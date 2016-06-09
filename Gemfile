@@ -28,6 +28,10 @@ gem 'clockwork','~>2.0.0'
 
 group :test do
 	gem 'rspec'
+	gem 'capybara'
+	gem 'rspec-sidekiq'
+	gem 'factory_girl'
+	gem "fakeredis", :require => "fakeredis/rspec"
 =begin
 	gem 'capybara'
 	gem 'selenium-webdriver'
