@@ -24,6 +24,10 @@ gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
+# gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
+
+gem 'twilio-ruby'
+gem 'facebook-messenger'
 
 
 group :test do
