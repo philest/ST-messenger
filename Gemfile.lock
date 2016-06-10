@@ -59,6 +59,9 @@ GEM
     rspec-mocks (3.4.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
+    rspec-sidekiq (2.2.0)
+      rspec (~> 3.0, >= 3.0.0)
+      sidekiq (>= 2.4.0)
     rspec-support (3.4.1)
     sequel (4.35.0)
     sidekiq (4.1.2)
@@ -87,6 +90,7 @@ DEPENDENCIES
   rake (= 11.1.2)
   redis (= 3.3.0)
   rspec
+  rspec-sidekiq
   sequel (~> 4.35.0)
   sidekiq (~> 4.1.2)
 
