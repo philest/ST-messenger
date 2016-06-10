@@ -1,6 +1,9 @@
 ENV['RACK_ENV'] = 'test' # TODO: do this here?
 
-require 'database_cleaner'
+#require 'database_cleaner'
+require 'webmock/rspec'
+require 'sidekiq/testing' # for the sidekiq-rspec gem
+require 'json'
 # require 'rspec'
 # require_relative '../models/user'
 # require_relative '../config/environments'
@@ -24,10 +27,7 @@ require 'database_cleaner'
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-RSpec::Sidekiq.configure do |config|
-  config.clear_all_enqueued_jobs = true;
-  config.warn_when_jobs_not_processed_by_sidekiq = true # default => true
-end
+WebMock.disable_net_connect!(allow_localhost:true)
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

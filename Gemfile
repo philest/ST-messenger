@@ -20,7 +20,7 @@ gem 'puma', 	'~>3.4.0'
 gem 'httparty', '~>0.13.7'
 gem 'rake', 	'11.1.2'
 gem 'sequel', 	'~>4.35.0'
-
+gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
@@ -28,6 +28,7 @@ gem 'clockwork','~>2.0.0'
 
 group :test do
 	gem 'rspec'
+	gem 'webmock'
 	gem 'capybara'
 	gem 'rspec-sidekiq'
 	gem 'factory_girl'
@@ -38,8 +39,7 @@ group :test do
 	gem 'database_cleaner'
 	gem 'pry', "= 0.10.0"
 	gem 'pry-nav'
-	gem 'timecop'
 	gem 'factory_girl'
-	gem 'fakeredis', :require => 'fakeredis/rspec'
+	gem 'timecop'
 =end	
 end
