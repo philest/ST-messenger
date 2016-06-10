@@ -1,5 +1,6 @@
 .env
+ENV_LOCAL.rb
 dump.rdb
 .bundle
 *.swp
-helpers/*
+
