@@ -8,7 +8,7 @@ ruby '2.2.3'
 platform :jruby do
 	# you do need both of these for postgres to work properly on jruby.
 	# test on jruby 9.0.5.0
-    gem 'pg_jruby', 							'0.17.1-java'
+    # gem 'pg_jruby', 							'0.17.1-java'
     gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
 end
 
@@ -20,7 +20,7 @@ gem 'puma', 	'~>3.4.0'
 gem 'httparty', '~>0.13.7'
 gem 'rake', 	'11.1.2'
 gem 'sequel', 	'~>4.35.0'
-
+gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
@@ -34,6 +34,7 @@ gem 'dotenv-rails', '~> 2.1', '>= 2.1.1'
 
 group :test do
 	gem 'rspec'
+	gem 'webmock'
 	gem 'capybara'
 	gem 'rspec-sidekiq'
 	gem 'factory_girl'
@@ -44,8 +45,8 @@ group :test do
 	gem 'selenium-webdriver'
 	gem 'pry', "= 0.10.0"
 	gem 'pry-nav'
-	gem 'timecop'
 	gem 'factory_girl'
-	gem 'fakeredis', :require => 'fakeredis/rspec'
+	gem 'timecop'
 =end	
 end
+
