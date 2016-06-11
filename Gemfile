@@ -29,6 +29,8 @@ gem 'clockwork','~>2.0.0'
 gem 'twilio-ruby'
 gem 'facebook-messenger'
 
+gem 'dotenv-rails', '~> 2.1', '>= 2.1.1'
+
 
 group :test do
 	gem 'rspec'
@@ -36,10 +38,10 @@ group :test do
 	gem 'rspec-sidekiq'
 	gem 'factory_girl'
 	gem "fakeredis", :require => "fakeredis/rspec"
+	gem 'database_cleaner'
 =begin
 	gem 'capybara'
 	gem 'selenium-webdriver'
-	gem 'database_cleaner'
 	gem 'pry', "= 0.10.0"
 	gem 'pry-nav'
 	gem 'timecop'

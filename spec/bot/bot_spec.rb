@@ -1,8 +1,12 @@
-#  expect { 1/0 }.to raise_error(ZeroDivisionError)
+require 'spec_helper'
+require 'bot/bot'
+# require_relative '../models/story'
 
-describe Bot do
-	context "When adding new users to the users table" do
+describe "Bot" do
+	context "When adding new users to the database" do
 		it "should successfully connect to the database" do
+
+			# expect()
 		end
 
 		it "should rescue an exception upon failure to connect to the db" do 
