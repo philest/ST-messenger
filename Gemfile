@@ -8,7 +8,7 @@ ruby '2.2.3'
 platform :jruby do
 	# you do need both of these for postgres to work properly on jruby.
 	# test on jruby 9.0.5.0
-    # gem 'pg_jruby', 							'0.17.1-java'
+    gem 'pg_jruby'
     gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
 end
 
@@ -16,7 +16,17 @@ platform :ruby do
   gem 'pg', 	'0.18.4'
 end
 
+
+gem 'dotenv', '~> 2.1', '>= 2.1.1'
+
+
+# bot stuff
 gem 'puma', 	'~>3.4.0'
+gem 'twilio-ruby'
+gem 'facebook-messenger'
+
+
+# birdv stuff
 gem 'httparty', '~>0.13.7'
 gem 'rake', 	'11.1.2'
 gem 'sequel', 	'~>4.35.0'
@@ -26,10 +36,9 @@ gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
-gem 'twilio-ruby'
-gem 'facebook-messenger'
 
-gem 'dotenv-rails', '~> 2.1', '>= 2.1.1'
+
+
 
 
 group :test do

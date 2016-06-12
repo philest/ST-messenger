@@ -3,22 +3,29 @@ require 'bot/bot'
 # require_relative '../models/story'
 
 describe "Bot" do
+
+	describe '#fb_send_txt' for
+
+	
+
+	end
+
 	context "When adding new users to the database" do
-		it "should successfully connect to the database" do
+		it "successfully connects to the database" do
 
 			# expect()
 		end
 
-		it "should rescue an exception upon failure to connect to the db" do 
+		it "rescues an exception upon failure to connect to the db" do 
 		end
 
-		it "should successfully add a user to the database if the user's Facebook id and phone number are unique" do
+		it "adds a user to the db if the user's FB id and phone number are unique" do
 		end
 
-		it "should throw a database exception when either the FB id or the phone number are not unique" do
+		it "throws a db exception when either the FB id or the phone number are not unique" do
 		end
 
-		it "should rescue the db exception in the above instance" do
+		it "rescues the db exception in the above instance" do
 		end
 	end
 end

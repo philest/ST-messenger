@@ -1,19 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    actionpack (4.2.6)
-      actionview (= 4.2.6)
-      activesupport (= 4.2.6)
-      rack (~> 1.6)
-      rack-test (~> 0.6.2)
-      rails-dom-testing (~> 1.0, >= 1.0.5)
-      rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (4.2.6)
-      activesupport (= 4.2.6)
-      builder (~> 3.1)
-      erubis (~> 2.7.0)
-      rails-dom-testing (~> 1.0, >= 1.0.5)
-      rails-html-sanitizer (~> 1.0, >= 1.0.2)
     activemodel (4.2.6)
       activesupport (= 4.2.6)
       builder (~> 3.1)
@@ -45,6 +32,7 @@ GEM
     clockwork (2.0.0)
       activesupport
       tzinfo
+    concurrent-ruby (1.0.2)
     concurrent-ruby (1.0.2-java)
     connection_pool (2.2.0)
     crack (0.4.3)
@@ -52,10 +40,6 @@ GEM
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
     dotenv (2.1.1)
-    dotenv-rails (2.1.1)
-      dotenv (= 2.1.1)
-      railties (>= 4.0, < 5.1)
-    erubis (2.7.0)
     facebook-messenger (0.6.0)
       httparty (~> 0.13.7)
       rack (>= 1.6.4)
@@ -69,34 +53,27 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
     jdbc-postgres (9.4.1206)
+    json (1.8.3)
     json (1.8.3-java)
     jwt (1.5.4)
-    loofah (2.0.3)
-      nokogiri (>= 1.5.9)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
+    mini_portile2 (2.1.0)
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     nokogiri (1.6.8-java)
+    pg (0.18.4)
+    pkg-config (1.1.7)
+    puma (3.4.0)
     puma (3.4.0-java)
     rack (1.6.4)
     rack-test (0.6.3)
       rack (>= 1.0)
-    rails-deprecated_sanitizer (1.0.3)
-      activesupport (>= 4.2.0.alpha)
-    rails-dom-testing (1.0.7)
-      activesupport (>= 4.2.0.beta, < 5.0)
-      nokogiri (~> 1.6.0)
-      rails-deprecated_sanitizer (>= 1.0.1)
-    rails-html-sanitizer (1.0.3)
-      loofah (~> 2.0)
-    railties (4.2.6)
-      actionpack (= 4.2.6)
-      activesupport (= 4.2.6)
-      rake (>= 0.8.7)
-      thor (>= 0.18.1, < 2.0)
     rake (11.1.2)
     redis (3.3.0)
     rspec (3.4.0)
@@ -121,7 +98,7 @@ GEM
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
-    thor (0.19.1)
+    thread_safe (0.3.5)
     thread_safe (0.3.5-java)
     twilio-ruby (4.11.1)
       builder (>= 2.1.2)
@@ -138,19 +115,21 @@ GEM
 
 PLATFORMS
   java
+  ruby
 
 DEPENDENCIES
   activerecord-jdbcpostgresql-adapter (= 1.3.20)
   capybara
   clockwork (~> 2.0.0)
   database_cleaner
-  dotenv-rails (~> 2.1, >= 2.1.1)
+  dotenv (~> 2.1, >= 2.1.1)
   facebook-messenger
   factory_girl
   fakeredis
   httparty (~> 0.13.7)
   json
   pg (= 0.18.4)
+  pg_jruby
   puma (~> 3.4.0)
   rake (= 11.1.2)
   redis (= 3.3.0)

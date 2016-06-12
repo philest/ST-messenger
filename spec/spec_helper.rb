@@ -4,7 +4,7 @@ require 'rspec'
 require 'sequel'
 require 'database_cleaner'
 # loads database as 'db'
-require_relative '../config/environments'
+require_relative '../config/environment'
 # loads user model
 require_relative '../models/user'
 
