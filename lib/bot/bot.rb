@@ -13,6 +13,7 @@ end
 include Facebook::Messenger
 require_relative 'demo'
 require_relative 'intro'
+require_relative 'day1'
 
 # aubrey 10209571935726081
 # phil 10209486368143976
@@ -44,8 +45,35 @@ def fb_send_pic(recipient, img_url)
 end
 
 
+# TODO: make btns optional
+def fb_send_generic(recipient, title, img_url, btns)
+  Bot.deliver(
+    recipient: recipient,
+      message: {
+        attachment: {
+          type:'template',
+          payload:{
+            template_type: 'generic',
+            elements: [
+              {   
+                title: title,
+                image_url: img_url,
+                buttons: btns
+              }
+            ]
+          }
+        }
+      }
+  )
+end
+
+def fb_send_arbitrary(arb)
+  Bot.deliver(arb)
+end
+
+
 DEMO    = /demo/i
-DAY_ONE = /day one/xi # ignore case and spaces
+DAY_ONE = /dayone/i # ignore case and spaces
 JOIN    = /join/i
 INTRO   = 'INTRO'
 
@@ -55,9 +83,10 @@ Bot.on :message do |message|
 
   case message.text
   when DAY_ONE
-    day1()
+    day1(message.sender, "0_3_3")
+    puts "hey"
   when DEMO
-  	demo(message)
+  	intro(message.sender)
   when JOIN     
     fb_send_txt( message.sender, 
       "You're enrolled! Get ready for free stories!"
@@ -74,7 +103,7 @@ Bot.on :postback do |postback|
 
   case postback.payload
   when /^[0-9]_[0-9]_[0-9]$/
-    intro(postback.sender)
+    day1(postback.sender, postback.payload)
   else
     fb_send_txt( postback.sender, postback.payload, 
       "lol what is that selection?"
