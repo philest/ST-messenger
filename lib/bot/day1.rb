@@ -12,26 +12,27 @@ BTN_GROUP0 = [
 							"What is StoryTime?"
 						 ]
 
-BTN_GROUP1 =  [
-								[
-									"Read my first story!",
-								  ""
-								],
-								[
-									"Message my teacher?",
-								  "Just type a message, and Ms. Stobierski will see it next time she’s on her computer :)"	
-								],
-								[
-									"When does it come?",
-								  "You’ll get a StoryTime Facebook message each night at 7pm :)"
-								]
+BTN_GROUP1 =  [		
+							 "Read my first story!",
+							 "Message my teacher?",
+							 "When does it come?"
 						  ]
 
 # e.g. of payload format:
 # '3_x_x' = story 3, garbage, garbage
 BTN_GROUP2 = [
-
+							"Read it!"
 						 ]
+
+BTN_GROUP3 = [
+							"Read it!"
+						 ]			
+
+BTN_GROUP4 =  [		
+							 "What is StoryTime?",
+							 "Thank you!"
+						  ]
+
 
 # e.g. of payload format:
 # '3_1_2' = btn_group 3, button 1, binarystring 2
@@ -115,12 +116,25 @@ def send_story(recipient, title, len)
 	end
 end
 
+
+def story_btn(recipient, title_url, title, btn_group)
+	formatted_buttons = format_buttons(btn_group,1)
+	turl = "https://s3.amazonaws.com/st-messenger/day1/#{title_url}/#{title_url}title.jpg"
+	fb_send_generic(recipient, title, turl, formatted_buttons)
+end
+
+
 def day1(recipient, payload)
+	
+	# parse payload
 	btn_group, btn_num, btn_bin = payload.split('_').map { |e| e.to_i }
 
 	case btn_group
-		# the behaviour of btn group 0 is different :P
-	when 0
+
+	#
+	# btn group #0
+	#	
+	when 0 # the behaviour of btn group 0 is different :P
 		puts 'suh dude'
 		formatted_buttons = format_buttons(0,3)
 		welcm_url= 'https://s3.amazonaws.com/st-messenger/day1/clouds/cloudstitle.jpg'
@@ -137,22 +151,64 @@ def day1(recipient, payload)
 			fb_send_txt(recipient, sammy_intro)
 			sleep 1
 			send_story(recipient, 'clouds', 2)
-
-			
+			fb_send_txt(recipient, "Tap the first picture to make it big, then swipe to read through!")
+			fb_send_txt(recipient,"Every night, I’ll bring you 3 new short stories. Here’s another!")
+			story_btn(recipient, "floating_shoe", "The Shoe Boat", 2)
 
 		when 1 # what is ST?
 			fb_send_arbitrary(generate_buttons(recipient,1,"Now what?",7))
 		else
-			
-			# no picture needed
-			fb_send_generic(recipient, 'Welcome to StoryTime!', '', formatted_buttons)
+			fb_send_txt(recipient,"StoryTime a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
+
+			fb_send_generic(recipient, 'Welcome to StoryTime!', '', formatted_buttons) # no picture needed
 		end
+	
+	#
+	# btn group #1
+	#	
 	when 1
-
+		case btn_num
+		when 0
+			sammy = "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png"
+			fb_send_pic(recipient, sammy)
+			sammy_intro = 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to send you nightly stories :)'
+			fb_send_txt(recipient, sammy_intro)
+			sleep 1
+			send_story(recipient, 'clouds', 2)
+			fb_send_txt(recipient, "Tap the first picture to make it big, then swipe to read through!")
+			fb_send_txt(recipient,"Every night, I’ll bring you 3 new short stories. Here’s another!")
+			story_btn(recipient, "floating_shoe", "The Shoe Boat", 2)
+		when 1
+			fb_send_txt(recipient, "Just type a message, and Ms. Stobierski will see it next time she’s on her computer :)")
+			fb_send_arbitrary(generate_buttons(recipient,1,"Now what?",btn_bin))
+		when 2
+			fb_send_txt(recipient, "You’ll get a StoryTime Facebook message each night at 7pm :)")
+			fb_send_arbitrary(generate_buttons(recipient,1,"Now what?",btn_bin))
+		end
+	
+	#
+	# btn group #2 (just floating shoe)
+	#	
 	when 2
-
+			send_story(recipient, "floating_shoe", 2)
+			fb_send_txt(recipient,"You’ll get Facebook message on your phone with your new stories to read together.")
+			story_btn(recipient, "hero", "My Super Power!", 3)
 	when 3
+			send_story(recipient, "hero", 2)
+			sleep 1
+			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: Thanks, Ms. Edwards! I’ll send more stories tomorrow night. Reply to send me a message.",3))
+	
+	when 4
+
+		case btn_num
+		when 0
+			fb_send_arbitrary(generate_buttons(recipient,1,"More info:",6))
+		else
+			fb_send_txt(recipient, "You're welcome :)")
+		end
 	end
+
+
 
 end
 
