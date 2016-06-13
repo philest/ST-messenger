@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+puts :platform
 
 # this version of ruby seems to make jruby and cruby 
 # play nicely. The jruby implementation we used is
