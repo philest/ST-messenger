@@ -8,6 +8,7 @@ require_relative '../../config/environment'
 Facebook::Messenger.configure do |config|
   config.access_token = ENV['FB_ACCESS_TKN']
   config.verify_token = ENV['FB_VERIFY_TKN']
+  config.app_secret   = ENV['APP_SECRET']
 end
 
 include Facebook::Messenger
