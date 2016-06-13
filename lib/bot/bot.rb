@@ -68,6 +68,10 @@ def fb_send_generic(recipient, title, img_url, btns)
   )
 end
 
+def get_fb_name(user_id)
+  HTTParty.get("https://graph.facebook.com/v2.6/#{user_id}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
+end
+
 def fb_send_arbitrary(arb)
   Bot.deliver(arb)
 end
@@ -120,8 +124,9 @@ Bot.on :message do |message|
       "You're enrolled! Get ready for free stories!"
     )
   else 
+    tuser = get_fb_name(message.sender)
     fb_send_txt( message.sender, 
-      "You say \"#{message.text}\". I say, \"QuailTime!\""
+      "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time she’s on her computer."
     )
   end
 end

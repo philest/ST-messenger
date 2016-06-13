@@ -146,7 +146,7 @@ def day1(recipient, payload)
 		case btn_num
 		when 3 # when request a dayone demo
 			fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
-			tname = "#{fb_name.gender=='male' ? "Mr." : "Ms."} #{fb_name.last_name}"
+			tname = "#{fb_name['gender']=='male' ? "Mr." : "Ms."} #{fb_name['last_name']}"
 			delay_after 2, 		fb_send_txt(recipient, "Hi #{tname}, this is Ms. Stobierski from the YMCA!")
 			delay_after 3, 		fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
 			fb_send_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
