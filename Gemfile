@@ -15,7 +15,7 @@ end
 params = ruby_version_get
 ruby *params
 
-if ENV['RUBY_VERSION']=='jruby'
+if RUBY_ENGINE=='jruby'
   gem 'pg', '0.17.1', :platform => :jruby, :git => 'git://github.com/headius/jruby-pg.git', :branch => :master
   gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
 else
