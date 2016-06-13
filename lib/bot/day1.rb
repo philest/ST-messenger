@@ -200,13 +200,16 @@ def day1(recipient, payload)
 
 	
 	when 3
-			delay_after 3, 		send_story(recipient, "hero", 2)
+			
+			delay_after 2, fb_send_txt(recipient, "This one’s my favorite :)")
+			delay_after 9, 		send_story(recipient, "hero", 2)
 			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: Thanks, Ms. Edwards! I’ll send more stories tomorrow night. Reply to send me a message.",3))
 	
 	when 4
 
 		case btn_num
 		when 0
+			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
 			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions? ",6))
 		else
 			fb_send_txt(recipient, "You're welcome :)")
