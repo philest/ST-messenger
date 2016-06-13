@@ -1,9 +1,19 @@
 source 'https://rubygems.org'
 
+
 # this version of ruby seems to make jruby and cruby 
 # play nicely. The jruby implementation we used is
 # 9.0.5.0
-ruby '2.2.3'
+def ruby_version_get
+  if ENV['RUBY_VERSION']=='jruby'
+    ['2.2.3',:engine=>'jruby',:engine_version=>'9.0.5.0']
+  else
+    ['2.2.3']
+  end
+end
+
+params = ruby_version_get
+ruby *params
 
 platform :jruby do
 	# you do need both of these for postgres to work properly on jruby.

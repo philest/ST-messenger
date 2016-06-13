@@ -187,12 +187,14 @@ def day1(recipient, payload)
 		end
 	
 	#
-	# btn group #2 (just floating shoe)
+	# btn group #2 (the floating shoe!)
 	#	
 	when 2
 			send_story(recipient, "floating_shoe", 2)
 			fb_send_txt(recipient,"You’ll get Facebook message on your phone with your new stories to read together.")
 			story_btn(recipient, "hero", "My Super Power!", 3)
+
+	
 	when 3
 			send_story(recipient, "hero", 2)
 			sleep 1
