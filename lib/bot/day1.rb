@@ -214,16 +214,13 @@ def day1(recipient, payload)
 	when 4
 
 		case btn_num
-		when 0sdfsdfsdf
+		when 0
 			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
 			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions? ",6))
 		else
 			fb_send_txt(recipient, "You're welcome :)")
 		end
 	end
-
-
-
 end
 
 =begin
