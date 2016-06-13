@@ -133,7 +133,9 @@ def day1(recipient, payload)
 	
 	# parse payload
 	btn_group, btn_num, btn_bin = payload.split('_').map { |e| e.to_i }
-
+	if btn_bin==0 
+		return
+	end
 	case btn_group
 
 	#
@@ -202,15 +204,17 @@ def day1(recipient, payload)
 
 	
 	when 3
-			
+			# TODO: DRY this shit up
+			fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
+			tname = "#{fb_name['gender']=='male' ? "Mr." : "Ms."} #{fb_name['last_name']}"			
 			delay_after 2, fb_send_txt(recipient, "This one’s my favorite :)")
 			delay_after 9, 		send_story(recipient, "hero", 2)
-			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: Thanks, Ms. Edwards! I’ll send more stories tomorrow night. Reply to send me a message.",3))
+			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: Thanks, #{tname}! I’ll send more stories tomorrow night. Reply to send me a message.",3))
 	
 	when 4
 
 		case btn_num
-		when 0
+		when 0sdfsdfsdf
 			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
 			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions? ",6))
 		else
