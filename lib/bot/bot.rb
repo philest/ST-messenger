@@ -78,6 +78,34 @@ DAY_ONE = /day1/i # ignore case and spaces
 JOIN    = /join/i
 INTRO   = 'INTRO'
 
+def register_user(recipient)
+    # save user in the database.
+    begin
+      users = DB[:users] 
+      begin
+        fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
+        name = fb_name["first_name"] + " " + fb_name["last_name"]
+      rescue HTTParty::Error
+        name = ""
+      else
+        puts "successfully found name"
+      end
+
+      begin 
+        users.insert(:name => name, :fb_id => recipient["id"])
+        puts "inserted #{name}:#{recipient} into the users table"
+      rescue Sequel::UniqueConstraintViolation => e
+        p e.message
+        puts "did not insert, already exists in db"
+      rescue Sequel::Error => e
+        p e.message
+        puts "failure"
+      end
+    rescue Sequel::Error => e
+      p e.message
+    end
+end
+
 
 Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
@@ -85,7 +113,6 @@ Bot.on :message do |message|
   case message.text
   when DAY_ONE
     day1(message.sender, "0_3_3")
-    puts "hey"
   when DEMO
   	intro(message.sender)
   when JOIN     
@@ -103,12 +130,11 @@ end
 Bot.on :postback do |postback|
 
   case postback.payload
+  when INTRO
+    register_user(postback.sender)
+    day1(postback.sender, "0_3_3")
   when /^[0-9]_[0-9]_[0-9]$/
     day1(postback.sender, postback.payload)
-  else
-    fb_send_txt( postback.sender, postback.payload, 
-      "lol what is that selection?"
-    )    
   end
 end
 

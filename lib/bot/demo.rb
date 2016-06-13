@@ -12,7 +12,7 @@ def demo(message)
           type: 'image',
           payload: {
           	# floating shoe 1
-            url: 'http://s33.postimg.org/z2io2l1gv/floating_Shoe1.jpg'
+            url: 'https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg'
           }
         }
 		}
@@ -24,7 +24,7 @@ def demo(message)
           type: 'image',
           payload: {
           	# floating shoe 2
-            url: 'http://s33.postimg.org/487qtv4bz/floating_Shoe2.jpg'
+            url: 'https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg'
           }
         }
 		}

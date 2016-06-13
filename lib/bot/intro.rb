@@ -10,8 +10,8 @@ def intro(recipient)
     )
 
     intro_story = %w(
-                http://s33.postimg.org/z2io2l1gv/floating_Shoe1.jpg 
-                http://s33.postimg.org/487qtv4bz/floating_Shoe2.jpg
+                https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg 
+                https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg
                 )
 
   	intro_story.each do |story_page|
