@@ -15,15 +15,11 @@ end
 params = ruby_version_get
 ruby *params
 
-platform :jruby do
-	# you do need both of these for postgres to work properly on jruby.
-	# test on jruby 9.0.5.0
-    gem 'pg_jruby'
-    gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
-end
-
-platform :ruby do
-  gem 'pg', 	'0.18.4'
+if ENV['RUBY_VERSION']=='jruby'
+  gem 'pg', '0.17.1', :platform => :jruby, :git => 'git://github.com/headius/jruby-pg.git', :branch => :master
+  gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
+else
+  gem 'pg', 	'0.17.1'
 end
 
 
