@@ -74,7 +74,7 @@ end
 
 
 DEMO    = /demo/i
-DAY_ONE = /dayone/i # ignore case and spaces
+DAY_ONE = /day1/i # ignore case and spaces
 JOIN    = /join/i
 INTRO   = 'INTRO'
 
