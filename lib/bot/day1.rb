@@ -129,6 +129,26 @@ def delay_after(secs, f)
 end
 
 
+def get_name(id)
+	begin
+        fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{id}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
+        case fb_name['gender']
+        when 'male'
+        	honorific = "Mr."
+        when 'female'
+        	honorific = "Ms."
+        else
+        	honorific = "Mx."
+        end
+        return "#{honorific} #{fb_name['last_name']}"
+	rescue HTTParty::Error
+	    name = ""
+	else
+	    puts "successfully found name"
+	end
+end
+
+
 def day1(recipient, payload)
 	
 	# parse payload
@@ -136,6 +156,9 @@ def day1(recipient, payload)
 	if btn_bin==0 
 		return
 	end
+
+	tname = get_name(recipient['id'])
+
 	case btn_group
 
 	#
@@ -147,9 +170,8 @@ def day1(recipient, payload)
 		turl= 'https://s3.amazonaws.com/st-messenger/day1/clouds/cloudstitle.jpg'
 		case btn_num
 		when 3 # when request a dayone demo
-			fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
-			tname = "#{fb_name['gender']=='male' ? "Mr." : "Ms."} #{fb_name['last_name']}"
-			delay_after 2, 		fb_send_txt(recipient, "Hi #{tname}, this is Ms. Stobierski from the YMCA!")
+			greeting = tname.empty? ? "Hi" : "Hi #{tname}"
+			delay_after 2, 		fb_send_txt(recipient, "#{greeting}, this is Ms. Stobierski from the YMCA!")
 			delay_after 3, 		fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
 			fb_send_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
 
@@ -204,12 +226,11 @@ def day1(recipient, payload)
 
 	
 	when 3
-			# TODO: DRY this shit up
-			fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
-			tname = "#{fb_name['gender']=='male' ? "Mr." : "Ms."} #{fb_name['last_name']}"			
 			delay_after 2, fb_send_txt(recipient, "This one’s my favorite :)")
 			delay_after 9, 		send_story(recipient, "hero", 2)
-			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: Thanks, #{tname}! I’ll send more stories tomorrow night. Reply to send me a message.",3))
+
+			greeting = tname.empty? ? "Thanks" : "Thanks, #{tname}"
+			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: #{greeting}! I’ll send more stories tomorrow night. Reply to send me a message.",3))
 	
 	when 4
 
