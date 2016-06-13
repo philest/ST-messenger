@@ -174,12 +174,12 @@ def day1(recipient, payload)
 		case btn_num
 
 		when 0 # same same btn_group 0, btn 0
-			fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
+			delay_after 1.75, 	fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
 			
-			delay_after 2.5, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
-			delay_after 2.75, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
-			delay_after 12, 	send_story(recipient,  'clouds', 2)
-			delay_after 1.25, fb_send_txt(recipient, "When you’re done reading your first story, here's another :)")
+			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
+			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
+			delay_after 12, 	send_story(recipient, 'clouds', 2)
+			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
 			story_btn(recipient, "floating_shoe", "The Shoe Boat", 2)
 		when 1
 			delay_after 1.1, fb_send_txt(recipient, "Just type a message, and Ms. Stobierski will see it next time she’s on her computer :)")
