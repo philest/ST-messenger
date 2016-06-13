@@ -150,9 +150,9 @@ def day1(recipient, payload)
 			fb_send_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
 
 		when 0 # read first story
-			fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
+			delay_after 1.75, 	fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
 			
-			delay_after 4, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
+			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
 			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
 			delay_after 12, 	send_story(recipient, 'clouds', 2)
 			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
@@ -190,10 +190,11 @@ def day1(recipient, payload)
 	#
 	# btn group #2 (the floating shoe!)
 	#	
-	when 2
+	when 2 
+			delay_after 2, fb_send_txt(recipient, "I promised Ms. Stobierski I’d bring you the best stories I could find :)")
 			delay_after 15, 	send_story(recipient,  "floating_shoe", 2)
 			delay_after 1.75, fb_send_txt(recipient, "Every night, I’ll bring your new stories in a Facebook message.")
-			delay_after 1, 		fb_send_txt(recipient, "Then,  you can read together on your phone :) ")
+			delay_after 1, 		fb_send_txt(recipient, "Then, you can read together on your phone :) ")
 			delay_after 1.25, fb_send_txt(recipient, "Here’s tonight’s last story!")
 			story_btn(recipient, "hero", "My Super Power!", 3)
 
