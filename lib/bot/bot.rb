@@ -69,7 +69,7 @@ def fb_send_generic(recipient, title, img_url, btns)
 end
 
 def get_fb_name(user_id)
-  HTTParty.get("https://graph.facebook.com/v2.6/#{user_id}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
+  HTTParty.get("https://graph.facebook.com/v2.6/#{user_id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
 end
 
 def fb_send_arbitrary(arb)
