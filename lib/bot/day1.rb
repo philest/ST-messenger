@@ -123,6 +123,11 @@ def story_btn(recipient, title_url, title, btn_group)
 	fb_send_generic(recipient, title, turl, formatted_buttons)
 end
 
+def delayed(secs, f)
+	#todo, should check if f when ok
+	sleep secs
+end
+
 
 def day1(recipient, payload)
 	
@@ -135,14 +140,14 @@ def day1(recipient, payload)
 	# btn group #0
 	#	
 	when 0 # the behaviour of btn group 0 is different :P
-		puts 'suh dude'
 		formatted_buttons = format_buttons(0,3)
 		welcm_url= 'https://s3.amazonaws.com/st-messenger/day1/clouds/cloudstitle.jpg'
 		case btn_num
 		when 3 # when request a dayone demo
-			fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski from the YMCA!")
-			fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
-			fb_send_generic(recipient, 'Welcome to StoryTime!', welcm_url, formatted_buttons)
+			delayed 2, 	fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski from the YMCA!")
+			delayed 4, 	fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
+			
+			delayed 2.5,fb_send_generic(recipient, 'Welcome to StoryTime!', welcm_url, formatted_buttons)
 
 		when 0 # read first story
 			sammy = "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png"
