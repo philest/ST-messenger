@@ -48,7 +48,7 @@ namespace :enrollment do
 			client.account.messages.create(
 				:from => from,
 				:to => value,
-				:body => "Hi #{key}, welcome to StoryTime!\nm.me/quailtime"
+				:body => "Hi #{key}, welcome to StoryTime!\nm.me/490917624435792"
 			)
 			puts "Sent message to #{key}"
 		end
