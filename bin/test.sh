@@ -3,10 +3,9 @@
 # curl -X GET "https://graph.facebook.com/v2.6/$david?fields=first_name,last_name&access_token=$token"
 
 
-
 curl -X POST -H "Content-Type: application/json" -d '{
   "recipient":{
-    "id":
+    "id":$david_id
   },
   "message":{
     "attachment":{
@@ -17,5 +16,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
     }
   }
 }' -i "https://graph.facebook.com/v2.6/me/messages?access_token=$access_token"
-
 
