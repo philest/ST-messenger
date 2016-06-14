@@ -12,6 +12,8 @@ Facebook::Messenger.configure do |config|
 end
 
 include Facebook::Messenger
+require_relative 'fb_helpers'
+include Facebook::Messenger::Helpers
 require_relative 'demo'
 require_relative 'intro'
 require_relative 'day1'
@@ -22,99 +24,154 @@ require_relative 'day1'
 # 
 # david? 10209967651611613
 
-def fb_send_txt(recipient, message)
-  Bot.deliver(
-    recipient: recipient, 
-    message: {
-      text: message
-    }
-  )
+
+def register_user(recipient)
+  # save user in the database.
+  begin
+    users = DB[:users] 
+    begin
+      fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
+      name = fb_name["first_name"] + " " + fb_name["last_name"]
+    rescue HTTParty::Error
+      name = ""
+    else
+      puts "successfully found name"
+    end
+
+    begin 
+      users.insert(:name => name, :fb_id => recipient["id"])
+      puts "inserted #{name}:#{recipient} into the users table"
+    rescue Sequel::UniqueConstraintViolation => e
+      p e.message
+      puts "did not insert, already exists in db"
+    rescue Sequel::Error => e
+      p e.message
+      puts "failure"
+    end
+  rescue Sequel::Error => e
+    p e.message
+  end
 end
 
-def fb_send_pic(recipient, img_url)
-  Bot.deliver(
-    recipient: recipient,
-    message: {
-      attachment: {
-        type: 'image',
-        payload: {
-          url: img_url
-        }
-      }
-    }
-  )
+#
+# handy bot helpers
+#
+STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
+
+# sends recipient the indicated story
+# here's what this looks like:
+# 
+#
+def send_story(recipient, library, title_url, num_pages)
+  num_pages.times do |i|
+    fb_send_pic(recipient, STORY_BASE_URL+"#{library}/#{title_url}/#{title_url}#{i+1}.jpg")
+  end
 end
 
 
-# TODO: make btns optional
-def fb_send_generic(recipient, title, img_url, btns)
-  Bot.deliver(
-    recipient: recipient,
-      message: {
-        attachment: {
-          type:'template',
-          payload:{
-            template_type: 'generic',
-            elements: [
-              {   
-                title: title,
-                image_url: img_url,
-                buttons: btns
+def button_json(title, btn_group, btn_num, bin)
+  return {
+    type:   'postback',
+    title:  "#{title}",
+    payload:"#{btn_group}_#{btn_num}_#{bin}" 
+  }
+end
+
+
+
+
+def format_buttons(btn_group, bin=7)
+  arr_size = btn_group.size
+  reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
+
+  selected_btns = eval("BTN_GROUP#{btn_group}").map.with_index do |e, i|
+      [e,(2**i)]
+  end
+
+  formated_buttons = selected_btns.map.with_index do |e,i|
+    button_json(e[0],btn_group,i,bin-e[1])
+  end
+end
+
+
+
+#
+# here's what this looks like:
+# 
+#
+
+# e.g. of payload format:
+# '3_1_2' = btn_group 3, button 1, binarystring 2
+def story_btn(recipient, library, title, title_url, btn_group)
+  formatted_buttons = format_buttons(btn_group)
+  turl =  STORY_BASE_URL + "#{library}/#{title_url}/#{title_url}title.jpg"
+  fb_send_template_generic(recipient, title, turl, formatted_buttons)
+end
+
+
+
+
+def generate_buttons(recipient, btn_group, message_text, bin=7)
+  arr_size = btn_group.size
+  reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
+
+  selected_btns = eval("BTN_GROUP#{btn_group}").map.with_index do |e, i|
+    if (reversed_bin_str[i] == "1")
+      [e,(2**i)]
+    else
+      []
+    end
+  end
+
+  temp = selected_btns.map.with_index do |e,i|
+    if !e.empty?
+     button_json(e[0],btn_group,i,bin-e[1])
+    else
+      []
+    end
+  end
+
+  formatted_buttons = temp.reject{ |c| c.empty? }
+
+  btn_rqst= { recipient: recipient,
+              message: {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type:'button',
+                    text: message_text,
+                    buttons: formatted_buttons
+                  }
+                }
               }
-            ]
-          }
-        }
-      }
-  )
+            }
+
+  return btn_rqst
 end
 
-def get_fb_name(user_id)
-  HTTParty.get("https://graph.facebook.com/v2.6/#{user_id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
-end
 
-def fb_send_arbitrary(arb)
-  Bot.deliver(arb)
-end
+
+
 
 
 DEMO    = /demo/i
 DAY_ONE = /day1/i # ignore case and spaces
 JOIN    = /join/i
+TENIMG  = /tenimg/i
 INTRO   = 'INTRO'
 
-def register_user(recipient)
-    # save user in the database.
-    begin
-      users = DB[:users] 
-      begin
-        fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
-        name = fb_name["first_name"] + " " + fb_name["last_name"]
-      rescue HTTParty::Error
-        name = ""
-      else
-        puts "successfully found name"
-      end
+puts "poop"
 
-      begin 
-        users.insert(:name => name, :fb_id => recipient["id"])
-        puts "inserted #{name}:#{recipient} into the users table"
-      rescue Sequel::UniqueConstraintViolation => e
-        p e.message
-        puts "did not insert, already exists in db"
-      rescue Sequel::Error => e
-        p e.message
-        puts "failure"
-      end
-    rescue Sequel::Error => e
-      p e.message
-    end
-end
-
-
+#
+# i.e. when user sends the bot a message.
+#
 Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
 
   case message.text
+  when TENIMG
+    10.times do 
+    fb_send_pic(message.sender,'https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg') end
   when DAY_ONE
     day1(message.sender, "0_3_3")
   when DEMO
@@ -124,14 +181,16 @@ Bot.on :message do |message|
       "You're enrolled! Get ready for free stories!"
     )
   else 
-    tuser = get_fb_name(message.sender)
+    tuser = fb_get_user(message.sender)
     fb_send_txt( message.sender, 
       "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time she’s on her computer."
     )
   end
 end
 
-
+#
+# i.e. when user taps a button
+#
 Bot.on :postback do |postback|
 
   case postback.payload
@@ -143,6 +202,10 @@ Bot.on :postback do |postback|
   end
 end
 
+
+#
+# i.e. a reciept from facebook
+#
 Bot.on :delivery do |delivery|
   puts "Delivered message(s) #{delivery.ids}"
 end

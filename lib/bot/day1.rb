@@ -13,9 +13,9 @@ BTN_GROUP0 = [
 						 ]
 
 BTN_GROUP1 =  [		
-							 "Read my first story!",
-							 "Message my teacher?",
-							 "When does it come?"
+							 "Read my first story!",		
+							 "Message my teacher?",		
+							 "When does it come?"			
 						  ]
 
 # e.g. of payload format:
@@ -34,118 +34,11 @@ BTN_GROUP4 =  [
 						  ]
 
 
-# e.g. of payload format:
-# '3_1_2' = btn_group 3, button 1, binarystring 2
-def button_json(title, btn_group, btn_num, bin)
-	return {
-  	type:   'postback',
-  	title:  "#{title}",
-  	payload:"#{btn_group}_#{btn_num}_#{bin}" 
-	}
-end
-
-=begin
-def select_btn (btn_group, bin)
-	arr_size = btn_group.size
-	reversed_bin_str = ("%0#{arr.size}b" % 3).reverse
-
-	selected_btns = eval("BTN_GROUP#{btn_group}").select.with_index do |e, i|
-		reversed_bin_str[i] == "1"
-	end
-	return selected_btns
-end
-=end
-
-def generate_buttons(recipient, btn_group, message_text, bin)
-	arr_size = btn_group.size
-	reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
-
-	selected_btns = eval("BTN_GROUP#{btn_group}").map.with_index do |e, i|
-		if (reversed_bin_str[i] == "1")
-			[e,(2**i)]
-		else
-			[]
-		end
-	end
-
-	temp = selected_btns.map.with_index do |e,i|
-		if !e.empty?
-		 button_json(e[0],btn_group,i,bin-e[1])
-		else
-			[]
-		end
-	end
-
-	formatted_buttons = temp.reject{ |c| c.empty? }
-
-	btn_rqst= { recipient: recipient,
-							message: {
-								attachment: {
-									type: 'template',
-									payload: {
-										template_type:'button',
-										text: message_text,
-										buttons: formatted_buttons
-									}
-								}
-							}
-						}
-
-	return btn_rqst
-end
-
-def format_buttons(btn_group, bin)
-	arr_size = btn_group.size
-	reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
-
-	selected_btns = eval("BTN_GROUP#{btn_group}").map.with_index do |e, i|
-			[e,(2**i)]
-	end
-
-	formated_buttons = selected_btns.map.with_index do |e,i|
-		button_json(e[0],btn_group,i,bin-e[1])
-	end
-end
-
-
-def send_story(recipient, title, len)
-	baseurl = 'https://s3.amazonaws.com/st-messenger/day1/'
-	len.times do |i|
-		fb_send_pic(recipient, baseurl+"#{title}/#{title}#{i+1}.jpg")
-	end
-end
-
-
-def story_btn(recipient, title_url, title, btn_group)
-	formatted_buttons = format_buttons(btn_group,1)
-	turl = "https://s3.amazonaws.com/st-messenger/day1/#{title_url}/#{title_url}title.jpg"
-	fb_send_generic(recipient, title, turl, formatted_buttons)
-end
 
 # delay the message after sending--will need to make this different later
 def delay_after(secs, f)
 	#todo, should check if f when ok
 	sleep secs
-end
-
-
-def get_name(id)
-	begin
-        fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{id}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
-        case fb_name['gender']
-        when 'male'
-        	honorific = "Mr."
-        when 'female'
-        	honorific = "Ms."
-        else
-        	honorific = "Mx."
-        end
-        return "#{honorific} #{fb_name['last_name']}"
-	rescue HTTParty::Error
-	    name = ""
-	else
-	    puts "successfully found name"
-	end
 end
 
 
@@ -157,7 +50,7 @@ def day1(recipient, payload)
 		return
 	end
 
-	tname = get_name(recipient['id'])
+	tname = fb_get_name_honorific(recipient['id'])
 
 	case btn_group
 
@@ -173,22 +66,22 @@ def day1(recipient, payload)
 			greeting = tname.empty? ? "Hi" : "Hi #{tname}"
 			delay_after 2, 		fb_send_txt(recipient, "#{greeting}, this is Ms. Stobierski from the YMCA!")
 			delay_after 3, 		fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
-			fb_send_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
+			fb_send_template_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
 
 		when 0 # read first story
 			delay_after 1.75, 	fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
 			
 			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
 			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
-			delay_after 12, 	send_story(recipient, 'clouds', 2)
+			delay_after 12, 	send_story(recipient, 'day1', 'clouds', 2)
 			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
-			story_btn(recipient, "floating_shoe", "The Shoe Boat", 2)
+			story_btn(recipient, 'day1', "The Shoe Boat", "floating_shoe", 2)
 
 		when 1 # what is ST?
 			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
 			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions?",7))
 		else
-			fb_send_generic(recipient, 'Welcome to StoryTime!', '', formatted_buttons) # no picture needed
+			fb_send_template_generic(recipient, 'Welcome to StoryTime!', '', formatted_buttons) # no picture needed
 		end
 	
 	#
@@ -202,9 +95,9 @@ def day1(recipient, payload)
 			
 			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
 			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
-			delay_after 12, 	send_story(recipient, 'clouds', 2)
+			delay_after 12, 	send_story(recipient, 'day1', 'clouds', 2)
 			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
-			story_btn(recipient, "floating_shoe", "The Shoe Boat", 2)
+			story_btn(recipient, 'day1', "The Shoe Boat", "floating_shoe", 2)
 		when 1
 			delay_after 1.1, fb_send_txt(recipient, "Just type a message, and Ms. Stobierski will see it next time she’s on her computer :)")
 			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions?",btn_bin))
@@ -218,16 +111,16 @@ def day1(recipient, payload)
 	#	
 	when 2 
 			delay_after 2, fb_send_txt(recipient, "I promised Ms. Stobierski I’d bring you the best stories I could find :)")
-			delay_after 15, 	send_story(recipient,  "floating_shoe", 2)
+			delay_after 15, 	send_story(recipient, 'day1',  "floating_shoe", 2)
 			delay_after 1.75, fb_send_txt(recipient, "Every night, I’ll bring your new stories in a Facebook message.")
 			delay_after 1, 		fb_send_txt(recipient, "Then, you can read together on your phone :) ")
 			delay_after 1.25, fb_send_txt(recipient, "Here’s tonight’s last story!")
-			story_btn(recipient, "hero", "My Super Power!", 3)
+			story_btn(recipient, 'day1', "My Super Power!", "hero", 3)
 
 	
 	when 3
 			delay_after 2, fb_send_txt(recipient, "This one’s my favorite :)")
-			delay_after 9, 		send_story(recipient, "hero", 2)
+			delay_after 9, 		send_story(recipient, 'day1', "hero", 2)
 
 			greeting = tname.empty? ? "Thanks" : "Thanks, #{tname}"
 			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: #{greeting}! I’ll send more stories tomorrow night. Reply to send me a message.",3))
