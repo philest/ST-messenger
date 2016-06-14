@@ -14,7 +14,7 @@ class StoryCourier
   end
 end
 
-class StoryWorker
+class ScheduleWorker
   include Sidekiq::Worker
   def perform(*args)
   	StoryCourier.perform_async(*args)
