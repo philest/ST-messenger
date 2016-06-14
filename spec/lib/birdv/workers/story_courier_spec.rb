@@ -9,3 +9,10 @@ describe StoryCourier do
 	end
   # 
 end
+
+describe StoryWorker do
+	
+
+
+	
+end

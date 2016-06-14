@@ -1,5 +1,5 @@
 require 'spec_helper'
-# require './ENV_LOCAL' # if running locally
+
 
 
 describe "User" do
