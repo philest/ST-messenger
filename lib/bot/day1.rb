@@ -63,7 +63,7 @@ def day1(recipient, payload)
 			fb_send_arbitrary(generate_btns(recipient, 1, 'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.',7))		
 		else	
 			btn = btn_json('Tap here!', 0, 0, 0)
-			delay_after 3.5, fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime.")
+			delay_after 4, fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime.")
 			fb_send_template_generic(recipient, 'Tap below', "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", [btn])
 		end
 		
