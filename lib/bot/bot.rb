@@ -88,7 +88,7 @@ def register_user(recipient)
     begin
       users = DB[:users] 
       begin
-        # fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
+        fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
         name = fb_name["first_name"] + " " + fb_name["last_name"]
       rescue HTTParty::Error
         name = ""
@@ -127,10 +127,8 @@ Bot.on :message do |message|
   else 
     tuser = get_fb_name(message.sender)
     fb_send_txt( message.sender, 
-      "Thanks!"
-
+      "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time she’s on her computer."
     )
-    # "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time she’s on her computer."
   end
 end
 
