@@ -8,14 +8,11 @@ stories = [
 # e.g. of payload format:
 # '3_1_2' = btn_group 3, button 1, binarystring 2
 BTN_GROUP0 = [
-							"Read my first story!",
-							"What is StoryTime?"
+							"Tap here!",
 						 ]
 
 BTN_GROUP1 =  [		
-							 "Read my first story!",		
-							 "Message my teacher?",		
-							 "When does it come?"			
+							 "Thank you!"		
 						  ]
 
 # e.g. of payload format:
@@ -46,9 +43,9 @@ def day1(recipient, payload)
 	
 	# parse payload
 	btn_group, btn_num, btn_bin = payload.split('_').map { |e| e.to_i }
-	if btn_bin==0 
-		return
-	end
+	# if btn_bin==0 
+	# 	return
+	# end
 
 	tname = fb_get_name_honorific(recipient['id'])
 
@@ -58,82 +55,26 @@ def day1(recipient, payload)
 	# btn group #0
 	#	
 	when 0 # the behaviour of btn group 0 is different :P
-
-		formatted_buttons = format_buttons(0,3)
-		turl= 'https://s3.amazonaws.com/st-messenger/day1/clouds/cloudstitle.jpg'
-		case btn_num
-		when 3 # when request a dayone demo
-			greeting = tname.empty? ? "Hi" : "Hi #{tname}"
-			delay_after 2, 		fb_send_txt(recipient, "#{greeting}, this is Ms. Stobierski from the YMCA!")
-			delay_after 3, 		fb_send_txt(recipient, "I’ve signed our class up to get free nightly stories on StoryTime, starting tonight!")
-			fb_send_template_generic(recipient, 'Welcome to StoryTime!', turl, formatted_buttons)
-
-		when 0 # read first story
-			delay_after 1.75, 	fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
-			
-			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
-			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
-			delay_after 12, 	send_story(recipient, 'day1', 'clouds', 2)
-			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
-			story_btn(recipient, 'day1', "The Shoe Boat", "floating_shoe", 2)
-
-		when 1 # what is ST?
-			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
-			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions?",7))
-		else
-			fb_send_template_generic(recipient, 'Welcome to StoryTime!', '', formatted_buttons) # no picture needed
+		case btn_bin
+		when 0
+			fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg")
+			send_story(recipient, 'day1', 'cook', 8)
+			delay_after 15, fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg")
+			fb_send_txt(recipient, 'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.')
+			fb_send_aribitrary(generate_btns(recipient, 1, ''))		
+		else	
+			btn = btn_json('Tap here!', 0, 0, 0)
+			delay_after 4, fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime.")
+			fb_send_template_generic(recipient, 'A Hungry Day', "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", [btn])
 		end
-	
+		
+		
 	#
 	# btn group #1
 	#		
 	when 1
-		case btn_num
 
-		when 0 # same same btn_group 0, btn 0
-			delay_after 1.75, 	fb_send_pic(recipient, "https://s3.amazonaws.com/st-messenger/day1/sammy_bird.png")
-			
-			delay_after 3, 	fb_send_txt(recipient, 'Great! I’m Sammy, the StoryTime Bird! Ms. Stobierski asked me to bring you your first story :)')			
-			delay_after 4.4, fb_send_txt(recipient, "Here it comes! Tap the first picture to make it big, then swipe to read through!")
-			delay_after 12, 	send_story(recipient, 'day1', 'clouds', 2)
-			delay_after 1.25, fb_send_txt(recipient,"When you’re done reading your first story, here's another :)")
-			story_btn(recipient, 'day1', "The Shoe Boat", "floating_shoe", 2)
-		when 1
-			delay_after 1.1, fb_send_txt(recipient, "Just type a message, and Ms. Stobierski will see it next time she’s on her computer :)")
-			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions?",btn_bin))
-		when 2
-			delay_after 0.7, fb_send_txt(recipient, "You’ll get a StoryTime Facebook message each night at 7pm :)")
-			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions?",btn_bin))
-		end
-	
-	#
-	# btn group #2 (the floating shoe!)
-	#	
-	when 2 
-			delay_after 2, fb_send_txt(recipient, "I promised Ms. Stobierski I’d bring you the best stories I could find :)")
-			delay_after 15, 	send_story(recipient, 'day1',  "floating_shoe", 2)
-			delay_after 1.75, fb_send_txt(recipient, "Every night, I’ll bring your new stories in a Facebook message.")
-			delay_after 1, 		fb_send_txt(recipient, "Then, you can read together on your phone :) ")
-			delay_after 1.25, fb_send_txt(recipient, "Here’s tonight’s last story!")
-			story_btn(recipient, 'day1', "My Super Power!", "hero", 3)
 
-	
-	when 3
-			delay_after 2, fb_send_txt(recipient, "This one’s my favorite :)")
-			delay_after 9, 		send_story(recipient, 'day1', "hero", 2)
-
-			greeting = tname.empty? ? "Thanks" : "Thanks, #{tname}"
-			fb_send_arbitrary(generate_buttons(recipient,4,"Ms. Stobierski: #{greeting}! I’ll send more stories tomorrow night. Reply to send me a message.",3))
-	
-	when 4
-
-		case btn_num
-		when 0
-			delay_after 1.1, fb_send_txt(recipient,"StoryTime is a free program that Ms. Stobierski is using to send nightly stories by Facebook :)")
-			fb_send_arbitrary(generate_buttons(recipient,1,"Do you have any other questions? ",6))
-		else
-			fb_send_txt(recipient, "You're welcome :)")
-		end
 	end
 end
 

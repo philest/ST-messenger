@@ -7,8 +7,9 @@ require_relative '../../config/environment'
 
 Facebook::Messenger.configure do |config|
   config.access_token = ENV['FB_ACCESS_TKN']
-  config.verify_token = ENV['FB_VERIFY_TKN']
   config.app_secret   = ENV['APP_SECRET']
+  config.verify_token = ENV['FB_VERIFY_TKN']
+
 end
 
 include Facebook::Messenger
@@ -64,12 +65,12 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 #
 def send_story(recipient, library, title_url, num_pages)
   num_pages.times do |i|
-    fb_send_pic(recipient, STORY_BASE_URL+"#{library}/#{title_url}/#{title_url}#{i+1}.jpg")
+    fb_send_pic(recipient, STORY_BASE_URL+"#{library}/#{title_url}/#{title_url}#{i}.jpg")
   end
 end
 
 
-def button_json(title, btn_group, btn_num, bin)
+def btn_json(title, btn_group, btn_num, bin)
   return {
     type:   'postback',
     title:  "#{title}",
@@ -80,7 +81,7 @@ end
 
 
 
-def format_buttons(btn_group, bin=7)
+def format_btns(btn_group, bin=7)
   arr_size = btn_group.size
   reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
 
@@ -88,7 +89,7 @@ def format_buttons(btn_group, bin=7)
       [e,(2**i)]
   end
 
-  formated_buttons = selected_btns.map.with_index do |e,i|
+  formated_btns = selected_btns.map.with_index do |e,i|
     button_json(e[0],btn_group,i,bin-e[1])
   end
 end
@@ -103,15 +104,15 @@ end
 # e.g. of payload format:
 # '3_1_2' = btn_group 3, button 1, binarystring 2
 def story_btn(recipient, library, title, title_url, btn_group)
-  formatted_buttons = format_buttons(btn_group)
+  formatted_btns = format_btns(btn_group)
   turl =  STORY_BASE_URL + "#{library}/#{title_url}/#{title_url}title.jpg"
-  fb_send_template_generic(recipient, title, turl, formatted_buttons)
+  fb_send_template_generic(recipient, title, turl, formatted_btns)
 end
 
 
 
 
-def generate_buttons(recipient, btn_group, message_text, bin=7)
+def generate_btns(recipient, btn_group, message_text, bin=7)
   arr_size = btn_group.size
   reversed_bin_str = ("%0#{arr_size}b" % bin).reverse
 
@@ -131,7 +132,7 @@ def generate_buttons(recipient, btn_group, message_text, bin=7)
     end
   end
 
-  formatted_buttons = temp.reject{ |c| c.empty? }
+  formatted_btns = temp.reject{ |c| c.empty? }
 
   btn_rqst= { recipient: recipient,
               message: {
@@ -140,7 +141,7 @@ def generate_buttons(recipient, btn_group, message_text, bin=7)
                   payload: {
                     template_type:'button',
                     text: message_text,
-                    buttons: formatted_buttons
+                    btns: formatted_btns
                   }
                 }
               }
