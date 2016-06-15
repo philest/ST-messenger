@@ -141,7 +141,7 @@ def generate_btns(recipient, btn_group, message_text, bin=7)
                   payload: {
                     template_type:'button',
                     text: message_text,
-                    btns: formatted_btns
+                    buttons: formatted_btns
                   }
                 }
               }

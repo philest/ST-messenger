@@ -60,12 +60,11 @@ def day1(recipient, payload)
 			fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg")
 			send_story(recipient, 'day1', 'cook', 8)
 			delay_after 15, fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg")
-			fb_send_txt(recipient, 'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.')
-			fb_send_aribitrary(generate_btns(recipient, 1, ''))		
+			fb_send_arbitrary(generate_btns(recipient, 1, 'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.',7))		
 		else	
 			btn = btn_json('Tap here!', 0, 0, 0)
-			delay_after 4, fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime.")
-			fb_send_template_generic(recipient, 'A Hungry Day', "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", [btn])
+			delay_after 3.5, fb_send_txt(recipient, "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime.")
+			fb_send_template_generic(recipient, 'Tap below', "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", [btn])
 		end
 		
 		
@@ -73,7 +72,7 @@ def day1(recipient, payload)
 	# btn group #1
 	#		
 	when 1
-
+		fb_send_txt(recipient,"You're welcome :).")
 
 	end
 end
