@@ -90,7 +90,7 @@ def format_btns(btn_group, bin=7)
   end
 
   formated_btns = selected_btns.map.with_index do |e,i|
-    button_json(e[0],btn_group,i,bin-e[1])
+    btn_json(e[0],btn_group,i,bin-e[1])
   end
 end
 
@@ -126,7 +126,7 @@ def generate_btns(recipient, btn_group, message_text, bin=7)
 
   temp = selected_btns.map.with_index do |e,i|
     if !e.empty?
-     button_json(e[0],btn_group,i,bin-e[1])
+     btn_json(e[0],btn_group,i,bin-e[1])
     else
       []
     end
