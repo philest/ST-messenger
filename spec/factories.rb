@@ -3,15 +3,18 @@
 #  Define a set of factories for creating test model 
 #  instances. 
 #  --------------------------------------------------------
+require ''
 
 FactoryGirl.define do
   # Needed to make factorygirl compatible with Sequel. Sequel doesn't have a save! method.
   to_create { |instance| instance.save }
 
+
   factory :user do
     name   "Fleem Flom"
-    phone  "+18186897323"
-    fb_id  "12345678"
+    sequence(:phone) {|id| "555#{id}"}
+    sequence(:fb_id) {|id| "00000000#{id}" }
+    send_time DateTime.new(2016, 6, 24, 19)
   end
 
   factory :story do

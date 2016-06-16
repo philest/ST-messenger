@@ -7,10 +7,11 @@ require_relative '../../config/environment'
 
 Facebook::Messenger.configure do |config|
   config.access_token = ENV['FB_ACCESS_TKN']
-  config.verify_token = ENV['FB_VERIFY_TKN']
   config.app_secret   = ENV['APP_SECRET']
+  config.verify_token = ENV['FB_VERIFY_TKN']
 end
 
+# Facebook::Messenger::Subscriptions.subscribe
 include Facebook::Messenger
 require_relative 'demo'
 require_relative 'intro'
