@@ -9,9 +9,9 @@ Facebook::Messenger.configure do |config|
   config.access_token = ENV['FB_ACCESS_TKN']
   config.app_secret   = ENV['APP_SECRET']
   config.verify_token = ENV['FB_VERIFY_TKN']
-
 end
 
+# Facebook::Messenger::Subscriptions.subscribe
 include Facebook::Messenger
 require_relative 'fb_helpers'
 include Facebook::Messenger::Helpers
@@ -24,7 +24,6 @@ require_relative 'day1'
 # david 10209967651611602
 # 
 # david? 10209967651611613
-
 
 def register_user(recipient)
   # save user in the database.

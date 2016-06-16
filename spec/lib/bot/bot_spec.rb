@@ -4,7 +4,7 @@ require 'bot/bot'
 
 describe "Bot" do
 
-	describe '#fb_send_txt' for
+	describe '#fb_send_txt' do
 
 	
 

@@ -1,8 +1,7 @@
 require 'dotenv'
 Dotenv.load
-# require './ENV_LOCAL'
 require 'httparty'
-
+require 'openssl'
 
 def generate_hmac(content)
   OpenSSL::HMAC.hexdigest('sha1'.freeze, app_secret, content)

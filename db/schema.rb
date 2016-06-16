@@ -16,7 +16,7 @@ Sequel.migration do
       String :fb_id, :text=>true
       Integer :story_number, :default=>0
       String :language, :default=>"English", :text=>true
-      DateTime :send_time, :default=>DateTime.parse("2016-06-08T19:00:00.000000000+0000")
+      DateTime :send_time, :default=>DateTime.new(2016, 6, 24, 19)
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end
