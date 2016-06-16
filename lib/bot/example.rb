@@ -1,8 +1,9 @@
 scrp = StoryTimeScript.new 'day1' do
-	reg_button 'Button1' do
-		url_btn a, b, classify
+	
+	reg_button 'Button1', [
+		url_btn a, b, classify,
 		postback_btn a, b, sequence_postback('name of sequence')
-	end
+	]
 
 	story_button 'strbtn' postback_btn a, b, sequence_postback('name of sequence'), 'storyname'
 
@@ -13,4 +14,4 @@ scrp = StoryTimeScript.new 'day1' do
 
 end
 
-scrp.run_sequence(recipient, 'sequence')
+scrp.run_sequence(recipient, 'sequence_postback')
