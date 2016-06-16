@@ -58,7 +58,7 @@ def day1(recipient, payload)
 		case btn_bin
 		when 0
 			fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg")
-			send_story(recipient, 'day1', 'cook', 8)
+			send_story(recipient, 'day1', 'cook', 10)
 			delay_after 15, fb_send_pic(recipient,"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg")
 			fb_send_arbitrary(generate_btns(recipient, 1, 'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.',7))		
 		else	

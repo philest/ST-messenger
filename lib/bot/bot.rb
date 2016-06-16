@@ -63,9 +63,11 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 # here's what this looks like:
 # 
 #
+# NOTE: Indexes by 1 through end, because this is the format
+# that inDesign
 def send_story(recipient, library, title_url, num_pages)
   num_pages.times do |i|
-    fb_send_pic(recipient, STORY_BASE_URL+"#{library}/#{title_url}/#{title_url}#{i}.jpg")
+    fb_send_pic(recipient, STORY_BASE_URL+"#{library}/#{title_url}/#{title_url}#{i+1}.jpg")
   end
 end
 
