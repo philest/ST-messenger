@@ -4,3 +4,5 @@ dump.rdb
 .bundle
 *.swp
 
+*_ig.rb
+.aws*
