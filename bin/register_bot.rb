@@ -14,8 +14,5 @@ response = HTTParty.post(
 	query: {
 		access_token: ENV["FB_ACCESS_TKN"]
 	}
-	# header: {
-	# 	'X-Hub-Signature': generate_hmac(tbody)
-	# }
 )
 puts response.inspect
