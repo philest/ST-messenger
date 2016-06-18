@@ -14,38 +14,80 @@ describe ScheduleWorker do
 		Timecop.freeze(@time)
 
 		@on_time = User.create(:send_time => Time.now)
-		puts "on_time = #{@on_time.send_time}"
+		# puts "on_time = #{@on_time.send_time}"
 		# 6:55:00 
 		@just_early = User.create(:send_time => Time.now - @interval.minutes)
-		puts "just_early = #{@just_early.send_time}"
+		# puts "just_early = #{@just_early.send_time}"
 		#  7:04:59pm
 		@just_late = User.create(:send_time => Time.now + (@interval-1).minutes + 59)
-		puts "just_late = #{@just_late.send_time}"
+		# puts "just_late = #{@just_late.send_time}"
 		# 6:54:59
 		@early = User.create(:send_time => Time.now - (@interval+1).minutes + 59)
-		puts "early = #{@early.send_time}"
+		# puts "early = #{@early.send_time}"
 		# 7:05
 		@late = User.create(:send_time => Time.now + @interval.minutes)
-		puts "late = #{@late.send_time}"
+		# puts "late = #{@late.send_time}"
 	end
 
 	after(:each) do
 		DatabaseCleaner.clean
 	end
 
+	context "timezone conversions", :zone => true do
+		before(:each) do
+			@summer, @winter = @time, @time + 6.months
+			@s = ScheduleWorker.new
+		end
+
+		it "handles summer-summer and winter-winter cases (DST)" do
+		# when the user enrolled in the summer and it's currently summer
+			Timecop.freeze(@summer)
+			user = User.create(:send_time => Time.now)
+			expect(@s.adjust_tz(user)).to eq(user.send_time)
+			# winter-winter case
+			Timecop.freeze(@winter)
+			user = User.create(:send_time => Time.now) # enrolled_on field is wintertime
+			expect(@s.adjust_tz(user)).to eq(user.send_time)
+		end
+
+		it "subtracts an hour from the UTC clock when it's summer and the user enrolled during the winter" do
+		# when the user enrolled in the winter and it's currently summer
+			Timecop.freeze(@winter)
+			user = User.create(:send_time => Time.now)
+			Timecop.freeze(@summer)
+			expect(@s.adjust_tz(user)).to eq(user.send_time - 1.hour)
+		end
+
+		it "adds an hour to the UTC clock when it's winter and the user enrolled during the summer" do 
+		# when the user enrolled in the summer and it's currently winter
+			Timecop.freeze(@summer)
+			user = User.create(:send_time => @summer)
+			Timecop.freeze(@winter)
+			expect(@s.adjust_tz(user)).to eq(user.send_time + 1.hour)
+		end
+	end
+
+
 	context "#self.within_time_range" do
-		it "converts timezones properly", :zone => true do 
+		it "converts timezones properly" do 
 			summer = @time
 			winter = @time + 6.months
 			s = ScheduleWorker.new
-			puts "time = #{Time.now.utc}"
-			puts "enrolled_on = #{@on_time.enrolled_on}"
+			# puts "time = #{Time.now.utc}"
+			# puts "enrolled_on = #{@on_time.enrolled_on}"
+			# summer -> summer
 			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time)
-			Timecop.freeze(winter)
-
+			# winter -> summer
 			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time + 1.hour)
 
+			user = User.create(:send_time => Time.now)
+			expect(s.adjust_tz(user)).to eq(user.send_time)			
+
+			Timecop.freeze(summer)
+			expect(s.adjust_tz(user)).to eq(user.send_time - 1.hour)
 		end
+
+
 
 		it "returns true for users within the time interval at a given time" do 
 			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)

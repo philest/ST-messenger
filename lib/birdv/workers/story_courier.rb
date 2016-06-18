@@ -29,23 +29,19 @@ class ScheduleWorker
 
   def adjust_tz(user)
   	user_tz = ActiveSupport::TimeZone.new(user.timezone)
+  	tz_init = user.enrolled_on.in_time_zone(user_tz)
+  	tz_current = Time.now.utc.in_time_zone(user_tz)
 
-  	puts "enrolled_on = #{user.enrolled_on}"
-  	puts user.enrolled_on.in_time_zone(user_tz).dst?
-
-  	local_tz_user = user.enrolled_on.in_time_zone(user_tz)
-  	local_tz_now = Time.now.utc.in_time_zone(user_tz)
-
-	if local_tz_user.dst? and not local_tz_now.dst?
+	if tz_init.dst? and not tz_current.dst?
 		send_time = user.send_time + 1.hour
-	elsif not local_tz_user.dst? and local_tz_now.dst?
+	elsif not tz_init.dst? and tz_current.dst?
 		send_time = user.send_time - 1.hour
 	else
 		send_time = user.send_time
 	end
 
 	send_time
-	
+
   end
 
 
