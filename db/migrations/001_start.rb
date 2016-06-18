@@ -10,13 +10,14 @@ Sequel.migration do
     create_table(:users, :ignore_index_errors=>true) do
       primary_key :id
       String :name, :text=>true
-      String :phone, :text=>true
-      String :fb_id, :text=>true
+      String :phone, :text=>true, :unique => true
+      String :fb_id, :text=>true, :unique => true
       Integer :story_number, :default=>0
       String :language, :default=>"English", :text=>true
-      DateTime :send_time, :default=>DateTime.parse("2016-06-08T19:00:00.000000000+0000")
-      index [:fb_id], :name=>:users_fb_id_key, :unique=>true
-      index [:phone], :name=>:users_phone_key, :unique=>true
+      seven_o_clock = 19
+      utc_offset = 4
+      Time :send_time, :default => Time.new(Time.now.year, Time.now.month, Time.now.day, seven_o_clock + utc_offset, 0, 0, 0)
+      String :timezone, :default => "EST"
     end
   end
 end

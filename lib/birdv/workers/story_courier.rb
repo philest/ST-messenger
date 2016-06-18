@@ -20,7 +20,7 @@ class ScheduleWorker
   include Sidekiq::Worker
   def perform
   	interval = 5
-  	self.class.filter_users(DateTime.new(2016, 6, 24, 19), interval).each do |user|
+  	self.class.filter_users(Time.new(2016, 6, 24, 19), interval).each do |user|
   		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
   	end
  
@@ -38,7 +38,7 @@ class ScheduleWorker
 
   # need to make sure the send_time column is a Datetime type
   def self.within_time_range(time, interval)
-    now = DateTime.now.seconds_since_midnight
+    now = Time.now.seconds_since_midnight
     user_time = time.seconds_since_midnight
     if now >= user_time
     	now - user_time <= interval.minutes

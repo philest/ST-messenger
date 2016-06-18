@@ -9,22 +9,22 @@ describe ScheduleWorker do
 		DatabaseCleaner.clean
 		Sidekiq::Worker.clear_all
 
-		@time = DateTime.new(2016, 6, 24, 19)
+		@time = Time.new(2016, 6, 24, 19)
 		@interval = 5
 		Timecop.freeze(@time)
 
-		@on_time = User.create(:send_time => DateTime.new(2016, 6, 24, 19))
+		@on_time = User.create(:send_time => Time.new(2016, 6, 24, 19))
 		# 6:55:00 ... 
 		@just_early = 10.times.map do |i|
-			User.create(:send_time => DateTime.new(2016, 6, 24, 18, 60 - @interval, i))
+			User.create(:send_time => Time.new(2016, 6, 24, 18, 60 - @interval, i))
 		end
 		# ... 7:04:59pm
 		@just_late = 10.times.map do |i|
-			User.create(:send_time => DateTime.new(2016, 6, 24, 19, @interval - 1, 59 - i))
+			User.create(:send_time => Time.new(2016, 6, 24, 19, @interval - 1, 59 - i))
 		end
 		# 7:55
-		@early = User.create(:send_time => DateTime.new(2016, 6, 24, 18, 60-@interval-1, 59))
-		@late = User.create(:send_time => DateTime.new(2016, 6, 24, 19, @interval))
+		@early = User.create(:send_time => Time.new(2016, 6, 24, 18, 60-@interval-1, 59))
+		@late = User.create(:send_time => Time.new(2016, 6, 24, 19, @interval))
 	end
 
 	after(:each) do
@@ -33,22 +33,22 @@ describe ScheduleWorker do
 
 	context "#self.within_time_range" do
 		it "returns true for users within the time interval at a given time" do 
-			# just_early = DateTime.new(2016, 6, 24, 18, 60 - @interval)
-			just_early = DateTime.now - @interval.minutes
+			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)
+			just_early = Time.now - @interval.minutes
 			expect(ScheduleWorker.within_time_range(just_early, @interval)).to be true
 			
-			# just_late = DateTime.new(2016, 6, 24, 19, @interval - 1, 59)
-			just_late = DateTime.now + (@interval.minutes + 59)
+			# just_late = Time.new(2016, 6, 24, 19, @interval - 1, 59)
+			just_late = Time.now + (@interval.minutes + 59)
 			expect(ScheduleWorker.within_time_range(just_late, @interval)).to be true
 		end
 
 		it "returns false for users outside the time interval at a given time" do
-			# early = DateTime.new(2016, 6, 24, 18, 60-@interval-1, 59)
-			early = DateTime.now - (5.minutes + 1)
+			# early = Time.new(2016, 6, 24, 18, 60-@interval-1, 59)
+			early = Time.now - (5.minutes + 1)
 			expect(ScheduleWorker.within_time_range(early, @interval)).to be false
 			
-			# late = DateTime.new(2016, 6, 24, 19, @interval)
-			late = DateTime.now + 5.minutesz
+			# late = Time.new(2016, 6, 24, 19, @interval)
+			late = Time.now + 5.minutes
 			expect(ScheduleWorker.within_time_range(late, @interval)).to be false
 		end
 	end
