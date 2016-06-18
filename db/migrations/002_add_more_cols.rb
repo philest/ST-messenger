@@ -31,8 +31,6 @@ Sequel.migration do
       add_column :phone, String
       add_column :fb_id, String
     end
-
   end
-
 end
 =end

@@ -19,35 +19,79 @@ end
 class ScheduleWorker
   include Sidekiq::Worker
   def perform
-  	interval = 5
-  	self.class.filter_users(Time.new(2016, 6, 24, 19), interval).each do |user|
-  		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
-  	end
+	interval = 5
+	filter_users(Time.now, interval).each do |user|
+		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
+	end
  
   end
 
-  private
+
+  def adjust_tz(user)
+  	user_tz = ActiveSupport::TimeZone.new(user.timezone)
+
+  	puts "enrolled_on = #{user.enrolled_on}"
+  	puts user.enrolled_on.in_time_zone(user_tz).dst?
+
+  	local_tz_user = user.enrolled_on.in_time_zone(user_tz)
+  	local_tz_now = Time.now.utc.in_time_zone(user_tz)
+
+	if local_tz_user.dst? and not local_tz_now.dst?
+		send_time = user.send_time + 1.hour
+	elsif not local_tz_user.dst? and local_tz_now.dst?
+		send_time = user.send_time - 1.hour
+	else
+		send_time = user.send_time
+	end
+
+	send_time
+	
+  end
+
+
   # time = current_time
   # interval = range of valid times
-  def self.filter_users(time, interval)
+  def filter_users(time, interval)
 	User.all.select do |user|
-  		within_time_range(user.send_time, interval)
-  	end
+		# TODO - exception handling if the timezone isn't the correct name
+		user_tz = ActiveSupport::TimeZone.new(user.timezone)
+		# figure out the date that this user enrolled. the send_time was adjusted based on DST
+		# readjust depending on whether it's the summer or winter
+		# 
+		# maybe we should have a periodic job that runs every day... it updates the users'
+		# send_times to reflect their local send_time when they just started out, by DST. 
+		# can we make a sequel default field dependent on another field, like :enrolled_on ? 
+		
 
+
+		# # handle Daylight Savings Time
+		# if user.enrolled_on.dst? and not Time.now.utc.in_time_zone(user_tz).dst?
+		# 	send_time = user.send_time + 1.hour
+		# elsif not user.enrolled_on.dst? and Time.now.utc.in_time_zone(user_tz).dst?
+		# 	send_time = user.send_time - 1.hour
+		# else
+		# 	send_time = user.send_time
+		# end
+
+		within_time_range(send_time, interval)
+	end
   end
 
   # need to make sure the send_time column is a Datetime type
-  def self.within_time_range(time, interval)
-    now = Time.now.seconds_since_midnight
-    user_time = time.seconds_since_midnight
-    if now >= user_time
-    	now - user_time <= interval.minutes
-    else
-    	user_time - now <  interval.minutes
-    end
+  def within_time_range(time, interval)
+  	# TODO: ensure that Time.now is in UTC time
+	now = Time.now.utc.seconds_since_midnight
+	user_time = time.utc.seconds_since_midnight
+	if now >= user_time
+		now - user_time <= interval.minutes
+	else
+		user_time - now <  interval.minutes
+	end
   end
 
 end
+
+
 
 
 

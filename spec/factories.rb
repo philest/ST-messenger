@@ -12,8 +12,8 @@ FactoryGirl.define do
     name   "Fleem Flom"
     sequence(:phone) {|id| "555#{id}"}
     sequence(:fb_id) {|id| "00000000#{id}" }
-    now = Time.now
-    send_time Time.new(now.year, now.month, now.day, 19 - now.offset, 0, 0, 0)
+    # now = Time.now
+    # send_time Time.new(now.year, now.month, now.day, 19 - now.utc_offset, 0, 0, 0)
   end
 
   factory :story do

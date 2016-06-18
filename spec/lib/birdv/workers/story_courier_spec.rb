@@ -9,22 +9,24 @@ describe ScheduleWorker do
 		DatabaseCleaner.clean
 		Sidekiq::Worker.clear_all
 
-		@time = Time.new(2016, 6, 24, 19)
+		@time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
 		@interval = 5
 		Timecop.freeze(@time)
 
-		@on_time = User.create(:send_time => Time.new(2016, 6, 24, 19))
-		# 6:55:00 ... 
-		@just_early = 10.times.map do |i|
-			User.create(:send_time => Time.new(2016, 6, 24, 18, 60 - @interval, i))
-		end
-		# ... 7:04:59pm
-		@just_late = 10.times.map do |i|
-			User.create(:send_time => Time.new(2016, 6, 24, 19, @interval - 1, 59 - i))
-		end
-		# 7:55
-		@early = User.create(:send_time => Time.new(2016, 6, 24, 18, 60-@interval-1, 59))
-		@late = User.create(:send_time => Time.new(2016, 6, 24, 19, @interval))
+		@on_time = User.create(:send_time => Time.now)
+		puts "on_time = #{@on_time.send_time}"
+		# 6:55:00 
+		@just_early = User.create(:send_time => Time.now - @interval.minutes)
+		puts "just_early = #{@just_early.send_time}"
+		#  7:04:59pm
+		@just_late = User.create(:send_time => Time.now + (@interval-1).minutes + 59)
+		puts "just_late = #{@just_late.send_time}"
+		# 6:54:59
+		@early = User.create(:send_time => Time.now - (@interval+1).minutes + 59)
+		puts "early = #{@early.send_time}"
+		# 7:05
+		@late = User.create(:send_time => Time.now + @interval.minutes)
+		puts "late = #{@late.send_time}"
 	end
 
 	after(:each) do
@@ -32,6 +34,19 @@ describe ScheduleWorker do
 	end
 
 	context "#self.within_time_range" do
+		it "converts timezones properly", :zone => true do 
+			summer = @time
+			winter = @time + 6.months
+			s = ScheduleWorker.new
+			puts "time = #{Time.now.utc}"
+			puts "enrolled_on = #{@on_time.enrolled_on}"
+			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time)
+			Timecop.freeze(winter)
+
+			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time + 1.hour)
+
+		end
+
 		it "returns true for users within the time interval at a given time" do 
 			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)
 			just_early = Time.now - @interval.minutes
@@ -80,8 +95,6 @@ describe ScheduleWorker do
 		for user in users
 			expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
 		end
-
-
 	end
 
 	# it "calls StoryCourier for users whose send_time is within the proper time interval" do
