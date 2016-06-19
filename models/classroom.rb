@@ -3,5 +3,6 @@ class Classroom < Sequel::Model(:classrooms)
 
 	many_to_one :teachers
 	many_to_one :schools
+	one_to_many :users
 
 end
