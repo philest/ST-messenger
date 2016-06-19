@@ -21,9 +21,7 @@ require_relative 'day1'
 
 # aubrey 10209571935726081
 # phil 10209486368143976
-# david 10209967651611602
-# 
-# david? 10209967651611613
+# david 10209967651611613
 
 def register_user(recipient)
   # save user in the database.

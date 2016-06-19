@@ -55,15 +55,19 @@ RSpec.configure do |config|
       FactoryGirl.find_definitions
     end
 
+    # config.before(:each) do
+    #   Sidekiq::Worker.clear_all
+    # end
+
     DatabaseCleaner.strategy = :truncation
 
-    config.before(:each) do
-      DatabaseCleaner.clean
-    end
+    # config.before(:each) do
+    #   DatabaseCleaner.clean
+    # end
 
-    config.after(:each) do
-      DatabaseCleaner.clean
-    end
+    # config.after(:each) do
+    #   DatabaseCleaner.clean
+    # end
 
 
   # rspec-expectations config goes here. You can use an alternate

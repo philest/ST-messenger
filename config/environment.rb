@@ -20,5 +20,7 @@ else
 	DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
 end
 
+DB.timezone = :utc
+
 require_relative '../models/user.rb'
 require_relative '../models/story.rb'
