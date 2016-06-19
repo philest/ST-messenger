@@ -77,6 +77,12 @@ module Facebook
       end
 
 
+      def fb_send_json_to_user(user_id, msg_json)
+        Bot.deliver( 
+          recipient: { id: user_id }, 
+          message: msg_json[:message] 
+          )
+      end
 
       # send arbitrary json!
       def fb_send_arbitrary(arb)
