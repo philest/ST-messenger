@@ -1,5 +1,4 @@
 require 'spec_helper'
-Sidekiq::Testing.fake!
 require 'timecop'
 require 'birdv/workers/story_courier'
 
@@ -92,41 +91,51 @@ describe ScheduleWorker do
 		end
 	end
 
-	it "gets users whose send_time is between 6:55:00 and 7:04:59 and calls StoryCourier on them" do
-		users = [@on_time] + @just_early + @just_late
-		filtered = ScheduleWorker.filter_users(@time, @interval)
-		expect(filtered.size).to eq(users.size)
-		# we want filter_uses to return the SQL rows
-		expect(filtered.to_set).to eq(users.to_set)
-	end
-
-	it "does not get users whose send_time is at 7:05 or 6:54:59 and calls StoryCourier on them" do
-		users = [@early] + [@late]
-		filtered = ScheduleWorker.filter_users(@time, @interval)
-		for user in users
-			expect(filtered).not_to include(user)
+	context "filtering users", :filter => true do
+		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
+			users = [@on_time, @just_early, @just_late]
+			filtered = @s.filter_users(@time, @interval)
+			expect(filtered.size).to eq(users.size)
+			# we want filter_uses to return the SQL rows
+			expect(filtered.to_set).to eq(users.to_set)
 		end
-	end
 
-	it "calls StoryCourier on all the right people" do
-		users = [@on_time] + @just_early + @just_late
-
-		expect {
-		  ScheduleWorker.perform_async
-		}.to change(ScheduleWorker.jobs, :size).by(users.size)
-
-		# specify exact arguments and people on this one...
-		for user in users
-			expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
+		it "does not get users whose send_time is at 7:05 or 6:54:59" do
+			users = [@early, @late]
+			filtered = @s.filter_users(@time, @interval)
+			for user in users
+				expect(filtered).not_to include(user)
+			end
 		end
+
+		it "calls StoryCourier on all the right people" do
+			users = [@on_time, @just_early, @just_late]
+			expect(ScheduleWorker.jobs.size).to eq(0)
+			
+			Sidekiq::Testing.inline! 
+			
+			expect {
+			  ScheduleWorker.perform_async
+			  # ScheduleWorker.drain
+			}.to change(StoryCourier.jobs, :size).by(3)
+
+			# expect {
+			#   ScheduleWorker.perform_async
+			# }.to change(ScheduleWorker.jobs, :size).by(users.size)
+
+			# specify exact arguments and people on this one...
+			# for user in users
+			# 	expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
+			# end
+		end
+
+
+
+		# it "does not call StoryCourier for anyone twice in a row" do
+
+		# end
+
 	end
 
-	# it "calls StoryCourier for users whose send_time is within the proper time interval" do
-	# 	expect(StoryCourier).to receive(:perform_async)
-	# 	ScheduleWorker.new.perform
-	# end
 
-	it "does not call StoryCourier for anyone twice in a row" do
-
-	end
 end
