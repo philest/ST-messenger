@@ -17,9 +17,7 @@ end
 
 get '/enroll' do 
 	
-	require 'pry'
-	binding.pry
-
+	# register the users, with names if possible
 	25.times do |idx|
 		if params["\"phone_#{idx}\""]
 			user = User.create(phone: params["phone_#{idx}"])
@@ -29,7 +27,7 @@ get '/enroll' do
 		end
 	end	
 
-	puts User.count
+	#TODO hook the users to their teacher
 
 end
 
