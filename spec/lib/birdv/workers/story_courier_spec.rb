@@ -13,6 +13,8 @@ describe ScheduleWorker do
 		@interval = 5
 		Timecop.freeze(@time)
 
+		@s = ScheduleWorker.new
+
 		@on_time = User.create(:send_time => Time.now)
 		# puts "on_time = #{@on_time.send_time}"
 		# 6:55:00 
@@ -33,10 +35,9 @@ describe ScheduleWorker do
 		DatabaseCleaner.clean
 	end
 
-	context "timezone conversions", :zone => true do
+	context "timezone conversion function", :zone => true do
 		before(:each) do
 			@summer, @winter = @time, @time + 6.months
-			@s = ScheduleWorker.new
 		end
 
 		it "handles summer-summer and winter-winter cases (DST)" do
@@ -68,45 +69,26 @@ describe ScheduleWorker do
 	end
 
 
-	context "#self.within_time_range" do
-		it "converts timezones properly" do 
-			summer = @time
-			winter = @time + 6.months
-			s = ScheduleWorker.new
-			# puts "time = #{Time.now.utc}"
-			# puts "enrolled_on = #{@on_time.enrolled_on}"
-			# summer -> summer
-			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time)
-			# winter -> summer
-			expect(s.adjust_tz(@on_time)).to eq(@on_time.send_time + 1.hour)
-
-			user = User.create(:send_time => Time.now)
-			expect(s.adjust_tz(user)).to eq(user.send_time)			
-
-			Timecop.freeze(summer)
-			expect(s.adjust_tz(user)).to eq(user.send_time - 1.hour)
-		end
-
-
+	context "within_time_range function", :range => true do
 
 		it "returns true for users within the time interval at a given time" do 
 			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)
-			just_early = Time.now - @interval.minutes
-			expect(ScheduleWorker.within_time_range(just_early, @interval)).to be true
+			# just_early = Time.now - @interval.minutes
+			expect(@s.within_time_range(@just_early, @interval)).to be true
 			
 			# just_late = Time.new(2016, 6, 24, 19, @interval - 1, 59)
-			just_late = Time.now + (@interval.minutes + 59)
-			expect(ScheduleWorker.within_time_range(just_late, @interval)).to be true
+			# just_late = Time.now + (@interval.minutes + 59)
+			expect(@s.within_time_range(@just_late, @interval)).to be true
 		end
 
 		it "returns false for users outside the time interval at a given time" do
 			# early = Time.new(2016, 6, 24, 18, 60-@interval-1, 59)
-			early = Time.now - (5.minutes + 1)
-			expect(ScheduleWorker.within_time_range(early, @interval)).to be false
+			# early = Time.now - (5.minutes + 1)
+			expect(@s.within_time_range(@early, @interval)).to be false
 			
 			# late = Time.new(2016, 6, 24, 19, @interval)
-			late = Time.now + 5.minutes
-			expect(ScheduleWorker.within_time_range(late, @interval)).to be false
+			# late = Time.now + 5.minutes
+			expect(@s.within_time_range(@late, @interval)).to be false
 		end
 	end
 

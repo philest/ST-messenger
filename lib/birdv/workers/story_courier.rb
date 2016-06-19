@@ -74,10 +74,10 @@ class ScheduleWorker
   end
 
   # need to make sure the send_time column is a Datetime type
-  def within_time_range(time, interval)
+  def within_time_range(user, interval)
   	# TODO: ensure that Time.now is in UTC time
 	now = Time.now.utc.seconds_since_midnight
-	user_time = time.utc.seconds_since_midnight
+	user_time = adjust_tz(user).utc.seconds_since_midnight
 	if now >= user_time
 		now - user_time <= interval.minutes
 	else
