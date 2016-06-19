@@ -1,1 +1,3 @@
-class Story < Sequel::Model(:stories); end
+class Story < Sequel::Model(:stories)
+	
+end
