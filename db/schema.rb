@@ -19,9 +19,9 @@ Sequel.migration do
       Integer :story_number, :default=>0
       String :language, :default=>"English", :text=>true
       DateTime :send_time, :default=>DateTime.parse("2016-06-18T23:00:00.000000000+0000")
-      String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
       DateTime :enrolled_on
       DateTime :updated_at
+      String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
