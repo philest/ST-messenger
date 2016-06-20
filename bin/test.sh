@@ -28,7 +28,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }
     }
   }
-}' "https://graph.facebook.com/me/messages?access_token=EAAYOZCTY8IiwBAIZCkoKlZAHtpFcxBqHUKFUsNZCDUIcxVDWJqhiqdB4q0jDpaiubiYmRtZBBFjCMWE6jnoBoT6qAc2Tr1VtOl4L6RvJFKVFUScqavZByWsBROo1FGVSpcpsjKyFc4HtkjocuVAgcM3ITJPGxBNOndaRA7HFrhqQZDZD"
+}' "https://graph.facebook.com/me/messages?access_token=${FB_ACCESS_TKN}"
 
 
 # curl -X POST -H "Content-Type: application/json" -d '{
