@@ -14,7 +14,7 @@ when "test"
 	DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
 when "development"
 	puts "loading development db (quailtime)..."
-	DB = Sequel.connect(ENV['DATABASE_URL_QUAILTIME'])
+	DB = Sequel.connect(ENV['DATABASE_URL_DEVELOPMENT'])
 when "production"
 	puts "loading production db (storytime)..."
 	DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
