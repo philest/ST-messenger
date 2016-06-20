@@ -22,5 +22,16 @@ end
 
 DB.timezone = :utc
 
-require_relative '../models/user.rb'
-require_relative '../models/story.rb'
+# require all models
+# Dir[File.dirname(__FILE__) + "/*.rb"].each {|file| require_relative file if not file =~ /#{__FILE__}/ }
+
+models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
+Dir[models_dir].each {|file| require_relative file }
+
+# require_relative '../models/classroom.rb'
+# require_relative '../models/district.rb'
+# require_relative '../models/school.rb'
+# require_relative '../models/school_sessions.rb'
+# require_relative '../models/story.rb'
+# require_relative '../models/teacher.rb'
+# require_relative '../models/user.rb'

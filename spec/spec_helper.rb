@@ -12,7 +12,7 @@ require 'factory_girl'
 
 FactoryGirl.definition_file_paths = %w{./factories ./test/factories ./spec/factories}
 
-require 'webmock/rspec'
+# require 'webmock/rspec'
 require 'sidekiq/testing' # for the sidekiq-rspec gem
 require 'json'
 
@@ -46,28 +46,30 @@ require 'json'
 
 
 
-WebMock.disable_net_connect!(allow_localhost:true)
+# WebMock.disable_net_connect!(allow_localhost:true)
 
 RSpec.configure do |config|
 
     config.include FactoryGirl::Syntax::Methods
+    
+    # test in RubyMRI
     config.before(:suite) do
       FactoryGirl.find_definitions
+      DatabaseCleaner.strategy = :transaction
+      DatabaseCleaner.clean_with(:truncation)
     end
 
     # config.before(:each) do
     #   Sidekiq::Worker.clear_all
     # end
 
-    DatabaseCleaner.strategy = :truncation
+    config.around(:each) do |example|
+      DatabaseCleaner.cleaning do
+        example.run
+      end
+    end
 
-    # config.before(:each) do
-    #   DatabaseCleaner.clean
-    # end
 
-    # config.after(:each) do
-    #   DatabaseCleaner.clean
-    # end
 
 
   # rspec-expectations config goes here. You can use an alternate
