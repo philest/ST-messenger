@@ -25,13 +25,14 @@ require_relative 'day1'
 
 def register_user(recipient)
   # save user in the database.
+  # TODO : update an existing DB entry to coincide the fb_id with phone_number
   begin
     users = DB[:users] 
     begin
       fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
       name = fb_name["first_name"] + " " + fb_name["last_name"]
     rescue HTTParty::Error
-      name = ""
+      name = nil
     else
       puts "successfully found name"
     end
@@ -40,11 +41,9 @@ def register_user(recipient)
       users.insert(:name => name, :fb_id => recipient["id"])
       puts "inserted #{name}:#{recipient} into the users table"
     rescue Sequel::UniqueConstraintViolation => e
-      p e.message
-      puts "did not insert, already exists in db"
+      p e.message << " ::> did not insert, already exists in db"
     rescue Sequel::Error => e
-      p e.message
-      puts "failure"
+      p e.message << " ::> failure"
     end
   rescue Sequel::Error => e
     p e.message

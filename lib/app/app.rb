@@ -4,7 +4,7 @@
 #  www.joinstorytime.com/enroll with family phones and names. 
 #  --------------------------------------------------------
 
-#siantra dependencies 
+#sinatra dependencies 
 require 'sinatra'
 require_relative '../../config/environment.rb'
 
@@ -16,23 +16,30 @@ get '/' do
 end
 
 
-
 post '/enroll' do
-	
+	puts "enrolling parents..."
+	# DO WE WANT to have a secret key or some other validation so that someone can't overload the system with CURL requests to phone numbers?
+	# that's a later challenge.
+
+	# TODO : what teacher info will we have?
+	if defined? params["teacher_signature"]
+				# create a new teacher with a phone number
+				signature =  params["teacher_prefix"] + params["teacher_signature"]
+				puts "creating new teacher: #{signature}"
+				teacher = Teacher.create(:signature => ?, signature)
+	end
 
 	# Create the parents
 	25.times do |idx|
-		if params["phone_#{idx}"]
-
-			user = User.create(phone: params["phone_#{idx}"])
-			if params["name_#{idx}"]
-				user.update(name: params["name_#{idx}"])
+		if defined? params["phone_#{idx}"]
+			parent = User.create(:phone => ?, params["phone_#{idx}"])
+			parent.update(:name => ?, params["name_#{idx}"]) if params["name_#{idx}"]
+			if defined? teacher
+				teacher.add_user(parent)
 			end
 		end
 	end	
-
 	puts User.count
-
 
 
 end
