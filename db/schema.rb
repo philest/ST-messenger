@@ -20,6 +20,15 @@ Sequel.migration do
       Integer :num_pages
     end
     
+    create_table(:tests, :ignore_index_errors=>true) do
+      String :name, :text=>true
+      String :thing, :text=>true
+      
+      index [:name], :name=>:tests_name_key, :unique=>true
+      index [:name, :thing], :unique=>true
+      index [:thing], :name=>:tests_thing_key, :unique=>true
+    end
+    
     create_table(:schools) do
       primary_key :id
       String :name, :text=>true
@@ -52,7 +61,10 @@ Sequel.migration do
       DateTime :enrolled_on
       DateTime :updated_at
       foreign_key :school_id, :schools, :key=>[:id]
+      String :prefix, :text=>true
+      String :signature, :text=>true
       
+      index [:email], :name=>:teachers_email_key, :unique=>true
       index [:fb_id], :name=>:teachers_fb_id_key, :unique=>true
       index [:phone], :name=>:teachers_phone_key, :unique=>true
     end
