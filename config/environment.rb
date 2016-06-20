@@ -9,11 +9,14 @@ Dotenv.load
 
 
 case ENV["APP_ENV"]
-when "development", "test"
+when "test"
 	puts "loading local db..."
 	DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
+when "development"
+	puts "loading development db (quailtime)..."
+	DB = Sequel.connect(ENV['DATABASE_URL_QUAILTIME'])
 when "production"
-	puts "loading production db..."
+	puts "loading production db (storytime)..."
 	DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
 else
 	puts "please specify an APP_ENV in environment.rb, defaulting to production..."
