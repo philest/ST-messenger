@@ -1,13 +1,12 @@
-class StoryCourier
+class SequenceWorker
   include Sidekiq::Worker
 
   def perform(recipient, day_number)
 		Birdv::DSL::StoryTimeScript.scripts['day_#{day_number}'].run_sequence(recipient, :init)
+		# update the user day! TODO: make this a seperate job!
 	end
 
-	# TODO, add completed to a DONE pile. Then we can increment story num.
-	# But for now,
-	# DB[:users].where(:name => name).update(:story_number=>Sequel.expr(:story_number)+1)
+	# TODO, add completed to a DONE pile. some day
 end
 
 class ScheduleWorker
@@ -15,8 +14,9 @@ class ScheduleWorker
 
   def perform
 	interval = 5
+	# TODO: get user day!
 	filter_users(Time.now, interval).each do |user|
-		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
+		SequenceWorker.perform_async(user.fb_id, user.day) if user.day > 1 #TODO: fix this stuff
 	end
   end
 
