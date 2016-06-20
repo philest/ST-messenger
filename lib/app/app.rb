@@ -26,19 +26,28 @@ post '/enroll' do
 				# create a new teacher with a phone number
 				signature =  params["teacher_prefix"] + params["teacher_signature"]
 				puts "creating new teacher: #{signature}"
-				teacher = Teacher.create(:signature => ?, signature)
+				teacher = Teacher.create(:signature => signature)
 	end
 
 	# Create the parents
 	25.times do |idx|
-		if defined? params["phone_#{idx}"]
-			parent = User.create(:phone => ?, params["phone_#{idx}"])
-			parent.update(:name => ?, params["name_#{idx}"]) if params["name_#{idx}"]
+		if params["phone_#{idx}"] != ''
+
+			begin 
+			parent = User.create(:phone =>  params["phone_#{idx}"])
+	    parent.update(:name => params["name_#{idx}"]) if params["name_#{idx}"] != ''
+	    rescue Sequel::UniqueConstraintViolation => e
+	      p e.message << " ::> did not insert, already exists in db"
+	    rescue Sequel::Error => e
+	      p e.message << " ::> failure"
+			end
+
 			if defined? teacher
 				teacher.add_user(parent)
 			end
 		end
 	end	
+	
 	puts User.count
 
 
