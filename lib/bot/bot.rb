@@ -31,7 +31,7 @@ def register_user(recipient)
       fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
       name = fb_name["first_name"] + " " + fb_name["last_name"]
     rescue HTTParty::Error
-      name = ""
+      name = nil
     else
       puts "successfully found name"
     end
