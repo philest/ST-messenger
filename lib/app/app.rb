@@ -17,7 +17,6 @@ end
 
 post '/enroll' do
 	puts "enrolling parents..."
-
 	# DO WE WANT to have a secret key or some other validation so that someone can't overload the system with CURL requests to phone numbers?
 	# that's a later challenge.
 

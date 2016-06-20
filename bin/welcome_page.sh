@@ -28,4 +28,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }
     }
   ]
-}' "https://graph.facebook.com/v2.6/$page_id/thread_settings?access_token=$token"
+}' "https://graph.facebook.com/v2.6/$page_id/thread_settings?access_token=$access_token"
