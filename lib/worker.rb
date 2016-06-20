@@ -1,22 +1,13 @@
-require 'active_support/time'
-require_relative '../fb_helper'
-
 class StoryCourier
   include Sidekiq::Worker
-  include Birdv::FBHelper
 
-  def perform(name, fb_id, title, length)
-	base_url = "https://s3.amazonaws.com/st-messenger/old_stories/"
-	story_url = base_url + title
-	length.times do |page|
-	  page_url = "#{story_url}/#{title}#{page+1}.jpg" 
-	  send_pic(fb_id, page_url)
+  def perform(recipient, day_number)
+		Birdv::DSL::StoryTimeScript.scripts['day_#{day_number}'].run_sequence(recipient, :init)
 	end
 
 	# TODO, add completed to a DONE pile. Then we can increment story num.
 	# But for now,
 	# DB[:users].where(:name => name).update(:story_number=>Sequel.expr(:story_number)+1)
-  end
 end
 
 class ScheduleWorker
@@ -67,12 +58,3 @@ class ScheduleWorker
   end
 
 end
-
-
-
-
-
-
-
-
-
