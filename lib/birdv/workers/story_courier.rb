@@ -25,6 +25,9 @@ class ScheduleWorker
   def perform
 	interval = 5
 	filter_users(Time.now, interval).each do |user|
+		# users have some days_passed field
+		# this field tells us which script to run from the DSL
+		# we pass the day number in as a parameter, then StoryCourier executes that job
 		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
 	end
   end
@@ -65,7 +68,6 @@ class ScheduleWorker
 		user_time - now <  interval.minutes
 	end
   end
-
 end
 
 
