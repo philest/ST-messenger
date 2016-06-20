@@ -3,7 +3,7 @@ module Birdv
 	module FBHelper
 		# this is not a public API
 		
-		include HTTParty
+		include HTTParty	
 
 		#debug_output $stdout
 		

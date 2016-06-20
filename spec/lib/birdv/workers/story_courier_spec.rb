@@ -5,7 +5,7 @@ require 'birdv/workers/story_courier'
 describe ScheduleWorker do
 	before(:each) do
 		# clean everything up
-		DatabaseCleaner.clean
+		# DatabaseCleaner.clean
 		Sidekiq::Worker.clear_all
 
 		@time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
@@ -30,9 +30,9 @@ describe ScheduleWorker do
 		# puts "late = #{@late.send_time}"
 	end
 
-	after(:each) do
-		DatabaseCleaner.clean
-	end
+	# after(:each) do
+	# 	DatabaseCleaner.clean
+	# end
 
 	context "timezone conversion function", :zone => true do
 		before(:each) do
@@ -108,34 +108,29 @@ describe ScheduleWorker do
 			end
 		end
 
-		it "calls StoryCourier on all the right people" do
+		it "calls StoryCourier the correct number of times" do
 			users = [@on_time, @just_early, @just_late]
 			expect(ScheduleWorker.jobs.size).to eq(0)
 			
-			Sidekiq::Testing.inline! 
-			
-			expect {
-			  ScheduleWorker.perform_async
-			  # ScheduleWorker.drain
-			}.to change(StoryCourier.jobs, :size).by(3)
+			Sidekiq::Testing.fake! do
+				expect {
+				  ScheduleWorker.perform_async
+				  ScheduleWorker.drain
+				}.to change(StoryCourier.jobs, :size).by(users.size)
+			end
 
-			# expect {
-			#   ScheduleWorker.perform_async
-			# }.to change(ScheduleWorker.jobs, :size).by(users.size)
-
-			# specify exact arguments and people on this one...
-			# for user in users
-			# 	expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
-			# end
 		end
 
+		it "call StoryCourier on all the right people" do
+			# specify exact arguments and people on this one...
+			users = [@on_time, @just_early, @just_late]
+			for user in users
+				expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
+			end
 
-
-		# it "does not call StoryCourier for anyone twice in a row" do
-
-		# end
-
+			Sidekiq::Testing.inline! do
+				ScheduleWorker.perform_async
+			end
+		end
 	end
-
-
 end

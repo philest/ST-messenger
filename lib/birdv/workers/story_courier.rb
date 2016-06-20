@@ -3,12 +3,14 @@ require_relative '../fb_helper'
 
 class StoryCourier
   include Sidekiq::Worker
+  include Birdv::FBHelper
+
   def perform(name, fb_id, title, length)
 	base_url = "https://s3.amazonaws.com/st-messenger/old_stories/"
 	story_url = base_url + title
 	length.times do |page|
 	  page_url = "#{story_url}/#{title}#{page+1}.jpg" 
-	  Birdv::FBHelper.send_pic(fb_id, page_url)
+	  send_pic(fb_id, page_url)
 	end
 
 	# TODO, add completed to a DONE pile. Then we can increment story num.
