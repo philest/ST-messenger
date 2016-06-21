@@ -17,7 +17,6 @@ get '/' do
 end
 
 get '/sms' do 
-
 	# begin
 	phone = params[:From][2..-1]
 	user = User.where(:phone => phone).first
@@ -27,7 +26,6 @@ get '/sms' do
 		r.Message "StoryTime: Hi, we'll send your text to #{user.teacher.signature}. They'll see it next time they are on their computer."
 	end
 	twiml.text
-
 end
 
 
@@ -37,6 +35,7 @@ post '/enroll' do
 	# that's a later challenge.
 
 	# TODO : what teacher info will we have?
+
 	if params["teacher_signature"] != nil
 		# create a new teacher with a phone number
 		if params["teacher_prefix"] == ''
@@ -61,7 +60,6 @@ post '/enroll' do
 	# Create the parents
 	25.times do |idx|
 		if params["phone_#{idx}"] != nil
-
 			begin 
 				parent = User.create(:phone =>  params["phone_#{idx}"])
 			    parent.update(:name => params["name_#{idx}"]) if params["name_#{idx}"] != nil
@@ -80,21 +78,16 @@ post '/enroll' do
 				puts "Sent message to #{parent.phone}"
 
 		    rescue Sequel::UniqueConstraintViolation => e
-		      	p e.message << " ::> did not insert, already exists in db"
+		      	p e.message << "\n::> did not insert, already exists in db"
 		      	next
 		    rescue Sequel::Error => e
-		     	p e.message << " ::> failure"
+		     	p e.message << "\n::> failure"
 		     	next
 			end
 		end
 	end	
 	
 	puts User.count
-
-
-
-
-
 
 end
 

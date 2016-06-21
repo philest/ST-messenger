@@ -175,7 +175,8 @@ Bot.on :message do |message|
     day1(message.sender, "0_3_3")
   when DEMO
   	intro(message.sender)
-  when JOIN     
+  when JOIN    
+    register_user(message.sender) 
     fb_send_txt( message.sender, 
       "You're enrolled! Get ready for free stories!"
     )
@@ -195,6 +196,7 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     register_user(postback.sender)
+    # how to connect user to phone number?
     day1(postback.sender, "0_3_3")
   when /^[0-9]_[0-9]_[0-9]$/
     day1(postback.sender, postback.payload)
