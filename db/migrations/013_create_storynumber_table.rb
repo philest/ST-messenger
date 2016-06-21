@@ -1,12 +1,14 @@
-Sequel.migrations do
+Sequel.migration do
 	change do
-		alter_table(:users) do
-			drop_column :story_number
+		create_table(:button_press_logs) do
+			primary_key :id
+			Time :created_at
+			Integer :day_number
+			String :sequence_name
+			foreign_key :user_id, :users
+			index [:day_number, :sequence_name]
 		end
-
-		create_table(:story_number)
 	end
-
 end
 
 # automatically add story_number row which associates w/ user, default = 1

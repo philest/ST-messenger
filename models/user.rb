@@ -4,6 +4,8 @@ class User < Sequel::Model(:users)
 	
 	many_to_one :teacher
 	many_to_one :classroom
+	one_to_many :button_press_logs
+
 
 	def validate
     	super
