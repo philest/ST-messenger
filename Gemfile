@@ -46,16 +46,16 @@ gem 'clockwork','~>2.0.0'
 gem 'sinatra'
 
 
-group :test, :development do
-	gem 'pry'
-end
+# group :test, :development do
+# 	gem 'pry'
+# end
 
-group :development do 
-	gem 'pry-stack_explorer'
-	gem 'pry-rescue'
-	gem 'webrick'
-	gem 'pry-nav'
-end
+# group :development do 
+# 	gem 'pry-stack_explorer'
+# 	gem 'pry-rescue'
+# 	gem 'webrick'
+# 	gem 'pry-nav'
+# end
 
 
 
