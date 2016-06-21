@@ -1,10 +1,23 @@
-
+require 'httparty'
 module Facebook
   module Messenger
     module Helpers
+      GRAPH_URL = "https://graph.facebook.com/v2.6/me/messages"
+
+      def get_graph_url
+        GRAPH_URL
+      end
+
+      def deliver(message)
+        HTTParty.post(GRAPH_URL, 
+          query: {access_token: ENV['FB_ACCESS_TKN']},
+            :body => message.to_json,
+            :headers => { 'Content-Type' => 'application/json' } 
+          )
+      end
 
       def fb_send_txt(recipient, message)
-        Bot.deliver(
+        deliver(
           recipient: recipient, 
           message: {
             text: message
@@ -14,7 +27,7 @@ module Facebook
 
 
       def fb_send_pic(recipient, img_url)
-        Bot.deliver(
+        deliver(
           recipient: recipient,
           message: {
             attachment: {
@@ -30,7 +43,7 @@ module Facebook
 
       # TODO: make btns optional
       def fb_send_template_generic(recipient, title, img_url, btns)
-        Bot.deliver(
+        deliver(
           recipient: recipient,
           message: {
             attachment: {
@@ -78,15 +91,27 @@ module Facebook
 
 
       def fb_send_json_to_user(user_id, msg_json)
-        Bot.deliver( 
+        deliver( 
           recipient: { id: user_id }, 
           message: msg_json[:message] 
           )
       end
 
+      def http_send_json_to_user(user_id, msg_json)
+        HTTParty.post(GRAPH_URL, 
+          query: {access_token: ENV['FB_ACCESS_TKN']},
+            :body => { 
+              recipient: { id: user_id },
+              message: msg_json[:message]
+            }.to_json,
+            :headers => { 'Content-Type' => 'application/json' } 
+          )
+      end
+
+
       # send arbitrary json!
       def fb_send_arbitrary(arb)
-        Bot.deliver(arb)
+        deliver(arb)
       end
     end
   end

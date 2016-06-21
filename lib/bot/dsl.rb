@@ -4,6 +4,7 @@ module Birdv
   module DSL
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
+      @@scripts = {}
 
       attr_reader :script_name
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
@@ -13,7 +14,13 @@ module Birdv
         @sequences   = {}
         @script_name = script_name
         instance_eval(&block)
+        puts "adding #{@script_name} to thing"
+        @@scripts[script_name] = self
         # fb_send_txt( { id: '10209571935726081'}, 'hey dude')
+      end
+
+      def self.scripts
+        @@scripts
       end
       
       def register_fb_object(obj_key, fb_obj)
@@ -26,9 +33,14 @@ module Birdv
         return { type: 'web_url', title: title, url: url }
       end
 
+      def script_payload(sequence_name)
+        return "#{@script_name.to_s}_#{sequence_name.to_s}"
+      end
+
       def postback_button(title, payload)
         return { type: 'postback', title: title, payload: payload.to_s}
       end
+
       
       def button_normal(btn_name, window_txt, btns)
         tjson = {
@@ -96,7 +108,11 @@ module Birdv
 
       def register_sequence(sqnce_name, block)
         puts 'WARNING: overwriting object #{sqnce_name}' if @fb_objects.key?(sqnce_name.to_sym)
+        if @sequences[:init] == nil
+          @sequences[:init] = block
+        end
         @sequences[sqnce_name.to_sym] = block
+
       end
 
 
@@ -140,10 +156,10 @@ module Birdv
 		           }}
       end
 
-      def send_story(library, url_title, num_pages, recipient,  delay=0)
+      def send_story(library, url_title, num_pages, recipient, delay=0)
       	num_pages.times do |i|
       		img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
-      		fb_send_json_to_user(recipient, picture(img_url))
+          fb_send_json_to_user(recipient, picture(img_url))
       	end
       	sleep delay if delay > 0
       end

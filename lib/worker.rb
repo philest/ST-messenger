@@ -1,22 +1,12 @@
-require 'active_support/time'
-require_relative '../fb_helper'
-
-class StoryCourier
+class SequenceWorker
   include Sidekiq::Worker
-  include Birdv::FBHelper
 
-  def perform(name, fb_id, title, length)
-	base_url = "https://s3.amazonaws.com/st-messenger/old_stories/"
-	story_url = base_url + title
-	length.times do |page|
-	  page_url = "#{story_url}/#{title}#{page+1}.jpg" 
-	  send_pic(fb_id, page_url)
+  def perform(recipient, day_number)
+		Birdv::DSL::StoryTimeScript.scripts['day_#{day_number}'].run_sequence(recipient, :init)
+		# update the user day! TODO: make this a seperate job!
 	end
 
-	# TODO, add completed to a DONE pile. Then we can increment story num.
-	# But for now,
-	# DB[:users].where(:name => name).update(:story_number=>Sequel.expr(:story_number)+1)
-  end
+	# TODO, add completed to a DONE pile. some day
 end
 
 class ScheduleWorker
@@ -24,12 +14,9 @@ class ScheduleWorker
 
   def perform
 	interval = 5
+	# TODO: get user day!
 	filter_users(Time.now, interval).each do |user|
-		# users have some days_passed field
-		# this field tells us which script to run from the DSL
-		# we pass the day number in as a parameter, then StoryCourier executes that job
-		StoryCourier.perform_async(user.name, user.fb_id, "some_title", 2)
-	end
+		SequenceWorker.perform_async(user.fb_id, user.day) if user.day > 1 #TODO: fix this stuff
   end
 
   def adjust_tz(user)
@@ -69,12 +56,3 @@ class ScheduleWorker
 	end
   end
 end
-
-
-
-
-
-
-
-
-

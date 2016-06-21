@@ -1,4 +1,4 @@
-def intro(recipient)
+def demo(recipient)
     fb_send_txt( recipient, 
       "Here's how it works.\nReading to your kids at night grows "\
       "their brain.\nWe send stories to you so you always have "\
