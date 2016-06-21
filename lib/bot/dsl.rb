@@ -33,9 +33,14 @@ module Birdv
         return { type: 'web_url', title: title, url: url }
       end
 
+      def script_payload(sequence_name)
+        return "#{@script_name.to_s}_#{sequence_name.to_s}"
+      end
+
       def postback_button(title, payload)
         return { type: 'postback', title: title, payload: payload.to_s}
       end
+
       
       def button_normal(btn_name, window_txt, btns)
         tjson = {

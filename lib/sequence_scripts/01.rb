@@ -10,13 +10,13 @@ Birdv::DSL::StoryTimeScript.new 'day_1' do
 								'(not here)', 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
-									postback_button('Tap here!', :cook_story)
+									postback_button('Tap here!', script_payload(:cook_story))
 								])
 
 	button_normal( 'thanks',
 									'Ms. Stobierski: I’ll send another storybook tomorrow :) Just reply to send me a message.',
 									[
-										postback_button('Thank you!', :your_welcome)
+										postback_button('Thank you!', script_payload(:your_welcome))
 									])
 
 

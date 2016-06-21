@@ -69,6 +69,7 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
 
+
 #
 # i.e. when user sends the bot a message.
 #
@@ -99,8 +100,8 @@ Bot.on :postback do |postback|
   when INTRO
     register_user(postback.sender)
   else 
-    day_number sequence = postback.payload.split('_')
-    StoryTimeScriptWorker.perform_async(postback.sender, day_number, sequence)
+    script_name, sequence = postback.payload.split('_')
+    StoryTimeScriptWorker.perform_async(postback.sender, script_name, sequence)
   end
 end
 
