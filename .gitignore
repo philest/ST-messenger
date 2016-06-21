@@ -1,7 +1,7 @@
 .env
 ENV_LOCAL.rb
 dump.rdb
-.bundle
+*.bundle
 *.swp
-*_ig.rb
-.aws*
+*ig.rb
+*.aws
