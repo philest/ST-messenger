@@ -22,7 +22,7 @@ else
   gem 'pg', 	'0.17.1'
 end
 
-
+gem 'sinatra'
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
 
