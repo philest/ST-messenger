@@ -7,9 +7,13 @@
 #sinatra dependencies 
 require 'sinatra'
 require_relative '../../config/environment.rb'
-require_relative 'enroll'
+require 'twilio-ruby'
 
 enable :sessions
+
+# aubrey 3013328953
+# phil 5612125831
+# david 8186897323
 
 
 get '/' do
@@ -35,7 +39,6 @@ post '/enroll' do
 	# that's a later challenge.
 
 	# TODO : what teacher info will we have?
-
 	if params["teacher_signature"] != nil
 		# create a new teacher with a phone number
 		if params["teacher_prefix"] == ''
@@ -43,12 +46,11 @@ post '/enroll' do
 		else
 			signature =  params["teacher_prefix"] + " " + params["teacher_signature"]
 		end
-
 		begin
 			teacher = Teacher.create(:signature => signature)
 			puts "created new teacher: #{signature}"
 		rescue Sequel::Error => e
-			p e.message
+			p e.message + " didn't insert teacher, her number already exists in db"
 		end
 	end
 
@@ -60,40 +62,25 @@ post '/enroll' do
 	# Create the parents
 	25.times do |idx|
 		if params["phone_#{idx}"] != nil
-			begin 
-				parent = User.create(:phone =>  params["phone_#{idx}"])
-			    parent.update(:name => params["name_#{idx}"]) if params["name_#{idx}"] != nil
-
+			begin
+				parent = User.create(:phone => params["phone_#{idx}"])
+				parent.update(:name => params["name_#{idx}"]) if params["name_#{idx}"] != nil
 				teacher.add_user(parent)
-
-				# ok, as long as the text messaging is done in this block, parents won't be sent duplicate texts
-				# because this only happens when they first enter the database table
+				puts "added #{parent.name if params["name_#{idx}"] != nil}, phone => #{parent.phone}"
 				body = "Hi, this is #{teacher.signature}. I've signed up our class to get free nightly books on StoryTime. Just click here:\nm.me/490917624435792"
-
 				client.account.messages.create(
 					:from => from,
 					:to => parent.phone,
 					:body => body
 				)
 				puts "Sent message to #{parent.phone}"
-
-		    rescue Sequel::UniqueConstraintViolation => e
-		      	p e.message << "\n::> did not insert, already exists in db"
-		      	next
-		    rescue Sequel::Error => e
-		     	p e.message << "\n::> failure"
-		     	next
+			rescue Sequel::Error => e
+				puts e.message + " - didn't insert user" 
 			end
 		end
 	end	
-	
-	puts User.count
-
+	status 201
 end
-
-
-
-
 
 
 
