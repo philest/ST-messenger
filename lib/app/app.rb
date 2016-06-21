@@ -7,6 +7,7 @@
 #sinatra dependencies 
 require 'sinatra'
 require_relative '../../config/environment.rb'
+require 'twilio-ruby'
 
 enable :sessions
 
