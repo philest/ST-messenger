@@ -1,3 +1,5 @@
+require 'twilio-ruby'
+
 class SequenceWorker
   include Sidekiq::Worker
 
@@ -17,6 +19,7 @@ class ScheduleWorker
 	# TODO: get user day!
 	filter_users(Time.now, interval).each do |user|
 		SequenceWorker.perform_async(user.fb_id, user.day) if user.day > 1 #TODO: fix this stuff
+	end
   end
 
   def adjust_tz(user)
@@ -56,3 +59,27 @@ class ScheduleWorker
 	end
   end
 end
+
+class TwilioWorker
+ 	include Sidekiq::Worker
+ 	# include Twilio
+
+
+	def perform(name, number, teacher)
+		client = Twilio::REST::Client.new ENV["TW_ACCOUNT_SID"], ENV["TW_AUTH_TOKEN"]
+		from = "+12032023505" # Your Twilio number
+		body = "Hi, this is #{teacher}. I've signed up our class to get free nightly books on StoryTime. Just click here:\nm.me/490917624435792"
+		client.account.messages.create(
+			:from => from,
+			:to => number,
+			:body => body
+		)
+		puts "Sent message to #{name}"
+
+		# update the user day! TODO: make this a seperate job!
+	end
+
+	# TODO, add completed to a DONE pile. some day
+end
+
+
