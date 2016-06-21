@@ -22,7 +22,7 @@ else
   gem 'pg', 	'0.17.1'
 end
 
-
+gem 'sinatra'
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
 
@@ -42,20 +42,7 @@ gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
-#routes
-gem 'sinatra'
 
-
-# group :test, :development do
-# 	gem 'pry'
-# end
-
-# group :development do 
-# 	gem 'pry-stack_explorer'
-# 	gem 'pry-rescue'
-# 	gem 'webrick'
-# 	gem 'pry-nav'
-# end
 
 
 
