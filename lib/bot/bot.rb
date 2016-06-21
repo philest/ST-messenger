@@ -8,7 +8,7 @@ require 'sidekiq'
 require_relative '../../config/environment'
 
 # load STScripts
-require_relative 'bot/dsl'
+require_relative 'dsl'
 Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/../sequence_scripts/*")
       .each {|f| require_relative f }
 
