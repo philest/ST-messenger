@@ -2,6 +2,8 @@ require 'spec_helper'
 require 'bot/bot'
 # require_relative '../models/story'
 
+DAVID="10209967651611613"
+
 describe "Bot" do
 	context "user-fb_id matching", :matching => true do
 
@@ -18,7 +20,7 @@ describe "Bot" do
 
 		it "matches fb_id to existing user with the same last name in the db" do
 			init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
-			fb_id = ENV["DAVID"]
+			fb_id = DAVID
 			recipient = { "id" => fb_id }
 			register_user(recipient)
 			expect(User.count).to eq 1
@@ -35,7 +37,7 @@ describe "Bot" do
 			candidate1 = User.create(:child_name => "Ben McPeek")
 			sleep 1
 			candidate2 = User.create(:child_name => "Emily McPeek")
-			fb_id = ENV["DAVID"]
+			fb_id = DAVID
 			recipient = { "id" => fb_id }
 			register_user(recipient)
 			expect(User.count).to eq 3
@@ -48,7 +50,7 @@ describe "Bot" do
 			User.create(:child_name => "Fun Town USA")
 			init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
 			teacher.add_user(init)
-			fb_id = ENV["DAVID"]
+			fb_id = DAVID
 			recipient = { "id" => fb_id }
 			register_user(recipient)
 			user = User.where(:fb_id => fb_id).first
@@ -58,7 +60,7 @@ describe "Bot" do
 
 		it "creates a new user when there is no matching user for the child in the database" do
 			some_user = User.create(:child_name => "Phil Esterman", :phone => "phil_phone") 
-			fb_id = ENV["DAVID"]
+			fb_id = DAVID
 			recipient = { "id" => fb_id }
 			register_user(recipient)
 			expect(User.count).to eq 2
