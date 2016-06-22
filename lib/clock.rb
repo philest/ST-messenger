@@ -15,13 +15,11 @@ Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/sequence_scripts/*")
 # get workers (must happen after the StoryTimeScripts are loaded)
 require_relative 'worker'
 
+
+interval = 5
 # cronjob
 module Clockwork
-  every 10.seconds, 'check.db' do 
-  	ScheduleWorker.perform_async
-  end
-
-  every 1.day, 'update.timezone' do
-  	TimezoneWorker.perform_async
+  every interval.minutes, 'check.db' do 
+  	ScheduleWorker.perform_async(interval)
   end
 end

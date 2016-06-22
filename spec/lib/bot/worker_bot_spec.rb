@@ -18,19 +18,17 @@ describe StoryTimeScriptWorker do
 
 		# load up some scripts!
 		Birdv::DSL::StoryTimeScript.new 'day3' do
-			sequence 'one' {}
-			sequence 'two' {}
+			sequence 'one' do end
+			sequence 'two' do end
 		end
 		Birdv::DSL::StoryTimeScript.new 'day4' do
-			sequence 'one' {}
-			sequence 'two' {}
-			end
+			sequence 'one' do end
+			sequence 'two' do end			
 		end
 		Birdv::DSL::StoryTimeScript.new 'day5' do
-			sequence 'one' {}
-			sequence 'two' {}
+			sequence 'one' do end
+			sequence 'two' do end		
 		end
-
 	end
 
 	before(:each) do

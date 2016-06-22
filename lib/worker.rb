@@ -16,8 +16,7 @@ end
 class ScheduleWorker
   include Sidekiq::Worker
 
-  def perform
-	interval = 5
+  def perform(interval=5)
 	filter_users(Time.now, interval).each do |user|
 		StartDayWorker.perform_async(user.fb_id, user.story_number) if user.story_number > 1 #TODO: fix this stuff
 	end
