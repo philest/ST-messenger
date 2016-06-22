@@ -6,13 +6,19 @@ module Birdv
       include Facebook::Messenger::Helpers 
       @@scripts = {}
 
-      attr_reader :script_name
+      attr_reader :script_name, :script_day
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
       def initialize(script_name, &block)
         @fb_objects  = {}
         @sequences   = {}
-        @script_name = script_name
+        @script_name = script_name # TODO how do we wanna do this?
+        day          = script_name.scan(/\d+/)[0]
+        if !day.nil?
+          @script_day = day.to_i
+        else
+          @script_day = 0
+        end
         instance_eval(&block)
         puts "adding #{@script_name} to thing"
         @@scripts[script_name] = self
@@ -34,6 +40,8 @@ module Birdv
       end
 
       def script_payload(sequence_name)
+        puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
+
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 
@@ -125,11 +133,10 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-      	puts sqnce_name
-      	puts(@sequences[sqnce_name.to_sym])
+      	# puts(@sequences[sqnce_name.to_sym])
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
-          puts "successfully ran #{sqnce_name}!"
+         # puts "successfully ran #{sqnce_name}!"
         rescue Exception => e  
           puts "#{sqnce_name} failed!"
           puts e.message  
@@ -165,7 +172,8 @@ module Birdv
       end
 
       def send(some_json, recipient, delay=0)
-      	fb_send_json_to_user(recipient, some_json)
+        puts "sending to #{recipient}"
+      	puts fb_send_json_to_user(recipient, some_json)
       	sleep delay if delay > 0
       end
 

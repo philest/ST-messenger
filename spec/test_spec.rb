@@ -1,8 +1,21 @@
 # require 'set'
 
+def test
+	"hi" + 5 
+
+	begin
+		"hi" + 5
+	rescue TypeError => e
+		puts e.message
+	end
+end
+
+	
+
+
 
 describe "test" do
-	it "matches sets right" do
-		expect([1, 2].to_set).to eq([1, 2, 2].to_set)
+	it "raises errors" do
+		expect{test}.to raise_error(TypeError)
 	end 
 end

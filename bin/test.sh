@@ -5,7 +5,7 @@
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "recipient":{
-    "phone_number":"18186897323"
+    "id": "10209967651611613"
   },
   "message":{
     "attachment":{

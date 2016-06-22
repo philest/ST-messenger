@@ -1,8 +1,12 @@
-class SequenceWorker
+require 'twilio-ruby'
+require_relative 'bot/worker_bot'
+
+
+class StartDayWorker
   include Sidekiq::Worker
 
   def perform(recipient, day_number)
-		Birdv::DSL::StoryTimeScript.scripts['day_#{day_number}'].run_sequence(recipient, :init)
+		Birdv::DSL::StoryTimeScript.scripts['day#{day_number}'].run_sequence(recipient, :init)
 		# update the user day! TODO: make this a seperate job!
 	end
 
@@ -12,11 +16,10 @@ end
 class ScheduleWorker
   include Sidekiq::Worker
 
-  def perform
-	interval = 5
-	# TODO: get user day!
+  def perform(interval=5)
 	filter_users(Time.now, interval).each do |user|
-		SequenceWorker.perform_async(user.fb_id, user.day) if user.day > 1 #TODO: fix this stuff
+		StartDayWorker.perform_async(user.fb_id, user.story_number) if user.story_number > 1 #TODO: fix this stuff
+	end
   end
 
   def adjust_tz(user)
@@ -56,3 +59,27 @@ class ScheduleWorker
 	end
   end
 end
+
+
+class TwilioWorker
+ 	include Sidekiq::Worker
+ 	# include Twilio
+
+
+	def perform(name, number, teacher)
+		client = Twilio::REST::Client.new ENV["TW_ACCOUNT_SID"], ENV["TW_AUTH_TOKEN"]
+		from = "+12032023505" # Your Twilio number
+		body = "Hi, this is #{teacher}. I've signed up our class to get free nightly books on StoryTime. Just click here:\nm.me/490917624435792"
+		client.account.messages.create(
+			:from => from,
+			:to => number,
+			:body => body
+		)
+		puts "Sent message to parent of #{name}"
+
+		# update the user day! TODO: make this a seperate job!
+	end
+	# TODO, add completed to a DONE pile. some day
+end
+
+

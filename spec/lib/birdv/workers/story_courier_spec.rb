@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'timecop'
-require 'birdv/workers/story_courier'
+require 'worker'
+require 'active_support/time'
 
 describe ScheduleWorker do
 	before(:each) do
@@ -14,20 +15,24 @@ describe ScheduleWorker do
 
 		@s = ScheduleWorker.new
 
-		@on_time = User.create(:send_time => Time.now)
+		@on_time = User.create(:send_time => Time.now, :story_number => 2)
 		# puts "on_time = #{@on_time.send_time}"
 		# 6:55:00 
-		@just_early = User.create(:send_time => Time.now - @interval.minutes)
+		@just_early = User.create(:send_time => Time.now - @interval.minutes, :story_number => 2)
 		# puts "just_early = #{@just_early.send_time}"
 		#  7:04:59pm
-		@just_late = User.create(:send_time => Time.now + (@interval-1).minutes + 59)
+		@just_late = User.create(:send_time => Time.now + (@interval-1).minutes + 59, :story_number => 2)
 		# puts "just_late = #{@just_late.send_time}"
 		# 6:54:59
-		@early = User.create(:send_time => Time.now - (@interval+1).minutes + 59)
+		@early = User.create(:send_time => Time.now - (@interval+1).minutes + 59, :story_number => 2)
 		# puts "early = #{@early.send_time}"
 		# 7:05
-		@late = User.create(:send_time => Time.now + @interval.minutes)
+		@late = User.create(:send_time => Time.now + @interval.minutes, :story_number => 2)
 		# puts "late = #{@late.send_time}"
+	end
+
+	after(:each) do
+		Timecop.return
 	end
 
 	# after(:each) do
@@ -95,7 +100,7 @@ describe ScheduleWorker do
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
 			users = [@on_time, @just_early, @just_late]
 			filtered = @s.filter_users(@time, @interval)
-			expect(filtered.size).to eq(users.size)
+			expect(filtered.size).to eq(3)
 			# we want filter_uses to return the SQL rows
 			expect(filtered.to_set).to eq(users.to_set)
 		end
@@ -108,7 +113,7 @@ describe ScheduleWorker do
 			end
 		end
 
-		it "calls StoryCourier the correct number of times" do
+		it "calls StartDayWorker the correct number of times" do
 			users = [@on_time, @just_early, @just_late]
 			expect(ScheduleWorker.jobs.size).to eq(0)
 			
@@ -116,16 +121,28 @@ describe ScheduleWorker do
 				expect {
 				  ScheduleWorker.perform_async
 				  ScheduleWorker.drain
-				}.to change(StoryCourier.jobs, :size).by(users.size)
+				}.to change(StartDayWorker.jobs, :size).by(3)
 			end
-
 		end
 
-		it "call StoryCourier on all the right people" do
+		it "does NOT call StartDayWorker when users are at day 1" do
+			DB[:users].delete # clean database
+			user = User.create(:send_time => Time.now, :story_number => 1)
+			expect(ScheduleWorker.jobs.size).to eq(0)
+
+			Sidekiq::Testing.fake! do
+				expect {
+				  ScheduleWorker.perform_async
+				  ScheduleWorker.drain
+				}.to change(StartDayWorker.jobs, :size).by(0)
+			end
+		end
+
+		it "calls StartDayWorker on all the right people" do
 			# specify exact arguments and people on this one...
 			users = [@on_time, @just_early, @just_late]
 			for user in users
-				expect(StoryCourier).to receive(:perform_async).with(user.name, user.fb_id, "some_title", 2).once
+				expect(StartDayWorker).to receive(:perform_async).with(user.fb_id, user.story_number).once
 			end
 
 			Sidekiq::Testing.inline! do
