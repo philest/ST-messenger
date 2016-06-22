@@ -10,7 +10,7 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 								'(not here)', 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
-									postback_button('Tap here!', script_payload(:cookstory))
+									postback_button('Tap here!', script_payload(:coonstory))
 								])
 
 	button_normal( 'thanks',
@@ -29,11 +29,12 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 		send button('tap_here'), recipient
 	end
 
-	sequence 'cookstory' do |recipient|
+	sequence 'coonstory' do |recipient|
 		# send out cook story
-		img = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
-		send picture(img), recipient
-		send_story 'day1', 'cook', 10, recipient, 15
+		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
+		send picture(img_1), recipient
+		send_story 'day1', 'coon', 9, recipient, 15
+		
 
 		# one more button
 		send button('thanks'), recipient
