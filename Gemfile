@@ -22,7 +22,7 @@ else
   gem 'pg', 	'0.17.1'
 end
 
-
+gem 'sinatra'
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
 
@@ -55,13 +55,14 @@ group :test do
 	gem 'factory_girl'
 	gem "fakeredis", :require => "fakeredis/rspec"
 	gem 'database_cleaner'
+	gem 'rspec-mocks', '~> 3.4', '>= 3.4.1'
+	gem 'timecop'
 =begin
 	gem 'capybara'
 	gem 'selenium-webdriver'
 	gem 'pry', "= 0.10.0"
 	gem 'pry-nav'
 	gem 'factory_girl'
-	gem 'timecop'
 =end	
 end
 
