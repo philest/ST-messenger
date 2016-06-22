@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'timecop'
-require 'birdv/workers/story_courier'
+require 'worker'
+require 'active_support/time'
 
 describe ScheduleWorker do
 	before(:each) do

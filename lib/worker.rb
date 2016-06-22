@@ -61,6 +61,7 @@ class ScheduleWorker
   end
 end
 
+
 class TwilioWorker
  	include Sidekiq::Worker
  	# include Twilio
@@ -75,8 +76,11 @@ class TwilioWorker
 			:to => number,
 			:body => body
 		)
-		puts "Sent message to #{name}"
+		puts "Sent message to parent of #{name}"
+
+		# update the user day! TODO: make this a seperate job!
 	end
+	# TODO, add completed to a DONE pile. some day
 end
 
 

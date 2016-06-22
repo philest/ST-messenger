@@ -1,5 +1,5 @@
 Sequel.migration do
-  change do
+  up do
     create_table(:districts) do
       primary_key :id
       String :name, :text=>true
@@ -7,10 +7,6 @@ Sequel.migration do
       String :county, :text=>true
       DateTime :created_at
       DateTime :updated_at
-    end
-    
-    create_table(:schema_info) do
-      Integer :version, :default=>0, :null=>false
     end
     
     create_table(:stories) do
@@ -101,4 +97,16 @@ Sequel.migration do
       index [:day_number, :sequence_name]
     end
   end
+
+  down do
+    drop_table :button_press_logs
+    drop_table :users
+    drop_table :classrooms
+    drop_table :teachers
+    drop_table :school_sessions
+    drop_table :schools
+    drop_table :stories
+    drop_table :districts
+  end
+
 end

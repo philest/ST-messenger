@@ -1,6 +1,7 @@
 require "clockwork"
 require 'sidekiq'
 require 'active_support/time'
+require_relative "../config/environment"
 
 # load all of the scripts!
 
@@ -18,5 +19,9 @@ require_relative 'worker'
 module Clockwork
   every 10.seconds, 'check.db' do 
   	ScheduleWorker.perform_async
+  end
+
+  every 1.day, 'update.timezone' do
+  	TimezoneWorker.perform_async
   end
 end

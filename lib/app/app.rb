@@ -67,17 +67,10 @@ post '/enroll' do
 		if params["phone_#{idx}"] != nil
 			begin
 				parent = User.create(:phone => params["phone_#{idx}"])
-				parent.update(:name => params["name_#{idx}"]) if params["name_#{idx}"] != nil
+				parent.update(:child_name => params["name_#{idx}"]) if not params["name_#{idx}"].nil?
 				teacher.add_user(parent)
-				puts "added #{parent.name if params["name_#{idx}"] != nil}, phone => #{parent.phone}"
+				puts "added #{parent.child_name if not params["name_#{idx}"].nil?}, phone => #{parent.phone}"
 				TwilioWorker.perform_async(params["name_#{idx}"], parent.phone, teacher.signature)
-				# body = "Hi, this is #{teacher.signature}. I've signed up our class to get free nightly books on StoryTime. Just click here:\nm.me/490917624435792"
-				# client.account.messages.create(
-				# 	:from => from,
-				# 	:to => parent.phone,
-				# 	:body => body
-				# )
-				# puts "Sent message to #{parent.phone}"
 			rescue Sequel::Error => e
 				puts e.message + " - didn't insert user" 
 			end
