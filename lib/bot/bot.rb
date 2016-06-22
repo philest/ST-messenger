@@ -95,13 +95,15 @@ end
 # i.e. when user taps a button
 #
 Bot.on :postback do |postback|
-  # TODO: log the postback into DB
   case postback.payload
   when INTRO
     register_user(postback.sender)
+
+
   else 
-    script_name, sequence = postback.payload.split('_')
-    StoryTimeScriptWorker.perform_async(postback.sender, script_name, sequence)
+    # log the user's button press and execute sequence
+    script_name, sequence, day_incr = postback.payload.split('_')
+    StoryTimeScriptWorker.perform_async(postback.sender, script_name, sequence, day_incr)
   end
 end
 

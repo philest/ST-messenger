@@ -1,6 +1,8 @@
 require 'twilio-ruby'
+require_relative 'bot/worker_bot'
 
-class SequenceWorker
+
+class StartDayWorker
   include Sidekiq::Worker
 
   def perform(recipient, day_number)
@@ -16,9 +18,8 @@ class ScheduleWorker
 
   def perform
 	interval = 5
-	# TODO: get user day!
 	filter_users(Time.now, interval).each do |user|
-		SequenceWorker.perform_async(user.fb_id, user.day) if user.day > 1 #TODO: fix this stuff
+		StartDayWorker.perform_async(user.fb_id, user.story_number) if user.story_number > 1 #TODO: fix this stuff
 	end
   end
 
@@ -75,8 +76,6 @@ class TwilioWorker
 			:body => body
 		)
 		puts "Sent message to #{name}"
-
-		# update the user day! TODO: make this a seperate job!
 	end
 
 	# TODO, add completed to a DONE pile. some day

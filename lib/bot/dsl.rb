@@ -6,13 +6,19 @@ module Birdv
       include Facebook::Messenger::Helpers 
       @@scripts = {}
 
-      attr_reader :script_name
+      attr_reader :script_name, :script_day
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
       def initialize(script_name, &block)
         @fb_objects  = {}
         @sequences   = {}
-        @script_name = script_name
+        @script_name = script_name # TODO how do we wanna do this?
+        str, day     = script_name.split '_'
+        if !day.nil?
+          @script_day = day
+        else
+          @script_day = 0
+        end
         instance_eval(&block)
         puts "adding #{@script_name} to thing"
         @@scripts[script_name] = self
