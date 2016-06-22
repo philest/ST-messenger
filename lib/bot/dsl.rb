@@ -13,7 +13,7 @@ module Birdv
         @fb_objects  = {}
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
-        str, day     = script_name.split '_'
+        day          = script_name.scan(/\d+/)[0]
         if !day.nil?
           @script_day = day
         else
@@ -40,6 +40,8 @@ module Birdv
       end
 
       def script_payload(sequence_name)
+        puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
+
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 
@@ -171,7 +173,8 @@ module Birdv
       end
 
       def send(some_json, recipient, delay=0)
-      	fb_send_json_to_user(recipient, some_json)
+        puts "sending to #{recipient}"
+      	puts fb_send_json_to_user(recipient, some_json)
       	sleep delay if delay > 0
       end
 

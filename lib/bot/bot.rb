@@ -30,7 +30,7 @@ include Facebook::Messenger::Helpers
 # demo sequence!
 require_relative 'demo'
 DEMO    = /demo/i
-
+INTRO   = 'intro'
 # reach us on QuialTime! :)
 #
 # aubrey 10209571935726081
@@ -68,16 +68,19 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
 
+scripts  = Birdv::DSL::StoryTimeScript.scripts
+
 
 #
 # i.e. when user sends the bot a message.
 #
 Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
-
+  sender_id = message.sender['id']
   case message.text
   when DEMO
-  	intro(message.sender)
+  	#intro(message.sender)
+    scripts['day1'].run_sequence(sender_id, :init)
   when JOIN    
     register_user(message.sender) 
     fb_send_txt( message.sender, 
@@ -95,15 +98,16 @@ end
 # i.e. when user taps a button
 #
 Bot.on :postback do |postback|
+  sender_id = postback.sender['id']
   case postback.payload
   when INTRO
     register_user(postback.sender)
-
-
   else 
     # log the user's button press and execute sequence
     script_name, sequence, day_incr = postback.payload.split('_')
-    StoryTimeScriptWorker.perform_async(postback.sender, script_name, sequence, day_incr)
+    puts script_name
+    puts sequence
+    StoryTimeScriptWorker.perform_async(sender_id, script_name, sequence, day_incr)
   end
 end
 

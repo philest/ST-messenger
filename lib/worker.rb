@@ -6,7 +6,7 @@ class StartDayWorker
   include Sidekiq::Worker
 
   def perform(recipient, day_number)
-		Birdv::DSL::StoryTimeScript.scripts['day_#{day_number}'].run_sequence(recipient, :init)
+		Birdv::DSL::StoryTimeScript.scripts['day#{day_number}'].run_sequence(recipient, :init)
 		# update the user day! TODO: make this a seperate job!
 	end
 
@@ -77,8 +77,6 @@ class TwilioWorker
 		)
 		puts "Sent message to #{name}"
 	end
-
-	# TODO, add completed to a DONE pile. some day
 end
 
 
