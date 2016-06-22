@@ -16,9 +16,10 @@ Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/sequence_scripts/*")
 require_relative 'worker'
 
 
-interval = 5
+
 # cronjob
 module Clockwork
+	interval = 5
   every interval.minutes, 'check.db' do 
   	ScheduleWorker.perform_async(interval)
   end
