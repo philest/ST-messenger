@@ -20,15 +20,6 @@ Sequel.migration do
       Integer :num_pages
     end
     
-    create_table(:tests, :ignore_index_errors=>true) do
-      String :name, :text=>true
-      String :thing, :text=>true
-      
-      index [:name], :name=>:tests_name_key, :unique=>true
-      index [:name, :thing], :unique=>true
-      index [:thing], :name=>:tests_thing_key, :unique=>true
-    end
-    
     create_table(:schools) do
       primary_key :id
       String :name, :text=>true
@@ -82,8 +73,7 @@ Sequel.migration do
       String :name, :text=>true
       String :phone, :text=>true
       String :fb_id, :text=>true
-      String :language, :default=>"English", :text=>true
-      DateTime :send_time, :default=>DateTime.parse("2016-06-18T23:00:00.000000000+0000")
+      DateTime :send_time, :default=>DateTime.parse("2016-06-22T23:00:00.000000000+0000")
       DateTime :enrolled_on
       DateTime :updated_at
       String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
@@ -94,9 +84,21 @@ Sequel.migration do
       foreign_key :classroom_id, :classrooms, :key=>[:id]
       foreign_key :teacher_id, :teachers, :key=>[:id]
       Integer :story_number, :default=>1
+      String :locale, :default=>"en_US", :text=>true
+      String :profile_pic, :text=>true
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
+    end
+    
+    create_table(:button_press_logs, :ignore_index_errors=>true) do
+      primary_key :id
+      DateTime :created_at
+      Integer :day_number
+      String :sequence_name, :text=>true
+      foreign_key :user_id, :users, :key=>[:id]
+      
+      index [:day_number, :sequence_name]
     end
   end
 end

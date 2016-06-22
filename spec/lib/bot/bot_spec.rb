@@ -4,9 +4,22 @@ require 'bot/bot'
 
 describe "Bot" do
 
+	context "user-fb_id matching", :matching => true do
+		before(:each) do
+			@user = User.create(:child_name => "David McPeek", :phone => "8186897323")
+			@fb_id = ENV["DAVID"]
+			@recipient = { id: @fb_id }
+		end
+
+		it "creates a user with just a fb_id attribute on failure" do 
+			bad_id = { id: "bad!" }
+			expect(register_user(bad_id)).to raise_exception(HTTParty::Error)
+		end
+
+	end
+
 	describe '#fb_send_txt' do
 
-	
 
 	end
 

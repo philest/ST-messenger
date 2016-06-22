@@ -53,10 +53,11 @@ def register_user(recipient)
     begin
       candidates = User.where(:child_name => regex, :fb_id => nil)
       if candidates.all.empty? # add a new user w/o child info (no matches)
-        User.create(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :timezone => data['timezone'], :profile_pic => data['profile_pic'])
+        User.create(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
       else
         # implement stupid fb_name matching to existing user matching
-        candidates.first.update(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :timezone => data['timezone'], :profile_pic => data['profile_pic'])
+        candidates.first.update(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
+      end
     rescue Sequel::Error => e
       p e.message + " did not insert, already exists in db"
     end # rescue - db transaction

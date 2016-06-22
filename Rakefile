@@ -10,7 +10,7 @@ namespace :db do
     desc "Perform migration reset (full erase and migration up)"
     task :reset do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
-      Sequel::Migrator.run(DB, "db/migrations")
+      # Sequel::Migrator.run(DB, "db/migrations")
       puts "<= sq:migrate:reset executed"
     end
 
@@ -24,8 +24,8 @@ namespace :db do
     	when "production" # will always be in production on heroku
     		db_url = ENV["DATABASE_URL"]
     	end
-    	sh "sequel -d '#{db_url}' > './db/test_schema'"
-    	puts "<= schema located in db/test_schema"
+    	sh "sequel -d '#{db_url}' > './db/schema.rb'"
+    	puts "<= schema located in db/schema.rb"
     end
 
     desc "Perform migration up/down to VERSION"

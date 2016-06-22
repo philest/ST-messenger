@@ -61,15 +61,6 @@ class ScheduleWorker
   end
 end
 
-class TimezoneWorker
-	include Sidekiq::Worker
-	User.each do |user|
-		if user.timezone != nil
-			tz = HTTParty.get("https://graph.facebook.com/v2.6/#{user.id}?fields=timezone&access_token=#{ENV['FB_ACCESS_TKN']}")
-			user.update(:timezone => tz["timezone"]) if not tz["timezone"].nil? 
-		end
-	end
-end
 
 class TwilioWorker
  	include Sidekiq::Worker
@@ -89,7 +80,6 @@ class TwilioWorker
 
 		# update the user day! TODO: make this a seperate job!
 	end
-
 	# TODO, add completed to a DONE pile. some day
 end
 
