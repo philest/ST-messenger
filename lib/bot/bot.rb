@@ -102,6 +102,7 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     register_user(postback.sender)
+    StoryTimeScriptWorker.perform_async(sender_id, 'day1', :init)
   else 
     # log the user's button press and execute sequence
     script_name, sequence, day_incr = postback.payload.split('_')
