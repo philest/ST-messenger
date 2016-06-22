@@ -6,9 +6,9 @@ require_relative 'bot/dsl'
 # heroku redis!
 redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/12'
 Sidekiq.configure_server do |config|
-    config.redis = { url: redis_url }
+    config.redis = { url: redis_url, :size => 10 }
 end
 
 Sidekiq.configure_client do |config|
-    config.redis = { url: redis_url }
+    config.redis = { url: redis_url, :size => 5 }
 end
