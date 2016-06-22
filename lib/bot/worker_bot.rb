@@ -3,7 +3,7 @@ class StoryTimeScriptWorker
   include Sidekiq::Worker
 
   def perform(recipient, script_name, sequence, day_increment=nil)
-		puts "script name: #{script_name}, sequence name: #{sequence}"
+		# puts "script name: #{script_name}, sequence name: #{sequence}"
   	# load script
   	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
 
@@ -16,9 +16,8 @@ class StoryTimeScriptWorker
 		s.run_sequence(recipient, sequence.to_sym)
 		
 		# increment the user's reading day if necessary
-		if day_increment != nil
-			u.story_number += 1
-			u.save
+		if s.script_day >= u.story_number
+			u.update(:story_number => s.script_day+1)
 		end
 	end
 

@@ -15,7 +15,7 @@ module Birdv
         @script_name = script_name # TODO how do we wanna do this?
         day          = script_name.scan(/\d+/)[0]
         if !day.nil?
-          @script_day = day
+          @script_day = day.to_i
         else
           @script_day = 0
         end
@@ -133,11 +133,10 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-      	puts sqnce_name
-      	puts(@sequences[sqnce_name.to_sym])
+      	# puts(@sequences[sqnce_name.to_sym])
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
-          puts "successfully ran #{sqnce_name}!"
+         # puts "successfully ran #{sqnce_name}!"
         rescue Exception => e  
           puts "#{sqnce_name} failed!"
           puts e.message  
