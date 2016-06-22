@@ -76,7 +76,7 @@ class TwilioWorker
 			:to => number,
 			:body => body
 		)
-		puts "Sent message to parent of #{name.nil? ? an unnamed child : name}"
+		puts "Sent message to parent of #{name}"
 
 		# update the user day! TODO: make this a seperate job!
 	end
