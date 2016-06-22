@@ -41,27 +41,26 @@ def register_user(recipient)
   # save user in the database.
   # TODO : update an existing DB entry to coincide the fb_id with phone_number
   begin
-    users = DB[:users] 
+    fields = "first_name,last_name,profile_pic,locale,timezone,gender"
+    data = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}")
+    name = data["first_name"] + " " + data["last_name"]
+  rescue HTTParty::Error
+    User.create(:fb_id => recipient["id"])
+  else
+    puts "successfully found user data"
+    last_name = data['last_name']
+    regex = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
     begin
-      fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=first_name,last_name&access_token=#{ENV['FB_ACCESS_TKN']}")
-      name = fb_name["first_name"] + " " + fb_name["last_name"]
-    rescue HTTParty::Error
-      name = nil
-    else
-      puts "successfully found name"
-    end
-
-    begin 
-      users.insert(:name => name, :fb_id => recipient["id"])
-      puts "inserted #{name}:#{recipient} into the users table"
-    rescue Sequel::UniqueConstraintViolation => e
-      p e.message << " ::> did not insert, already exists in db"
+      candidates = User.where(:child_name => regex, :fb_id => nil)
+      if candidates.all.empty? # add a new user w/o child info (no matches)
+        User.create(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :timezone => data['timezone'], :profile_pic => data['profile_pic'])
+      else
+        # implement stupid fb_name matching to existing user matching
+        candidates.first.update(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :timezone => data['timezone'], :profile_pic => data['profile_pic'])
     rescue Sequel::Error => e
-      p e.message << " ::> failure"
-    end
-  rescue Sequel::Error => e
-    p e.message
-  end
+      p e.message + " did not insert, already exists in db"
+    end # rescue - db transaction
+  end # rescue - httparty
 end
 
 STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
