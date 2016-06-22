@@ -96,7 +96,7 @@ describe ScheduleWorker do
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
 			users = [@on_time, @just_early, @just_late]
 			filtered = @s.filter_users(@time, @interval)
-			expect(filtered.size).to eq(users.size)
+			expect(filtered.size).to eq(3)
 			# we want filter_uses to return the SQL rows
 			expect(filtered.to_set).to eq(users.to_set)
 		end
@@ -117,19 +117,20 @@ describe ScheduleWorker do
 				expect {
 				  ScheduleWorker.perform_async
 				  ScheduleWorker.drain
-				}.to change(StartDayWorker.jobs, :size).by(users.size)
+				}.to change(StartDayWorker.jobs, :size).by(3)
 			end
 		end
 
 		it "does NOT call StartDayWorker when users are at day 1" do
-			user = User.create(:send_time => @on_time.send_time, :story_number => 1)
+			DB[:users].delete # clean database
+			user = User.create(:send_time => Time.now, :story_number => 1)
 			expect(ScheduleWorker.jobs.size).to eq(0)
 
 			Sidekiq::Testing.fake! do
 				expect {
 				  ScheduleWorker.perform_async
 				  ScheduleWorker.drain
-				}.to change(StartDayWorker.jobs, :size).by(3)
+				}.to change(StartDayWorker.jobs, :size).by(0)
 			end
 		end
 
