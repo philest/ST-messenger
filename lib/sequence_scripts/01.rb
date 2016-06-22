@@ -7,7 +7,7 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	# and button_normal OUTSIDE of sequence blocks
 	#
 	story_button( 'tap_here', 
-								'(not here)', 
+								"Let's read your first story.", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
 									postback_button('Tap here!', script_payload(:coonstory))

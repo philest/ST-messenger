@@ -8,7 +8,7 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 	# and button_normal OUTSIDE of sequence blocks
 	#
 	story_button( 'tap_here', 
-								'(not here)', 
+								"Let's get tonight's story.", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
 									postback_button('Tap here!', script_payload(:cookstory))
