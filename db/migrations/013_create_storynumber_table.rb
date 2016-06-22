@@ -1,5 +1,5 @@
 Sequel.migration do
-	change do
+	up do
 		create_table(:button_press_logs) do
 			primary_key :id
 			Time :created_at
@@ -8,6 +8,10 @@ Sequel.migration do
 			foreign_key :user_id, :users
 			index [:day_number, :sequence_name]
 		end
+	end
+
+	down do
+		drop_table(:button_press_logs)
 	end
 end
 
