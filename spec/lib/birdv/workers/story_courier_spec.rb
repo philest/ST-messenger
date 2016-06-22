@@ -31,6 +31,10 @@ describe ScheduleWorker do
 		# puts "late = #{@late.send_time}"
 	end
 
+	after(:each) do
+		Timecop.return
+	end
+
 	# after(:each) do
 	# 	DatabaseCleaner.clean
 	# end
