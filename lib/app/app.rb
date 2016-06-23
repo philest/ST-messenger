@@ -50,7 +50,7 @@ post '/enroll' do
 			signature =  params["teacher_prefix"] + " " + params["teacher_signature"]
 		end
 		begin
-			teacher = Teacher.create(:signature => signature)
+			teacher = Teacher.create(:signature => signature, :email => params["teacher_email"])
 			puts "created new teacher: #{signature}"
 		rescue Sequel::Error => e
 			p e.message + " didn't insert teacher, her number already exists in db"

@@ -41,6 +41,6 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send text("No, no. Thank YOU!"), recipient
+		send text("You're welcome :)"), recipient
 	end
 end 
