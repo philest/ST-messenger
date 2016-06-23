@@ -42,13 +42,13 @@ def register_user(recipient)
   # TODO : update an existing DB entry to coincide the fb_id with phone_number
   begin
     fields = "first_name,last_name,profile_pic,locale,timezone,gender"
-    data = HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}")
-    name = data["first_name"] + " " + data["last_name"]
+    data = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}").body
+    name = data['first_name'] + " " + data["last_name"]
   rescue
     User.create(:fb_id => recipient["id"])
   else
     puts "successfully found user data for #{name}"
-    last_name = data['last_name']
+    last_name = data["last_name"]
     regex = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
     begin
       candidates = User.where(:child_name => regex, :fb_id => nil)

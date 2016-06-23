@@ -63,7 +63,8 @@ RSpec.configure do |config|
     #   Sidekiq::Worker.clear_all
     # end
     config.before(:each) do
-      WebMock.allow_net_connect!
+      WebMock.enable!
+      WebMock.disable_net_connect!(allow_localhost:false, allow: [])
     end
     config.around(:each) do |example|
       DatabaseCleaner.cleaning do
