@@ -1,5 +1,4 @@
-require_relative '../../config/environment'
-class StoryTimeScriptWorker
+class BotWorker
   include Sidekiq::Worker
 
   def perform(recipient, script_name, sequence, day_increment=nil)

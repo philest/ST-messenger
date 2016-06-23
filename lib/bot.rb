@@ -5,8 +5,6 @@ require 'httparty'
 require 'sidekiq'
 
 # load environment vars
-require_relative '../config/environment' # we can do this cos I added 
-                             # root to path (see config.ru)
 
 # load STScripts
 require_relative 'bot/dsl'
@@ -14,7 +12,7 @@ Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/sequence_scripts/*")
       .each {|f| require_relative f }
 
 # load workers
-require_relative 'workers/worker_bot'
+require_relative 'workers/bot_worker'
 
 # configure facebook-messenger gem 
 include Facebook::Messenger
@@ -102,13 +100,13 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     register_user(postback.sender)
-    StoryTimeScriptWorker.perform_async(sender_id, 'day1', :init)
+    BotWorker.perform_async(sender_id, 'day1', :init)
   else 
     # log the user's button press and execute sequence
     script_name, sequence, day_incr = postback.payload.split('_')
     puts script_name
     puts sequence
-    StoryTimeScriptWorker.perform_async(sender_id, script_name, sequence, day_incr)
+    BotWorker.perform_async(sender_id, script_name, sequence, day_incr)
   end
 end
 

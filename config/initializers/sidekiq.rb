@@ -1,5 +1,4 @@
 # AFAIK sidekiq just picks this file up automatically 
-require_relative 'bot/dsl'
 
 # configure redis to use PG redis, or local if PG redis unavialible
 # (you'd have to run redis-server on your own machine if not using 

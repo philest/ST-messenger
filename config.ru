@@ -1,6 +1,7 @@
 $stdout.sync = true
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'config/environment'
 require_relative 'lib/app'
 require 'bundler'
 require 'sidekiq/web'

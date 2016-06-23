@@ -38,6 +38,7 @@ describe 'FBHelper' do
 	end	
 
 	context 'text message fails' do
+			# stub a failure response
 			before(:example) do 
 				stub_response.call(*FAILURE)
 			end
@@ -49,6 +50,7 @@ describe 'FBHelper' do
 	end
 
 	context 'text message succeeds' do
+			# stub a success response
 			before(:example) do 
 				stub_response.call(*SUCCESS)
 			end
