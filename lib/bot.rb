@@ -5,15 +5,16 @@ require 'httparty'
 require 'sidekiq'
 
 # load environment vars
-require_relative '../../config/environment'
+require_relative '../config/environment' # we can do this cos I added 
+                             # root to path (see config.ru)
 
 # load STScripts
-require_relative 'dsl'
-Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/../sequence_scripts/*")
+require_relative 'bot/dsl'
+Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/sequence_scripts/*")
       .each {|f| require_relative f }
 
 # load workers
-require_relative 'worker_bot'
+require_relative 'workers/worker_bot'
 
 # configure facebook-messenger gem 
 include Facebook::Messenger
@@ -24,11 +25,10 @@ Facebook::Messenger.configure do |config|
 end
 
 # custom fb helpers that we wrote
-require_relative 'fb_helpers'
+require_relative 'helpers/fb'
 include Facebook::Messenger::Helpers
 
 # demo sequence!
-require_relative 'demo'
 DEMO    = /demo/i
 INTRO   = /intro/i
 # reach us on QuialTime! :)

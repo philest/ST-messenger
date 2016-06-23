@@ -1,15 +1,14 @@
 $stdout.sync = true
+$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-
+require_relative 'lib/app'
 require 'bundler'
-require './lib/app/app.rb'
 require 'sidekiq/web'
-
 require 'facebook/messenger'
-require_relative 'lib/bot/bot'
+require_relative 'lib/bot'
 
 run Rack::URLMap.new({
-  '/bot' => Facebook::Messenger::Server,
+  #'/bot' => Facebook::Messenger::Server,
   '/' => Sinatra::Application, 
   '/sidekiq' => Sidekiq::Web
 })

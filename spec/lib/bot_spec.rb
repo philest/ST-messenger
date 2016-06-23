@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'bot/bot'
+require 'bot'
 # require_relative '../models/story'
 
 DAVID="10209967651611613"
@@ -35,13 +35,13 @@ describe "Bot" do
 		it "picks the first user who matches a child when there are many of such users" do 
 			candidate0 = User.create
 			candidate1 = User.create(:child_name => "Ben McPeek")
-			sleep 1
 			candidate2 = User.create(:child_name => "Emily McPeek")
 			fb_id = DAVID
 			recipient = { "id" => fb_id }
 			register_user(recipient)
-			expect(User.count).to eq 3
 			puts User.all.inspect
+			expect(User.count).to eq 3
+			
 			expect(User.where(:id => candidate1.id).first.name).to eq "David McPeek"
 		end
 

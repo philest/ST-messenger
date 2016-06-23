@@ -5,11 +5,11 @@
 #  --------------------------------------------------------
 
 #sinatra dependencies 
+require 'config/environment.rb'
 require 'sinatra'
-require_relative '../../config/environment.rb'
 require 'sidekiq'
 require 'twilio-ruby'
-require_relative "../worker"
+require_relative "workers/worker"
 
 enable :sessions
 

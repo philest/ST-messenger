@@ -1,8 +1,7 @@
 require 'spec_helper'
 require 'timecop'
-require 'worker'
 require 'active_support/time'
-
+require 'workers/worker'
 describe ScheduleWorker do
 	before(:each) do
 		# clean everything up

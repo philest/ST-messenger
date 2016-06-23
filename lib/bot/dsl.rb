@@ -1,4 +1,4 @@
-require_relative 'fb_helpers'
+require_relative '../helpers/fb'
 
 module Birdv
   module DSL

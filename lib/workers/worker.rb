@@ -1,5 +1,5 @@
 require 'twilio-ruby'
-require_relative 'bot/worker_bot'
+require_relative 'worker_bot'
 
 
 class StartDayWorker

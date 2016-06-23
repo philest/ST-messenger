@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timecop'
-require 'bot/worker_bot'
 require 'active_support/time'
+require 'workers/worker_bot'
 require 'bot/dsl'
 
 describe StoryTimeScriptWorker do
