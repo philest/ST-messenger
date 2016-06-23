@@ -5,30 +5,12 @@
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "recipient":{
-    "id": "10209967651611613"
+    "phone_number": ""
   },
   "message":{
-    "attachment":{
-      "type":"template",
-      "payload":{
-        "template_type":"button",
-        "text":"Hello you rascal!",
-        "buttons":[
-          {
-            "type":"web_url",
-            "url":"https://petersapparel.parseapp.com",
-            "title":"Show Website"
-          },
-          {
-            "type":"postback",
-            "title":"Join the cult",
-            "payload":"8186897323"
-          }
-        ]
-      }
-    }
+    "text": "hello world"
   }
-}' "https://graph.facebook.com/me/messages?access_token=${FB_ACCESS_TKN}"
+}' "https://graph.facebook.com/me/messages?access_token="
 
 
 # curl -X POST -H "Content-Type: application/json" -d '{
