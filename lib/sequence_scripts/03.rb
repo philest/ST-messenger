@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'day2' do
+Birdv::DSL::StoryTimeScript.new 'day3' do
 
 
 	#
@@ -8,14 +8,14 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 	# and button_normal OUTSIDE of sequence blocks
 	#
 	story_button( 'tap_here', 
-								"Let's read tonight's story.", 
+								"Your next story's coming soon!", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
-									postback_button('Tap here!', script_payload(:cookstory))
+									postback_button('Tap here!', script_payload(:scratchstory))
 								])
 
 	button_normal( 'thanks',
-									'Ms. Stobierski: I’ll send another story tomorrow night. You both are doing great! :)',
+									'Ms. Stobierski: I’ll send another story tomorrow night :)',
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
@@ -23,17 +23,19 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Ms Stobierski: Hi Ms. Edwards, here’s another story to prepare Calivin for kindergarten."
+		txt = "Ms Stobierski: Hi Ms. Edwards, here’s another story!"
 		send text(txt), recipient, 4 
 		
 		# send tap_here button
 		send button('tap_here'), recipient
 	end
 
-	sequence 'cookstory' do |recipient|
+	sequence 'scratchstory' do |recipient|
 		# send out cook story
-		send_story 'day1', 'cook', 11, recipient, 15
-		
+
+		send_story 'day1', 'scratch', 6, recipient
+		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+		send picture(img_1), recipient, 15
 
 		# one more button
 		send button('thanks'), recipient

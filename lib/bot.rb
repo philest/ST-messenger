@@ -62,6 +62,8 @@ JOIN    = /join/i
 scripts  = Birdv::DSL::StoryTimeScript.scripts
 
 
+DAY_RQST = /day\d+/i
+
 #
 # i.e. when user sends the bot a message.
 #
@@ -69,9 +71,13 @@ Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
   sender_id = message.sender['id']
   case message.text
-  when DEMO
-  	#intro(message.sender)
-    scripts['day1'].run_sequence(sender_id, :init)
+  when DAY_RQST
+    script_name = message.text.match(DAY_RQST).to_s
+    if scripts[script_name] != nil
+      scripts[script_name].run_sequence(sender_id, :init)
+    else
+      fb_send_txt("Sorry, that script is not yet availible.")
+    end
   when JOIN    
     register_user(message.sender) 
     fb_send_txt( message.sender, 
@@ -96,10 +102,10 @@ Bot.on :postback do |postback|
     BotWorker.perform_async(sender_id, 'day1', :init)
   else 
     # log the user's button press and execute sequence
-    script_name, sequence, day_incr = postback.payload.split('_')
+    script_name, sequence = postback.payload.split('_')
     puts script_name
     puts sequence
-    BotWorker.perform_async(sender_id, script_name, sequence, day_incr)
+    BotWorker.perform_async(sender_id, script_name, sequence)
   end
 end
 
