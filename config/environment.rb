@@ -4,7 +4,7 @@ require 'sequel'
 #The environment variable DATABASE_URL should be in the following format:
 # => postgres://{user}:{password}@{host}:{port}/path
 
-case ENV["APP_ENV"]
+case ENV["RACK_ENV"]
 when "development"
 	# use .env file for local development. no need for extra config files!
 	require 'dotenv'
@@ -18,7 +18,7 @@ when "production"
 	puts "loading production db (storytime)..."
 	DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
 else
-	puts "please specify an APP_ENV in environment.rb, defaulting to production..."
+	puts "please specify an RACK_ENV in environment.rb, defaulting to production..."
 	# heroku says that we generally wanna have same pool size as threads 
 	# https://devcenter.heroku.com/articles/concurrency-and-database-connections#threaded-servers
 	# but I'm gonna do 6 because I expect each of the web, worker, and clock will be using
