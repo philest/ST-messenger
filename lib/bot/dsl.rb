@@ -173,7 +173,7 @@ module Birdv
 
       def send(some_json, recipient, delay=0)
         puts "sending to #{recipient}"
-        puts fb_send_json_to_user(recipient, some_json)
+        puts fb_send_json_to_user(recipient['id'], some_json)
         sleep delay if delay > 0
       end
 
