@@ -1,5 +1,4 @@
-require 'sequel'
-class BotWorker
+class BotWorker 
   include Sidekiq::Worker
 
   def perform(recipient, script_name, sequence, day_increment=nil)
