@@ -1,3 +1,4 @@
+require 'sequel'
 class BotWorker
   include Sidekiq::Worker
 
