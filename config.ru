@@ -6,7 +6,6 @@ require 'config/environment'
 require 'bundler'
 require 'sidekiq'
 require 'sidekiq/web'
-require 'facebook/messenger'
 require_relative 'lib/bot'
 require_relative 'lib/app'
 

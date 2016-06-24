@@ -14,9 +14,10 @@ Dir[models_dir].each {|file| require_relative file }
 # we only need the schedule worker
 require_relative 'workers'
 
-module Clockwork
-	interval = 5
-  every interval.seconds, 'check.db' do 
-  	ScheduleWorker.perform_async(interval)
-  end
-end
+
+# module Clockwork
+# 	interval = 5
+#   every interval.seconds, 'check.db' do 
+#   	ScheduleWorker.perform_async(interval)
+#   end
+# end
