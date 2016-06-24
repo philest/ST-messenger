@@ -24,7 +24,7 @@ end
 
 gem 'sinatra'
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
-
+gem 'airbrake'
 
 # bot stuff
 gem 'puma', 	'~>3.4.0'
