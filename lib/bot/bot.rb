@@ -72,7 +72,7 @@ DAY1    = /day1/i
 DAY2    = /day2/i
 DAY3    = /day3/i
 
-scripts = Birdv::DSL:StoryTimeScript.scripts
+scripts = Birdv::DSL::StoryTimeScript.scripts
 
 #
 # i.e. when user sends the bot a message.
