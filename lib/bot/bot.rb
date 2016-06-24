@@ -30,6 +30,7 @@ include Facebook::Messenger::Helpers
 # demo sequence!
 require_relative 'demo'
 DEMO    = /demo/i
+INTRO = /intro/i
 
 # reach us on QuialTime! :)
 #
