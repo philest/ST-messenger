@@ -43,7 +43,9 @@ gem 'clockwork','~>2.0.0'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
 
-
+configure :production do
+	require 'newrelic_rpm'
+end
 
 
 
