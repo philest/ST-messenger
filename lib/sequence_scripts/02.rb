@@ -23,8 +23,7 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Ms Stobierski: Hi Ms. Edwards, here’s /
-			   another story to prepare Calivin for kindergarten."
+		txt = "Ms Stobierski: Hi Ms. Edwards, here’s another story to prepare Calivin for kindergarten."
 		send text(txt), recipient, 4 
 		
 		# send tap_here button

@@ -82,11 +82,11 @@ Bot.on :message do |message|
 
   case message.text
   when DAY1
-    scripts['day1'].run_sequence(message.sender,  'firsttap')
+    scripts['day1'].run_sequence(message.sender['id'],  'init')
   when DAY2
-    scripts['day2'].run_sequence(message.sender,  'init')
+    scripts['day2'].run_sequence(message.sender['id'],  'init')
   when DAY3
-    scripts['day3'].run_sequence(message.sender,  'init')
+    scripts['day3'].run_sequence(message.sender['id'],  'init')
   when JOIN    
     register_user(message.sender) 
     fb_send_txt( message.sender, 
@@ -110,7 +110,7 @@ Bot.on :postback do |postback|
     register_user(postback.sender)
   else 
     script_name, sequence = postback.payload.split('_')
-    scripts[script_name].run_sequence(postback.sender, sequence)
+    scripts[script_name].run_sequence(postback.sender['id'], sequence)
   end
 end
 

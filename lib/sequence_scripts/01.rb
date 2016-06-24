@@ -21,8 +21,6 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 
 
 	sequence 'firsttap' do |recipient|
-		puts 'supppp'
-		fb_send_txt recipient, 'heeeey'
 		# greeting with 4 second delay
 		txt = "Hi Ms. Edwards, this is Ms. Stobierski. I’ve signed our class up to get free nightly books here on StoryTime."
 		send text(txt), recipient, 4 
