@@ -6,7 +6,6 @@ class User < Sequel::Model(:users)
 	many_to_one :classroom
 	one_to_many :button_press_logs
 
-
 	def validate
     	super
     	validates_unique :phone, :allow_nil=>true, :message => "#{phone} is already taken (users)"
