@@ -1,3 +1,3 @@
-web: bundle exec puma -p $PORT
-worker: bundle exec sidekiq -c 10 -r ./lib/workers.rb
+web: bundle exec puma -C config/puma.rb
+webkiq: bundle exec sidekiq  -c 6 -r ./lib/bot.rb
 clock: bundle exec clockwork ./lib/clock.rb

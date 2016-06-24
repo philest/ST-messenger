@@ -6,9 +6,8 @@
 
 #sinatra dependencies 
 require 'sinatra'
-require 'sidekiq'
 require 'twilio-ruby'
-require_relative "workers/twilio_worker"
+require_relative "workers"
 
 enable :sessions
 

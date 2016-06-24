@@ -1,18 +1,11 @@
 require 'facebook/messenger'
 require 'activerecord-jdbcpostgresql-adapter' if RUBY_PLATFORM == 'java'
-require 'sequel'
 require 'httparty'
-require 'sidekiq'
 
-# load environment vars
-
+# load environment vars, db, workers, and STScripts
 # load STScripts
-require_relative 'bot/dsl'
-Dir.glob("#{File.expand_path("", File.dirname(__FILE__))}/sequence_scripts/*")
-      .each {|f| require_relative f }
-
 # load workers
-require_relative 'workers/bot_worker'
+require_relative 'workers'
 
 # configure facebook-messenger gem 
 include Facebook::Messenger
