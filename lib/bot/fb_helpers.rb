@@ -105,7 +105,7 @@ module Facebook
         HTTParty.post(GRAPH_URL, 
           query: {access_token: ENV['FB_ACCESS_TKN']},
             :body => { 
-              recipient: { id: user_id },
+              recipient: user_id['id'],
               message: msg_json[:message]
             }.to_json,
             :headers => { 'Content-Type' => 'application/json' } 
