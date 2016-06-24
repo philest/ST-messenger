@@ -1,12 +1,12 @@
 require 'sidekiq'
 require 'active_support/time'
-require_relative "../config/environment"
+
 
 redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/12'
 # hopefull this will work out
 # I'm giving 6 to puma and 1 to clock
 Sidekiq.configure_client do |config|
-    config.redis = { url: redis_url, size: 2 }
+    config.redis = { url: redis_url, size: 6 }
 end
 
 Sidekiq.configure_server do |config|
