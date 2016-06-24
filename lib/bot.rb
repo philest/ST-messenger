@@ -1,7 +1,7 @@
 require 'facebook/messenger'
 require 'activerecord-jdbcpostgresql-adapter' if RUBY_PLATFORM == 'java'
 require 'httparty'
-require 'config/environment'
+require_relative '../config/environment'
 # load environment vars, db, workers, and STScripts
 # load STScripts
 # load workers
