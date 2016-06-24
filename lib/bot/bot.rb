@@ -67,7 +67,9 @@ end
 STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
-
+DAY1    = /day1/i
+DAY2    = /day2/i
+DAY3    = /day3/i
 
 #
 # i.e. when user sends the bot a message.
@@ -76,8 +78,12 @@ Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
 
   case message.text
-  when DEMO
-  	intro(message.sender)
+  when DAY1
+    StoryTimeScriptWorker.perform_async(message.sender, 'day1', 'init')
+  when DAY2
+    StoryTimeScriptWorker.perform_async(message.sender, 'day2', 'init')
+  when DAY3
+    StoryTimeScriptWorker.perform_async(message.sender, 'day3', 'init')
   when JOIN    
     register_user(message.sender) 
     fb_send_txt( message.sender, 
