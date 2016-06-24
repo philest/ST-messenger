@@ -82,7 +82,7 @@ Bot.on :message do |message|
 
   case message.text
   when DAY1
-    scripts['day1'].run_sequence(message.sender,  'init')
+    scripts['day1'].run_sequence(message.sender,  'firsttap')
   when DAY2
     scripts['day2'].run_sequence(message.sender,  'init')
   when DAY3
