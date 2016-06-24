@@ -32,8 +32,10 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
-		send_story 'day1', 'scratch', 6, recipient, 15
-		
+
+		send_story 'day1', 'scratch', 6, recipient
+		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+		send picture(img_1), recipient, 15
 
 		# one more button
 		send button('thanks'), recipient
