@@ -8,6 +8,10 @@ module Facebook
         GRAPH_URL
       end
 
+      def self.get_graph_url
+        GRAPH_URL
+      end
+
       def deliver(message)
         HTTParty.post(GRAPH_URL, 
           query: {access_token: ENV['FB_ACCESS_TKN']},
