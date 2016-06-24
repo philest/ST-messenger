@@ -72,6 +72,8 @@ DAY1    = /day1/i
 DAY2    = /day2/i
 DAY3    = /day3/i
 
+scripts = Birdv::DSL:StoryTimeScript.scripts
+
 #
 # i.e. when user sends the bot a message.
 #
@@ -80,11 +82,11 @@ Bot.on :message do |message|
 
   case message.text
   when DAY1
-    StoryTimeScriptWorker.perform_async(message.sender, 'day1', 'init')
+    scripts['day1'].run_sequence(message.sender,  'init')
   when DAY2
-    StoryTimeScriptWorker.perform_async(message.sender, 'day2', 'init')
+    scripts['day2'].run_sequence(message.sender,  'init')
   when DAY3
-    StoryTimeScriptWorker.perform_async(message.sender, 'day3', 'init')
+    scripts['day3'].run_sequence(message.sender,  'init')
   when JOIN    
     register_user(message.sender) 
     fb_send_txt( message.sender, 
@@ -108,7 +110,7 @@ Bot.on :postback do |postback|
     register_user(postback.sender)
   else 
     script_name, sequence = postback.payload.split('_')
-    StoryTimeScriptWorker.perform_async(postback.sender, script_name, sequence)
+    scripts[script_name].run_sequence(postback.sender, sequence)
   end
 end
 
