@@ -1,7 +1,7 @@
 $stdout.sync = true
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'config/environment'
+
 
 require 'bundler'
 require 'sidekiq'
@@ -22,17 +22,14 @@ configure :production do
 	  config.environment = ENV['RACK_ENV'] || "development"
 	end
 	
+	use Airbrake::Rack::Middleware
+
 end
 
 
 
-
-
-use Airbrake::Rack::Middleware
-
-
 run Rack::URLMap.new({
-  #'/bot' => Facebook::Messenger::Server,
+  '/bot' => Facebook::Messenger::Server,
   '/' => Sinatra::Application, 
   '/sidekiq' => Sidekiq::Web
 })
