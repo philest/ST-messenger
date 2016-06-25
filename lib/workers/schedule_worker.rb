@@ -1,13 +1,18 @@
 class StartDayWorker
   include Sidekiq::Worker
+
+  sidekiq_options :retry => false
+
   def perform(recipient, day_number)
-		Birdv::DSL::StoryTimeScript.scripts['day#{day_number}'].run_sequence(recipient, :init)
+  		# double quotation 
+		Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"].run_sequence(recipient, :init)
 		# update the user day! TODO: make this a seperate job!
 	end
 end
 
 class ScheduleWorker
   include Sidekiq::Worker
+  sidekiq_options :retry => false
 
   def perform(interval=5)
 		filter_users(Time.now, interval).each do |user|
@@ -46,9 +51,9 @@ class ScheduleWorker
 	now = Time.now.utc.seconds_since_midnight
 	user_time = adjust_tz(user).utc.seconds_since_midnight
 	if now >= user_time
-		now - user_time <= interval.minutes
+		now - user_time <= interval
 	else
-		user_time - now <  interval.minutes
+		user_time - now <  interval
 	end
   end
 end
