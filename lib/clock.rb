@@ -16,9 +16,9 @@ require_relative 'workers'
 
 
 module Clockwork
-	interval = 5.minutes
+	interval = 30
   	every interval.seconds, 'check.db' do 
   		# TODO change this back to INTERVAL!!!!
-  		ScheduleWorker.perform_async(interval.to_i)
+  		ScheduleWorker.perform_async(1.day.to_i)
   	end
 end

@@ -15,7 +15,7 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 								])
 
 	button_normal( 'thanks',
-									'Ms. Stobierski: I’ll send another story tomorrow night :)',
+									"__TEACHER__: I’ll send another story tomorrow night :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
@@ -23,7 +23,7 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Ms Stobierski: Hi Ms. Edwards, here’s another story!"
+		txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
 		send text(txt), recipient, 4 
 		
 		# send tap_here button
@@ -35,7 +35,7 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 		send_story 'day1', 'scratch', 6, recipient
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-		send picture(img_1), recipient, 15
+		send picture(img_1), recipient, 23
 
 		# one more button
 		send button('thanks'), recipient

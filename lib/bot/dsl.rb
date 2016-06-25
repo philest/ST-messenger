@@ -51,9 +51,8 @@ module Birdv
 
       def name_codes(str, id)
         user = User.where(:fb_id => id).first
-        parent  = user.name
-        
-        child   = user.child_name.nil? ? "your child" : user.child_name
+        parent  = user.name.split[0]
+        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
         teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
         str = str.gsub(/__TEACHER__/, teacher)
         str = str.gsub(/__PARENT__/, parent)
@@ -187,9 +186,9 @@ module Birdv
         # alter text to include teacher/parent/child names... 
         if some_json[:message][:text]
           # TODO check to see if id key is a symbol or a string.............
-          some_json[:message][:text] = name_codes(some_json[:message][:text], recipient['id'])
+          some_json[:message][:text] = name_codes(some_json[:message][:text], recipient)
         elsif some_json[:message][:attachment][:payload][:text]
-          some_json[:message][:attachment][:payload][:text] = name_codes(some_json[:message][:attachment][:payload][:text], recipient['id'])
+          some_json[:message][:attachment][:payload][:text] = name_codes(some_json[:message][:attachment][:payload][:text], recipient)
         end
             
         puts "sending to #{recipient}"
