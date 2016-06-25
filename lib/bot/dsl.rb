@@ -133,11 +133,7 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-<<<<<<< HEAD
       	# puts(@sequences[sqnce_name.to_sym])
-=======
-        # puts(@sequences[sqnce_name.to_sym])
->>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
          # puts "successfully ran #{sqnce_name}!"
@@ -177,15 +173,9 @@ module Birdv
 
       def send(some_json, recipient, delay=0)
         puts "sending to #{recipient}"
-<<<<<<< HEAD
       	puts fb_send_json_to_user(recipient, some_json)
       	sleep delay if delay > 0
-=======
-        puts fb_send_json_to_user(recipient, some_json)
-        sleep delay if delay > 0
->>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
       end
-
     end
   end
 end
