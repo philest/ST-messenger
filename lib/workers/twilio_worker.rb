@@ -1,5 +1,7 @@
 require 'twilio-ruby'
 class TwilioWorker
+	sidekiq_options :retry => 3
+	
  	include Sidekiq::Worker
  	# include Twilio
 

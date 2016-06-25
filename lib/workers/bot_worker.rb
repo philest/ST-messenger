@@ -1,5 +1,7 @@
 class BotWorker 
   include Sidekiq::Worker
+  sidekiq_options :retry => 3
+
 
   def perform(recipient, script_name, sequence, day_increment=nil)
 		# puts "script name: #{script_name}, sequence name: #{sequence}"

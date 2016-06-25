@@ -1,8 +1,7 @@
 class StartDayWorker
   include Sidekiq::Worker
-
-  sidekiq_options :retry => false
-
+  sidekiq_options :retry => 3
+  
   def perform(recipient, day_number)
   		# double quotation 
 		Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"].run_sequence(recipient, :init)
