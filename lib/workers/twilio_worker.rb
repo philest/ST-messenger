@@ -1,8 +1,11 @@
 require 'twilio-ruby'
 class TwilioWorker
- 	include Sidekiq::Worker
- 	sidekiq_options :retry => 3
  	# include Twilio
+ 	include Sidekiq::Worker
+	sidekiq_options :retry => 3
+	# sidekiq_retry_in do |count|
+ #    	10
+ #  	end
 
 
 	def perform(name, number, teacher)
