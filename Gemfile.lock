@@ -42,6 +42,10 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
+<<<<<<< HEAD
+=======
+    jdbc-postgres (9.4.1206)
+>>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
     json (1.8.3)
     json (1.8.3-java)
     jwt (1.5.4)
@@ -52,12 +56,18 @@ GEM
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
+<<<<<<< HEAD
     newrelic_rpm (3.15.2.317)
+=======
+>>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
     nokogiri (1.6.8-java)
+<<<<<<< HEAD
     pg (0.17.1)
+=======
+>>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
     pkg-config (1.1.7)
     puma (3.4.0)
     puma (3.4.0-java)

@@ -84,8 +84,8 @@ module Birdv
       # }
       #
       def template_generic(btn_name, elemnts)
-      	tjson = { 
-      		message: {
+        tjson = { 
+          message: {
             attachment: {
               type: 'template',
               payload: {
@@ -133,48 +133,57 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
+<<<<<<< HEAD
       	# puts(@sequences[sqnce_name.to_sym])
+=======
+        # puts(@sequences[sqnce_name.to_sym])
+>>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
          # puts "successfully ran #{sqnce_name}!"
         rescue Exception => e  
           puts "#{sqnce_name} failed!"
           puts e.message  
-  				puts e.backtrace.join("\n") 
+          puts e.backtrace.join("\n") 
         end
       end
 
       def button(btn_name)
-      	return @fb_objects[btn_name.to_sym]
+        return @fb_objects[btn_name.to_sym]
       end
 
       def text(txt)
-      	return {message: {text: txt}}
+        return {message: {text: txt}}
       end
 
       def picture(img_url)
-      	return {message: {
-		             attachment: {
-		               type: 'image',
-		               payload: {
-		                 url: img_url
-		               }
-		             }
-		           }}
+        return {message: {
+                 attachment: {
+                   type: 'image',
+                   payload: {
+                     url: img_url
+                   }
+                 }
+               }}
       end
 
       def send_story(library, url_title, num_pages, recipient, delay=0)
-      	num_pages.times do |i|
-      		img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
+        num_pages.times do |i|
+          img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
           fb_send_json_to_user(recipient, picture(img_url))
-      	end
-      	sleep delay if delay > 0
+        end
+        sleep delay if delay > 0
       end
 
       def send(some_json, recipient, delay=0)
         puts "sending to #{recipient}"
+<<<<<<< HEAD
       	puts fb_send_json_to_user(recipient, some_json)
       	sleep delay if delay > 0
+=======
+        puts fb_send_json_to_user(recipient, some_json)
+        sleep delay if delay > 0
+>>>>>>> 087b9fd450d635d5764cdd5abcc6565ddb7dc262
       end
 
     end
