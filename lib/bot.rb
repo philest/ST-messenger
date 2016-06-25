@@ -86,8 +86,12 @@ Bot.on :message do |message|
     )
   else 
     tuser = fb_get_user(message.sender)
+    # come up with contingency if this happens
+
+    user = User.where(:fb_id => message.sender['id']).first
+    teacher = user.teacher.nil? ? "your teacher" : user.teacher.signature
     fb_send_txt( message.sender, 
-      "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time she’s on her computer."
+      "Thanks, #{tuser['first_name']}! I’ll send your message to #{teacher} to see next time they are on their computer."
     )
   end
 end
