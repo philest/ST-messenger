@@ -1,9 +1,9 @@
 class StartDayWorker
   include Sidekiq::Worker
-  sidekiq_options :retry => 30
-   sidekiq_retry_in do |count|
-    10
-  end
+  sidekiq_options :retry => 3
+  #  sidekiq_retry_in do |count|
+  #   10
+  # end
 
   def perform(recipient, day_number)
   		# double quotation 
