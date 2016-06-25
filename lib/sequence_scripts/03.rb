@@ -23,7 +23,8 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Ms Stobierski: Hi Ms. Edwards, here’s another story!"
+		txt = "Ms Stobierski: Hi Ms. Edwards, here’s /
+			   another story!"
 		send text(txt), recipient, 4 
 		
 		# send tap_here button
@@ -32,10 +33,8 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
-
-		send_story 'day1', 'scratch', 6, recipient
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-		send picture(img_1), recipient, 15
+		send_story 'day1', 'scratch', 6, recipient, 15
+		
 
 		# one more button
 		send button('thanks'), recipient
