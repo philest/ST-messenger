@@ -5,7 +5,7 @@ require 'sequel'
 # => postgres://{user}:{password}@{host}:{port}/path
 
 case ENV["RACK_ENV"]
-when "development"
+when "development", "test"
   # use .env file for local development. no need for extra config files!
   require 'dotenv'
   Dotenv.load

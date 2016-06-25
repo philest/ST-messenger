@@ -10,7 +10,7 @@ end
 response = HTTParty.post(
 	"https://graph.facebook.com/me/messages",
 	query: {
-		access_token: ENV['RACK_ENV'] == 'production' ? ENV['PRODUCTION_FB_ACCESS_TKN'] : ENV['DEVELOPMENT_FB_ACCESS_TKN']
+		access_token: ENV['RACK_ENV'] == 'production' ? ENV['PRODUCTION_FB_ACCESS_TKN'] : ENV['FB_ACCESS_TKN']
 	},
 	body: {
 		recipient: { 

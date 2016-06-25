@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'timecop'
 require 'active_support/time'
-require 'workers/worker_bot'
+require 'workers/bot_worker'
 require 'bot/dsl'
 
-describe StoryTimeScriptWorker do
+describe BotWorker do
 
 	let (:usr) {User.create(:fb_id=>@usr_fb_id,:send_time => Time.now, :story_number => @starting_story_number)}
 
@@ -40,7 +40,7 @@ describe StoryTimeScriptWorker do
 		it 'adds new log entries when press a day3 button' do
 			expect {
 				Sidekiq::Testing.inline! do
-					5.times {StoryTimeScriptWorker.perform_async('12345','day3','two')}
+					5.times {BotWorker.perform_async('12345','day3','two')}
 				end
 			}.to change{ButtonPressLog.count}.by(5)
 		end
@@ -48,7 +48,7 @@ describe StoryTimeScriptWorker do
 		it 'does not update story_number when user is presses button from old script' do
 			expect {
 				Sidekiq::Testing.inline! do
-					5.times {StoryTimeScriptWorker.perform_async('12345','day3','two')}
+					5.times {BotWorker.perform_async('12345','day3','two')}
 				end
 			}.to_not change{usr.story_number}		
 		end
@@ -56,7 +56,7 @@ describe StoryTimeScriptWorker do
 		it 'pressing day4 button jumps story_number to next day (day 5)' do
 			expect {
 				Sidekiq::Testing.inline! do
-					StoryTimeScriptWorker.perform_async('12345','day4','one')
+					BotWorker.perform_async('12345','day4','one')
 				end
 			}.to change{User.where(:fb_id=>@usr_fb_id).first.story_number}.to 5	
 		end
