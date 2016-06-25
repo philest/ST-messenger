@@ -20,9 +20,6 @@ end
 # Birdv::DSL::StoryTimeScript.scripts, which returns a hash table of scripts
 require_relative 'bot/dsl'
 
-TEACHER = "__TEACHER__"
-CHILD = "__CHILD__"
-PARENT = "__PARENT__"
 
 Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sequence_scripts/*")
 			.each {|f| require_relative f }

@@ -49,7 +49,19 @@ module Birdv
         return { type: 'postback', title: title, payload: payload.to_s}
       end
 
-      
+      def name_codes(str, id)
+        user = User.where(:fb_id => id).first
+        parent  = user.name
+        
+        child   = user.child_name.nil? ? "your child" : user.child_name
+        teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
+        str = str.gsub(/__TEACHER__/, teacher)
+        str = str.gsub(/__PARENT__/, parent)
+        str = str.gsub(/__CHILD__/, child)
+
+        return str
+      end
+
       def button_normal(btn_name, window_txt, btns)
         tjson = {
           message:  {
@@ -172,6 +184,14 @@ module Birdv
       end
 
       def send(some_json, recipient, delay=0)
+        # alter text to include teacher/parent/child names... 
+        if some_json[:message][:text]
+          # TODO check to see if id key is a symbol or a string.............
+          some_json[:message][:text] = name_codes(some_json[:message][:text], recipient['id'])
+        elsif some_json[:message][:attachment][:payload][:text]
+          some_json[:message][:attachment][:payload][:text] = name_codes(some_json[:message][:attachment][:payload][:text], recipient['id'])
+        end
+            
         puts "sending to #{recipient}"
       	puts fb_send_json_to_user(recipient, some_json)
       	sleep delay if delay > 0
@@ -179,3 +199,7 @@ module Birdv
     end
   end
 end
+
+
+
+
