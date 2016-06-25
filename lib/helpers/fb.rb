@@ -21,6 +21,9 @@ module Facebook
       end
 
       def fb_send_txt(recipient, message)
+       
+
+
         deliver(
           recipient: recipient, 
           message: {
