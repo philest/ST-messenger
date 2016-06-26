@@ -47,6 +47,7 @@ group :production do
 	gem 'newrelic_rpm'
 end
 
+gem 'derailed', group: :development
 
 group :test do
 	gem 'rspec'
