@@ -22,14 +22,13 @@ else
   gem 'pg', 	'0.17.1'
 end
 
-gem 'sinatra'
-gem 'dotenv', '~> 2.1', '>= 2.1.1'
+
 gem 'airbrake'
 
 # bot stuff
 gem 'puma', 	'~>3.4.0'
-gem 'twilio-ruby'
 gem 'facebook-messenger'
+gem 'sinatra'
 
 
 # birdv stuff
@@ -47,7 +46,12 @@ group :production do
 	gem 'newrelic_rpm'
 end
 
-gem 'derailed', group: :development
+
+group :development do
+	gem 'dotenv', '~> 2.1', '>= 2.1.1'
+end
+
+
 
 group :test do
 	gem 'rspec'

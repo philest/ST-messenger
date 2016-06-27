@@ -7,7 +7,7 @@ require 'bundler'
 require 'sidekiq'
 require 'sidekiq/web'
 require_relative 'lib/bot'
-require_relative 'lib/app'
+require 'sinatra'
 
 require 'rack'
 require 'airbrake'
@@ -30,7 +30,6 @@ end
 
 run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,
-  '/' => Sinatra::Application, 
   '/sidekiq' => Sidekiq::Web
 })
 
