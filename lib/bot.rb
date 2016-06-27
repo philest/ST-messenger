@@ -77,7 +77,7 @@ Bot.on :message do |message|
     if scripts[script_name] != nil
       scripts[script_name].run_sequence(sender_id, :init)
     else
-      fb_send_txt("Sorry, that script is not yet availible.")
+      fb_send_txt(sender_id, "Sorry, that script is not yet available.")
     end
   when JOIN    
     register_user(message.sender) 

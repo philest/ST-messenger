@@ -6,6 +6,7 @@ require 'active_support/time'
 # we have to open this connection to load the models, which is an unfornate thing that 
 # must be done by us :(
 DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => 1)
+DB.timezone = :utc
 
 # load models
 models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))

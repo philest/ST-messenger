@@ -93,6 +93,11 @@ describe ScheduleWorker do
 			# late = Time.now + 5
 			expect(@s.within_time_range(@late, @interval)).to be false
 		end
+
+		it "does not send messages to a user twice" do
+			
+		end
+
 	end
 
 	context "filtering users", :filter => true do

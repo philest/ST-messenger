@@ -1,4 +1,4 @@
-#  app.rb                                     Phil Esterman     
+#  app.rb                                     
 # 
 #  The routes controller. Recieves POST from 
 #  www.joinstorytime.com/enroll with family phones and names. 
@@ -33,8 +33,6 @@ get '/sms' do
 	twiml.text
 end
 
-
-
 post '/enroll' do
 	puts "enrolling parents..."
 	# DO WE WANT to have a secret key or some other validation so that someone can't overload the system with CURL requests to phone numbers?
@@ -57,8 +55,8 @@ post '/enroll' do
 	end
 
 	# setup Twilio
-	client = Twilio::REST::Client.new ENV["TW_ACCOUNT_SID"], ENV["TW_AUTH_TOKEN"]
-	from = "+12032023505" # Your Twilio number
+	# client = Twilio::REST::Client.new ENV["TW_ACCOUNT_SID"], ENV["TW_AUTH_TOKEN"]
+	# from = "+12032023505" # Your Twilio number
 
 
 	# Create the parents
