@@ -14,7 +14,7 @@ response = HTTParty.post(
 	},
 	body: {
 		recipient: { 
-			id: ENV["DAVID"] 
+			phone_number: "8186897323"
 		},
 		message: {
 			text: "Hello there, you rascal! Call me ;)"
