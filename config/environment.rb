@@ -3,9 +3,7 @@ require 'sequel'
 
 #The environment variable DATABASE_URL should be in the following format:
 # => postgres://{user}:{password}@{host}:{port}/path
-ENV["RACK_ENV"] |= "development"
-
-
+ENV["RACK_ENV"] ||= "development"
 
 case ENV["RACK_ENV"]
 when "development", "test"
@@ -37,10 +35,4 @@ DB.timezone = :utc
 models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
 Dir[models_dir].each {|file| require_relative file }
 
-# require_relative '../models/classroom.rb'
-# require_relative '../models/district.rb'
-# require_relative '../models/school.rb'
-# require_relative '../models/school_sessions.rb'
-# require_relative '../models/story.rb'
-# require_relative '../models/teacher.rb'
-# require_relative '../models/user.rb'
+

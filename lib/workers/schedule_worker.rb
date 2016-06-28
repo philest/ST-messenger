@@ -22,6 +22,27 @@ class ScheduleWorker
 		end
   end
 
+  # time = current_time
+  # interval = range of valid times
+  def filter_users(time, interval)
+	User.all.select do |user|
+		# TODO - exception handling if the timezone isn't the correct name
+		within_time_range(user, interval)
+	end
+  end
+
+    # need to make sure the send_time column is a Datetime type
+  def within_time_range(user, interval)
+  	# TODO: ensure that Time.now is in UTC time
+	now = Time.now.utc.seconds_since_midnight
+	user_time = adjust_tz(user).utc.seconds_since_midnight
+	if now >= user_time
+		now - user_time <= interval
+	else
+		user_time - now <  interval
+	end
+  end
+
   def adjust_tz(user)
   	user_tz = ActiveSupport::TimeZone.new(user.timezone)
   	tz_init = user.enrolled_on.in_time_zone(user_tz)
@@ -38,26 +59,6 @@ class ScheduleWorker
 	send_time
   end
 
-  # time = current_time
-  # interval = range of valid times
-  def filter_users(time, interval)
-	User.all.select do |user|
-		# TODO - exception handling if the timezone isn't the correct name
-		within_time_range(user, interval)
-	end
-  end
-
-  # need to make sure the send_time column is a Datetime type
-  def within_time_range(user, interval)
-  	# TODO: ensure that Time.now is in UTC time
-	now = Time.now.utc.seconds_since_midnight
-	user_time = adjust_tz(user).utc.seconds_since_midnight
-	if now >= user_time
-		now - user_time <= interval
-	else
-		user_time - now <  interval
-	end
-  end
 end
 
 

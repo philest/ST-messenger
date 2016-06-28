@@ -18,15 +18,24 @@ require_relative 'workers'
 
 
 module Clockwork
-	time_range = 5.minutes
-	interval = time_range.to_i / 2.0
-	
+	 
+   time_range = 5.minutes
+	 interval   = time_range.to_i / 2.0
+
   	every time_range, 'check.db' do 
   		# TODO remove .minutes! should be in seconds
   		ScheduleWorker.perform_async(interval)
   	end
 
-  	every 1.day, 'enroll.db', :at => '23:00', :tz => 'UTC' do
-  		HTTParty.get('https://st-enroll.herokuapp.com/enroll')
+
+    enrollment_time_range = 1.hour
+    enrollment_interval   = enrollment_time_range.to_i / 2.0
+
+  	every enrollment_time_range, 'enroll.db', do
+  		HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
+        body: {
+          time_interval: enrollment_interval
+        }
+      )
   	end
 end
