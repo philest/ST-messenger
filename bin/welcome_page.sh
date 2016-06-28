@@ -1,3 +1,5 @@
+string="Let's read your first story!"
+
 curl -X POST -H "Content-Type: application/json" -d '{
   "setting_type":"call_to_actions",
   "thread_state":"new_thread",
@@ -10,15 +12,13 @@ curl -X POST -H "Content-Type: application/json" -d '{
             "template_type":"generic",
             "elements":[
               {
-                "title":"Welcome to StoryTime!",
-                "item_url":"http://www.joinstorytime.com/",
-                "image_url":"http://media.dunkedcdn.com/assets/prod/73484/950x0_p18e1d3irvk7g18p4hks3frrm03.jpg",
-                "subtitle":"Sending nightly bedtime stories for you and your kids.",
+                "title":"Welcome to StoryTime! Here is your first story.",
+                "image_url":"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg",
                 "buttons":[
                   {
                     "type":"postback",
-                    "title":"Get stories",
-                    "payload":"INTRO"
+                    "title":"Tap here!",
+                    "payload":"day1_coonstory"
                   }
                 ]
               }
@@ -28,4 +28,10 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }
     }
   ]
-}' "https://graph.facebook.com/v2.6/$page_id/thread_settings?access_token=$access_token"
+}' "https://graph.facebook.com/v2.6//thread_settings?access_token="
+
+# curl -X POST -H "Content-Type: application/json" -d '{
+#   "setting_type":"call_to_actions",
+#   "thread_state":"new_thread",
+#   "call_to_actions":[]
+# }' "https://graph.facebook.com/v2.6//thread_settings?access_token="
