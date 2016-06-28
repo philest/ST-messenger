@@ -91,7 +91,7 @@ Bot.on :message do |message|
     # teacher = user.teacher.nil? ? "your teacher" : user.teacher.signature
 
     fb_send_txt( message.sender, 
-      "Thanks, #{tuser['first_name']}! I’ll send your message to Ms. Stobierski to see next time they are on their computer."
+      "StoryTime: Thanks, #{tuser['first_name']}! I’ll send your message to your teacher to see next time they are on their computer."
     )
   end
 end
