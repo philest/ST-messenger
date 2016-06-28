@@ -107,7 +107,7 @@ Bot.on :postback do |postback|
   # TODO: log the postback into DB
   case postback.payload
   when INTRO
-    scripts['day1'].run_sequence(postback.sender['id'], sequence)
+    register_user(postback.sender)
   else 
     script_name, sequence = postback.payload.split('_')
     scripts[script_name].run_sequence(postback.sender['id'], sequence)
