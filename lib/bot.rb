@@ -29,33 +29,6 @@ INTRO   = /intro/i
 # phil 10209486368143976
 # david 10209967651611613
 
-def register_user(recipient)
-  # save user in the database.
-  # TODO : update an existing DB entry to coincide the fb_id with phone_number
-  begin
-    fields = "first_name,last_name,profile_pic,locale,timezone,gender"
-    data = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}").body
-    name = data['first_name'] + " " + data["last_name"]
-  rescue
-    User.create(:fb_id => recipient["id"])
-  else
-    puts "successfully found user data for #{name}"
-    last_name = data["last_name"]
-    regex = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
-    begin
-      candidates = User.where(:child_name => regex, :fb_id => nil)
-      if candidates.all.empty? # add a new user w/o child info (no matches)
-        User.create(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
-      else
-        # implement stupid fb_name matching to existing user matching
-        candidates.order(:enrolled_on).first.update(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
-      end
-    rescue Sequel::Error => e
-      p e.message + " did not insert, already exists in db"
-    end # rescue - db transaction
-  end # rescue - httparty
-end
-
 STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
@@ -71,6 +44,13 @@ DAY_RQST = /day\d+/i
 Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
   sender_id = message.sender['id']
+
+  # enroll user if they don't exist in db
+  db_user = User.where(:fb_id => sender_id).first 
+  if db_user.nil?
+    register_user(message.sender)
+  end # enroll
+
   case message.text
   when DAY_RQST
     script_name = message.text.match(DAY_RQST).to_s
@@ -79,20 +59,14 @@ Bot.on :message do |message|
     else
       fb_send_txt(sender_id, "Sorry, that script is not yet available.")
     end
-  when JOIN    
-    register_user(message.sender) 
-    fb_send_txt( message.sender, 
-      "You're enrolled! Get ready for free stories!"
-    )
-  else 
-    tuser = fb_get_user(message.sender)
-    # come up with contingency if this happens
-    # user = User.where(:fb_id => message.sender['id']).first
-    # teacher = user.teacher.nil? ? "your teacher" : user.teacher.signature
 
-    fb_send_txt( message.sender, 
-      "StoryTime: Thanks, #{tuser['first_name']}! I’ll send your message to your teacher to see next time they are on their computer."
-    )
+  else # any other text....
+    tuser = fb_get_user(message.sender)
+    db_user = User.where(:fb_id => sender_id).first
+    teacher = db_user.teacher.nil? ? "your teacher" : db_user.teacher.signature
+    msg = "Thanks, #{tuser['first_name']}! I’ll send your message to #{teacher} to see next time they are on their computer." 
+
+    fb_send_txt( message.sender, msg )
   end
 end
 
@@ -103,7 +77,6 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    register_user(postback.sender)
     BotWorker.perform_async(sender_id, 'day1', :init)
   else 
     # log the user's button press and execute sequence

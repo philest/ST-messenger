@@ -57,7 +57,6 @@ module Birdv
         str = str.gsub(/__TEACHER__/, teacher)
         str = str.gsub(/__PARENT__/, parent)
         str = str.gsub(/__CHILD__/, child)
-
         return str
       end
 
@@ -140,8 +139,6 @@ module Birdv
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
-
-
 
       def run_sequence(recipient, sqnce_name)
         # puts(@sequences[sqnce_name.to_sym])

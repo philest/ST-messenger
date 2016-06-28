@@ -29,7 +29,7 @@ end
 
 
 run Rack::URLMap.new({
-  '/bot' => Facebook::Messenger::Server,
+  '/' => Facebook::Messenger::Server,
   '/sidekiq' => Sidekiq::Web
 })
 

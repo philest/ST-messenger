@@ -1,10 +1,11 @@
+require_relative "../helpers/fb"
+
 class BotWorker 
   include Sidekiq::Worker
   sidekiq_options :retry => 3
   # sidekiq_retry_in do |count|
   #   10
   # end
-
   def perform(recipient, script_name, sequence, day_increment=nil)
 		# puts "script name: #{script_name}, sequence name: #{sequence}"
   	# load script
@@ -12,6 +13,13 @@ class BotWorker
 
 		# open DB connection, log the button press
 		u = User.where(:fb_id=>recipient).first
+
+		# enroll user if they are not in the db
+		if u.nil?
+			Facebook::Messenger::Helpers.register_user({'id' => recipient})
+			u = User.where(:fb_id=>recipient).first
+		end
+
 		b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
 		u.add_button_press_log(b)
 		

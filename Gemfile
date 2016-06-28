@@ -41,14 +41,10 @@ gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
+gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
 group :production do
 	gem 'newrelic_rpm'
-end
-
-
-group :development do
-	gem 'dotenv', '~> 2.1', '>= 2.1.1'
 end
 
 
