@@ -8,9 +8,17 @@ def generate_hmac(content)
 end
 
 response = HTTParty.post(
-	"https://graph.facebook.com/v2.6/me/subscribed_apps",
+	"https://graph.facebook.com/me/messages",
 	query: {
 		access_token: ENV['RACK_ENV'] == 'production' ? ENV['PRODUCTION_FB_ACCESS_TKN'] : ENV['FB_ACCESS_TKN']
+	},
+	body: {
+		recipient: { 
+			id: ENV["DAVID"] 
+		},
+		message: {
+			text: "Hello there, you rascal! Call me ;)"
+		}
 	}
 )
 puts response.inspect

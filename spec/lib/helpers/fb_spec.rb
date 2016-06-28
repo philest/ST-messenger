@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'birdv/fb_helper'
+require 'helpers/fb'
 
 =begin 
 # some example stubs!
@@ -14,9 +14,12 @@ stub_request(:post, "www.example.com").
 =end
 
 describe 'FBHelper' do
+	before(:all) do
+		WebMock.disable_net_connect!(allow_localhost:true)
+	end
 
 	# facebook url, i.e. 'https://graph.facebook.com/v2.6/me/messages?access_token=blahblahblah'
-	FB_URI  = "#{Birdv::FBHelper.get_graph_url}?access_token=#{ENV['FB_ACCESS_TKN']}"
+	FB_URI  = "#{Facebook::Messenger::Helpers.get_graph_url}?access_token=#{ENV['FB_ACCESS_TKN']}"
 
 	# stub HTTP responses from facebook
 	FAILURE = [{"error":{"message":"(#100) Invalid fbid.","type":"OAuthException","code":100,"fbtrace_id":"A0Nh+OHr+TX"}}, 400]
@@ -25,7 +28,7 @@ describe 'FBHelper' do
 	DUMMY_MSG = ["some FB ID", "this is a generic message"]
 
 	# a mock instance of a class that has FBHelper functions
-	let (:fb_caller) { Class.new{ include Birdv::FBHelper }.new }
+	let (:fb_caller) { Class.new{ include Facebook::Messenger::Helpers }.new }
 
 	# a reusable wrapper for #stub_request from webmock
 	let (:stub_response ) do 
@@ -35,28 +38,30 @@ describe 'FBHelper' do
 	end	
 
 	context 'text message fails' do
+			# stub a failure response
 			before(:example) do 
 				stub_response.call(*FAILURE)
 			end
 
 			it 'returns the FB error code' do
-				ret = fb_caller.send_txt(*DUMMY_MSG)
+				ret = fb_caller.fb_send_txt(*DUMMY_MSG)
 				expect(ret.body['error']).not_to eq(nil)
 			end
 	end
 
 	context 'text message succeeds' do
+			# stub a success response
 			before(:example) do 
 				stub_response.call(*SUCCESS)
 			end
 
 			it 'does not return FB error code' do
-				ret = fb_caller.send_txt(*DUMMY_MSG)
+				ret = fb_caller.fb_send_txt(*DUMMY_MSG)
 				expect(ret.body['error']).to eq(nil)
 			end
 
 			it 'has a recipient_id' do
-				ret = fb_caller.send_txt(*DUMMY_MSG)
+				ret = fb_caller.fb_send_txt(*DUMMY_MSG)
 				expect(ret.body['recipient_id']).not_to eq(nil)
 			end
 	end

@@ -1,6 +1,17 @@
 require 'rake'
 require 'sequel'
-require_relative "config/environment"
+require 'dotenv'
+Dotenv.load
+
+env = "local"
+
+case env
+when "local", "test", "development"
+  DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
+when "production"
+  DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
+end
+
 # Rakefile
 
 namespace :db do
@@ -11,12 +22,12 @@ namespace :db do
     task :reset do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
       # Sequel::Migrator.run(DB, "db/migrations")
-      puts "<= sq:migrate:reset executed"
+      puts "<= db:migrate:reset executed for #{env}"
     end
 
     desc "Dump migration into schema"
     task :dump do
-    	case ENV["APP_ENV"]
+    	case ENV["RACK_ENV"]
     	when "test"
     		db_url = ENV["DATABASE_URL_LOCAL"]
     	when "development"
@@ -34,19 +45,19 @@ namespace :db do
       # version = ENV['VERSION'].to_i
       raise "No VERSION was provided" if version.nil?
       Sequel::Migrator.run(DB, "db/migrations", :target => version)
-      puts "<= sq:migrate:to version=[#{version}] executed"
+      puts "<= db:migrate:to version=[#{version}] executed for #{env}"
     end
 
     desc "Perform migration up to latest migration available"
     task :up do
       Sequel::Migrator.run(DB, "db/migrations")
-      puts "<= sq:migrate:up executed"
+      puts "<= db:migrate:up executed for #{env}"
     end
 
     desc "Perform migration down (erase all data)"
     task :down do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
-      puts "<= sq:migrate:down executed"
+      puts "<= db:migrate:down executed for #{env}"
     end
   end
 end

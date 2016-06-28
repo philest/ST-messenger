@@ -22,14 +22,13 @@ else
   gem 'pg', 	'0.17.1'
 end
 
-gem 'sinatra'
-gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
+gem 'airbrake'
 
 # bot stuff
 gem 'puma', 	'~>3.4.0'
-gem 'twilio-ruby'
 gem 'facebook-messenger'
+gem 'sinatra'
 
 
 # birdv stuff
@@ -43,7 +42,14 @@ gem 'clockwork','~>2.0.0'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
 
+group :production do
+	gem 'newrelic_rpm'
+end
 
+
+group :development do
+	gem 'dotenv', '~> 2.1', '>= 2.1.1'
+end
 
 
 

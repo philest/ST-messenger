@@ -5,3 +5,5 @@ dump.rdb
 *.swp
 *ig.rb
 *.aws
+logs/*
+logs

@@ -1,0 +1,39 @@
+# Logfile created on 2016-06-26 18:13:56 -0400 by logger.rb/47272
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Starting the New Relic agent in "development" environment.
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : To prevent agent startup add a NEW_RELIC_AGENT_ENABLED=false environment variable or modify the "development" section of your newrelic.yml.
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] WARN : No configuration file found. Working directory = /Users/jdmcpeek/birdv
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] WARN : Looked in these locations (based on defaults): /Users/jdmcpeek/birdv/config/newrelic.yml, /Users/jdmcpeek/birdv/newrelic.yml, /Users/jdmcpeek/birdv/config/newrelic.yml, /Users/jdmcpeek/birdv/newrelic.yml, /Users/jdmcpeek/.newrelic/newrelic.yml, /Users/jdmcpeek/newrelic.yml
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Environment: development
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : No known dispatcher detected.
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Application: development
+[2016-06-26 18:13:56 -0400 Davids-Air-4.wireless.yale.internal (4403)] WARN : No license key found. This often means your newrelic.yml file was not found, or it lacks a section for the running environment, 'development'. You may also want to try linting your newrelic.yml to ensure it is valid YML.
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Net instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Sinatra instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing deferred Rack::Builder instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Rack::Builder middleware instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing deferred Puma::Rack::Builder instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Puma::Rack::Builder middleware instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Redis Instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Sequel instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Installing Sidekiq instrumentation
+[2016-06-26 18:13:57 -0400 Davids-Air-4.wireless.yale.internal (4403)] INFO : Finished instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Starting the New Relic agent in "production" environment.
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : To prevent agent startup add a NEW_RELIC_AGENT_ENABLED=false environment variable or modify the "production" section of your newrelic.yml.
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] WARN : No configuration file found. Working directory = /Users/jdmcpeek/birdv
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] WARN : Looked in these locations (based on defaults): /Users/jdmcpeek/birdv/config/newrelic.yml, /Users/jdmcpeek/birdv/newrelic.yml, /Users/jdmcpeek/birdv/config/newrelic.yml, /Users/jdmcpeek/birdv/newrelic.yml, /Users/jdmcpeek/.newrelic/newrelic.yml, /Users/jdmcpeek/newrelic.yml
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Environment: production
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : No known dispatcher detected.
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Application: production
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] WARN : No license key found. This often means your newrelic.yml file was not found, or it lacks a section for the running environment, 'production'. You may also want to try linting your newrelic.yml to ensure it is valid YML.
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing ActiveRecord 4+ instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Net instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Sinatra instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing deferred Rack::Builder instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Rack::Builder middleware instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing deferred Puma::Rack::Builder instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Puma::Rack::Builder middleware instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Redis Instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Sequel instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Installing Sidekiq instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Finished instrumentation
+[2016-06-27 18:48:05 -0400 davids-air-4.wireless.yale.internal (35843)] INFO : Doing deferred dependency-detection before Rack startup

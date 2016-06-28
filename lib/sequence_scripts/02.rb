@@ -8,14 +8,14 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 	# and button_normal OUTSIDE of sequence blocks
 	#
 	story_button( 'tap_here', 
-								'(not here)', 
+								"Let's read tonight's story.", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
 									postback_button('Tap here!', script_payload(:cookstory))
 								])
 
 	button_normal( 'thanks',
-									'Ms. Stobierski: I’ll send another story tomorrow night. You both are doing great! :)',
+									"__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
@@ -23,8 +23,7 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Ms Stobierski: Hi Ms. Edwards, here’s /
-			   another story to prepare Calivin for kindergarten."
+		txt = "__TEACHER__: Hi __PARENT__, here’s another story to prepare __CHILD__ for kindergarten."
 		send text(txt), recipient, 4 
 		
 		# send tap_here button
@@ -33,7 +32,7 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 
 	sequence 'cookstory' do |recipient|
 		# send out cook story
-		send_story 'day1', 'cook', 11, recipient, 15
+		send_story 'day1', 'cook', 11, recipient, 23
 		
 
 		# one more button

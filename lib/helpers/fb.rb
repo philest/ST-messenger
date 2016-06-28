@@ -8,6 +8,10 @@ module Facebook
         GRAPH_URL
       end
 
+      def self.get_graph_url
+        GRAPH_URL
+      end
+
       def deliver(message)
         HTTParty.post(GRAPH_URL, 
           query: {access_token: ENV['FB_ACCESS_TKN']},
@@ -17,6 +21,9 @@ module Facebook
       end
 
       def fb_send_txt(recipient, message)
+       
+
+
         deliver(
           recipient: recipient, 
           message: {
@@ -63,10 +70,9 @@ module Facebook
         )
       end
 
-
       def fb_get_user(id)
         begin
-          fb_name = HTTParty.get("https://graph.facebook.com/v2.6/#{id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}")
+          fb_name = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}").body
         rescue HTTParty::Error
           name = ""
         end
@@ -101,7 +107,7 @@ module Facebook
         HTTParty.post(GRAPH_URL, 
           query: {access_token: ENV['FB_ACCESS_TKN']},
             :body => { 
-              recipient: { id: user_id },
+              recipient: user_id,
               message: msg_json[:message]
             }.to_json,
             :headers => { 'Content-Type' => 'application/json' } 

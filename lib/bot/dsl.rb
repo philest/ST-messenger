@@ -1,4 +1,4 @@
-require_relative 'fb_helpers'
+require_relative '../helpers/fb'
 
 module Birdv
   module DSL
@@ -49,7 +49,18 @@ module Birdv
         return { type: 'postback', title: title, payload: payload.to_s}
       end
 
-      
+      def name_codes(str, id)
+        user = User.where(:fb_id => id).first
+        parent  = user.name.split[0]
+        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+        teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
+        str = str.gsub(/__TEACHER__/, teacher)
+        str = str.gsub(/__PARENT__/, parent)
+        str = str.gsub(/__CHILD__/, child)
+
+        return str
+      end
+
       def button_normal(btn_name, window_txt, btns)
         tjson = {
           message:  {
@@ -84,8 +95,8 @@ module Birdv
       # }
       #
       def template_generic(btn_name, elemnts)
-      	tjson = { 
-      		message: {
+        tjson = { 
+          message: {
             attachment: {
               type: 'template',
               payload: {
@@ -133,50 +144,61 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-      	# puts(@sequences[sqnce_name.to_sym])
+        # puts(@sequences[sqnce_name.to_sym])
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
          # puts "successfully ran #{sqnce_name}!"
         rescue Exception => e  
           puts "#{sqnce_name} failed!"
           puts e.message  
-  				puts e.backtrace.join("\n") 
+          puts e.backtrace.join("\n") 
         end
       end
 
       def button(btn_name)
-      	return @fb_objects[btn_name.to_sym]
+        return @fb_objects[btn_name.to_sym]
       end
 
       def text(txt)
-      	return {message: {text: txt}}
+        return {message: {text: txt}}
       end
 
       def picture(img_url)
-      	return {message: {
-		             attachment: {
-		               type: 'image',
-		               payload: {
-		                 url: img_url
-		               }
-		             }
-		           }}
+        return {message: {
+                 attachment: {
+                   type: 'image',
+                   payload: {
+                     url: img_url
+                   }
+                 }
+               }}
       end
 
       def send_story(library, url_title, num_pages, recipient, delay=0)
-      	num_pages.times do |i|
-      		img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
+        num_pages.times do |i|
+          img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
           fb_send_json_to_user(recipient, picture(img_url))
-      	end
-      	sleep delay if delay > 0
+        end
+        sleep delay if delay > 0
       end
 
       def send(some_json, recipient, delay=0)
+        # alter text to include teacher/parent/child names... 
+        if some_json[:message][:text]
+          # TODO check to see if id key is a symbol or a string.............
+          some_json[:message][:text] = name_codes(some_json[:message][:text], recipient)
+        elsif some_json[:message][:attachment][:payload][:text]
+          some_json[:message][:attachment][:payload][:text] = name_codes(some_json[:message][:attachment][:payload][:text], recipient)
+        end
+            
         puts "sending to #{recipient}"
-      	puts fb_send_json_to_user(recipient, some_json)
-      	sleep delay if delay > 0
+        puts fb_send_json_to_user(recipient, some_json)
+        sleep delay if delay > 0
       end
-
     end
   end
 end
+
+
+
+

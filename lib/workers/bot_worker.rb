@@ -1,6 +1,9 @@
-require_relative '../../config/environment'
-class StoryTimeScriptWorker
+class BotWorker 
   include Sidekiq::Worker
+  sidekiq_options :retry => 3
+  # sidekiq_retry_in do |count|
+  #   10
+  # end
 
   def perform(recipient, script_name, sequence, day_increment=nil)
 		# puts "script name: #{script_name}, sequence name: #{sequence}"

@@ -1,8 +1,7 @@
 require 'spec_helper'
 require 'timecop'
-require 'worker'
 require 'active_support/time'
-
+require 'workers/schedule_worker'
 describe ScheduleWorker do
 	before(:each) do
 		# clean everything up
@@ -10,7 +9,7 @@ describe ScheduleWorker do
 		Sidekiq::Worker.clear_all
 
 		@time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
-		@interval = 5
+		@interval = 5.minutes.to_i
 		Timecop.freeze(@time)
 
 		@s = ScheduleWorker.new
@@ -18,16 +17,16 @@ describe ScheduleWorker do
 		@on_time = User.create(:send_time => Time.now, :story_number => 2)
 		# puts "on_time = #{@on_time.send_time}"
 		# 6:55:00 
-		@just_early = User.create(:send_time => Time.now - @interval.minutes, :story_number => 2)
+		@just_early = User.create(:send_time => Time.now - @interval, :story_number => 2)
 		# puts "just_early = #{@just_early.send_time}"
 		#  7:04:59pm
-		@just_late = User.create(:send_time => Time.now + (@interval-1).minutes + 59, :story_number => 2)
+		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds, :story_number => 2)
 		# puts "just_late = #{@just_late.send_time}"
 		# 6:54:59
-		@early = User.create(:send_time => Time.now - (@interval+1).minutes + 59, :story_number => 2)
+		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds, :story_number => 2)
 		# puts "early = #{@early.send_time}"
 		# 7:05
-		@late = User.create(:send_time => Time.now + @interval.minutes, :story_number => 2)
+		@late = User.create(:send_time => Time.now + @interval, :story_number => 2)
 		# puts "late = #{@late.send_time}"
 	end
 
@@ -77,23 +76,28 @@ describe ScheduleWorker do
 
 		it "returns true for users within the time interval at a given time" do 
 			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)
-			# just_early = Time.now - @interval.minutes
+			# just_early = Time.now - @interval
 			expect(@s.within_time_range(@just_early, @interval)).to be true
 			
 			# just_late = Time.new(2016, 6, 24, 19, @interval - 1, 59)
-			# just_late = Time.now + (@interval.minutes + 59)
+			# just_late = Time.now + (@interval + 59)
 			expect(@s.within_time_range(@just_late, @interval)).to be true
 		end
 
 		it "returns false for users outside the time interval at a given time" do
 			# early = Time.new(2016, 6, 24, 18, 60-@interval-1, 59)
-			# early = Time.now - (5.minutes + 1)
+			# early = Time.now - (5 + 1)
 			expect(@s.within_time_range(@early, @interval)).to be false
 			
 			# late = Time.new(2016, 6, 24, 19, @interval)
-			# late = Time.now + 5.minutes
+			# late = Time.now + 5
 			expect(@s.within_time_range(@late, @interval)).to be false
 		end
+
+		it "does not send messages to a user twice" do
+			
+		end
+
 	end
 
 	context "filtering users", :filter => true do
@@ -119,7 +123,7 @@ describe ScheduleWorker do
 			
 			Sidekiq::Testing.fake! do
 				expect {
-				  ScheduleWorker.perform_async
+				  ScheduleWorker.new.perform(@interval)
 				  ScheduleWorker.drain
 				}.to change(StartDayWorker.jobs, :size).by(3)
 			end
@@ -132,7 +136,7 @@ describe ScheduleWorker do
 
 			Sidekiq::Testing.fake! do
 				expect {
-				  ScheduleWorker.perform_async
+				  ScheduleWorker.new.perform(@interval)
 				  ScheduleWorker.drain
 				}.to change(StartDayWorker.jobs, :size).by(0)
 			end
