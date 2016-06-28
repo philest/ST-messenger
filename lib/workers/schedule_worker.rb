@@ -7,7 +7,8 @@ class StartDayWorker
 
   def perform(recipient, day_number)
   		# double quotation 
-		Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"].run_sequence(recipient, :init)
+  		script = Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"]
+		script.run_sequence(recipient, :init) if not script.nil?
 		# update the user day! TODO: make this a seperate job!
 	end
 end
