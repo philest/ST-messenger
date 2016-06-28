@@ -18,10 +18,12 @@ require_relative 'workers'
 
 
 module Clockwork
-	interval = 5.minutes
-  	every interval, 'check.db' do 
+	time_range = 5.minutes
+	interval = time_range.to_i / 2.0
+	
+  	every time_range, 'check.db' do 
   		# TODO remove .minutes! should be in seconds
-  		ScheduleWorker.perform_async(interval.to_i)
+  		ScheduleWorker.perform_async(interval)
   	end
 
   	every 1.day, 'enroll.db', :at => '23:00', :tz => 'UTC' do

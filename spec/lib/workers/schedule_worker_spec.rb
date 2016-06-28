@@ -9,7 +9,8 @@ describe ScheduleWorker do
 		Sidekiq::Worker.clear_all
 
 		@time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
-		@interval = 5.minutes.to_i
+		@time_range = 10.minutes.to_i
+		@interval = @time_range / 2.0
 		Timecop.freeze(@time)
 
 		@s = ScheduleWorker.new
@@ -95,7 +96,11 @@ describe ScheduleWorker do
 		end
 
 		it "does not send messages to a user twice" do
-			
+			DB[:users].delete # clean database
+			user = User.create(:send_time => Time.now + @interval - 1.second, :story_number => 2)
+			expect(@s.within_time_range(user, @interval)).to be true
+			Timecop.freeze(Time.now + @time_range)
+			expect(@s.within_time_range(user, @interval)).to be false			
 		end
 
 	end
