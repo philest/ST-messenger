@@ -21,15 +21,13 @@ configure :production do
 	  config.project_key = ENV['AIRBRAKE_API_KEY']
 	  config.environment = ENV['RACK_ENV'] || "development"
 	end
-	
 	use Airbrake::Rack::Middleware
-
 end
 
 
 
 run Rack::URLMap.new({
-  '/' => Facebook::Messenger::Server,
+  '/bot' => Facebook::Messenger::Server,
   '/sidekiq' => Sidekiq::Web
 })
 

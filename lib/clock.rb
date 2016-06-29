@@ -28,7 +28,7 @@ module Clockwork
   	end
 
 
-    enrollment_time_range = 1.hour
+    enrollment_time_range = 20.minutes
     enrollment_interval   = enrollment_time_range.to_i / 2.0
 
   	every enrollment_time_range, 'enroll.db' do
