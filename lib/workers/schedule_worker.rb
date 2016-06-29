@@ -46,7 +46,7 @@ class ScheduleWorker
 
   def adjust_tz(user)
   	user_tz = ActiveSupport::TimeZone.new(user.timezone)
-  	tz_init = user.enrolled_on.in_time_zone(user_tz)
+  	tz_init = user.enrolled_on.utc.in_time_zone(user_tz)
   	tz_current = Time.now.utc.in_time_zone(user_tz)
 
 	if tz_init.dst? and not tz_current.dst?

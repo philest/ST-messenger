@@ -37,10 +37,41 @@ describe BotWorker do
 	end
 
 	context 'button press' do
+		before(:example) do
+			response = "{\"recipient_id\":\"10209967651611613\",\"message_id\":\"mid.1467225743455:2497dbcb4b07e68745\"}"
+
+			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+	        with(:body => "{\"recipient\":{\"id\":\"12345\"},\"message\":{\"text\":\"Excited for more stories? We'll send some more your way tomorrow night!\"}}",
+	             :headers => {'Content-Type'=>'application/json'}).
+	        to_return(:status => 200, :body => response)
+		end
+
 		it 'adds new log entries when press a day3 button' do
 			expect {
 				Sidekiq::Testing.inline! do
-					5.times {BotWorker.perform_async('12345','day3','two')}
+					BotWorker.perform_async('12345','day3','two')
+				end
+			}.to change{ButtonPressLog.count}.by(1)
+		end
+
+		it 'does not send more stories when buttons are pressed within two minutes of each other' do
+			expect {
+				Sidekiq::Testing.inline! do
+					5.times { BotWorker.perform_async('12345','day3','two') }
+				end
+			}.to change{ButtonPressLog.count}.by(1)
+		end
+
+		it 'sends repeat stories if user presses button after two minutes' do
+			require 'timecop'
+
+			expect {
+				Sidekiq::Testing.inline! do
+					5.times do
+						Timecop.travel(Time.now + 3.minutes)
+						BotWorker.perform_async('12345','day3','two')
+					end
+
 				end
 			}.to change{ButtonPressLog.count}.by(5)
 		end
@@ -61,6 +92,4 @@ describe BotWorker do
 			}.to change{User.where(:fb_id=>@usr_fb_id).first.story_number}.to 5	
 		end
 	end
-
-
 end

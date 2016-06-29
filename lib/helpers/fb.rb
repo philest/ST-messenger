@@ -1,4 +1,5 @@
 require 'httparty'
+require 'active_support/time'
 module Facebook
   module Messenger
     module Helpers
@@ -21,9 +22,6 @@ module Facebook
       end
 
       def fb_send_txt(recipient, message)
-       
-
-
         deliver(
           recipient: recipient, 
           message: {
@@ -122,6 +120,12 @@ module Facebook
         end
       end
 
+      def normalize_tz(timezone, *times)
+        user_tz = ActiveSupport::TimeZone.new(timezone)
+        times.map do |time|
+          time.utc.in_time_zone(user_tz)
+        end
+      end
 
       def fb_send_json_to_user(user_id, msg_json)
         deliver( 
