@@ -21,10 +21,7 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 
 
 	sequence 'firsttap' do |recipient|
-		# greeting with 4 second delay
-		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 4.75 
-		
+		# no longer a text before.
 		# send tap_here button
 		send button('tap_here'), recipient
 	end
