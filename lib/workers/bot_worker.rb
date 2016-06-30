@@ -26,7 +26,10 @@ class BotWorker
 			# check if user has already pressed that button...
 			history = ButtonPressLog.where(:user_id=>u.id, :day_number=>s.script_day, :sequence_name=>sequence).first
 			
-			if history.nil? or Time.now.utc - history.created_at.utc > 2.minutes # if indeed they haven't pressed this button before or it's been at least 2 minutes
+			if history.nil? \
+				or history.sequence_name == 'teachersend' \
+				or Time.now.utc - history.created_at.utc > 2.minutes # if indeed they haven't pressed this button before or it's been at least 2 minutes
+
 				puts "we haven't pressed that button before"
 				b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
 				u.add_button_press_log(b)

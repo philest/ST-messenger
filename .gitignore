@@ -7,3 +7,5 @@ dump.rdb
 *.aws
 logs/*
 logs
+log/
+log/*

@@ -108,6 +108,11 @@ module Birdv
         register_fb_object(btn_name, tjson)
         return tjson
       end
+
+      def ass
+
+        puts "ass"
+      end
                   
 
 

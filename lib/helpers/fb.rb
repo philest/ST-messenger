@@ -95,6 +95,8 @@ module Facebook
         )
       end
 
+
+
       def fb_get_user(id)
         begin
           fb_name = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}").body

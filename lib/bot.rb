@@ -59,14 +59,8 @@ Bot.on :message do |message|
     else
       fb_send_txt(sender_id, "Sorry, that script is not yet available.")
     end
-
   else # any other text....
-    tuser = fb_get_user(message.sender)
-    db_user = User.where(:fb_id => sender_id).first
-    teacher = db_user.teacher.nil? ? "your teacher" : db_user.teacher.signature
-    msg = "Thanks, #{tuser['first_name']}! I’ll send your message to #{teacher} to see next time they are on their computer." 
-
-    fb_send_txt( message.sender, msg )
+    scripts['defaultresponse'].run_sequence(sender_id, 'usermessage')
   end
 end
 
@@ -78,6 +72,11 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     BotWorker.perform_async(sender_id, 'day1', :init)
+  # when 'defaultresponse_teachersend'
+  #   s = Birdv::DSL::StoryTimeScript.scripts["defaultresponse"]
+  #   if not s.nil?
+  #     s.run_sequence(sender_id, 'teachersend')
+  #   end
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')
