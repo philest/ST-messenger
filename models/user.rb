@@ -8,12 +8,20 @@ class User < Sequel::Model(:users)
 	one_to_one :enrollment_queue 
 
 
-	def before_destroy
-		super
-		# clean your room, mister!
-		ButtonPressLog.where(user_id: self.id).delete
-		EnrollmentQueue.where(user_id: self.id).delete
-	end
+	# def before_destroy
+	# 	super
+	# 	# clean your room, mister!
+	# 	b = ButtonPressLog.where(user_id: self.id).first
+	# 	b.destroy if not b.nil?
+
+	# 	e = EnrollmentQueue.where(user_id: self.id).first
+	# 	if not e.nil?
+	# 		puts "not nil"
+	# 		e.update(user_id: nil)
+	# 		e.destroy 
+	# 	end
+
+	# end
 
 	# ensure that user is added EnrollmentQueue upon creation
 	def after_create
