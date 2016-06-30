@@ -14,7 +14,7 @@ puts HTTParty.post(
               template_type: "generic",
               elements: [
                 {
-                  title: "Welcome to StoryTime! Let's read your first story.",
+                  title: "Let's read your first story.",
                   image_url: "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg",
                   buttons: [
                     {
