@@ -22,7 +22,7 @@ namespace :db do
     task :reset do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
       # Sequel::Migrator.run(DB, "db/migrations")
-      puts "<= db:migrate:reset executed for #{env}"
+      puts "<= db:migrate:reset executed for #{ENV['RACK_ENV']}"
     end
 
     desc "Dump migration into schema"
@@ -45,19 +45,19 @@ namespace :db do
       # version = ENV['VERSION'].to_i
       raise "No VERSION was provided" if version.nil?
       Sequel::Migrator.run(DB, "db/migrations", :target => version)
-      puts "<= db:migrate:to version=[#{version}] executed for #{env}"
+      puts "<= db:migrate:to version=[#{version}] executed for #{ENV['RACK_ENV']}"
     end
 
     desc "Perform migration up to latest migration available"
     task :up do
       Sequel::Migrator.run(DB, "db/migrations")
-      puts "<= db:migrate:up executed for #{env}"
+      puts "<= db:migrate:up executed for #{ENV['RACK_ENV']}"
     end
 
     desc "Perform migration down (erase all data)"
     task :down do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
-      puts "<= db:migrate:down executed for #{env}"
+      puts "<= db:migrate:down executed for #{ENV['RACK_ENV']}"
     end
   end
 end
