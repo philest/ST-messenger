@@ -14,7 +14,7 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 								])
 
 	button_normal( 'thanks',
-									"__TEACHER__: I’ll send another storybook tomorrow :) Just reply to send me a message.",
+									"It's __TEACHER__ again. I’ll send another storybook tomorrow :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
