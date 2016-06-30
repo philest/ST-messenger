@@ -14,17 +14,14 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 								])
 
 	button_normal( 'thanks',
-									"__TEACHER__: I’ll send another storybook tomorrow :) Just reply to send me a message.",
+									"It's __TEACHER__ again. I’ll send another storybook tomorrow :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
 
 
 	sequence 'firsttap' do |recipient|
-		# greeting with 4 second delay
-		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 4.75 
-		
+		# no longer a text before.
 		# send tap_here button
 		send button('tap_here'), recipient
 	end

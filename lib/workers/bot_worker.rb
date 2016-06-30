@@ -29,7 +29,7 @@ class BotWorker
 			u.add_button_press_log(b)
 
 			# ...but if they didn't already press the button, send sequence
-			if history.nil? || history.sequence_name == 'teachersend' 
+			if history.nil? || history.sequence_name == 'teachersend' || recipient=='1084495154927802'
 
 				# TODO: run this in a worker
 				# run the script
