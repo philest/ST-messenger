@@ -54,27 +54,29 @@ describe BotWorker do
 			}.to change{ButtonPressLog.count}.by(1)
 		end
 
-		# it 'does not send more stories when buttons are pressed within two minutes of each other' do
-		# 	expect {
-		# 		Sidekiq::Testing.inline! do
-		# 			5.times { BotWorker.perform_async('12345','day3','two') }
-		# 		end
-		# 	}.to change{ButtonPressLog.count}.by(1)
-		# end
 
-		# it 'sends repeat stories if user presses button after two minutes' do
-		# 	require 'timecop'
+		it 'sends the story once' do
+			# TODO: need to figure out a way to test this
+			expect {
+				Sidekiq::Testing.inline! do
+					5.times { BotWorker.perform_async('12345','day3','two') }
+				end
+			}.to change{ButtonPressLog.count}.by(1)
 
-		# 	expect {
-		# 		Sidekiq::Testing.inline! do
-		# 			5.times do
-		# 				Timecop.travel(Time.now + 3.minutes)
-		# 				BotWorker.perform_async('12345','day3','two')
-		# 			end
+		end
 
-		# 		end
-		# 	}.to change{ButtonPressLog.count}.by(5)
-		# end
+		it 'does not send story, but do log button presses' do
+			require 'timecop'
+
+			expect {
+				Sidekiq::Testing.inline! do
+					5.times do
+						Timecop.travel(Time.now + 3.minutes)
+						BotWorker.perform_async('12345','day3','two')
+					end
+				end
+			}.to change{ButtonPressLog.count}.by(5)
+		end
 
 		it 'does not update story_number when user is presses button from old script' do
 			expect {

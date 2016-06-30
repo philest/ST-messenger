@@ -106,6 +106,19 @@ describe ScheduleWorker do
 	end
 
 	context "filtering users", :filter => true do
+
+		it 'get users only on W' do
+			Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0))
+			filtered = @s.filter_users(@time, @interval)
+			expect(filtered.size).to eq(3)
+		end
+
+		it 'does not get users on Th' do
+			Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))
+			filtered = @s.filter_users(@time, @interval)
+			expect(filtered.size).to eq(0)
+		end		
+
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
 			users = [@on_time, @just_early, @just_late]
 			filtered = @s.filter_users(@time, @interval)
