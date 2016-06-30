@@ -22,7 +22,7 @@ response = HTTParty.post(
 	"https://graph.facebook.com/me/messages",
 	query: {
 		access_token: ENV['RACK_ENV'] == 'production' ? ENV['PRODUCTION_FB_ACCESS_TKN'] : ENV['FB_ACCESS_TKN']
-		# access_token: "EAAYOZCTY8IiwBAIZCkoKlZAHtpFcxBqHUKFUsNZCDUIcxVDWJqhiqdB4q0jDpaiubiYmRtZBBFjCMWE6jnoBoT6qAc2Tr1VtOl4L6RvJFKVFUScqavZByWsBROo1FGVSpcpsjKyFc4HtkjocuVAgcM3ITJPGxBNOndaRA7HFrhqQZDZD"
+		# access_token: ""
 	},
 	body: {
 		recipient: { 
@@ -80,7 +80,7 @@ puts x[:body][:message][:attachment][:payload][:buttons][0][:type]
 # 	"https://graph.facebook.com/me/messages",
 # 	query: {
 # 		access_token: ENV['RACK_ENV'] == 'production' ? ENV['PRODUCTION_FB_ACCESS_TKN'] : ENV['FB_ACCESS_TKN']
-# 		# access_token: "EAAYOZCTY8IiwBAIZCkoKlZAHtpFcxBqHUKFUsNZCDUIcxVDWJqhiqdB4q0jDpaiubiYmRtZBBFjCMWE6jnoBoT6qAc2Tr1VtOl4L6RvJFKVFUScqavZByWsBROo1FGVSpcpsjKyFc4HtkjocuVAgcM3ITJPGxBNOndaRA7HFrhqQZDZD"
+# 		# access_token: ""
 # 	},
 # 	body: {
 # 		recipient: { 
