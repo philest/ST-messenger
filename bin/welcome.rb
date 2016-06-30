@@ -33,8 +33,6 @@ puts HTTParty.post(
     ]
   }.to_json,
   :headers => { 'Content-Type' => 'application/json' }
-
-
 )
 
 # curl -X POST -H "Content-Type: application/json" -d '{

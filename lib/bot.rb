@@ -27,7 +27,7 @@ INTRO   = /intro/i
 #
 # aubrey 10209571935726081
 # phil 10209486368143976
-# david 10209967651611613
+# david 1042751019139427
 
 STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 

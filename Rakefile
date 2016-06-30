@@ -3,9 +3,9 @@ require 'sequel'
 require 'dotenv'
 Dotenv.load
 
-env = "local"
+ENV["RACK_ENV"] ||= "development"
 
-case env
+case ENV["RACK_ENV"]
 when "local", "test", "development"
   DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
 when "production"

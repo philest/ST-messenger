@@ -40,6 +40,7 @@ class BotWorker
 				end
 			
 			else 
+				puts "we HAVE pressed this button before, don't send twice"
 				fb_send_txt({'id' => recipient}, "Excited for more stories? We'll send some more your way tomorrow night!")
 			end
 
