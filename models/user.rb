@@ -15,6 +15,7 @@ class User < Sequel::Model(:users)
 		EnrollmentQueue.where(user_id: self.id).delete
 	end
 
+	# ensure that user is added EnrollmentQueue upon creation
 	def after_create
 		super
 		eq = EnrollmentQueue.create(user_id: self.id)

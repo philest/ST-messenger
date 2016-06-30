@@ -18,23 +18,24 @@ require_relative 'workers'
 
 
 module Clockwork
-	 
-   time_range = 5.minutes
-	 interval   = time_range.to_i / 2.0
 
-  	every time_range, 'check.db' do 
-  		# TODO remove .minutes! should be in seconds
-  		ScheduleWorker.perform_async(interval)
+    
+    sched_pd = 5                     # (i.e. 'schedule period')
+	  sched_range  = sched_pd / 2.0    # (i.e. 'schedule range')
+
+  	every sched_pd.minutes, 'check.db' do 
+  		# TODO: remove .minutes! should be in seconds
+  		ScheduleWorker.perform_async(sched_range)
   	end
 
 
-    enrollment_time_range = 20.minutes
-    enrollment_interval   = enrollment_time_range.to_i / 2.0
+    enrollment_time_pd = 20
+    enrollment_range   = enrollment_time_pd / 2.0
 
-  	every enrollment_time_range, 'enroll.db' do
+  	every enrollment_time_pd.minutes, 'enroll.db' do
   		HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
         body: {
-          time_interval: enrollment_interval
+          time_interval: enrollment_range
         }
       )
   	end
