@@ -29,7 +29,7 @@ module Clockwork
   	end
 
 
-    enrollment_time_pd = 20
+    enrollment_time_pd = 10
     enrollment_range   = enrollment_time_pd / 2.0
 
   	every enrollment_time_pd.minutes, 'enroll.db' do
