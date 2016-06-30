@@ -32,7 +32,7 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	sequence 'coonstory' do |recipient|
 		# greeting with 4 second delay
 		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 4.75 
+		send text(txt), recipient, 5.35 
 
 		# send out coon story
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
