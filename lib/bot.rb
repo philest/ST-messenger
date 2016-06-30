@@ -72,11 +72,7 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     BotWorker.perform_async(sender_id, 'day1', :init)
-  # when 'defaultresponse_teachersend'
-  #   s = Birdv::DSL::StoryTimeScript.scripts["defaultresponse"]
-  #   if not s.nil?
-  #     s.run_sequence(sender_id, 'teachersend')
-  #   end
+
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

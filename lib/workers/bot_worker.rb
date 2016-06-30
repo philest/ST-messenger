@@ -25,7 +25,8 @@ class BotWorker
 
 			# check if user has already pressed that button...
 			history = ButtonPressLog.where(:user_id=>u.id, :day_number=>s.script_day, :sequence_name=>sequence).first
-			
+			puts "history = #{history.to_s}"
+
 			if history.nil? \
 				or history.sequence_name == 'teachersend' \
 				or Time.now.utc - history.created_at.utc > 2.minutes # if indeed they haven't pressed this button before or it's been at least 2 minutes
@@ -43,8 +44,7 @@ class BotWorker
 				end
 			
 			else 
-				puts "we HAVE pressed this button before, don't send twice"
-				fb_send_txt({'id' => recipient}, "Excited for more stories? We'll send some more your way tomorrow night!")
+				puts "we HAVE pressed button #{history.inspect} before, don't send twice"
 			end
 
 		end
