@@ -29,7 +29,7 @@ Sequel.migration do
       String :email, :text=>true
       DateTime :created_at
       DateTime :updated_at
-      foreign_key :district_id, :districts, :key=>[:id]
+      foreign_key :district_id, :districts, :key=>[:id], :on_delete=>:set_null
     end
     
     create_table(:school_sessions) do
@@ -39,7 +39,7 @@ Sequel.migration do
       DateTime :end_date
       DateTime :created_at
       DateTime :updated_at
-      foreign_key :school_id, :schools, :key=>[:id]
+      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
     end
     
     create_table(:teachers, :ignore_index_errors=>true) do
@@ -51,7 +51,7 @@ Sequel.migration do
       String :password, :text=>true
       DateTime :enrolled_on
       DateTime :updated_at
-      foreign_key :school_id, :schools, :key=>[:id]
+      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
       String :prefix, :text=>true
       String :signature, :text=>true
       
@@ -64,8 +64,24 @@ Sequel.migration do
       primary_key :id
       DateTime :enrolled_on
       DateTime :updated_at
-      foreign_key :teacher_id, :teachers, :key=>[:id]
-      foreign_key :school_id, :schools, :key=>[:id]
+      foreign_key :teacher_id, :teachers, :key=>[:id], :on_delete=>:set_null
+      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
+    end
+    
+    create_table(:button_press_logs, :ignore_index_errors=>true) do
+      primary_key :id
+      DateTime :created_at
+      Integer :day_number
+      String :sequence_name, :text=>true
+      Integer :user_id
+      
+      index [:day_number, :sequence_name]
+    end
+    
+    create_table(:enrollment_queue) do
+      primary_key :id
+      Integer :user_id
+      DateTime :created_at
     end
     
     create_table(:users, :ignore_index_errors=>true) do
@@ -81,24 +97,23 @@ Sequel.migration do
       String :child_name, :text=>true
       Integer :reading_level, :default=>0
       String :gender, :text=>true
-      foreign_key :classroom_id, :classrooms, :key=>[:id]
-      foreign_key :teacher_id, :teachers, :key=>[:id]
+      foreign_key :classroom_id, :classrooms, :key=>[:id], :on_delete=>:set_null
+      foreign_key :teacher_id, :teachers, :key=>[:id], :on_delete=>:set_null
       Integer :story_number, :default=>1
       String :locale, :default=>"en_US", :text=>true
       String :profile_pic, :text=>true
+      foreign_key :enrollment_queue_id, :enrollment_queue, :key=>[:id], :on_delete=>:set_null
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end
     
-    create_table(:button_press_logs, :ignore_index_errors=>true) do
-      primary_key :id
-      DateTime :created_at
-      Integer :day_number
-      String :sequence_name, :text=>true
-      foreign_key :user_id, :users, :key=>[:id]
-      
-      index [:day_number, :sequence_name]
+    alter_table(:button_press_logs) do
+      add_foreign_key [:user_id], :users, :name=>:button_press_logs_user_id_fkey, :on_delete=>:set_null, :key=>[:id]
+    end
+    
+    alter_table(:enrollment_queue) do
+      add_foreign_key [:user_id], :users, :name=>:enrollment_queue_user_id_fkey, :on_delete=>:set_null, :key=>[:id]
     end
   end
 end

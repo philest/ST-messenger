@@ -16,6 +16,18 @@ end
 
 namespace :db do
   require "sequel"
+  namespace :data do
+    # dump everything to csv files
+    task :dump, :dumpfile do |t, args|
+      dumpfile = args[:dumpfile].to_s
+
+
+    end
+
+  end
+
+
+
   namespace :migrate do
     Sequel.extension :migration
     desc "Perform migration reset (full erase and migration up)"

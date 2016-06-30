@@ -26,7 +26,8 @@ class User < Sequel::Model(:users)
 
 	def validate
     	super
-    	validates_unique :phone, :allow_nil=>true, :message => "#{phone} is already taken (users)"
+    	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (users)"
+    	validates_unique :fb_id, :allow_nil=>true, :message => "fb_id #{fb_id} is already taken (users)"
   	end
 
 end
