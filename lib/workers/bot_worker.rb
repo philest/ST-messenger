@@ -25,7 +25,6 @@ class BotWorker
 
 			# check if user has already pressed that button...
 			history = ButtonPressLog.where(:user_id=>u.id, :day_number=>s.script_day, :sequence_name=>sequence).first
-			puts "history = #{history.to_s}"
 
 			if history.nil? or history.sequence_name == 'teachersend'
 				puts "we haven't pressed that button before"
