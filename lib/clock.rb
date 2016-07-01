@@ -19,7 +19,6 @@ require_relative 'workers'
 
 module Clockwork
 
-    
     sched_pd = 5                     # (i.e. 'schedule period')
 	  sched_range  = sched_pd / 2.0    # (i.e. 'schedule range')
 
@@ -36,8 +35,7 @@ module Clockwork
      HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
         body: {
           time_interval: enrollment_range
-        }.to_json,
-        :headers => { 'Content-Type' => 'application/json' }
+        }
       )
   	end
 end

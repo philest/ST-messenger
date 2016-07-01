@@ -13,6 +13,11 @@ describe "Models" do
 			expect(@eq).to_not be_nil
 		end
 
+		it "has a state_table upon creation" do 
+			@st = @u.state_table
+			expect(@st).to_not be_nil
+		end
+
 		it "destroys its enrollment_queue upon destruction" do
 			@u.destroy
 			expect(EnrollmentQueue.all).to be_empty
@@ -29,6 +34,14 @@ describe "Models" do
 			expect(ButtonPressLog.all).to be_empty
 		end
 	end
+
+	context "state_table" do
+		it "has a user" do
+			expect(@u.state_table.user_id).to_not be_nil
+		end
+
+	end
+
 
 	context "enrollment_queue" do
 		before(:each) do
