@@ -9,7 +9,7 @@ class User < Sequel::Model(:users)
 	one_to_one :enrollment_queue
 	one_to_one :state_table
 
-	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_tables: :destroy
+	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
 	# def before_destroy
 	# 	super

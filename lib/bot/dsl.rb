@@ -185,6 +185,9 @@ module Birdv
       end
 
       def send(some_json, recipient, delay=0)
+        
+        
+        
         # alter text to include teacher/parent/child names... 
         if some_json[:message][:text]
           # TODO check to see if id key is a symbol or a string.............
@@ -195,6 +198,7 @@ module Birdv
             
         puts "sending to #{recipient}"
         puts fb_send_json_to_user(recipient, some_json)
+        
         sleep delay if delay > 0
       end
     end
