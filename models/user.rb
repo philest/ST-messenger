@@ -9,7 +9,7 @@ class User < Sequel::Model(:users)
 	one_to_one :enrollment_queue
 	one_to_one :state_table
 
-	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy#, #state_table: :destroy
+	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_tables: :destroy
 
 	# def before_destroy
 	# 	super
@@ -24,9 +24,9 @@ class User < Sequel::Model(:users)
 		self.enrollment_queue = eq
 		eq.user = self
 
-		# st = StateTable.create(user_id: self.id)
-		# self.state_table = st
-		# st.user = self
+		st = StateTable.create(user_id: self.id)
+		self.state_table = st
+		st.user = self
 	end
 
 	def validate

@@ -28,8 +28,11 @@ Sequel.migration do
 
 	down do
 		alter_table :users do
+			add_column :name, String
+			drop_column :last_name
+			drop_column :first_name
 			drop_foreign_key :state_table_id
 		end
-		drop_table :state_table
+		drop_table :state_tables
 	end
 end

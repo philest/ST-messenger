@@ -51,7 +51,7 @@ module Birdv
 
       def name_codes(str, id)
         user = User.where(:fb_id => id).first
-        parent  = user.name.split[0]
+        parent  = user.first_name
         child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
         teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
         str = str.gsub(/__TEACHER__/, teacher)
