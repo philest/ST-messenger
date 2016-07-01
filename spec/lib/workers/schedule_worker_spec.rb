@@ -96,7 +96,7 @@ describe ScheduleWorker do
 		end
 
 		it "does not send messages to a user twice" do
-			User.each {|u| u.delete } # clean database
+			User.each {|u| u.destroy } # clean database
 
 			user = User.create(:send_time => Time.now + @interval - 1.second, :story_number => 2)
 			expect(@s.within_time_range(user, @interval)).to be true
@@ -149,7 +149,7 @@ describe ScheduleWorker do
 		end
 
 		it "does NOT call StartDayWorker when users are at day 1" do
-			User.each {|u| u.delete } # clean database
+			User.each {|u| u.destroy } # clean database
 			user = User.create(:send_time => Time.now, :story_number => 1)
 			expect(ScheduleWorker.jobs.size).to eq(0)
 

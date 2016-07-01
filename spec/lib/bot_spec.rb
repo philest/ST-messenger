@@ -28,7 +28,8 @@ describe "Bot" do
 			expect(User.count).to eq 1
 			user = User.first
 			expect(user.fb_id).to eq "bad_id"
-			expect(user.name).to be_nil
+			expect(user.first_name).to be_nil
+			expect(user.last_name).to be_nil
 			expect(user.child_name).to be_nil
 			expect(user.phone).to be_nil
 		end
@@ -41,7 +42,8 @@ describe "Bot" do
 			expect(User.count).to eq 1
 			user = User.first
 			expect(user.fb_id).to eq fb_id
-			expect(user.name).to eq "David McPeek"
+			expect(user.first_name).to eq "David"
+			expect(user.last_name).to eq "McPeek"
 			expect(user.child_name).to eq "Galen McPeek"
 			expect(user.phone).to eq "8186897323"
 			expect(user.id).to eq init.id
@@ -57,7 +59,8 @@ describe "Bot" do
 			#puts User.all.inspect
 			expect(User.count).to eq 3
 			
-			expect(User.where(:id => candidate1.id).first.name).to eq "David McPeek"
+			expect(User.where(:id => candidate1.id).first.first_name).to eq "David"
+			expect(User.where(:id => candidate1.id).first.last_name).to eq "McPeek"
 		end
 
 		it "retains teacher info for parents" do
@@ -83,7 +86,8 @@ describe "Bot" do
 			expect(user.count).to eq 1
 			user = user.first
 			expect(user.fb_id).to eq fb_id
-			expect(user.name).to eq "David McPeek"
+			expect(user.first_name).to eq "David"
+			expect(user.last_name).to eq "McPeek"
 			expect(user.child_name).to be_nil
 			expect(user.phone).to be_nil
 			expect(user.id).to_not eq some_user.id

@@ -26,10 +26,10 @@ class ScheduleWorker
   # time = current_time
   # range = range of valid times
   def filter_users(time, range)
-	User.all.select do |user|
-		# TODO - exception handling if the timezone isn't the correct name
-		within_time_range(user, range)
-	end
+  	User.all.select do |user|
+  		# TODO - exception handling if the timezone isn't the correct name
+  		within_time_range(user, range)
+  	end
   end
 
     # need to make sure the send_time column is a Datetime type

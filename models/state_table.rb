@@ -1,15 +1,11 @@
-class User < Sequel::Model(:users)
-	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
+class StateTable < Sequel::Model(:state_tables)
+	plugin :timestamps, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
 	
-	many_to_one :teacher
-	many_to_one :classroom
-	one_to_many :button_press_logs
-	one_to_one :enrollment_queue
-	one_to_one :state_table
-
-	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy#, #state_table: :destroy
+	one_to_one :user
+	
+	add_association_dependencies user: :nullify
 
 	# def before_destroy
 	# 	super
@@ -22,11 +18,7 @@ class User < Sequel::Model(:users)
 		super
 		eq = EnrollmentQueue.create(user_id: self.id)
 		self.enrollment_queue = eq
-		eq.user = self
-
-		# st = StateTable.create(user_id: self.id)
-		# self.state_table = st
-		# st.user = self
+		eq.user = self		
 	end
 
 	def validate

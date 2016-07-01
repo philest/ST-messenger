@@ -25,7 +25,7 @@ Sequel.migration do
       String :email, :text=>true
       DateTime :created_at
       DateTime :updated_at
-      foreign_key :district_id, :districts, :key=>[:id], :on_delete=>:set_null
+      foreign_key :district_id, :districts, :key=>[:id]
     end
     
     create_table(:school_sessions) do
@@ -35,7 +35,7 @@ Sequel.migration do
       DateTime :end_date
       DateTime :created_at
       DateTime :updated_at
-      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
+      foreign_key :school_id, :schools, :key=>[:id]
     end
     
     create_table(:teachers, :ignore_index_errors=>true) do
@@ -47,7 +47,7 @@ Sequel.migration do
       String :password, :text=>true
       DateTime :enrolled_on
       DateTime :updated_at
-      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
+      foreign_key :school_id, :schools, :key=>[:id]
       String :prefix, :text=>true
       String :signature, :text=>true
       
@@ -60,8 +60,8 @@ Sequel.migration do
       primary_key :id
       DateTime :enrolled_on
       DateTime :updated_at
-      foreign_key :teacher_id, :teachers, :key=>[:id], :on_delete=>:set_null
-      foreign_key :school_id, :schools, :key=>[:id], :on_delete=>:set_null
+      foreign_key :teacher_id, :teachers, :key=>[:id]
+      foreign_key :school_id, :schools, :key=>[:id]
     end
 
     create_table(:enrollment_queue) do
@@ -82,9 +82,9 @@ Sequel.migration do
       String :child_name, :text=>true
       Integer :reading_level, :default=>0
       String :gender, :text=>true
-      foreign_key :classroom_id, :classrooms, :key=>[:id], :on_delete=>:set_null
-      foreign_key :teacher_id, :teachers, :key=>[:id], :on_delete=>:set_null
-      foreign_key :enrollment_queue_id, :enrollment_queue, :key=>[:id], :on_delete=>:set_null
+      foreign_key :classroom_id, :classrooms, :key=>[:id]
+      foreign_key :teacher_id, :teachers, :key=>[:id]
+      foreign_key :enrollment_queue_id, :enrollment_queue, :key=>[:id]
       Integer :story_number, :default=>1
       String :locale, :default=>"en_US", :text=>true
       String :profile_pic, :text=>true
@@ -94,7 +94,7 @@ Sequel.migration do
     end
 
     alter_table(:enrollment_queue) do
-      add_foreign_key :user_id, :users, :on_delete=>:set_null
+      add_foreign_key :user_id, :users
     end
     
     create_table(:button_press_logs, :ignore_index_errors=>true) do
@@ -102,7 +102,7 @@ Sequel.migration do
       DateTime :created_at
       Integer :day_number
       String :sequence_name, :text=>true
-      foreign_key :user_id, :users, :key=>[:id], :on_delete=>:set_null
+      foreign_key :user_id, :users, :key=>[:id]
       
       index [:day_number, :sequence_name]
     end
@@ -112,6 +112,12 @@ Sequel.migration do
 
   down do
     drop_table :button_press_logs
+    alter_table(:users) do
+      drop_foreign_key :enrollment_queue_id
+    end
+    alter_table(:enrollment_queue) do
+      drop_foreign_key :user_id
+    end
     drop_table :users
     drop_table :classrooms
     drop_table :teachers

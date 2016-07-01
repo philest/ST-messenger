@@ -41,15 +41,15 @@ module Facebook
           User.create(:fb_id => recipient["id"])
         else
           puts "successfully found user data for #{name}"
-          last_name = data["last_name"]
+          last_name = data['last_name']
           child_match = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
           begin
             candidates = User.where(:child_name => child_match, :fb_id => nil)
             if candidates.all.empty? # add a new user w/o child info (no matches)
-              User.create(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
+              User.create(:fb_id => recipient['id'], first_name: data['first_name'], last_name: data['last_name'], :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
             else
               # implement stupid fb_name matching to existing user matching
-              candidates.order(:enrolled_on).first.update(:fb_id => recipient['id'], :name => name, :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
+              candidates.order(:enrolled_on).first.update(:fb_id => recipient['id'], first_name: data['first_name'], last_name: data['last_name'], :gender => data['gender'], :locale => data['locale'], :profile_pic => data['profile_pic'])
             end
           rescue Sequel::Error => e
             p e.message + " did not insert, already exists in db"

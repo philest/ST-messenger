@@ -20,13 +20,9 @@ namespace :db do
     # dump everything to csv files
     task :dump, :dumpfile do |t, args|
       dumpfile = args[:dumpfile].to_s
-
-
     end
 
   end
-
-
 
   namespace :migrate do
     Sequel.extension :migration
@@ -40,10 +36,8 @@ namespace :db do
     desc "Dump migration into schema"
     task :dump do
     	case ENV["RACK_ENV"]
-    	when "test"
+    	when "test", "development"
     		db_url = ENV["DATABASE_URL_LOCAL"]
-    	when "development"
-    		db_url = ENV["DATABASE_URL_REMOTE"]
     	when "production" # will always be in production on heroku
     		db_url = ENV["DATABASE_URL"]
     	end
