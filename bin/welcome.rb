@@ -3,7 +3,7 @@ require 'dotenv'
 Dotenv.load
 
 puts HTTParty.post(
-  "https://graph.facebook.com/v2.6/#{ENV['PAGE_ID']}/thread_settings?access_token=#{ENV['PRODUCTION_FB_ACCESS_TKN']}",
+  "https://graph.facebook.com/v2.6/#{ENV['FB_PAGE_ID']}/thread_settings?access_token=#{ENV['PRODUCTION_FB_ACCESS_TKN']}",
   body: {
     setting_type: "call_to_actions",
     thread_state: "new_thread",
