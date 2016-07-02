@@ -1,14 +1,16 @@
 require 'rake'
 require 'sequel'
 require 'dotenv'
-Dotenv.load
+
 
 ENV["RACK_ENV"] ||= "development"
 
 case ENV["RACK_ENV"]
 when "local", "test", "development"
+  Dotenv.load
   DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
 when "production"
+  Dotenv.load
   DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
 end
 
