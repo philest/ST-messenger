@@ -31,7 +31,9 @@ module Clockwork
     enrollment_time_pd = 3.minutes
     enrollment_range   = enrollment_time_pd / 2.0
 
-  	every enrollment_time_pd.minutes, 'enroll.db' do
+  	every enrollment_time_pd, 'enroll.db' do
+      puts "enrollment_time_pd = #{enrollment_time_pd}"
+      puts "enrollment_range = #{enrollment_range}"
      HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
         body: {
           time_interval: enrollment_range
