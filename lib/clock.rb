@@ -19,16 +19,18 @@ require_relative 'workers'
 
 module Clockwork
 
-    sched_pd = 5                     # (i.e. 'schedule period')
+    sched_pd = 5.minutes             # (i.e. 'schedule period')
 	  sched_range  = sched_pd / 2.0    # (i.e. 'schedule range')
 
-  	every sched_pd.minutes, 'check.db' do 
+  	every sched_pd, 'check.db' do 
+      puts "sched_pd = #{sched_pd}"
+      puts "sched_range = #{sched_range}"
   		# TODO: remove .minutes! should be in seconds
   		ScheduleWorker.perform_async(sched_range)
   	end
 
 
-    enrollment_time_pd = 3.minutes
+    enrollment_time_pd = 10.minutes
     enrollment_range   = enrollment_time_pd / 2.0
 
   	every enrollment_time_pd, 'enroll.db' do
