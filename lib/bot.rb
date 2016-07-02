@@ -71,8 +71,7 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    BotWorker.perform_async(sender_id, 'day1', :init)
-
+    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

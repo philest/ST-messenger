@@ -10,7 +10,9 @@ class BotWorker
 	  	# load script
 	  	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
 
-	  	Sidekiq.logger.warn(s.nil? ? "about to send #{script_name}" : "couldn't fine script #{script_name}")
+	  	puts "day 1 = #{Birdv::DSL::StoryTimeScript.scripts['day1']}"
+
+	  	Sidekiq.logger.warn(s.nil? ? "couldn't fine script #{script_name}" : "about to send #{script_name}" )
 
 			# enroll user if they are not in the db
 			if User.where(fb_id:recipient).first.nil?
@@ -28,9 +30,17 @@ class BotWorker
 			b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
 			u.add_button_press_log(b)
 
-			# ...but if they didn't already press the button, send sequence
-			if history.nil? || history.sequence_name == 'teachersend' || recipient=='1084495154927802'
+			protected_ids = %w(1084495154927802 1042751019139427 1625783961083197 10209967651611613)
+			puts "id = #{recipient}"
+			puts "included? #{protected_ids.include?(recipient)}"
 
+			# ...but if they didn't already press the button, send sequence
+			if history.nil? \
+				|| history.sequence_name == 'intro' \
+				|| history.sequence_name == 'teachersend' \
+				|| protected_ids.include?(recipient)
+
+				puts "we haven't seen this button before..."
 				# TODO: run this in a worker
 				# run the script
 				s.run_sequence(recipient, sequence.to_sym)
@@ -39,6 +49,9 @@ class BotWorker
 				if s.script_day >= u.story_number
 					u.update(:story_number => s.script_day+1)
 				end
+			else
+				puts "we've seen this button before..."
+
 			end
 
 			# TODO: do we want an ELSE behavior?

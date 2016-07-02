@@ -1,39 +1,24 @@
 require 'httparty'
+require 'dotenv'
+Dotenv.load
 
 puts HTTParty.post(
-  "https://graph.facebook.com/v2.6/$fb_id/thread_settings?access_token=",
+  "https://graph.facebook.com/v2.6/#{ENV['PAGE_ID']}/thread_settings?access_token=#{ENV['PRODUCTION_FB_ACCESS_TKN']}",
   body: {
     setting_type: "call_to_actions",
     thread_state: "new_thread",
     call_to_actions: [
       {
-        message: {
-          attachment: {
-            type: "template",
-            payload: {
-              template_type: "generic",
-              elements: [
-                {
-                  title: "Let's read your first story.",
-                  image_url: "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg",
-                  buttons: [
-                    {
-                      type: "postback",
-                      title: "Tap here!",
-                      payload: "day1_coonstory"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
+            payload: "intro"
       }
 
     ]
-  }.to_json,
+  },
   :headers => { 'Content-Type' => 'application/json' }
 )
+
+
+# payload: { template_type: "generic", elements: [ { title: "Let's read your first story.", image_url: "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", buttons: [ { type: "postback", title: "Tap here!", payload: "day1_coonstory"}]}]}
 
 # curl -X POST -H "Content-Type: application/json" -d '{
 #   "setting_type":"call_to_actions",

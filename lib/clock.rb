@@ -29,7 +29,6 @@ module Clockwork
   		ScheduleWorker.perform_async(sched_range)
   	end
 
-
     enrollment_time_pd = 10.minutes
     enrollment_range   = enrollment_time_pd / 2.0
 

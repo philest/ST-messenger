@@ -29,7 +29,7 @@ namespace :db do
     desc "Perform migration reset (full erase and migration up)"
     task :reset do
       Sequel::Migrator.run(DB, "db/migrations", :target => 0)
-      # Sequel::Migrator.run(DB, "db/migrations")
+      Sequel::Migrator.run(DB, "db/migrations")
       puts "<= db:migrate:reset executed for #{ENV['RACK_ENV']}"
     end
 
