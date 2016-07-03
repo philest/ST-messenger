@@ -2,7 +2,7 @@ require 'httparty'
 require 'dotenv'
 Dotenv.load
 
-uri = "https://graph.facebook.com/v2.6/" + ENV["DAVID"]
+uri = "https://graph.facebook.com/v2.6/" + ENV["DAVID_QUAILTIME"]
 
 query = "fields=first_name,last_name,locale,timezone,gender"
 

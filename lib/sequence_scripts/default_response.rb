@@ -19,6 +19,4 @@ Birdv::DSL::StoryTimeScript.new 'defaultresponse' do
 		send text("Great, they'll see it soon :)"), recipient
 	end
 
-
-
 end 
