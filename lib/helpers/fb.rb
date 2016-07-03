@@ -99,7 +99,8 @@ module Facebook
 
       def fb_get_user(id)
         begin
-          fb_name = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{id['id']}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}").body
+          fb_name = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{id}?fields=first_name,last_name,gender&access_token=#{ENV['FB_ACCESS_TKN']}").body
+          return fb_name
         rescue HTTParty::Error
           name = ""
         end
@@ -108,7 +109,7 @@ module Facebook
 
       def fb_get_name_honorific(id)
         fb_name = fb_get_user(id)
-        if fb_name['name']== ''
+        if fb_name['last_name']== ''
           return ""
         else
           honorific = "Mx."

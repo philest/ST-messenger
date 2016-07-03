@@ -37,6 +37,7 @@ scripts  = Birdv::DSL::StoryTimeScript.scripts
 
 
 DAY_RQST = /day\d+/i
+HELP_RQST = /help/i
 
 #
 # i.e. when user sends the bot a message.
@@ -59,6 +60,8 @@ Bot.on :message do |message|
     else
       fb_send_txt(sender_id, "Sorry, that script is not yet available.")
     end
+  when HELP_RQST
+    scripts['help'].run_sequence(sender_id, 'help_start')
   else # any other text....
     scripts['defaultresponse'].run_sequence(sender_id, 'usermessage')
   end

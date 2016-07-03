@@ -17,3 +17,4 @@ response = HTTParty.post(
 	}
 )
 puts response.inspect
+puts "registered for #{ENV['RACK_ENV']}"

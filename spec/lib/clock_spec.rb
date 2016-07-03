@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'clock'
-require 'rack-test'
+require 'rack/test'
 require 'workers/schedule_worker'
 require 'timecop'
 # require_relative '../models/story'
