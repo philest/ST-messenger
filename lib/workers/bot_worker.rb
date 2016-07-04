@@ -10,10 +10,9 @@ class BotWorker
 	  	# load script
 	  	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
 
-	  	puts "day 1 = #{Birdv::DSL::StoryTimeScript.scripts['day1']}"
-
 	  	Sidekiq.logger.warn(s.nil? ? "couldn't fine script #{script_name}" : "about to send #{script_name}" )
 
+	  	if not s.nil?
 			# enroll user if they are not in the db
 			if User.where(fb_id:recipient).first.nil?
 				register_user({'id'=>recipient})
@@ -55,6 +54,6 @@ class BotWorker
 			end
 
 			# TODO: do we want an ELSE behavior?
-
+		end
 	end
 end

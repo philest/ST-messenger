@@ -109,13 +109,6 @@ module Birdv
         return tjson
       end
 
-      def ass
-
-        puts "ass"
-      end
-                  
-
-
       def story_button(btn_name, title, subtitle='', img_url, btns)
         elmnts = {title: title, image_url: img_url, subtitle:subtitle}
         # TODO: add more exceptions? e.g. when no img supplied?
@@ -150,7 +143,7 @@ module Birdv
         begin
           instance_exec(recipient, &@sequences[sqnce_name.to_sym])
          # puts "successfully ran #{sqnce_name}!"
-        rescue Exception => e  
+        rescue => e  
           puts "#{sqnce_name} failed!"
           puts e.message  
           puts e.backtrace.join("\n") 

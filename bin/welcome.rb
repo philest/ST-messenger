@@ -16,8 +16,6 @@ puts HTTParty.post(
   },
   :headers => { 'Content-Type' => 'application/json' }
 )
-
-
 # payload: { template_type: "generic", elements: [ { title: "Let's read your first story.", image_url: "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", buttons: [ { type: "postback", title: "Tap here!", payload: "day1_coonstory"}]}]}
 
 # curl -X POST -H "Content-Type: application/json" -d '{
