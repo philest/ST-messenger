@@ -67,7 +67,7 @@ Bot.on :message do |message|
       end
   end # db_user.nil?
 
-  
+   
 end
 
 #
