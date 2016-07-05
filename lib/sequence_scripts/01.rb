@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'day2' do
+Birdv::DSL::StoryTimeScript.new 'day1' do
 
 	#
 	# register some buttons for reuse!
