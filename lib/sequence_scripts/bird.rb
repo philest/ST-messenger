@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'day2' do
+Birdv::DSL::StoryTimeScript.new 'day1' do
 
 	#
 	# register some buttons for reuse!
@@ -10,11 +10,11 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 								"Let's read your first story.", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
-									postback_button('Tap here!', script_payload(:coonstory))
+									postback_button('Tap here!', script_payload(:birdstory))
 								])
 
 	button_normal( 'thanks',
-									"I’ll send another story tomorrow night. You both are doing great :)",
+									"It's __TEACHER__ again. I’ll send another storybook tomorrow :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
@@ -26,19 +26,17 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 		send button('tap_here'), recipient
 	end
 
-	sequence 'coonstory' do |recipient|
+	sequence 'birdstory' do |recipient|
 		# greeting with 4 second delay
 		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 5.35 
+		send text(txt), recipient, 5.15 
 
-		# send out coon story
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
+		# send out bird story
+		img_1 = "https://s3.amazonaws.com/st-messenger/day1/bird/bird-tap-final.jpg"
 		send picture(img_1), recipient
-		send_story 'day1', 'coon', 9, recipient
-
-		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
-		send picture(img_2), recipient, 23
-		
+		img_2 = "https://s3.amazonaws.com/st-messenger/day1/bird/bird-title.jpg"
+		send picture(img_2), recipient
+		send_story 'day1', 'bird', 8, recipient, 23
 
 		# one more button
 		send button('thanks'), recipient

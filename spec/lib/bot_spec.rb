@@ -99,6 +99,23 @@ describe "Bot" do
 
 	end
 
+	describe "response-handling" do 
+		context "when a user messages STOP" do
+			before(:example) do
+				#replies STOP
+	    	end
+
+			it "unsubscribes them" do
+				expect(user.subscribed?).to be false
+			end
+
+			it "replies with confirmation" do 
+				
+			end 
+		end
+
+	end 
+
 	context "When adding new users to the database" do
 		it "successfully connects to the database" do
 
@@ -117,4 +134,7 @@ describe "Bot" do
 		it "rescues the db exception in the above instance" do
 		end
 	end
+
+
+
 end

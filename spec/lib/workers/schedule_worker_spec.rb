@@ -173,4 +173,15 @@ describe ScheduleWorker do
 			end
 		end
 	end
+
+
+	describe "subscribed" do
+
+		it "does not send a message to a unsubscribed user." do
+
+		end 
+
+	end
+
+
 end
