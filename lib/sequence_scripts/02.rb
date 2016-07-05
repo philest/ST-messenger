@@ -32,9 +32,12 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 
 	sequence 'cookstory' do |recipient|
 		# send out cook story
-		send_story 'day1', 'cook', 11, recipient, 23
-		
+		version = get_curriculum_version(recipient)
+		story = CURRICULUM[version][0][:name]
+		num_pages = CURRICULUM[version][0][:pages]
 
+		send_story 'day1', story, num_pages, recipient, 23
+		
 		# one more button
 		send button('thanks'), recipient
 	end

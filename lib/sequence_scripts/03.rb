@@ -32,8 +32,12 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
+		version = get_curriculum_version(recipient)
+		story = CURRICULUM[version][0][:name]
+		num_pages = CURRICULUM[version][0][:pages]
 
-		send_story 'day1', 'scratch', 6, recipient
+		send_story 'day1', story, num_pages, recipient
+		
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
 		send picture(img_1), recipient, 23
 

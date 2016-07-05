@@ -131,8 +131,14 @@ module Birdv
 
       end
 
-
-
+      def get_curriculum_version(recipient)
+        user = User.where(fb_id: recipient).first
+        if user
+          return user.curriculum_version || 0
+        else # default to the 0th version
+          return 0
+        end
+      end
 
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)

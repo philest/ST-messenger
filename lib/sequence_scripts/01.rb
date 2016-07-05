@@ -34,7 +34,12 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 		# send out coon story
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
 		send picture(img_1), recipient
-		send_story 'day1', 'coon', 9, recipient
+
+		version = get_curriculum_version(recipient)
+		story = CURRICULUM[version][0][:name]
+		num_pages = CURRICULUM[version][0][:pages]
+
+		send_story 'day1', story, num_pages, recipient
 
 		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
 		send picture(img_2), recipient, 23

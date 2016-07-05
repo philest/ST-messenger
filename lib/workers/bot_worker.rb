@@ -10,7 +10,7 @@ class BotWorker
 	  	# load script
 	  	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
 
-	  	Sidekiq.logger.warn(s.nil? ? "couldn't fine script #{script_name}" : "about to send #{script_name}" )
+	  	Sidekiq.logger.warn(s.nil? ? "couldn't find script #{script_name}" : "about to send #{script_name}" )
 
 	  	if not s.nil?
 			# enroll user if they are not in the db

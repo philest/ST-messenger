@@ -6,7 +6,7 @@ class StartDayWorker
   # end
 
   def perform(recipient, day_number)
-  		# double quotation 
+  		# double quotation
   		script = Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"]
 		  if not script.nil?
         script.run_sequence(recipient, :init) 
