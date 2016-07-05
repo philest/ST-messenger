@@ -114,7 +114,7 @@ describe ScheduleWorker do
 			expect(filtered.size).to eq(3)
 		end
 
-		it 'does not get users on Th' do
+		it 'does not get users on Th', th:true do
 			Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))
 			filtered = @s.filter_users(@time, @interval)
 			expect(filtered.size).to eq(0)
@@ -180,6 +180,29 @@ describe ScheduleWorker do
 		it "does not send a message to a unsubscribed user." do
 
 		end 
+
+	end
+
+	describe "our_friend?" do
+
+		it "knows a rando's students aren't our friends" do 
+			teacher = create(:teacher, signature: "Mr. Jew")
+			user = create(:user)
+			teacher.add_user(user)
+			expect(ScheduleWorker.new.our_friend?(user)).to be false
+		end
+
+		it "knows our students are friends" do 
+			teacher = create(:teacher, signature: "Mr. Esterman")
+			user = create(:user)
+			teacher.add_user(user)
+			expect(ScheduleWorker.new.our_friend?(user)).to be true
+		end
+
+		it "handles users without a teacher" do
+			user = create(:user)
+			expect(ScheduleWorker.new.our_friend?(user)).to be false
+		end
 
 	end
 
