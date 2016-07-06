@@ -1,5 +1,5 @@
 require_relative '../helpers/fb'
-require_relative '../helpers/twilio_helpers'
+require_relative '../helpers/contact_helpers'
 
 
 module Birdv
@@ -7,7 +7,7 @@ module Birdv
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
 
-      include TwilioTextingHelpers
+      include ContactHelpers
  
       @@scripts = {}
 

@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'helpers/twilio_helpers'
-include TwilioTextingHelpers
+require 'helpers/contact_helpers'
+include ContactHelpers
 
-describe TwilioTextingHelpers do
+describe ContactHelpers do
 
 	describe "email_admins" do 
 	  include EmailSpec::Helpers
