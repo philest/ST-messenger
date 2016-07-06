@@ -1,4 +1,4 @@
-require 'facebook/messenger'
+ require 'facebook/messenger'
 require 'activerecord-jdbcpostgresql-adapter' if RUBY_PLATFORM == 'java'
 require 'httparty'
 
@@ -37,8 +37,40 @@ JOIN    = /join/i
 scripts  = Birdv::DSL::StoryTimeScript.scripts
 
 
-DAY_RQST = /day\d+/i
-HELP_RQST = /help/i
+DAY_RQST  = /day\d+/i
+HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
+STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
+THANK_MSG= /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
+
+
+
+def get_reply(body, user)
+  our_reply = ''
+
+  case body
+  when HELP_RQST
+    our_reply =  "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+  when STOP_RQST
+    user.state_table.update(subscribed?: false)
+    our_reply =  "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+  when THANK_MSG
+    our_reply = "You're welcome :)"
+  else #default msg 
+    our_reply = "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
+  end
+
+  return our_reply 
+
+end
+
+def is_text_only?(message_attachments)
+  if message_attachments.nil?  
+    return true
+  else # there's an image attached
+    return false
+  end
+end
+
 
 #
 # i.e. when user sends the bot a message.
@@ -47,25 +79,28 @@ Bot.on :message do |message|
   puts "Received #{message.text} from #{message.sender}"
   sender_id = message.sender['id']
 
+  attachments = message.attachments
+
   # enroll user if they don't exist in db
   db_user = User.where(:fb_id => sender_id).first 
   if db_user.nil?
     register_user(message.sender)
     BotWorker.perform_async(sender_id, 'day1', 'coonstory')
-  else # user has been enrolled already...
+  elsif is_text_only?(attachments) # user has been enrolled already + text
       case message.text
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s
         if scripts[script_name] != nil
           scripts[script_name].run_sequence(sender_id, :init)
         else
-          fb_send_txt(sender_id, "Sorry, that script is not yet available.")
+          fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end
-      when HELP_RQST
-        scripts['help'].run_sequence(sender_id, 'help_start')
-      else # any other text....
-        scripts['defaultresponse'].run_sequence(sender_id, 'usermessage')
-      end
+      else # find the appropriate reply
+        reply = get_reply(message.text, db_user)
+        fb_send_txt(message.sender, reply)
+      end  
+  else #image 
+    fb_send_txt(message.sender, ":)")
   end # db_user.nil?
 
    

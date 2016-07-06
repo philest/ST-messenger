@@ -82,6 +82,8 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
       spoon (~> 0.0)
+    pry-nav (0.2.4)
+      pry (>= 0.9.10, < 0.11.0)
     puma (3.4.0)
     puma (3.4.0-java)
     rack (1.6.4)
@@ -153,6 +155,7 @@ DEPENDENCIES
   pg (= 0.17.1)
   pony
   pry
+  pry-nav
   puma (~> 3.4.0)
   rack-test
   rake (= 11.1.2)

@@ -23,9 +23,9 @@ describe 'FBHelper' do
 
 	# stub HTTP responses from facebook
 	FAILURE = [{"error":{"message":"(#100) Invalid fbid.","type":"OAuthException","code":100,"fbtrace_id":"A0Nh+OHr+TX"}}, 400]
-	SUCCESS = [{"recipient_id":"10209571935726081","message_id":"mid.1465592244050:7b2b9006d900596e93"}, 200]
+	SUCCESS = [{"recipient_id" => "10209571935726081","message_id":"mid.1465592244050:7b2b9006d900596e93"}, 200]
 
-	DUMMY_MSG = ["some FB ID", "this is a generic message"]
+	DUMMY_MSG = [{ 'id' => "666"}, "this is a generic message"]
 
 	# a mock instance of a class that has FBHelper functions
 	let (:fb_caller) { Class.new{ include Facebook::Messenger::Helpers }.new }
@@ -41,6 +41,7 @@ describe 'FBHelper' do
 			# stub a failure response
 			before(:example) do 
 				stub_response.call(*FAILURE)
+				user = create(:user, fb_id: "666")
 			end
 
 			it 'returns the FB error code' do
@@ -53,6 +54,7 @@ describe 'FBHelper' do
 			# stub a success response
 			before(:example) do 
 				stub_response.call(*SUCCESS)
+				user = create(:user, fb_id: "666")
 			end
 
 			it 'does not return FB error code' do

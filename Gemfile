@@ -53,6 +53,7 @@ end
 group :test do
 	gem 'email_spec'
 	gem 'pry'
+	gem 'pry-nav'
 	gem 'rack-test'
 	gem 'rspec'
 	gem 'webmock'
