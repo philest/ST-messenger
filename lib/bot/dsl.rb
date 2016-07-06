@@ -157,7 +157,6 @@ module Birdv
           puts e.message  
           puts e.backtrace.join("\n") 
           email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
-          send_sms("There's a script error on StoryTime (#{sqnce_name} failed!). Check your email.")
         end
       end
 
