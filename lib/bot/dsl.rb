@@ -1,9 +1,14 @@
 require_relative '../helpers/fb'
+require_relative '../helpers/twilio_helpers'
+
 
 module Birdv
   module DSL
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
+
+      include TwilioTextingHelpers
+ 
       @@scripts = {}
 
       attr_reader :script_name, :script_day
@@ -138,6 +143,10 @@ module Birdv
         register_sequence(sqnce_name, block)
       end
 
+
+
+
+
       def run_sequence(recipient, sqnce_name)
         # puts(@sequences[sqnce_name.to_sym])
         begin
@@ -147,8 +156,13 @@ module Birdv
           puts "#{sqnce_name} failed!"
           puts e.message  
           puts e.backtrace.join("\n") 
+          email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
+          send_sms("There's a script error on StoryTime (#{sqnce_name} failed!). Check your email.")
         end
       end
+
+
+
 
       def button(btn_name)
         return @fb_objects[btn_name.to_sym]
