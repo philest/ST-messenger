@@ -39,6 +39,7 @@ gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
 gem 'clockwork','~>2.0.0'
+gem 'pony'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
@@ -50,7 +51,9 @@ end
 
 
 group :test do
+	gem 'email_spec'
 	gem 'pry'
+	gem 'pry-nav'
 	gem 'rack-test'
 	gem 'rspec'
 	gem 'webmock'

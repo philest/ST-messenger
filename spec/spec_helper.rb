@@ -15,6 +15,11 @@ FactoryGirl.definition_file_paths = %w{./factories ./test/factories ./spec/facto
 require 'webmock/rspec'
 require 'sidekiq/testing' # for the sidekiq-rspec gem
 require 'json'
+require 'pony'
+require "email_spec"
+require "email_spec/rspec"
+
+
 
 
 
@@ -49,6 +54,7 @@ require 'json'
 
 
 RSpec.configure do |config|
+
 
     config.include FactoryGirl::Syntax::Methods
     

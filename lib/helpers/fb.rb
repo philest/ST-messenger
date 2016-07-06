@@ -13,6 +13,19 @@ module Facebook
         GRAPH_URL
       end
 
+      def name_codes(str, id)
+
+        user = User.where(:fb_id => id).first
+        parent  = user.first_name
+        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+        teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
+        str = str.gsub(/__TEACHER__/, teacher)
+        str = str.gsub(/__PARENT__/, parent)
+        str = str.gsub(/__CHILD__/, child)
+        return str
+      end
+
+
       def deliver(message)
         HTTParty.post(GRAPH_URL, 
           query: {access_token: ENV['FB_ACCESS_TKN']},
@@ -22,6 +35,9 @@ module Facebook
       end
 
       def fb_send_txt(recipient, message)
+
+        message = name_codes(message, recipient['id'])
+
         deliver(
           recipient: recipient, 
           message: {

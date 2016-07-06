@@ -1,9 +1,14 @@
 require_relative '../helpers/fb'
+require_relative '../helpers/contact_helpers'
+
 
 module Birdv
   module DSL
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
+
+      include ContactHelpers
+ 
       @@scripts = {}
 
       attr_reader :script_name, :script_day
@@ -47,17 +52,6 @@ module Birdv
 
       def postback_button(title, payload)
         return { type: 'postback', title: title, payload: payload.to_s}
-      end
-
-      def name_codes(str, id)
-        user = User.where(:fb_id => id).first
-        parent  = user.first_name
-        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
-        teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
-        str = str.gsub(/__TEACHER__/, teacher)
-        str = str.gsub(/__PARENT__/, parent)
-        str = str.gsub(/__CHILD__/, child)
-        return str
       end
 
       def button_normal(btn_name, window_txt, btns)
@@ -138,6 +132,10 @@ module Birdv
         register_sequence(sqnce_name, block)
       end
 
+
+
+
+
       def run_sequence(recipient, sqnce_name)
         # puts(@sequences[sqnce_name.to_sym])
         begin
@@ -147,8 +145,12 @@ module Birdv
           puts "#{sqnce_name} failed!"
           puts e.message  
           puts e.backtrace.join("\n") 
+          email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
         end
       end
+
+
+
 
       def button(btn_name)
         return @fb_objects[btn_name.to_sym]

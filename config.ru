@@ -11,6 +11,7 @@ require 'sinatra'
 
 require 'rack'
 require 'airbrake'
+# require 'airbrake/sidekiq'
 require 'airbrake/sidekiq/error_handler'
 
 configure :production do
