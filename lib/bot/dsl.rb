@@ -5,7 +5,7 @@ module Birdv
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
       @@scripts = {}
-
+    
       attr_reader :script_name, :script_day
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
@@ -25,6 +25,30 @@ module Birdv
         # fb_send_txt( { id: '10209571935726081'}, 'hey dude')
       end
 
+      def self.load_curriculum_versions
+        require 'csv'
+        versions = {}
+        Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../curriculum_versions/*").each do |f|
+          CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
+            day_number = File.basename(f, ".csv").to_i
+            versions[day_number] ||= []
+            versions[day_number] << row
+          end
+        end
+        return versions
+      end
+
+      @@curriculum_versions = load_curriculum_versions
+
+      def self.curriculum_versions
+        @@curriculum_versions
+      end
+
+      def curriculum_versions
+        @@curriculum_versions
+      end
+
+
       def self.scripts
         @@scripts
       end
@@ -33,6 +57,7 @@ module Birdv
         puts 'WARNING: overwriting object #{obj_key.to_s}' if @fb_objects.key?(obj_key.to_sym)
         @fb_objects[obj_key.to_sym] =  fb_obj
       end
+
 
 
       def url_button(title, url)
@@ -175,12 +200,37 @@ module Birdv
                }}
       end
 
-      def send_story(library, url_title, num_pages, recipient, delay=0)
-        num_pages.times do |i|
-          img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
+      # def send_story(library, url_title, num_pages, recipient, delay=0)
+      #   num_pages.times do |i|
+      #     img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
+      #     fb_send_json_to_user(recipient, picture(img_url))
+      #   end
+      #   sleep delay if delay > 0
+      # end
+
+      def send_story(recipient, story_number, delay=0)
+        user = User.where(fb_id: recipient).first
+        if user
+          curr_version = user.curriculum_version || 0
+        else
+          curr_version = 0
+        end
+        curriculum = curriculum_version[curr_version.to_i]
+        # story number is indexed by 1 (default is 1)
+        story = curriculum[story_number-1]
+        # story_name = story[:name]
+        # num_pages = story[:num_pages]
+        # url = story[:url]
+
+        story[:num_pages].times do |i|
+          img_url = "#{story[:url]}/#{story[:name]}#{i+1}.jpg"
+          puts img_url
           fb_send_json_to_user(recipient, picture(img_url))
         end
         sleep delay if delay > 0
+
+      rescue => e
+        p e.message + " failed to send user with fb_id #{recipient} a story"
       end
 
       def send(some_json, recipient, delay=0)

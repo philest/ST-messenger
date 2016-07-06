@@ -43,7 +43,6 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 
 		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
 		send picture(img_2), recipient, 23
-		
 
 		# one more button
 		send button('thanks'), recipient
