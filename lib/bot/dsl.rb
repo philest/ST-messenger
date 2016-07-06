@@ -1,11 +1,28 @@
 require_relative '../helpers/fb'
+module Birdv
+  module DSL
+
+    class ScriptClient
+      @@scripts = {}
+
+      def self.newscript(script_name, &block)
+        puts "adding #{script_name} to thing"
+        @@scripts[script_name] = StoryTimeScript.new(script_name, &block)
+      end
+
+      def self.scripts
+        @@scripts
+      end
+    end
+  end
+end
+
+
 
 module Birdv
   module DSL
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
-      @@scripts = {}
-
       attr_reader :script_name, :script_day
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
@@ -14,24 +31,26 @@ module Birdv
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
         day          = script_name.scan(/\d+/)[0]
-        if !day.nil?
-          @script_day = day.to_i
-        else
-          @script_day = 0
-        end
+        @script_day = !day.nil? ? day.to_i : 0
         instance_eval(&block)
-        puts "adding #{@script_name} to thing"
-        @@scripts[script_name] = self
-        # fb_send_txt( { id: '10209571935726081'}, 'hey dude')
+        return self
       end
 
-      def self.scripts
-        @@scripts
-      end
-      
       def register_fb_object(obj_key, fb_obj)
         puts 'WARNING: overwriting object #{obj_key.to_s}' if @fb_objects.key?(obj_key.to_sym)
         @fb_objects[obj_key.to_sym] =  fb_obj
+      end
+
+      def register_sequence(sqnce_name, block)
+        puts 'WARNING: overwriting object #{sqnce_name}' if @fb_objects.key?(sqnce_name.to_sym)
+        if @sequences[:init] == nil
+          @sequences[:init] = block
+        end
+        @sequences[sqnce_name.to_sym] = block
+      end
+
+      def assert_keys(keys = [], args)
+        keys.each{|x| if  !args.key?(x) then raise ArgumentError.new("DSL: need to set :#{x} field") end}
       end
 
 
@@ -41,12 +60,11 @@ module Birdv
 
       def script_payload(sequence_name)
         puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
-
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 
       def postback_button(title, payload)
-        return { type: 'postback', title: title, payload: payload.to_s}
+        return { type: 'postback', title: title, payload: payload.to_s }
       end
 
       def name_codes(str, id)
@@ -60,23 +78,7 @@ module Birdv
         return str
       end
 
-      def button_normal(btn_name, window_txt, btns)
-        tjson = {
-          message:  {
-            attachment: {
-              type: 'template',
-              payload: {
-                template_type: 'button',
-                text: window_txt,
-                buttons: btns
-              }
-            }
-          }
-        }
-        register_fb_object(btn_name,tjson)
-        return tjson
-      end
-      
+
       # so this def merits examples. e.g.:
       # message: {
       #   attachment: {
@@ -93,6 +95,8 @@ module Birdv
       #   }
       # }
       #
+
+
       def template_generic(btn_name, elemnts)
         tjson = { 
           message: {
@@ -109,38 +113,52 @@ module Birdv
         return tjson
       end
 
-      def ass
-
-        puts "ass"
-      end
-                  
 
 
-      def story_button(btn_name, title, subtitle='', img_url, btns)
-        elmnts = {title: title, image_url: img_url, subtitle:subtitle}
-        # TODO: add more exceptions? e.g. when no img supplied?
-        if !btns.empty?
-          elmnts[:buttons]=btns
-        else
-          puts "WARNING: no buttons in yo' story_button"
-        end
-        template_generic(btn_name, [elmnts])
+      def button_normal(args = {})
+        assert_keys([:name, :window_text, :buttons], args)
+        window_txt = args[:window_text]
+        btns       = args[:buttons]
+        tjson = {
+          message:  {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: window_txt,
+                buttons: btns
+              }
+            }
+          }
+        }
+        register_fb_object(args[:name],tjson)
+        return tjson
       end
       
 
 
-      def register_sequence(sqnce_name, block)
-        puts 'WARNING: overwriting object #{sqnce_name}' if @fb_objects.key?(sqnce_name.to_sym)
-        if @sequences[:init] == nil
-          @sequences[:init] = block
+      def button_story(args = {})
+        default = {subtitle:'', buttons:[]}
+        assert_keys([:name, :image_url, :title], args)
+        args      = default.merge(args)
+        
+        title     = args[:title]
+        img_url   = args[:image_url]
+        subtitle = args[:subtitle]
+
+        elmnts = {title: title, image_url: img_url, subtitle: subtitle}
+
+        # if buttons are supplied, set 'elements' field
+        if !args[:buttons].empty?
+          elmnts[:buttons]=args[:buttons]
+        else
+          puts "WARNING: no buttons in yo' button_story"
         end
-        @sequences[sqnce_name.to_sym] = block
 
+        # return json hash
+        template_generic(args[:name], [elmnts])
       end
-
-
-
-
+      
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
@@ -158,53 +176,71 @@ module Birdv
       end
 
       def button(btn_name)
-        return @fb_objects[btn_name.to_sym]
+        if btn_name.is_a? String
+          return @fb_objects[btn_name.to_sym]
+        else
+          return @fb_objects[btn_name]
+        end
       end
 
-      def text(txt)
-        return {message: {text: txt}}
+
+
+      def text(args = {})
+        assert_keys([:text], args)     
+        return {message: {text:args[:text]}}
       end
 
-      def picture(img_url)
+
+      def picture(args = {})
+        assert_keys([:url], args)
         return {message: {
-                 attachment: {
-                   type: 'image',
-                   payload: {
-                     url: img_url
-                   }
-                 }
-               }}
+                  attachment: {
+                    type: 'image',
+                    payload: {
+                      url: args[:url]
+                    }
+                  }
+                }
+              }
       end
 
-      def send_story(library, url_title, num_pages, recipient, delay=0)
-        num_pages.times do |i|
-          img_url = STORY_BASE_URL+"#{library}/#{url_title}/#{url_title}#{i+1}.jpg"
-          fb_send_json_to_user(recipient, picture(img_url))
+      def story(args = {})
+        assert_keys([:library, :title, :num_pages], args)
+        library     = args[:library]
+        title       = args[:title]
+        num_pages   = args[:num_pages]
+        base = STORY_BASE_URL
+        return lambda do |recipient|
+          num_pages.times do |i|
+            url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
+            fb_send_json_to_user(recipient, picture(url:url))
+          end
         end
+      end
+
+
+      def send( recipient, to_send,  delay=0 )
+        
+        # if lambda, run it! e.g. send(story(args)) 
+        if to_send.is_a? Proc
+          to_send.call(recipient)
+
+        # else, we're dealing with a hash! e.g send(text("stuff"))
+        else
+          # alter text to include teacher/parent/child names... 
+          if to_send[:message][:text]
+            to_send[:message][:text] = name_codes(to_send[:message][:text], recipient)
+          elsif to_send[:message][:attachment][:payload][:text]
+            to_send[:message][:attachment][:payload][:text] = name_codes(to_send[:message][:attachment][:payload][:text], recipient)
+          end
+              
+          puts "sending to #{recipient}"
+          puts fb_send_json_to_user(recipient, to_send)
+        end
+        
         sleep delay if delay > 0
       end
 
-      def send(some_json, recipient, delay=0)
-        
-        
-        
-        # alter text to include teacher/parent/child names... 
-        if some_json[:message][:text]
-          # TODO check to see if id key is a symbol or a string.............
-          some_json[:message][:text] = name_codes(some_json[:message][:text], recipient)
-        elsif some_json[:message][:attachment][:payload][:text]
-          some_json[:message][:attachment][:payload][:text] = name_codes(some_json[:message][:attachment][:payload][:text], recipient)
-        end
-            
-        puts "sending to #{recipient}"
-        puts fb_send_json_to_user(recipient, some_json)
-        
-        sleep delay if delay > 0
-      end
     end
   end
 end
-
-
-
-

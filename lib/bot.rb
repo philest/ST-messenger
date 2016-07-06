@@ -33,7 +33,7 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
 
-scripts  = Birdv::DSL::StoryTimeScript.scripts
+scripts  = Birdv::DSL::ScriptClient.scripts
 
 
 DAY_RQST = /day\d+/i

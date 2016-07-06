@@ -6,18 +6,21 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	# NOTE: always call story_button, template_generic, 
 	# and button_normal OUTSIDE of sequence blocks
 	#
-	story_button( 'tap_here', 
-								"Let's read your first story.", 
-								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-								[
-									postback_button('Tap here!', script_payload(:coonstory))
-								])
 
-	button_normal( 'thanks',
-									"It's __TEACHER__ again. I’ll send another storybook tomorrow :)",
-									[
-										postback_button('Thank you!', script_payload(:yourwelcome))
-									])
+	button_story({
+		name: 		'tap_here',
+		title: 		"Let's read tonight's story.",
+		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+		buttons: 	[postback_button('Tap here!', script_payload(:coontory))]
+	})
+
+
+	button_normal({
+		name: 			 'thanks',
+		window_text: "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)",
+		buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+	})
+
 
 
 	sequence 'firsttap' do |recipient|

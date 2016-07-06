@@ -8,7 +8,7 @@ class BotWorker
 	def perform(recipient, script_name, sequence, day_increment=nil)
 
 	  	# load script
-	  	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
+	  	s = Birdv::DSL::ScriptClient.scripts[script_name]
 
 	  	Sidekiq.logger.warn(s.nil? ? "about to send #{script_name}" : "couldn't fine script #{script_name}")
 
