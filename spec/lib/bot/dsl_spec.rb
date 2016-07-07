@@ -215,11 +215,23 @@ describe Birdv::DSL::StoryTimeScript do
 
 		before(:example) do
 			@success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"StoryTime parent||Lil||Mr. McEsterWahl\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => @success, :headers => {})
+			
+			# stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+   #       with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"StoryTime parent||Lil||StoryTime\"}}",
+   #            :headers => {'Content-Type'=>'application/json'}).
+   #       to_return(:status => 200, :body => @success, :headers => {})
+
+
 		end	
 
 		it 'has no problem the the user is missing first_name' do
-			User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
-
+			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
+			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
+			t.add_user u
 			User.where(fb_id:@aubrey).first.update first_name: nil
 			expect {
 				script_obj.send(
@@ -229,51 +241,58 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error				
 		end
 
-		it 'has no problem the the user is missing last_name' do
+		# it 'has no problem the the user is missing last_name' do
+		# 	User.create  child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+		# 	User.where(fb_id:@aubrey).first.update first_name: nil
+		# 	expect {
+		# 		script_obj.send(
+		# 			@aubrey,
+		# 			script_obj.text({ text: @txt })
+		# 		)
+		# 	}.not_to raise_error	
+		# end
 
+		# it 'has no problem the the user is missing last/first_name' do
+		# 	User.create child_name:'Lil Aubs', fb_id: @aubrey
+		# 	User.where(fb_id:@aubrey).first.update first_name: nil
+		# 	expect {
+		# 		script_obj.send(
+		# 			@aubrey,
+		# 			script_obj.text({ text: @txt })
+		# 		)
+		# 	}.not_to raise_error	
+		# end
 
-		end
+		# it 'properly renders the teacher, parent, and child names' do
+		# 	User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+		# 	User.where(fb_id:@aubrey).first.update first_name: nil
+		# 	expect {
+		# 		script_obj.send(
+		# 			@aubrey,
+		# 			script_obj.text({ text: @txt })
+		# 		)
+		# 	}.not_to raise_error	
+		# end
 
-		it 'has no problem the the user is missing last/first_name' do
-
-
-		end
-
-		it 'properly renders the teacher, parent, and child names' do
-
-		end
-
-		it 'properly render just the child name' do
-
-		end
+		# it 'properly render just the child name' do
+		# 	User.create child_name:'Lil Aubs', fb_id: @aubrey
+		# 	User.where(fb_id:@aubrey).first.update first_name: nil
+		# 	expect {
+		# 		script_obj.send(
+		# 			@aubrey,
+		# 			script_obj.text({ text: @txt })
+		# 		)
+		# 	}.not_to raise_error	
+		# end
 	end	
 
-	context '#run_sequence' do
-
-
-	end
-
-	context '#button' do
-		it 'returns json when argument is string' do
-
-		end
-
-		it 'returns json when argument is hash' do
-
-		end
-	end
-
-	context '#text' do
-		it 'hash has required propterties' do
-
-		end
-	end
-
-	context '#picture' do
-		it 'hash has required propterties' do
-
-		end
+	it 'stipulate that the user has a teacher! tests may work, but might not be correct otherwise.' do
+		false
 	end
 
 
+	context 'when sending a story, the DB should be updated' do
+		it 'should '
+
+	end
 end
