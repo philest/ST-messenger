@@ -194,10 +194,39 @@ describe Birdv::DSL::StoryTimeScript do
 				)
 			}.not_to raise_error
 		end
+	end
+
+	# Visual separation :P
+	# => 
+	# => 
+	# =>
+	# the success of these tests is verified by making the corrext HTTP request
+	context 'name replacement stuff', text_replace: true do
+		before(:all) do
+			@txt = "__PARENT__||__CHILD__||__TEACHER__"
+			@lib 				= 'day1'
+			@title 			= 'chomp'
+			@aubrey 	= '10209571935726081' # aubrey
+		end
+
+		before(:each) do
+			DatabaseCleaner.clean_with(:truncation)
+		end
+
+		before(:example) do
+			@success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+		end	
 
 		it 'has no problem the the user is missing first_name' do
+			User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
 
-
+			User.where(fb_id:@aubrey).first.update first_name: nil
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error				
 		end
 
 		it 'has no problem the the user is missing last_name' do
@@ -217,8 +246,7 @@ describe Birdv::DSL::StoryTimeScript do
 		it 'properly render just the child name' do
 
 		end
-
-	end
+	end	
 
 	context '#run_sequence' do
 
