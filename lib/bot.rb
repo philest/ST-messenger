@@ -42,7 +42,7 @@ HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
 STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
 THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
 HAHA_MSG = /(haha)/i 
-ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)/i
+ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)/i
 
 
 
