@@ -207,28 +207,22 @@ describe Birdv::DSL::StoryTimeScript do
 			@lib 				= 'day1'
 			@title 			= 'chomp'
 			@aubrey 	= '10209571935726081' # aubrey
+			@estohb = lambda do |text|  
+				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => @success, :headers => {})			
+			end
 		end
 
 		before(:each) do
 			DatabaseCleaner.clean_with(:truncation)
 		end
 
-		before(:example) do
-			@success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"StoryTime parent||Lil||Mr. McEsterWahl\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => @success, :headers => {})
-			
-			# stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-   #       with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"StoryTime parent||Lil||StoryTime\"}}",
-   #            :headers => {'Content-Type'=>'application/json'}).
-   #       to_return(:status => 200, :body => @success, :headers => {})
-
-
-		end	
-
 		it 'has no problem the the user is missing first_name' do
+			# stub the request with the expected body :)
+			@estohb.call '||Lil||Mr. EcEsterWahl'
 			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
 			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
 			t.add_user u

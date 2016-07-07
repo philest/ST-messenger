@@ -17,7 +17,21 @@ module Birdv
   end
 end
 
-
+# so this def merits examples. e.g.:
+# message: {
+#   attachment: {
+#     type: 'template',
+#     payload: {
+#       template_type: 'generic',
+#       elements: [{
+#         title: title,
+#         image_url: 'image_url is an optional field, but only include if you will use it',
+#         subtitle: "you can acutally include subititle but still set it as empty string",
+#         buttons: [{you are require to add buttons}]
+#       }]
+#     }
+#   }
+# }
 
 module Birdv
   module DSL
@@ -69,32 +83,21 @@ module Birdv
 
       def name_codes(str, id)
         user = User.where(:fb_id => id).first
-        parent  = user.first_name.nil? ? "StoryTime parent" : user.first_name
+        parent  = user.first_name.nil? ? "" : user.first_name
         child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
-        teacher = user.teacher.nil?    ? "StoryTime" : user.teacher.signature        
+        
+        if !user.teacher.nil?
+          sig = user.teacher.signature
+          teacher = sig.nil?           ? "StoryTime" : sig
+        else
+          teacher = "StoryTime"
+        end
+
         str = str.gsub(/__TEACHER__/, teacher)
         str = str.gsub(/__PARENT__/, parent)
         str = str.gsub(/__CHILD__/, child)
         return str
       end
-
-
-      # so this def merits examples. e.g.:
-      # message: {
-      #   attachment: {
-      #     type: 'template',
-      #     payload: {
-      #       template_type: 'generic',
-      #       elements: [{
-      #         title: title,
-      #         image_url: 'image_url is an optional field, but only include if you will use it',
-      #         subtitle: "you can acutally include subititle but still set it as empty string",
-      #         buttons: [{you are require to add buttons}]
-      #       }]
-      #     }
-      #   }
-      # }
-      #
 
 
       def template_generic(btn_name, elemnts)
