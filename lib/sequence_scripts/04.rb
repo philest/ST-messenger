@@ -1,6 +1,7 @@
-Birdv::DSL::StoryTimeScript.new 'day1' do
+Birdv::DSL::StoryTimeScript.new 'day4' do
 
-	day 1
+	day 4
+
 
 	#
 	# register some buttons for reuse!
@@ -8,41 +9,36 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	# NOTE: always call story_button, template_generic, 
 	# and button_normal OUTSIDE of sequence blocks
 	#
-
-
 	story_button( 'tap_here', 
-								"Let's read your first story.", 
+								"Your next story's coming soon!", 
 								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
 								[
-									postback_button('Tap here!', script_payload(:coonstory))
+									postback_button('Tap here!', script_payload(:birdstory))
 								])
 
 	button_normal( 'thanks',
-									"It's __TEACHER__ again. I’ll send another storybook tomorrow :)",
+									"__TEACHER__: I’ll send another story tomorrow night :)",
 									[
 										postback_button('Thank you!', script_payload(:yourwelcome))
 									])
 
 
 	sequence 'firsttap' do |recipient|
-		# no longer a text before.
+		# greeting with 4 second delay
+		txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+		send text(txt), recipient, 4 
+		
 		# send tap_here button
 		send button('tap_here'), recipient
 	end
 
-	sequence 'coonstory' do |recipient|
-		# greeting with 4 second delay
-		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 5.35 
-
-		# send out coon story
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
-		send picture(img_1), recipient
+	sequence 'birdstory' do |recipient|
+		# send out cook story
 
 		send_story recipient
-
-		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
-		send picture(img_2), recipient, 23
+		
+		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+		send picture(img_1), recipient, 23
 
 		# one more button
 		send button('thanks'), recipient

@@ -7,12 +7,13 @@ require 'csv'
 #   end
 # end
 
+def puts_file
+	puts __FILE__
+end
+
 class Test
 
-	puts "starting up"
 
-@@d = "dcf"
-puts @@d
 
 	def self.load_x
 		return "we have come to take your sheep"
@@ -22,6 +23,16 @@ puts @@d
 	def self.x
 		@@x
 	end
+
+	attr_reader :day
+	def initialize
+		@day = start_day
+	end
+
+	def start_day
+		13
+	end
+
 
 	      def self.load_curriculum_versions
         require 'csv'
@@ -49,4 +60,6 @@ puts Test.curriculum_versions
 
 puts Test.new.curriculum_versions
 
+
+puts Test.new.day
 

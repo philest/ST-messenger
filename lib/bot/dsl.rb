@@ -5,6 +5,7 @@ module Birdv
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
       @@scripts = {}
+      @@curriculum_versions = {}
     
       attr_reader :script_name, :script_day
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
@@ -13,36 +14,42 @@ module Birdv
         @fb_objects  = {}
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
+        @script_day = 0
+
         day          = script_name.scan(/\d+/)[0]
         if !day.nil?
           @script_day = day.to_i
-        else
-          @script_day = 0
+        # else
+        #   @script_day = 0
         end
+
         instance_eval(&block)
         puts "adding #{@script_name} to thing"
         @@scripts[script_name] = self
         # fb_send_txt( { id: '10209571935726081'}, 'hey dude')
       end
 
-      def self.load_curriculum_versions
+      def self.load_curriculum_versions(dir="../curriculum_versions")
         require 'csv'
-        versions = {}
-        Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../curriculum_versions/*").each do |f|
+        @@curriculum_versions = {}
+        # using a hash to ensure the correct ordering of the curriculum versions
+        Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/#{dir}/*").each do |f|
           CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
-            day_number = File.basename(f, ".csv").to_i
-            versions[day_number] ||= []
-            versions[day_number] << row
+            curr_version = File.basename(f, ".csv").to_i
+            @@curriculum_versions[curr_version] ||= []
+            @@curriculum_versions[curr_version] << row
           end
         end
-        return versions
       end
 
       @@curriculum_versions = load_curriculum_versions
 
+      puts "loaded curriculum_versions #{@@curriculum_versions}"
+
       def self.curriculum_versions
         @@curriculum_versions
       end
+
 
       def curriculum_versions
         @@curriculum_versions
@@ -58,7 +65,9 @@ module Birdv
         @fb_objects[obj_key.to_sym] =  fb_obj
       end
 
-
+      def day(number)
+        @script_day = number
+      end
 
       def url_button(title, url)
         return { type: 'web_url', title: title, url: url }
@@ -208,25 +217,23 @@ module Birdv
       #   sleep delay if delay > 0
       # end
 
-      def send_story(recipient, story_number, delay=0)
+      def send_story(recipient, delay=0)
         user = User.where(fb_id: recipient).first
         if user
-          curr_version = user.curriculum_version || 0
+          user_curriculum_version = user.curriculum_version || 0
         else
-          curr_version = 0
+          user_curriculum_version = 0
         end
-        curriculum = curriculum_version[curr_version.to_i]
-        # story number is indexed by 1 (default is 1)
-        story = curriculum[story_number-1]
-        # story_name = story[:name]
-        # num_pages = story[:num_pages]
-        # url = story[:url]
+        curriculum = @@curriculum_versions[user_curriculum_version.to_i]
+        # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
+        story = curriculum[@script_day - 1]
 
         story[:num_pages].times do |i|
           img_url = "#{story[:url]}/#{story[:name]}#{i+1}.jpg"
           puts img_url
           fb_send_json_to_user(recipient, picture(img_url))
         end
+
         sleep delay if delay > 0
 
       rescue => e
