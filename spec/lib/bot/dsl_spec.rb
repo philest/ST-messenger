@@ -172,11 +172,11 @@ describe Birdv::DSL::StoryTimeScript do
          to_return(:status => 200, :body => success, :headers => {})
 		end		
 
-		it 'sends a story!', story: true do
+		it 'sends a send_story!', story: true do
 			expect {
-				script_obj.send( 
+				script_obj.send_story( 
 					@aubrey, 
-					script_obj.story({ 
+					script_obj.send_story({ 
 									library: 		@lib,
 									title: 	 		@title,
 									num_pages: 	@num_pages,
@@ -195,6 +195,27 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error
 		end
 	end
+	
+	# Visual separation :P
+	# => 
+	# => 
+	# =>
+	# note the difference between 'send story...' and 'send send_story'.
+	# the former is usually used in a script, the latter not
+	context '#send a #story' do
+		it 'send correct story when ' do
+
+		end
+
+		it 'updates the last_story_read field' do
+
+		end
+
+		it 'update the new '
+
+	end
+
+
 
 	# Visual separation :P
 	# => 
@@ -222,7 +243,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 		it 'has no problem the the user is missing first_name' do
 			# stub the request with the expected body :)
-			@estohb.call '||Lil||Mr. EcEsterWahl'
+			@estohb.call '||Lil||Mr. McEsterWahl'
 			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
 			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
 			t.add_user u
@@ -235,58 +256,139 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error				
 		end
 
-		# it 'has no problem the the user is missing last_name' do
-		# 	User.create  child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
-		# 	User.where(fb_id:@aubrey).first.update first_name: nil
-		# 	expect {
-		# 		script_obj.send(
-		# 			@aubrey,
-		# 			script_obj.text({ text: @txt })
-		# 		)
-		# 	}.not_to raise_error	
-		# end
+		it 'has no problem the the user is missing last_name' do
+			@estohb.call 'Aubrey||Lil||Mr. McEsterWahl'
+			u = User.create  child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
+			t.add_user u
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end
 
-		# it 'has no problem the the user is missing last/first_name' do
-		# 	User.create child_name:'Lil Aubs', fb_id: @aubrey
-		# 	User.where(fb_id:@aubrey).first.update first_name: nil
-		# 	expect {
-		# 		script_obj.send(
-		# 			@aubrey,
-		# 			script_obj.text({ text: @txt })
-		# 		)
-		# 	}.not_to raise_error	
-		# end
+		it 'has no problem the the user is missing last/first_name' do
+			@estohb.call '||Lil||Mr. McEsterWahl'
+			u = User.create child_name:'Lil Aubs', fb_id: @aubrey
+			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
+			t.add_user u			
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end
 
-		# it 'properly renders the teacher, parent, and child names' do
-		# 	User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
-		# 	User.where(fb_id:@aubrey).first.update first_name: nil
-		# 	expect {
-		# 		script_obj.send(
-		# 			@aubrey,
-		# 			script_obj.text({ text: @txt })
-		# 		)
-		# 	}.not_to raise_error	
-		# end
+		it 'renders the teacher, parent, and child names when all set' do
+			@estohb.call 'Aubrey||Lil||Mr. McEsterWahl'
+			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+			t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
+			t.add_user u			
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end
 
-		# it 'properly render just the child name' do
-		# 	User.create child_name:'Lil Aubs', fb_id: @aubrey
-		# 	User.where(fb_id:@aubrey).first.update first_name: nil
-		# 	expect {
-		# 		script_obj.send(
-		# 			@aubrey,
-		# 			script_obj.text({ text: @txt })
-		# 		)
-		# 	}.not_to raise_error	
-		# end
+		it 'properly render just the child name, nothing else set' do
+			@estohb.call '||Lil||StoryTime'
+			u = User.create child_name:'Lil Aubs', fb_id: @aubrey
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end
+
+		it 'works when user has not teacher' do
+			@estohb.call 'Aubrey||Lil||StoryTime'
+			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end		
+		it 'works when teacher has no signature' do
+			@estohb.call 'Aubrey||Lil||StoryTime'
+			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
+			t = Teacher.create email:'poop@pee.com', signature: nil
+			t.add_user u			
+			expect {
+				script_obj.send(
+					@aubrey,
+					script_obj.text({ text: @txt })
+				)
+			}.not_to raise_error	
+		end				
 	end	
 
-	it 'stipulate that the user has a teacher! tests may work, but might not be correct otherwise.' do
-		false
+
+	context 'when #send, the DB should be updated' do
+		before(:all) do
+			#load curriculae
+			
+
+			# load a script
+			@cli = Birdv::DSL::ScriptClient
+			@cli.newscript 'day1' do
+				button_story({
+					name: 		'tap_here',
+					title: 		"You're next story's coming soon!",
+					image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+					buttons: 	[postback_button('Tap here!', script_payload(:scratchstory))]
+				})
+				button_normal({
+					name: 			 'thanks',
+					window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
+					buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+				})			
+				sequence 'firsttap' do |recipient|
+					txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+					send recipient, text({text:txt})
+					send recipient, button({name:'tap_here'}) 
+				end
+				sequence 'scratchstory' do |recipient|
+					send recipient, story 
+					img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+					send recipient, picture({url:img_1})
+					send recipient, button({name: 'thanks'})
+				end
+				sequence 'yourwelcome' do |recipient|
+					send recipient, text({text: "You're welcome :)"})
+				end					
+			end
+
+			@s =  @cli.scripts
+		end
+
+		it 'updates last sequence seen' do
+			expect {
+
+			}.to.change(@u.state_table.last_sequence_seen).to eq()
+		end
+
+		it 'updates last_script_sent_time when :init sequence' do
+
+		end
+
+		it 'does not update last_sequence_seen when not :init sequence' do
+
+		end
+
+		it 'updates story read when sequence '
+
+		end
+
 	end
 
 
-	context 'when sending a story, the DB should be updated' do
-		it 'should '
 
-	end
 end

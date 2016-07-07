@@ -1,7 +1,8 @@
 require_relative '../helpers/fb'
+
+
 module Birdv
   module DSL
-
     class ScriptClient
       @@scripts = {}
 
@@ -13,25 +14,15 @@ module Birdv
       def self.scripts
         @@scripts
       end
+
     end
   end
 end
 
-# so this def merits examples. e.g.:
-# message: {
-#   attachment: {
-#     type: 'template',
-#     payload: {
-#       template_type: 'generic',
-#       elements: [{
-#         title: title,
-#         image_url: 'image_url is an optional field, but only include if you will use it',
-#         subtitle: "you can acutally include subititle but still set it as empty string",
-#         buttons: [{you are require to add buttons}]
-#       }]
-#     }
-#   }
-# }
+module Birdv
+  module DSL
+    class 
+
 
 module Birdv
   module DSL
@@ -181,6 +172,9 @@ module Birdv
       def button(btn_name)
         if btn_name.is_a? String
           return @fb_objects[btn_name.to_sym]
+        else btn_name.is_a? Hash 
+          # TODO: ensure is not nil?
+          return @fb_objects[btn_name[:name].to_sym]
         else
           return @fb_objects[btn_name]
         end
@@ -207,17 +201,25 @@ module Birdv
               }
       end
 
-      def story(args = {})
+      def send_story(args = {})
         assert_keys([:library, :title, :num_pages], args)
         library     = args[:library]
         title       = args[:title]
         num_pages   = args[:num_pages]
         base = STORY_BASE_URL
+        num_pages.times do |i|
+          url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
+          fb_send_json_to_user(recipient, picture(url:url))
+        end
+      end
+
+      def story
         return lambda do |recipient|
-          num_pages.times do |i|
-            url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
-            fb_send_json_to_user(recipient, picture(url:url))
-          end
+          
+
+
+          send_story()
+
         end
       end
 
@@ -247,3 +249,20 @@ module Birdv
     end
   end
 end
+
+
+# valid generic template format
+# message: {
+#   attachment: {
+#     type: 'template',
+#     payload: {
+#       template_type: 'generic',
+#       elements: [{
+#         title: title,
+#         image_url: 'image_url is an optional field, but only include if you will use it',
+#         subtitle: "you can acutally include subititle but still set it as empty string",
+#         buttons: [{you are require to add buttons}]
+#       }]
+#     }
+#   }
+# }
