@@ -66,6 +66,13 @@ RSpec.configure do |config|
       WebMock.enable!
       WebMock.disable_net_connect!(allow_localhost:false, allow: [])
     end
+
+    # config.around(:all) do |example|
+    #   DatabaseCleaner.cleaning do
+    #     example.run
+    #   end
+    # end
+
     config.around(:each) do |example|
       DatabaseCleaner.cleaning do
         example.run

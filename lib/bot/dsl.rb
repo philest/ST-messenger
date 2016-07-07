@@ -7,7 +7,7 @@ module Birdv
       @@scripts = {}
 
 
-      def self.newscript(script_name, &block)
+      def self.new_script(script_name, &block)
         puts "adding #{script_name} to thing"
         @@scripts[script_name] = StoryTimeScript.new(script_name, &block)
       end

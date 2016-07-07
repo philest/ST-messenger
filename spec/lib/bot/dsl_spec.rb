@@ -4,13 +4,15 @@ require 'bot/curricula'
 
 describe Birdv::DSL::StoryTimeScript do
 
-	let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
-	
-	before(:each) do
+	let (:script_obj) { Birdv::DSL::StoryTimeScript.new('examp') do end }
 
+	around(:all) do
+		DatabaseCleaner.clean_with(:truncation)
+	end
+
+	before(:each) do
 		@pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
 		@ubt  			= script_obj.url_button('Tap here!', 'http://example.com')
-
 	end
 
 	# => # => # => # => 
@@ -103,6 +105,7 @@ describe Birdv::DSL::StoryTimeScript do
 				window_text: @txt,
 				buttons: [@pb, @ubt]
 				})
+
 			[:text, :buttons].each do |x|
 				expect(btn[:message][:attachment][:payload].key? x).to be true
 			end
@@ -143,10 +146,10 @@ describe Birdv::DSL::StoryTimeScript do
 	# => 
 	# =>
 	context '#send' do
-		before(:all) do
-			@num_pages 	= 2;
+		before(:each) do
+			@num_pages 		= 2;
 			@txt  			= "hey this is window text, which can be much longer than button text"
-			@lib 				= 'day1'
+			@lib 			= 'day1'
 			@title 			= 'chomp'
 			
 
@@ -158,19 +161,19 @@ describe Birdv::DSL::StoryTimeScript do
 			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 			# one stub per page
 			@num_pages.times do |i|
-	      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-	        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{@lib}/#{@title}/#{@title}#{i+1}.jpg\"}}}}",
-	            :headers => {'Content-Type'=>'application/json'}).
-	        to_return(:status => 200, :body => success, :headers => {})
-	    end
+			      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+			        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{@lib}/#{@title}/#{@title}#{i+1}.jpg\"}}}}",
+			            :headers => {'Content-Type'=>'application/json'}).
+			        to_return(:status => 200, :body => success, :headers => {})
+	    	end
 		end
 
 		before(:example, :text) do
 			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"#{@aubrey}\"},\"message\":{\"text\":\"#{@txt}\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => success, :headers => {})
+				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+	         with(:body => "{\"recipient\":{\"id\":\"#{@aubrey}\"},\"message\":{\"text\":\"#{@txt}\"}}",
+	              :headers => {'Content-Type'=>'application/json'}).
+	         to_return(:status => 200, :body => success, :headers => {})
 		end		
 
 		it 'sends a send_story!', story: true do
@@ -224,7 +227,6 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end
 
-		it 'update the new '
 
 	end
 
@@ -244,15 +246,15 @@ describe Birdv::DSL::StoryTimeScript do
 			@estohb = lambda do |text|  
 				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => @success, :headers => {})			
+		         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
+		              :headers => {'Content-Type'=>'application/json'}).
+		         to_return(:status => 200, :body => @success, :headers => {})			
 			end
 		end
 
-		before(:each) do
-			DatabaseCleaner.clean_with(:truncation)
-		end
+		# after(:each) do
+		# 	DatabaseCleaner.clean_with(:truncation)
+		# end
 
 		it 'has no problem the the user is missing first_name' do
 			# stub the request with the expected body :)
@@ -353,7 +355,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 			# load a script
 			@cli = Birdv::DSL::ScriptClient
-			@cli.newscript 'day1' do
+			@cli.new_script 'day1' do
 				button_story({
 					name: 		'tap_here',
 					title: 		"You're next story's coming soon!",
@@ -380,7 +382,7 @@ describe Birdv::DSL::StoryTimeScript do
 					send recipient, text({text: "You're welcome :)"})
 				end					
 			
-			end #=>END @cli.newscript 'day1' do
+			end #=>END @cli.new_script 'day1' do
 
 			@s = @cli.scripts
 
@@ -404,5 +406,4 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end
 	end #=>END context 'when #send, the DB should be updated' do
-
 end
