@@ -40,7 +40,9 @@ scripts  = Birdv::DSL::StoryTimeScript.scripts
 DAY_RQST  = /day\d+/i
 HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
 STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
-THANK_MSG= /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
+THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
+HAHA_MSG = /(haha)/i 
+ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)/i
 
 
 
@@ -55,6 +57,10 @@ def get_reply(body, user)
     our_reply =  "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
   when THANK_MSG
     our_reply = "You're welcome :)"
+  when HAHA_MSG
+    our_reply = ":D"
+  when ROBOT_MSG
+    our_reply = "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
   else #default msg 
     our_reply = "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
   end

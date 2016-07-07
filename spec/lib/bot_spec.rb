@@ -161,7 +161,36 @@ describe "Bot" do
 			it "replies correctly" do 
 				expect(@reply).to eq "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
 			end 
-		end 
+		end
+
+		describe "ROBOT message" do 
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Are you a robot?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Is this automated?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+		end
+
+		describe "HAHA message" do 
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("hahaha", @user)
+				expect(@reply).to eq ":D"
+			end 
+
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("This is cool haha", @user)
+				expect(@reply).to eq ":D"
+			end 
+		end 		 
+
 
 		describe "THANK" do
 
@@ -182,9 +211,6 @@ describe "Bot" do
 				@reply = get_reply("THank YOU!!", @user)
 				expect(@reply).to eq "You're welcome :)"
 			end 
-
-
-
 		end  
 
 
