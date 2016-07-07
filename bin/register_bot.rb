@@ -7,6 +7,9 @@ def generate_hmac(content)
   OpenSSL::HMAC.hexdigest('sha1'.freeze, app_secret, content)
 end
 
+
+ENV["RACK_ENV"] ||= "development"
+
 response = HTTParty.post(
 	"https://graph.facebook.com/v2.6/me/subscribed_apps",
 	query: {
@@ -14,3 +17,4 @@ response = HTTParty.post(
 	}
 )
 puts response.inspect
+puts "registered for #{ENV['RACK_ENV']}"

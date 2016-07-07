@@ -6,9 +6,11 @@ class StartDayWorker
   # end
 
   def perform(recipient, day_number)
-  		# double quotation 
+  		# double quotation
   		script = Birdv::DSL::StoryTimeScript.scripts["day#{day_number}"]
-		script.run_sequence(recipient, :init) if not script.nil?
+		  if not script.nil?
+        script.run_sequence(recipient, :init) 
+      end
 		# update the user day! TODO: make this a seperate job!
 	end
 end
@@ -26,10 +28,16 @@ class ScheduleWorker
   # time = current_time
   # range = range of valid times
   def filter_users(time, range)
-  	User.all.select do |user|
+  	filtered = User.all.select do |user|
   		# TODO - exception handling if the timezone isn't the correct name
   		within_time_range(user, range)
   	end
+  rescue => e
+    p e.message " something went wrong, not filtering users"
+    filtered = []
+  ensure
+    puts "filtered = #{filtered.to_s}"
+    return filtered
   end
 
     # need to make sure the send_time column is a Datetime type

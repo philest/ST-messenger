@@ -37,6 +37,7 @@ scripts  = Birdv::DSL::ScriptClient.scripts
 
 
 DAY_RQST = /day\d+/i
+HELP_RQST = /help/i
 
 #
 # i.e. when user sends the bot a message.
@@ -49,19 +50,24 @@ Bot.on :message do |message|
   db_user = User.where(:fb_id => sender_id).first 
   if db_user.nil?
     register_user(message.sender)
-  end # enroll
+    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
+  else # user has been enrolled already...
+      case message.text
+      when DAY_RQST
+        script_name = message.text.match(DAY_RQST).to_s
+        if scripts[script_name] != nil
+          scripts[script_name].run_sequence(sender_id, :init)
+        else
+          fb_send_txt(sender_id, "Sorry, that script is not yet available.")
+        end
+      when HELP_RQST
+        scripts['help'].run_sequence(sender_id, 'help_start')
+      else # any other text....
+        scripts['defaultresponse'].run_sequence(sender_id, 'usermessage')
+      end
+  end # db_user.nil?
 
-  case message.text
-  when DAY_RQST
-    script_name = message.text.match(DAY_RQST).to_s
-    if scripts[script_name] != nil
-      scripts[script_name].run_sequence(sender_id, :init)
-    else
-      fb_send_txt(sender_id, "Sorry, that script is not yet available.")
-    end
-  else # any other text....
-    scripts['defaultresponse'].run_sequence(sender_id, 'usermessage')
-  end
+   
 end
 
 #
@@ -71,8 +77,7 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    BotWorker.perform_async(sender_id, 'day1', :init)
-
+    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

@@ -13,6 +13,11 @@ describe "Models" do
 			expect(@eq).to_not be_nil
 		end
 
+		it "has a state_table upon creation" do 
+			@st = @u.state_table
+			expect(@st).to_not be_nil
+		end
+
 		it "destroys its enrollment_queue upon destruction" do
 			@u.destroy
 			expect(EnrollmentQueue.all).to be_empty
@@ -28,6 +33,28 @@ describe "Models" do
 			@u.destroy 
 			expect(ButtonPressLog.all).to be_empty
 		end
+	end
+
+	context "state_table" do
+		it "has a user" do
+			expect(@u.state_table.user_id).to_not be_nil
+		end
+	end
+
+	context "curriculum version", version:true do
+		it "equals the ENV['CURRICULUM_VERSION'] in .env" do
+			expect(@u.curriculum_version).to eq ENV['CURRICULUM_VERSION'].to_i
+			env = ENV['CURRICULUM_VERSION']
+			ENV['CURRICULUM_VERSION'] = '10'
+			user = User.create
+			expect(user.curriculum_version).to eq ENV['CURRICULUM_VERSION'].to_i
+			ENV['CURRICULUM_VERSION'] = env
+		end
+
+		it "is a number" do
+			expect(@u.curriculum_version.class).to be Fixnum
+		end
+
 	end
 
 	context "enrollment_queue" do

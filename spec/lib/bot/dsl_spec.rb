@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'bot/dsl'
+require 'bot/curricula'
 
 describe Birdv::DSL::StoryTimeScript do
 
@@ -174,9 +175,10 @@ describe Birdv::DSL::StoryTimeScript do
 
 		it 'sends a send_story!', story: true do
 			expect {
-				script_obj.send_story( 
+				script_obj.send( 
 					@aubrey, 
 					script_obj.send_story({ 
+									recipient:  @aubrey,
 									library: 		@lib,
 									title: 	 		@title,
 									num_pages: 	@num_pages,
@@ -194,6 +196,13 @@ describe Birdv::DSL::StoryTimeScript do
 				)
 			}.not_to raise_error
 		end
+		
+		# TODO: explain this test
+		it 'does not error when passed json, but doesn\'t contain json' do
+
+
+		end
+
 	end
 	
 	# Visual separation :P
@@ -203,6 +212,10 @@ describe Birdv::DSL::StoryTimeScript do
 	# note the difference between 'send story...' and 'send send_story'.
 	# the former is usually used in a script, the latter not
 	context '#send a #story' do
+		it 'expects certain arguments' do
+
+		end
+
 		it 'send correct story when ' do
 
 		end
@@ -333,8 +346,10 @@ describe Birdv::DSL::StoryTimeScript do
 
 	context 'when #send, the DB should be updated' do
 		before(:all) do
+
 			#load curriculae
-			
+			dir = "#{File.expand_path(File.dirname(__FILE__))}/test_curricula/"
+			Birdv::DSL::Curricula.load(dir, absolute=true)			
 
 			# load a script
 			@cli = Birdv::DSL::ScriptClient
@@ -364,15 +379,17 @@ describe Birdv::DSL::StoryTimeScript do
 				sequence 'yourwelcome' do |recipient|
 					send recipient, text({text: "You're welcome :)"})
 				end					
-			end
+			
+			end #=>END @cli.newscript 'day1' do
 
-			@s =  @cli.scripts
-		end
+			@s = @cli.scripts
+
+		end #=>END before(:all) do
 
 		it 'updates last sequence seen' do
-			expect {
+			# expect {
 
-			}.to.change(@u.state_table.last_sequence_seen).to eq()
+			# }.to.change(@u.state_table.last_sequence_seen).to eq()
 		end
 
 		it 'updates last_script_sent_time when :init sequence' do
@@ -383,12 +400,9 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end
 
-		it 'updates story read when sequence '
+		it 'updates story read when sequence' do
 
 		end
-
-	end
-
-
+	end #=>END context 'when #send, the DB should be updated' do
 
 end

@@ -1,11 +1,14 @@
 Birdv::DSL::StoryTimeScript.new 'day1' do
 
+	day 1
+
 	#
 	# register some buttons for reuse!
 	# ================================
 	# NOTE: always call story_button, template_generic, 
 	# and button_normal OUTSIDE of sequence blocks
 	#
+
 
 	button_story({
 		name: 		'tap_here',
@@ -22,7 +25,6 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	})
 
 
-
 	sequence 'firsttap' do |recipient|
 		# no longer a text before.
 		# send tap_here button
@@ -37,11 +39,11 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 		# send out coon story
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
 		send picture(img_1), recipient
-		send_story 'day1', 'coon', 9, recipient
+
+		send_story recipient
 
 		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
 		send picture(img_2), recipient, 23
-		
 
 		# one more button
 		send button('thanks'), recipient

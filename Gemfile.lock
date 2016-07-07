@@ -122,6 +122,7 @@ DEPENDENCIES
   newrelic_rpm
   pg (= 0.17.1)
   puma (~> 3.4.0)
+  rack-test
   rake (= 11.1.2)
   redis (= 3.3.0)
   rspec
