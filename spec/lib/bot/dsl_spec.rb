@@ -7,11 +7,6 @@ describe Birdv::DSL::StoryTimeScript do
 
 	let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
 	
-	around(:each) do |example|
-		DatabaseCleaner.clean_with(:truncation)
-		example.run
-	end	
-
 	before(:all) do
 		ENV['CURRICULUM_VERSION'] = "0" 	# for the purposes of this spec
 		@aubrey 	= '10209571935726081' # aubrey 
@@ -25,15 +20,29 @@ describe Birdv::DSL::StoryTimeScript do
 	        to_return(:status => 200, :body => @success, :headers => {})
 	    end
 		end
+
+
+		@stub_txt = lambda do |text|  
+			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+       with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
+            :headers => {'Content-Type'=>'application/json'}).
+       to_return(:status => 200, :body => @success, :headers => {})			
+		end
+
+		@stub_arb = lambda do |text|  
+			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+       with(:body => text,
+            :headers => {'Content-Type'=>'application/json'}).
+       to_return(:status => 200, :body => @success, :headers => {})			
+		end		
+
 	end
 
 
-	before(:each) do
-		@pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
-		@ubt  			= script_obj.url_button('Tap here!', 'http://example.com')
-	end
 
-	# => # => # => # => 
+	# testing the button_story generation
 	# => # => # => # => 
 	# => # => # => # => 
 	# => # => # => # => 
@@ -41,6 +50,11 @@ describe Birdv::DSL::StoryTimeScript do
 		before(:all) do
 			@btn_name = 'poop'
 		end
+
+		before(:each) do
+			@pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
+			@ubt  			= script_obj.url_button('Tap here!', 'http://example.com')
+		end			
 
 		it 'hash has required properties' do
 			btn = script_obj.button_story ({
@@ -176,13 +190,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 		before(:example, :story) do
 			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-			# one stub per page
-			@num_pages.times do |i|
-			      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-			        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{@lib}/#{@title}/#{@title}#{i+1}.jpg\"}}}}",
-			            :headers => {'Content-Type'=>'application/json'}).
-			        to_return(:status => 200, :body => success, :headers => {})
-	    	end
+			@stub_story.call(@aubrey, @lib,@title,@num_pages)
 		end
 
 		before(:example, :text) do
@@ -271,9 +279,6 @@ describe Birdv::DSL::StoryTimeScript do
 			end
 		end
 
-		# after(:each) do
-		# 	DatabaseCleaner.clean_with(:truncation)
-		# end
 
 		# TODO: make this a webmock error
 		it 'has no problem the the user is missing first_name' do
@@ -372,57 +377,43 @@ describe Birdv::DSL::StoryTimeScript do
 	# =>
 	# 
 	context '#register_sequence' do
+		before(:all) do
+			@register_dumb_script = lambda do |name, return_str, script|
+				script.sequence name do |recipient|
+					return_str
+				end				
+			end
+		end
+
 		it 'registers correct number of sequences' do
-			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
       u = User.create(fb_id:@aubrey)		
-			script_obj.sequence 'seq1' do |r|
-				'a'
-			end
-			script_obj.sequence 'seq1' do |r|
-				'b'
-			end
-			script_obj.sequence 'seq1' do |r|
-				'c' 
-			end
-			script_obj.sequence 'seq2' do |r|
-				'd' 
-			end
+      @register_dumb_script.call('seq1','a', script_obj)
+      @register_dumb_script.call('seq1','b', script_obj)
+      @register_dumb_script.call('seq1','c', script_obj)
+      @register_dumb_script.call('seq2','d', script_obj)
+
 			expect(script_obj.num_sequences).to eq(2)
 			expect(script_obj.run_sequence(@aubrey,'seq1')).to eq('c')
 			expect(script_obj.run_sequence(@aubrey,'seq2')).to eq('d')
 		end
 
 		it 'overwriting a sequence screws up :init' do
-			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
       u = User.create(fb_id:@aubrey)		
-			script_obj.sequence 'seq1' do |r|
-				'a'
-			end
-			script_obj.sequence 'seq1' do |r|
-				'b'
-			end
-			script_obj.sequence 'seq1' do |r|
-				'c' 
-			end
-			script_obj.sequence 'seq2' do |r|
-				'd' 
-			end
+      @register_dumb_script.call('seq1','a', script_obj)
+      @register_dumb_script.call('seq1','b', script_obj)
+      @register_dumb_script.call('seq1','c', script_obj)
+      @register_dumb_script.call('seq2','d', script_obj)
 			expect(script_obj.run_sequence(@aubrey, :init)).to eq('a')
 		end
 
 		it 'errs when fallatious sequence, also DB is not updated' do
-			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
       u = User.create(fb_id: @aubrey)		
 			old = u.state_table.last_sequence_seen
 			
 			# should change the last_sequence_seen
 			expect{
-				script_obj.sequence 'seq1' do |r|
-					'a'
-				end
-				script_obj.sequence 'seq2' do |r|
-					'b'
-				end
+	      @register_dumb_script.call('seq1','a', script_obj)
+	      @register_dumb_script.call('seq2','b', script_obj)
 				script_obj.run_sequence(@aubrey, :seq1)
 			}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to 'seq1'
 
@@ -440,7 +431,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 
 	# Visual separation :P
-	# => 
+	# => 	
 	# => 
 	# =>
 	# making sure that we play nicely with scripts
@@ -456,22 +447,6 @@ describe Birdv::DSL::StoryTimeScript do
 				Teacher.create email:'poop@pee.com', signature: 'Ms. McEsterWahl'
 			end
 
-			@stub_txt = lambda do |text|  
-				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => @success, :headers => {})			
-			end
-
-			@stub_arb = lambda do |text|  
-				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => text,
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => @success, :headers => {})			
-			end
-			
 
 			#load curriculae
 			dir = "#{File.expand_path(File.dirname(__FILE__))}/test_curricula/"
@@ -542,11 +517,6 @@ describe Birdv::DSL::StoryTimeScript do
 		end #=>END before(:all) do
 
 
-		#TODO: get this out of here if possible...
-		before(:each) do
-						DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
-
-		end
 
 		context 'when updating last_sequence_seen it' do
 			let (:u) {@make_aubrey.call}
@@ -619,15 +589,25 @@ describe Birdv::DSL::StoryTimeScript do
 					@stub_story.call(@aubrey, 'day1', 'scratch', 6)
 					s2.send(@aubrey, s2.story())
 			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(3)
+
 		end		
 
-		it 'does not update last_sequence_seen when not :init sequence' do
+		it 'does not confuse last_sequence with last story_read' do
+			@stub_txt.call("You're welcome :)")
+			@make_aubrey.call
+			s1 = @s['day1']
+			s2 = @s['day2']
+			expect {
+					@stub_story.call(@aubrey, 'day1', 'coon', 2)
+					s1.send(@aubrey, s1.story())
+					@stub_story.call(@aubrey, 'day1', 'cook', 11)
+					s2.send(@aubrey, s2.story())
+					@stub_story.call(@aubrey, 'day1', 'scratch', 6)
+					s2.send(@aubrey, s2.story())
+					s2.run_sequence(@aubrey, 'yourwelcome')
+			}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to('yourwelcome')
 
-
-		end
-
-		it 'updates story read when sequence' do
-
+			expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(3)
 		end
 	end #=>END context 'when #send, the DB should be updated' do
 end
