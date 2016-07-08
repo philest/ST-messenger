@@ -1,6 +1,7 @@
 require_relative '../helpers/fb'
 
 
+
 module Birdv
   module DSL
     class ScriptClient
@@ -174,7 +175,7 @@ module Birdv
       def get_curriculum_version(recipient)
         user = User.where(fb_id: recipient).first
         if user
-          return user.curriculum_version || 0
+          return user.curriculum_version
         else # default to the 0th version
           return 0
         end

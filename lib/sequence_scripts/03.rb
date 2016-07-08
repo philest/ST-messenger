@@ -41,7 +41,7 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 		send recipient, picture({url:img_1}), 23
 
 		# one more button
-		send recipient, button('thanks') 
+		send recipient, button({name:"thanks"}) 
 	end
 
 	sequence 'yourwelcome' do |recipient|

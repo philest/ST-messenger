@@ -14,7 +14,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		name: 		'tap_here',
 		title: 		"Let's read tonight's story.",
 		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-		buttons: 	[postback_button('Tap here!', script_payload(:coontory))]
+		buttons: 	[postback_button('Tap here!', script_payload(:coonstory))]
 	})
 
 
@@ -28,7 +28,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	sequence 'firsttap' do |recipient|
 		# no longer a text before.
 		# send tap_here button
-		send recipient, button({text:'tap_here'}) 
+		send recipient, button({name:'tap_here'}) 
 	end
 
 	sequence 'coonstory' do |recipient|
@@ -38,7 +38,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 
 		# send out coon story
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
-		send recipient, picture(img_1)
+		send recipient, picture({url:img_1})
 
 		send recipient, story()
 
