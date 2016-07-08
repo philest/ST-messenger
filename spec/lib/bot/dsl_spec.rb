@@ -6,6 +6,10 @@ describe Birdv::DSL::StoryTimeScript do
 
 	let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
 	
+	before(:all) do
+		@aubrey 	= '10209571935726081' # aubrey 
+	end
+
 	before(:each) do
 
 		@pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
@@ -150,7 +154,6 @@ describe Birdv::DSL::StoryTimeScript do
 			@title 			= 'chomp'
 			
 
-			@aubrey 	= '10209571935726081' # aubrey 
 			User.create first_name:'Aubrey', last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
 		end
 
@@ -197,7 +200,7 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error
 		end
 		
-		# TODO: explain this test
+		# the use case here is if we do send(send_story{args...}), which doesn't have :text field
 		it 'does not error when passed json, but doesn\'t contain json' do
 
 
@@ -224,7 +227,6 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end
 
-		it 'update the new '
 
 	end
 
@@ -241,6 +243,7 @@ describe Birdv::DSL::StoryTimeScript do
 			@lib 				= 'day1'
 			@title 			= 'chomp'
 			@aubrey 	= '10209571935726081' # aubrey
+			
 			@estohb = lambda do |text|  
 				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
@@ -254,6 +257,7 @@ describe Birdv::DSL::StoryTimeScript do
 			DatabaseCleaner.clean_with(:truncation)
 		end
 
+		# TODO: make this a webmock error
 		it 'has no problem the the user is missing first_name' do
 			# stub the request with the expected body :)
 			@estohb.call '||Lil||Mr. McEsterWahl'
@@ -266,7 +270,7 @@ describe Birdv::DSL::StoryTimeScript do
 					@aubrey,
 					script_obj.text({ text: @txt })
 				)
-			}.not_to raise_error				
+			}.not_to raise_error			
 		end
 
 		it 'has no problem the the user is missing last_name' do
@@ -319,7 +323,7 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error	
 		end
 
-		it 'works when user has not teacher' do
+		it 'works when user has no teacher' do
 			@estohb.call 'Aubrey||Lil||StoryTime'
 			u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
 			expect {
@@ -344,8 +348,112 @@ describe Birdv::DSL::StoryTimeScript do
 	end	
 
 
-	context 'when #send, the DB should be updated' do
+	# Visual separation :P
+	# => 
+	# => 
+	# =>
+	# 
+	context '#register_sequence' do
+		it 'registers correct number of sequences' do
+			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
+      u = User.create(fb_id:@aubrey)		
+			script_obj.sequence 'seq1' do |r|
+				'a'
+			end
+			script_obj.sequence 'seq1' do |r|
+				'b'
+			end
+			script_obj.sequence 'seq1' do |r|
+				'c' 
+			end
+			script_obj.sequence 'seq2' do |r|
+				'd' 
+			end
+			expect(script_obj.num_sequences).to eq(2)
+			expect(script_obj.run_sequence(@aubrey,'seq1')).to eq('c')
+			expect(script_obj.run_sequence(@aubrey,'seq2')).to eq('d')
+		end
+
+		it 'overwriting a sequence screws up :init' do
+			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
+      u = User.create(fb_id:@aubrey)		
+			script_obj.sequence 'seq1' do |r|
+				'a'
+			end
+			script_obj.sequence 'seq1' do |r|
+				'b'
+			end
+			script_obj.sequence 'seq1' do |r|
+				'c' 
+			end
+			script_obj.sequence 'seq2' do |r|
+				'd' 
+			end
+			expect(script_obj.run_sequence(@aubrey, :init)).to eq('a')
+		end
+
+		it 'errs when fallatious sequence, also DB is not updated' do
+			DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
+      u = User.create(fb_id: @aubrey)		
+			old = u.state_table.last_sequence_seen
+			
+			# should change the last_sequence_seen
+			expect{
+				script_obj.sequence 'seq1' do |r|
+					'a'
+				end
+				script_obj.sequence 'seq2' do |r|
+					'b'
+				end
+				script_obj.run_sequence(@aubrey, :seq1)
+			}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to 'seq1'
+
+			# should raise error because fallatious
+			expect{
+				script_obj.run_sequence(@aubrey, :pee)
+			}.to raise_error(NoMethodError)
+
+			# should not have changed last_sequence_seen
+			expect(User.where(fb_id:@aubrey).first.state_table.last_sequence_seen).to eq('seq1')
+		end
+	end
+
+
+
+
+	# Visual separation :P
+	# => 
+	# => 
+	# =>
+	# making sure that we play nicely with scripts
+	# basically, we're running a larger part of stack
+	context 'when #send, the DB should be updated', script:true do
 		before(:all) do
+
+			@make_aubrey  = lambda do
+				User.create phone:'3013328953', first_name:'Aubs', last_name:'Wahl', fb_id:@aubrey, child_name:'Lil Aubs'
+			end
+
+			@make_teacher  = lambda do
+				Teacher.create email:'poop@pee.com', signature: 'Ms. McEsterWahl'
+			end
+
+			@stub_txt = lambda do |text|  
+				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => @success, :headers => {})			
+			end
+
+			@stub_arb = lambda do |text|  
+				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => text,
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => @success, :headers => {})			
+			end
+			
 
 			#load curriculae
 			dir = "#{File.expand_path(File.dirname(__FILE__))}/test_curricula/"
@@ -353,7 +461,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 			# load a script
 			@cli = Birdv::DSL::ScriptClient
-			@cli.newscript 'day1' do
+			@cli.new_script 'day1' do
 				button_story({
 					name: 		'tap_here',
 					title: 		"You're next story's coming soon!",
@@ -367,34 +475,120 @@ describe Birdv::DSL::StoryTimeScript do
 				})			
 				sequence 'firsttap' do |recipient|
 					txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
-					send recipient, text({text:txt})
+					send recipient, text({text: txt})
 					send recipient, button({name:'tap_here'}) 
 				end
 				sequence 'scratchstory' do |recipient|
 					send recipient, story 
 					img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-					send recipient, picture({url:img_1})
+					send recipient, picture({url: img_1})
 					send recipient, button({name: 'thanks'})
 				end
 				sequence 'yourwelcome' do |recipient|
 					send recipient, text({text: "You're welcome :)"})
 				end					
 			
-			end #=>END @cli.newscript 'day1' do
+			end #=>END @cli.new_script 'day1' do
 
+			@cli.new_script 'day2' do
+				button_story({
+					name: 		'tap_here',
+					title: 		"You're next story's coming soon!",
+					image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+					buttons: 	[postback_button('Tap here!', script_payload(:story))]
+				})
+
+				button_normal({
+					name: 			 'thanks',
+					window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
+					buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+				})			
+
+				sequence 'differentfirst' do |recipient|
+					txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+					send recipient, text({text: txt})
+					send recipient, button({name:'tap_here'}) 
+				end
+				sequence 'story' do |recipient|
+					send recipient, story 
+					img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+					send recipient, picture({url: img_1})
+					send recipient, button({name: 'thanks'})
+				end
+				sequence 'yourwelcome' do |recipient|
+					send recipient, text({text: "You're welcome :)"})
+				end					
+			
+			end #=>END @cli.new_script 'day1' do			
 			@s = @cli.scripts
-
 		end #=>END before(:all) do
 
-		it 'updates last sequence seen' do
-			# expect {
-
-			# }.to.change(@u.state_table.last_sequence_seen).to eq()
-		end
-
-		it 'updates last_script_sent_time when :init sequence' do
+		#TODO: get this out of here if possible...
+		before(:each) do
+						DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
 
 		end
+
+		context 'updating last_sequence_seen' do
+			let (:u) {@make_aubrey.call}
+			let (:t) {@make_teacher.call}
+
+			before(:example) do
+				t.add_user u
+
+				# init
+				b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"You're next story's coming soon!\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
+				@stub_txt.call("Ms. McEsterWahl: Hi Aubs, here’s another story!")
+				@stub_arb.call(b1)
+
+				# scratchstory
+				b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg\"}}}}"
+				b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Ms. McEsterWahl: I’ll send another story tomorrow night :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"			
+				@stub_arb.call(b2)
+				@stub_arb.call(b3)
+
+			end
+
+			it 'updates last sequence seen when run nil to init to scratchstory' do
+				expect {
+					@s['day1'].run_sequence(@aubrey, :init)
+				}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to ('init')
+
+				expect {
+					@s['day1'].run_sequence(@aubrey, :scratchstory)
+				}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from('init').to ('scratchstory')			
+			end
+
+		end
+
+		it 'sends the right story' do
+			@make_aubrey.call
+			script = @s['day1']
+			expect {
+					script.send(@aubrey, script.story())
+				}.not_to raise_error
+		end
+
+		it 'send(@aubrey, story()) updates story day' do
+			@make_aubrey.call
+			s1 = @s['day1']
+			s2 = @s['day2']
+			expect {
+					s1.send(@aubrey, s1.story())
+					s2.send(@aubrey, s2.story())
+			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(2)
+		end
+
+		it 'third story should work' do
+			@make_aubrey.call
+			s1 = @s['day1']
+			s2 = @s['day2']
+			expect {
+					s1.send(@aubrey, s1.story())
+					s2.send(@aubrey, s2.story())
+					s2.send(@aubrey, s2.story())
+			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(3)
+		end		
 
 		it 'does not update last_sequence_seen when not :init sequence' do
 

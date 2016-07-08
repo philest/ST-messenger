@@ -7,7 +7,7 @@ module Birdv
       @@scripts = {}
 
 
-      def self.newscript(script_name, &block)
+      def self.new_script(script_name, &block)
         puts "adding #{script_name} to thing"
         @@scripts[script_name] = StoryTimeScript.new(script_name, &block)
       end
@@ -26,14 +26,14 @@ module Birdv
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
 
-      attr_reader :script_name, :script_day
+      attr_reader :script_name, :script_day, :num_sequences
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
       def initialize(script_name, &block)
         @fb_objects  = {}
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
-
+        @num_sequences = 0
         day          = script_name.scan(/\d+/)[0]
         
         # TODO: something about this
@@ -51,11 +51,21 @@ module Birdv
 
 
       def register_sequence(sqnce_name, block)
-        puts 'WARNING: overwriting object #{sqnce_name}' if @fb_objects.key?(sqnce_name.to_sym)
+        sqnce = sqnce_name.to_sym
+
+        # check if this sqnce was already registered
+        already_registered = @sequences.has_key?(sqnce)
+
+        # register sqnce and index it
+        @sequences[sqnce]  = [block, @num_sequences]
+
         if @sequences[:init] == nil
-          @sequences[:init] = block
+          @sequences[:init] = @sequences[sqnce]
         end
-        @sequences[sqnce_name.to_sym] = block
+
+        # if sqnce wasn't previously registered, increment the number of registered sequences
+        warning = 'WARNING: you already registered that sequence :('
+        already_registered ? puts(warning) : @num_sequences = @num_sequences+1 
       end
 
       def assert_keys(keys = [], args)
@@ -177,12 +187,16 @@ module Birdv
       def run_sequence(recipient, sqnce_name)
         # puts(@sequences[sqnce_name.to_sym])
         begin
-          instance_exec(recipient, &@sequences[sqnce_name.to_sym])
+          ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
+          User.where(fb_id:recipient).first.state_table.update(last_sequence_seen: sqnce_name.to_s)
+          return ret
+
          # puts "successfully ran #{sqnce_name}!"
         rescue => e  
-          puts "#{sqnce_name} failed!"
-          puts e.message  
-          puts e.backtrace.join("\n") 
+          puts "#{sqnce_name} from script #{@script_name} failed!"
+          raise e
+          # puts e.message  
+          # puts e.backtrace.join("\n") 
         end
       end
 
@@ -226,8 +240,10 @@ module Birdv
         num_pages   = args[:num_pages]
         recipient   = args[:recipient]
         base = STORY_BASE_URL
+        puts "the number of pages #{num_pages}"
         num_pages.times do |i|
           url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
+          puts "sending #{url}!"
           fb_send_json_to_user(recipient, picture(url:url))
         end
       end
@@ -247,19 +263,28 @@ module Birdv
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
    
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
-            storyinfo = curriculum[@script_day - 1].value
+            storyinfo = curriculum[@script_day - 1]
 
-            lib, title, num_pages = storyinfo.values
+            lib, title, num_pages = storyinfo
+            puts "#{lib} #{num_pages}"
 
             send_story({
               recipient:  recipient,
-              library:     lib,
+              library:    lib,
               title:      title,
-              num_pages:  num_pages
+              num_pages:  num_pages.to_i
             })
+            
+            # TODO: error stuff
+
+            # TODO: make this atomic somehow? slash errors
+            User.where(fb_id:recipient).first.state_table.update(last_story_read_time:Time.now.utc, 
+                                 last_story_read?: true, 
+                                 story_number: Sequel.+(:story_number, 1))
 
           rescue => e
             p e.message + " failed to send user with fb_id #{recipient} a story"
+            raise e
           end         
         end
       end

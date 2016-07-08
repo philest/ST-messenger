@@ -1,10 +1,11 @@
+require 'csv'
 module Birdv
   module DSL
     class Curricula
     	@@curricula = {}
       
       def self.load(dir="../curriculum_versions", absolute=false)
-        require 'csv'
+
         @@curricula = {}
 
         # TODO: ensure ending '/'
@@ -19,7 +20,9 @@ module Birdv
           CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
             curr_version = File.basename(f, ".csv").to_i
             @@curricula[curr_version] ||= []
-            @@curricula[curr_version] << row
+            
+            puts "ROW: #{row} of type #{row.class}"
+            @@curricula[curr_version] << row.to_hash.values
           end
         end
       end
