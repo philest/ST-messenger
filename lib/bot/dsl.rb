@@ -260,6 +260,7 @@ module Birdv
 
             version = get_curriculum_version(recipient)
 
+            puts "THE CURRICULUM VERSION WE GETTING IS #{version}"
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
    
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1

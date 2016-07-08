@@ -4,9 +4,16 @@ require 'bot/curricula'
 
 describe Birdv::DSL::StoryTimeScript do
 
+
 	let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
 	
+	around(:each) do |example|
+		DatabaseCleaner.clean_with(:truncation)
+		example.run
+	end	
+
 	before(:all) do
+		ENV['CURRICULUM_VERSION'] = "0" 	# for the purposes of this spec
 		@aubrey 	= '10209571935726081' # aubrey 
 		@success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 
@@ -20,11 +27,10 @@ describe Birdv::DSL::StoryTimeScript do
 		end
 	end
 
-	before(:each) do
 
+	before(:each) do
 		@pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
 		@ubt  			= script_obj.url_button('Tap here!', 'http://example.com')
-
 	end
 
 	# => # => # => # => 
@@ -117,6 +123,7 @@ describe Birdv::DSL::StoryTimeScript do
 				window_text: @txt,
 				buttons: [@pb, @ubt]
 				})
+
 			[:text, :buttons].each do |x|
 				expect(btn[:message][:attachment][:payload].key? x).to be true
 			end
@@ -157,10 +164,10 @@ describe Birdv::DSL::StoryTimeScript do
 	# => 
 	# =>
 	context '#send' do
-		before(:all) do
-			@num_pages 	= 2;
+		before(:each) do
+			@num_pages 		= 2;
 			@txt  			= "hey this is window text, which can be much longer than button text"
-			@lib 				= 'day1'
+			@lib 			= 'day1'
 			@title 			= 'chomp'
 			
 
@@ -171,19 +178,19 @@ describe Birdv::DSL::StoryTimeScript do
 			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 			# one stub per page
 			@num_pages.times do |i|
-	      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-	        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{@lib}/#{@title}/#{@title}#{i+1}.jpg\"}}}}",
-	            :headers => {'Content-Type'=>'application/json'}).
-	        to_return(:status => 200, :body => success, :headers => {})
-	    end
+			      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+			        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{@lib}/#{@title}/#{@title}#{i+1}.jpg\"}}}}",
+			            :headers => {'Content-Type'=>'application/json'}).
+			        to_return(:status => 200, :body => success, :headers => {})
+	    	end
 		end
 
 		before(:example, :text) do
 			success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
-			stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"#{@aubrey}\"},\"message\":{\"text\":\"#{@txt}\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => success, :headers => {})
+				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+	         with(:body => "{\"recipient\":{\"id\":\"#{@aubrey}\"},\"message\":{\"text\":\"#{@txt}\"}}",
+	              :headers => {'Content-Type'=>'application/json'}).
+	         to_return(:status => 200, :body => success, :headers => {})
 		end		
 
 		it 'sends a send_story!', story: true do
@@ -210,6 +217,7 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error
 		end
 		
+
 		# the use case here is if we do send(send_story{args...}), which doesn't have :text field
 		it 'does not error when passed json, but doesn\'t contain json' do
 
@@ -225,17 +233,17 @@ describe Birdv::DSL::StoryTimeScript do
 	# note the difference between 'send story...' and 'send send_story'.
 	# the former is usually used in a script, the latter not
 	context '#send a #story' do
-		it 'expects certain arguments' do
+		# it 'expects certain arguments' do
 
-		end
+		# end
 
-		it 'send correct story when ' do
+		# it 'send correct story when ' do
 
-		end
+		# end
 
-		it 'updates the last_story_read field' do
+		# it 'updates the last_story_read field' do
 
-		end
+		# end
 
 
 	end
@@ -257,15 +265,15 @@ describe Birdv::DSL::StoryTimeScript do
 			@estohb = lambda do |text|  
 				success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 				stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
-              :headers => {'Content-Type'=>'application/json'}).
-         to_return(:status => 200, :body => @success, :headers => {})			
+		         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
+		              :headers => {'Content-Type'=>'application/json'}).
+		         to_return(:status => 200, :body => @success, :headers => {})			
 			end
 		end
 
-		before(:each) do
-			DatabaseCleaner.clean_with(:truncation)
-		end
+		# after(:each) do
+		# 	DatabaseCleaner.clean_with(:truncation)
+		# end
 
 		# TODO: make this a webmock error
 		it 'has no problem the the user is missing first_name' do
@@ -533,6 +541,7 @@ describe Birdv::DSL::StoryTimeScript do
 			@s = @cli.scripts
 		end #=>END before(:all) do
 
+
 		#TODO: get this out of here if possible...
 		before(:each) do
 						DatabaseCleaner.clean_with(:truncation) # TODO: get rid of this
@@ -546,12 +555,12 @@ describe Birdv::DSL::StoryTimeScript do
 			before(:example) do
 				t.add_user u
 
-				# init
+				# init sequence
 				b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"You're next story's coming soon!\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
 				@stub_txt.call("Ms. McEsterWahl: Hi Aubs, here’s another story!")
 				@stub_arb.call(b1)
 
-				# scratchstory
+				# scratchstory sequence
 				b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg\"}}}}"
 				b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Ms. McEsterWahl: I’ll send another story tomorrow night :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"			
 				@stub_arb.call(b2)
@@ -562,7 +571,10 @@ describe Birdv::DSL::StoryTimeScript do
 			it 'updates last sequence seen, nil->init->scratchstory' do
 				pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
 				expect(pgs).to eq(2)	# only two pages of coon story
+				expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)
+				expect(User.where(fb_id:@aubrey).first.curriculum_version).to eq(0)
 				@stub_story.call(@aubrey, "day1","coon", pgs)
+				#@stub_story.call(@aubrey, "day1","bird", 8)
 				expect {
 					@s['day1'].run_sequence(@aubrey, :init)
 				}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to ('init')
@@ -611,11 +623,11 @@ describe Birdv::DSL::StoryTimeScript do
 
 		it 'does not update last_sequence_seen when not :init sequence' do
 
+
 		end
 
 		it 'updates story read when sequence' do
 
 		end
 	end #=>END context 'when #send, the DB should be updated' do
-
 end

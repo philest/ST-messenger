@@ -17,15 +17,15 @@ describe BotWorker do
 		@scripts = Birdv::DSL::ScriptClient.scripts
 
 		# load up some scripts!
-		Birdv::DSL::StoryTimeScript.new 'day3' do
+		Birdv::DSL::ScriptClient.new_script 'day3' do
 			sequence 'one' do end
 			sequence 'two' do end
 		end
-		Birdv::DSL::StoryTimeScript.new 'day4' do
+		Birdv::DSL::ScriptClient.new_script 'day4' do
 			sequence 'one' do end
 			sequence 'two' do end			
 		end
-		Birdv::DSL::StoryTimeScript.new 'day5' do
+		Birdv::DSL::ScriptClient.new_script 'day5' do
 			sequence 'one' do end
 			sequence 'two' do end		
 		end

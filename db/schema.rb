@@ -86,27 +86,21 @@ Sequel.migration do
     
     create_table(:state_tables) do
       primary_key :id
-      Integer 	:user_id
-      DateTime 	:updated_at
-      TrueClass :subscribed?, :default=>true
-      
-	  DateTime 	:last_story_read_time
       TrueClass :last_story_read?, :default=>false
-
-      DateTime 	:last_script_sent_time
-
-      String 	:next_script, :text=>true
-      DateTime 	:next_story_time
-
-      Integer 	:story_number, :default=>0
-
-      String 	:last_sequence_seen, :text=>true
-
-      Integer 	:num_reminders, :default=>0
-      DateTime 	:last_reminded_time
-      String 	:series_name, :text=>true
-      Integer 	:series_index, :default=>0    
-	end
+      DateTime :last_script_sent_time
+      String :next_script, :text=>true
+      DateTime :next_story_time
+      String :series_name, :text=>true
+      Integer :series_index, :default=>0
+      DateTime :last_reminded_time
+      Integer :num_reminders, :default=>0
+      TrueClass :subscribed?, :default=>true
+      Integer :story_number, :default=>0
+      DateTime :last_story_read_time
+      Integer :user_id
+      String :last_sequence_seen, :text=>true
+      DateTime :updated_at
+    end
     
     create_table(:users, :ignore_index_errors=>true) do
       primary_key :id
@@ -129,6 +123,7 @@ Sequel.migration do
       foreign_key :state_table_id, :state_tables, :key=>[:id]
       String :first_name, :text=>true
       String :last_name, :text=>true
+      Integer :curriculum_version, :default=>0
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
