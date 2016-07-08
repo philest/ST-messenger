@@ -14,6 +14,9 @@ describe "Bot", bot:true do
 			bad_id = "https://graph.facebook.com/v2.6/bad_id?access_token=#{ENV['FB_ACCESS_TKN']}&fields=first_name,last_name,profile_pic,locale,timezone,gender"
 			david_req = "https://graph.facebook.com/v2.6/#{DAVID}?access_token=#{ENV['FB_ACCESS_TKN']}&fields=first_name,last_name,profile_pic,locale,timezone,gender"
 			resp = "{\"first_name\":\"David\",\"last_name\":\"McPeek\",\"profile_pic\":\"https:\\/\\/scontent.xx.fbcdn.net\\/v\\/t1.0-1\\/p200x200\\/11888010_10207778015232072_3952470954126194921_n.jpg?oh=77c09422a25205a7c80fb665e17cb67c&oe=5809110A\",\"locale\":\"en_US\",\"timezone\":-4,\"gender\":\"male\"}"
+
+
+			resp = "{\"first_name\":\"David\",\"last_name\":\"McPeek\",\"profile_pic\":\"https:\\/\\/scontent.xx.fbcdn.net\\/v\\/t1.0-1\\/p200x200\\/11888010_10207778015232072_3952470954126194921_n.jpg?oh=77c09422a25205a7c80fb665e17cb67c&oe=5809110A\",\"locale\":\"en_US\",\"timezone\":-4,\"gender\":\"male\"}"
 			stub_request(:get, "https://graph.facebook.com/v2.6/bad_id?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD&fields=first_name,last_name,profile_pic,locale,timezone,gender").
          		to_return(:status => 200, :body => resp, :headers => {})
 
@@ -33,6 +36,7 @@ describe "Bot", bot:true do
 			expect(User.count).to eq 1
 			user = User.first
 			expect(user.fb_id).to eq "bad_id"
+
 			expect(user.first_name).to be_nil
 			expect(user.last_name).to be_nil
 			expect(user.child_name).to be_nil

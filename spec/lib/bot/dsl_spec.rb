@@ -6,8 +6,9 @@ describe Birdv::DSL::StoryTimeScript do
 
 	let (:script_obj) { Birdv::DSL::StoryTimeScript.new('examp') do end }
 
-	around(:all) do
+	around(:each) do |example|
 		DatabaseCleaner.clean_with(:truncation)
+		example.run
 	end
 
 	before(:each) do
@@ -200,11 +201,11 @@ describe Birdv::DSL::StoryTimeScript do
 			}.not_to raise_error
 		end
 		
-		# TODO: explain this test
-		it 'does not error when passed json, but doesn\'t contain json' do
+		# # TODO: explain this test
+		# it 'does not error when passed json, but doesn\'t contain json' do
 
 
-		end
+		# end
 
 	end
 	
@@ -215,17 +216,17 @@ describe Birdv::DSL::StoryTimeScript do
 	# note the difference between 'send story...' and 'send send_story'.
 	# the former is usually used in a script, the latter not
 	context '#send a #story' do
-		it 'expects certain arguments' do
+		# it 'expects certain arguments' do
 
-		end
+		# end
 
-		it 'send correct story when ' do
+		# it 'send correct story when ' do
 
-		end
+		# end
 
-		it 'updates the last_story_read field' do
+		# it 'updates the last_story_read field' do
 
-		end
+		# end
 
 
 	end
@@ -388,22 +389,22 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end #=>END before(:all) do
 
-		it 'updates last sequence seen' do
-			# expect {
+		# it 'updates last sequence seen' do
+		# 	# expect {
 
-			# }.to.change(@u.state_table.last_sequence_seen).to eq()
-		end
+		# 	# }.to.change(@u.state_table.last_sequence_seen).to eq()
+		# end
 
-		it 'updates last_script_sent_time when :init sequence' do
+		# it 'updates last_script_sent_time when :init sequence' do
 
-		end
+		# end
 
-		it 'does not update last_sequence_seen when not :init sequence' do
+		# it 'does not update last_sequence_seen when not :init sequence' do
 
-		end
+		# end
 
-		it 'updates story read when sequence' do
+		# it 'updates story read when sequence' do
 
-		end
+		# end
 	end #=>END context 'when #send, the DB should be updated' do
 end
