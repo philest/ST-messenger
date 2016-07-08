@@ -313,7 +313,8 @@ module Birdv
           puts fb_send_json_to_user(recipient, to_send)
         end
         
-        sleep delay if delay > 0
+        # TODO: something about this next line
+        #sleep delay if delay > 0
       end
 
     end

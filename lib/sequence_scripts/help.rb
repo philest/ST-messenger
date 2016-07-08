@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'help' do
+Birdv::DSL::ScriptClient.new 'help' do
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -6,9 +6,9 @@ Birdv::DSL::StoryTimeScript.new 'help' do
 	# and button_normal OUTSIDE of sequence blocks
 	#
 
-
-	sequence 'help_start' do |recipient|
-		send text("Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, try 561-212-5831"), recipient
+	sequence 'helpstart' do |recipient|
+		txt = "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, try 561-212-5831"
+		send recipient, text({text:txt}) 
 	end
 
 end 

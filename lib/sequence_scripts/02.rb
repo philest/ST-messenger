@@ -28,22 +28,22 @@ Birdv::DSL::StoryTimeScript.new 'day2' do
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
 		txt = "Hi __PARENT__, it's __TEACHER__. Here’s another story to get __CHILD__ ready for kindergarten."
-		send text(txt), recipient, 4 
+		send recipient, text({text: txt}), 4 
 		
 		# send tap_here button
-		send button('tap_here'), recipient
+		send recipient, button({text:'tap_here'})
 	end
 
 	sequence 'cookstory' do |recipient|
 		# send out cook story
 
-		send_story recipient, 23
+		send recipient, story(), 23
 		
 		# one more button
-		send button('thanks'), recipient
+		send recipient, button({text:'thanks'}) 
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send text("You're welcome :)"), recipient
+		send recipient, text({text:"You're welcome :)"}) 
 	end
 end 

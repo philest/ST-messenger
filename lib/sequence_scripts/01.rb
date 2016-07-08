@@ -28,28 +28,28 @@ Birdv::DSL::StoryTimeScript.new 'day1' do
 	sequence 'firsttap' do |recipient|
 		# no longer a text before.
 		# send tap_here button
-		send button('tap_here'), recipient
+		send recipient, button({text:'tap_here'}) 
 	end
 
 	sequence 'coonstory' do |recipient|
 		# greeting with 4 second delay
 		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send text(txt), recipient, 5.35 
+		send recipient, text({text:txt}), 5.35 
 
 		# send out coon story
 		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
-		send picture(img_1), recipient
+		send recipient, picture(img_1)
 
-		send_story recipient
+		send recipient, story()
 
 		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
-		send picture(img_2), recipient, 23
+		send recipient, picture({url:img_2}), 23
 
 		# one more button
-		send button('thanks'), recipient
+		send recipient, button({name:'thanks'})
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send text("You're welcome :)"), recipient
+		send recipient, text({text:"You're welcome :)"}) 
 	end
 end 
