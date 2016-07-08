@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'defaultresponse' do
+Birdv::DSL::ScriptClient.new_script 'defaultresponse' do
 	#
 	# register some buttons for reuse!
 	# ================================

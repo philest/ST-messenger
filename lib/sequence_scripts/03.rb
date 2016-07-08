@@ -1,4 +1,4 @@
-Birdv::DSL::StoryTimeScript.new 'day3' do
+Birdv::DSL::ScriptClient.new_script 'day3' do
 
 	day 3
 

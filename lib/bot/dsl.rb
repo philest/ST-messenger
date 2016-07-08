@@ -26,7 +26,7 @@ module Birdv
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
 
-      attr_reader :script_name, :script_day, :num_sequences
+      attr_reader :script_name, :script_day, :num_sequences, :sequences
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
       def initialize(script_name, &block)

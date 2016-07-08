@@ -1,4 +1,4 @@
-Birdv::DSL::ScriptClient.new 'help' do
+Birdv::DSL::ScriptClient.new_script 'help' do
 	#
 	# register some buttons for reuse!
 	# ================================
