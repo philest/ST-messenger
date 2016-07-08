@@ -8,6 +8,16 @@ describe Birdv::DSL::StoryTimeScript do
 	
 	before(:all) do
 		@aubrey 	= '10209571935726081' # aubrey 
+		@success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
+
+		@stub_story = lambda do |recipient, lib, title, num_pages|
+			num_pages.times do |i|
+	      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+	        with(:body => "{\"recipient\":{\"id\":\"#{recipient}\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{lib}/#{title}/#{title}#{i+1}.jpg\"}}}}",
+	            :headers => {'Content-Type'=>'application/json'}).
+	        to_return(:status => 200, :body => @success, :headers => {})
+	    end
+		end
 	end
 
 	before(:each) do
@@ -427,7 +437,7 @@ describe Birdv::DSL::StoryTimeScript do
 	# =>
 	# making sure that we play nicely with scripts
 	# basically, we're running a larger part of stack
-	context 'when #send, the DB should be updated', script:true do
+	context 'when #send, the DB should be updating, and ', script:true do
 		before(:all) do
 
 			@make_aubrey  = lambda do
@@ -529,7 +539,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 		end
 
-		context 'updating last_sequence_seen' do
+		context 'when updating last_sequence_seen it' do
 			let (:u) {@make_aubrey.call}
 			let (:t) {@make_teacher.call}
 
@@ -549,7 +559,10 @@ describe Birdv::DSL::StoryTimeScript do
 
 			end
 
-			it 'updates last sequence seen when run nil to init to scratchstory' do
+			it 'updates last sequence seen, nil->init->scratchstory' do
+				pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
+				expect(pgs).to eq(2)	# only two pages of coon story
+				@stub_story.call(@aubrey, "day1","coon", pgs)
 				expect {
 					@s['day1'].run_sequence(@aubrey, :init)
 				}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to ('init')
@@ -563,6 +576,7 @@ describe Birdv::DSL::StoryTimeScript do
 
 		it 'sends the right story' do
 			@make_aubrey.call
+			@stub_story.call(@aubrey, 'day1', 'coon', 2)
 			script = @s['day1']
 			expect {
 					script.send(@aubrey, script.story())
@@ -574,7 +588,9 @@ describe Birdv::DSL::StoryTimeScript do
 			s1 = @s['day1']
 			s2 = @s['day2']
 			expect {
+					@stub_story.call(@aubrey, 'day1', 'coon', 2)
 					s1.send(@aubrey, s1.story())
+					@stub_story.call(@aubrey, 'day1', 'cook', 11)
 					s2.send(@aubrey, s2.story())
 			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(2)
 		end
@@ -584,8 +600,11 @@ describe Birdv::DSL::StoryTimeScript do
 			s1 = @s['day1']
 			s2 = @s['day2']
 			expect {
+					@stub_story.call(@aubrey, 'day1', 'coon', 2)
 					s1.send(@aubrey, s1.story())
+					@stub_story.call(@aubrey, 'day1', 'cook', 11)
 					s2.send(@aubrey, s2.story())
+					@stub_story.call(@aubrey, 'day1', 'scratch', 6)
 					s2.send(@aubrey, s2.story())
 			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(3)
 		end		
