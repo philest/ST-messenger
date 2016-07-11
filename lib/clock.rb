@@ -17,6 +17,8 @@ Dir[models_dir].each {|file| require_relative file }
 require_relative 'workers'
 
 
+
+
 module Clockwork
 
     sched_pd = 5.minutes             # (i.e. 'schedule period')
@@ -41,7 +43,37 @@ module Clockwork
         }
       )
   	end
+
+    i = 0
+    every 1.second, 'timer' do
+      puts "#{i} mississippi"
+      i += 1
+    end
+
+
+    every 30.seconds, 'test.ass' do
+      puts "testing this one thing..."
+      TestBot.perform_in(15.seconds)
+    end
+
+
+
+
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  
 

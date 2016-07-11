@@ -47,3 +47,15 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 		send recipient, text({text:"You're welcome :)"}) 
 	end
 end 
+
+
+
+
+
+
+
+
+
+
+
+

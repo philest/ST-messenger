@@ -34,12 +34,8 @@ Birdv::DSL::ScriptClient.new_script 'day4' do
 
 	sequence 'birdstory' do |recipient|
 		# send out cook story
-
-		send recipient, story()
-		
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-		send recipient, picture({url:img_1}), 23
-
+		send recipient, story(), 23
+	
 		# one more button
 		send recipient, button({name:"thanks"}) 
 	end

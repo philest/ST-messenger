@@ -8,8 +8,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	# NOTE: always call story_button, template_generic, 
 	# and button_normal OUTSIDE of sequence blocks
 	#
-
-
 	button_story({
 		name: 		'tap_here',
 		title: 		"Let's read tonight's story.",
@@ -37,13 +35,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		send recipient, text({text:txt}), 5.35 
 
 		# send out coon story
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/tap_and_swipe.jpg"
-		send recipient, picture({url:img_1})
-
-		send recipient, story()
-
-		img_2 = "https://s3.amazonaws.com/st-messenger/day1/go_up.jpg"
-		send recipient, picture({url:img_2}), 23
+		send recipient, story(), 23 
 
 		# one more button
 		send recipient, button({name:'thanks'})
@@ -53,3 +45,9 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		send recipient, text({text:"You're welcome :)"}) 
 	end
 end 
+
+
+
+
+
+
