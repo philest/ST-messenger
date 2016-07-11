@@ -1,12 +1,10 @@
 require_relative '../helpers/fb'
-
-
+require_relative '../workers/bot_worker'
 
 module Birdv
   module DSL
     class ScriptClient
       @@scripts = {}
-
 
       def self.new_script(script_name, &block)
         puts "adding #{script_name} to thing"
@@ -231,6 +229,10 @@ module Birdv
                   }
                 }
               }
+      end
+
+      def delay(recipient, sequence_name, time_delay)
+        BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name)
       end
 
 

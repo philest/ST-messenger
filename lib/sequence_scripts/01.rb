@@ -12,7 +12,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		name: 		'tap_here',
 		title: 		"Let's read tonight's story.",
 		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-		buttons: 	[postback_button('Tap here!', script_payload(:coonstory))]
+		buttons: 	[postback_button('Tap here!', script_payload(:greeting))]
 	})
 
 
@@ -29,14 +29,24 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		send recipient, button({name:'tap_here'}) 
 	end
 
-	sequence 'coonstory' do |recipient|
-		# greeting with 4 second delay
+	sequence 'greeting' do |recipient|
+		# greeting with 5 second delay
 		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-		send recipient, text({text:txt}), 5.35 
+		send recipient, text({text:txt})
+
+		delay recipient, 'coonstory', 5.35.seconds
+	end
+
+	sequence 'coonstory' do |recipient|
 
 		# send out coon story
-		send recipient, story(), 23 
+		send recipient, story()
 
+		delay recipient, 'thanks', 23.seconds
+
+	end
+
+	sequence 'thanks' do |recipient|
 		# one more button
 		send recipient, button({name:'thanks'})
 	end
@@ -45,9 +55,4 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		send recipient, text({text:"You're welcome :)"}) 
 	end
 end 
-
-
-
-
-
 

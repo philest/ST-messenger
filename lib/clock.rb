@@ -44,17 +44,17 @@ module Clockwork
       )
   	end
 
-    i = 0
-    every 1.second, 'timer' do
-      puts "#{i} mississippi"
-      i += 1
-    end
+    # i = 0
+    # every 1.second, 'timer' do
+    #   puts "#{i} mississippi"
+    #   i += 1
+    # end
 
 
-    every 30.seconds, 'test.ass' do
-      puts "testing this one thing..."
-      TestBot.perform_in(15.seconds)
-    end
+    # every 30.seconds, 'test.ass' do
+    #   puts "testing this one thing..."
+    #   TestBot.perform_in(15.seconds)
+    # end
 
 
 

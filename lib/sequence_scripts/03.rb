@@ -37,8 +37,12 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 
 		send recipient, story(), 23
 		
+		delay recipient, 'thanks', 23.seconds
+	end
+
+	sequence 'thanks' do |recipient|
 		# one more button
-		send recipient, button({name:"thanks"}) 
+		send recipient, button({name:'thanks'})
 	end
 
 	sequence 'yourwelcome' do |recipient|

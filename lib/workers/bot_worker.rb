@@ -1,4 +1,4 @@
-require_relative "../helpers/fb"
+require_relative '../helpers/fb'
 
 class BotWorker 
   include Sidekiq::Worker

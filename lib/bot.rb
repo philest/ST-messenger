@@ -50,7 +50,7 @@ Bot.on :message do |message|
   db_user = User.where(:fb_id => sender_id).first 
   if db_user.nil?
     register_user(message.sender)
-    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
+    BotWorker.perform_async(sender_id, 'day1', 'greeting')
   else # user has been enrolled already...
       case message.text
       when DAY_RQST
@@ -77,7 +77,7 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
+    BotWorker.perform_async(sender_id, 'day1', 'greeting')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')
