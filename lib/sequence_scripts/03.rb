@@ -1,4 +1,6 @@
-Birdv::DSL::StoryTimeScript.new 'day3' do
+Birdv::DSL::ScriptClient.new_script 'day3' do
+
+	day 3
 
 
 	#
@@ -7,41 +9,42 @@ Birdv::DSL::StoryTimeScript.new 'day3' do
 	# NOTE: always call story_button, template_generic, 
 	# and button_normal OUTSIDE of sequence blocks
 	#
-	story_button( 'tap_here', 
-								"Your next story's coming soon!", 
-								'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-								[
-									postback_button('Tap here!', script_payload(:scratchstory))
-								])
+	button_story({
+		name: 		'tap_here',
+		title: 		"You're next story's coming soon!",
+		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+		buttons: 	[postback_button('Tap here!', script_payload(:scratchstory))]
+	})
 
-	button_normal( 'thanks',
-									"I’ll send another story tomorrow night :)",
-									[
-										postback_button('Thank you!', script_payload(:yourwelcome))
-									])
 
+	button_normal({
+		name: 			 'thanks',
+		window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
+		buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+	})
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "Hi __PARENT__, it's __TEACHER__. Here’s another story!"
-		send text(txt), recipient, 4 
-		
+		txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+		send recipient, text({text:txt}),  4 
 		# send tap_here button
-		send button('tap_here'), recipient
+		send recipient, button({name:'tap_here'})
 	end
 
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
 
-		send_story 'day1', 'scratch', 6, recipient
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-		send picture(img_1), recipient, 23
+		send recipient, story(), 23
+		
+		delay recipient, 'thanks', 23.seconds
+	end
 
+	sequence 'thanks' do |recipient|
 		# one more button
-		send button('thanks'), recipient
+		send recipient, button({name:'thanks'})
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send text("You're welcome :)"), recipient
+		send recipient, text({text:"You're welcome :)"})
 	end
 end 

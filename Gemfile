@@ -16,8 +16,7 @@ params = ruby_version_get
 ruby *params
 
 if RUBY_ENGINE=='jruby'
-  gem 'pg', '0.17.1', :platform => :jruby, :git => 'git://github.com/headius/jruby-pg.git', :branch => :master
-  gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
+  	gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
 else
   gem 'pg', 	'0.17.1'
 end
@@ -38,6 +37,7 @@ gem 'sequel', 	'~>4.35.0'
 gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
+gem 'sidekiq-unique-jobs', '~> 4.0', '>= 4.0.17'
 gem 'clockwork','~>2.0.0'
 gem 'pony'
 # gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'

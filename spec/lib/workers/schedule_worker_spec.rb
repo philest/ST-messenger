@@ -16,28 +16,25 @@ describe ScheduleWorker do
 		@s = ScheduleWorker.new
 
 		@on_time = User.create(:send_time => Time.now, :story_number => 2)
-		# puts "on_time = #{@on_time.send_time}"
+
 		# 6:55:00 
 		@just_early = User.create(:send_time => Time.now - @interval, :story_number => 2)
-		# puts "just_early = #{@just_early.send_time}"
+
 		#  7:04:59pm
 		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds, :story_number => 2)
-		# puts "just_late = #{@just_late.send_time}"
+
 		# 6:54:59
 		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds, :story_number => 2)
-		# puts "early = #{@early.send_time}"
+
 		# 7:05
 		@late = User.create(:send_time => Time.now + @interval, :story_number => 2)
-		# puts "late = #{@late.send_time}"
+
 	end
 
 	after(:each) do
 		Timecop.return
 	end
 
-	# after(:each) do
-	# 	DatabaseCleaner.clean
-	# end
 
 	context "timezone conversion function", :zone => true do
 		before(:each) do
@@ -76,22 +73,12 @@ describe ScheduleWorker do
 	context "within_time_range function", :range => true do
 
 		it "returns true for users within the time interval at a given time" do 
-			# just_early = Time.new(2016, 6, 24, 18, 60 - @interval)
-			# just_early = Time.now - @interval
 			expect(@s.within_time_range(@just_early, @interval)).to be true
-			
-			# just_late = Time.new(2016, 6, 24, 19, @interval - 1, 59)
-			# just_late = Time.now + (@interval + 59)
 			expect(@s.within_time_range(@just_late, @interval)).to be true
 		end
 
 		it "returns false for users outside the time interval at a given time" do
-			# early = Time.new(2016, 6, 24, 18, 60-@interval-1, 59)
-			# early = Time.now - (5 + 1)
 			expect(@s.within_time_range(@early, @interval)).to be false
-			
-			# late = Time.new(2016, 6, 24, 19, @interval)
-			# late = Time.now + 5
 			expect(@s.within_time_range(@late, @interval)).to be false
 		end
 

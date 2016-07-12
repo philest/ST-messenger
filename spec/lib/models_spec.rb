@@ -39,9 +39,23 @@ describe "Models" do
 		it "has a user" do
 			expect(@u.state_table.user_id).to_not be_nil
 		end
-
 	end
 
+	context "curriculum version", version:true do
+		it "equals the ENV['CURRICULUM_VERSION'] in .env" do
+			expect(@u.curriculum_version).to eq ENV['CURRICULUM_VERSION'].to_i
+			env = ENV['CURRICULUM_VERSION']
+			ENV['CURRICULUM_VERSION'] = '10'
+			user = User.create
+			expect(user.curriculum_version).to eq ENV['CURRICULUM_VERSION'].to_i
+			ENV['CURRICULUM_VERSION'] = env
+		end
+
+		it "is a number" do
+			expect(@u.curriculum_version.class).to be Fixnum
+		end
+
+	end
 
 	context "enrollment_queue" do
 		before(:each) do

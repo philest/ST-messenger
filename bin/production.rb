@@ -5,7 +5,7 @@ require 'dotenv'
 Dotenv.load
 
 puts "loading production db (storytime)..."
-DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
+DB = Sequel.connect(ENV['DATABASE_URL_PRODUCTION'], :sslmode => 'require')
 
 DB.timezone = :utc
 

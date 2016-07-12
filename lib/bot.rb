@@ -34,14 +34,14 @@ STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
 
 JOIN    = /join/i
 
-scripts  = Birdv::DSL::StoryTimeScript.scripts
+scripts  = Birdv::DSL::ScriptClient.scripts
 
 
 DAY_RQST  = /day\d+/i
 HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
 STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
 THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
-HAHA_MSG = /(haha)/i 
+HAHA_MSG = /(ha)*/i 
 ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)/i
 
 
@@ -69,14 +69,9 @@ def get_reply(body, user)
 
 end
 
-def is_text_only?(message_attachments)
-  if message_attachments.nil?  
-    return true
-  else # there's an image attached
-    return false
-  end
+def is_image?(message_attachments)
+  not message_attachments.nil?
 end
-
 
 #
 # i.e. when user sends the bot a message.
@@ -90,9 +85,11 @@ Bot.on :message do |message|
   # enroll user if they don't exist in db
   db_user = User.where(:fb_id => sender_id).first 
   if db_user.nil?
-    register_user(message.sender)
-    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
-  elsif is_text_only?(attachments) # user has been enrolled already + text
+      register_user(message.sender)
+      BotWorker.perform_async(sender_id, 'day1', 'greeting')
+  elsif is_image?(attachments) # user has been enrolled already + sent an image
+      fb_send_txt(message.sender, ":)")
+  else # user has been enrolled already...
       case message.text
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s
@@ -104,9 +101,7 @@ Bot.on :message do |message|
       else # find the appropriate reply
         reply = get_reply(message.text, db_user)
         fb_send_txt(message.sender, reply)
-      end  
-  else #image 
-    fb_send_txt(message.sender, ":)")
+      end # case message.text
   end # db_user.nil?
 
    
@@ -119,7 +114,7 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    BotWorker.perform_async(sender_id, 'day1', 'coonstory')
+    BotWorker.perform_async(sender_id, 'day1', 'greeting')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

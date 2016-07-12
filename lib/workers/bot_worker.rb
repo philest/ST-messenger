@@ -1,16 +1,16 @@
-require_relative "../helpers/fb"
+require_relative '../helpers/fb'
 
 class BotWorker 
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
-  sidekiq_options :retry => 1
+  sidekiq_options :retry => 1, unique: :while_executing
 
 	def perform(recipient, script_name, sequence, day_increment=nil)
 
 	  	# load script
-	  	s = Birdv::DSL::StoryTimeScript.scripts[script_name]
+	  	s = Birdv::DSL::ScriptClient.scripts[script_name]
 
-	  	Sidekiq.logger.warn(s.nil? ? "couldn't fine script #{script_name}" : "about to send #{script_name}" )
+	  	Sidekiq.logger.warn(s.nil? ? "couldn't find script #{script_name}" : "about to send #{script_name}" )
 
 	  	if not s.nil?
 			# enroll user if they are not in the db
