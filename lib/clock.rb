@@ -1,4 +1,5 @@
 require "clockwork"
+require RUBY_PLATFORM == 'java' ? 'activerecord-jdbcpostgresql-adapter' : 'pg'
 require "sequel"
 require 'sidekiq'
 require 'active_support/time'
