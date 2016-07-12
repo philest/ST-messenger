@@ -6,7 +6,19 @@ require 'httparty'
 
 # we have to open this connection to load the models, which is an unfornate thing that 
 # must be done by us :(
-DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => 1)
+
+ENV['RACK_ENV'] ||= 'development'
+puts "loading #{ENV['RACK_ENV']} db: #{ENV['DATABASE_URL']}"
+
+case ENV['RACK_ENV']
+when 'development', 'test'
+  DB = Sequel.connect(ENV['DATABASE_URL'])
+when 'production'
+  DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => 1)
+else
+  puts "Please set a RACK_ENV in your configuration, thank youuuu!"
+end
+
 DB.timezone = :utc
 
 # load models
@@ -15,9 +27,6 @@ Dir[models_dir].each {|file| require_relative file }
 
 # we only need the schedule worker
 require_relative 'workers'
-
-
-
 
 module Clockwork
 
@@ -44,11 +53,14 @@ module Clockwork
       )
   	end
 
-    # i = 0
-    # every 1.second, 'timer' do
-    #   puts "#{i} mississippi"
-    #   i += 1
-    # end
+    i = 0
+    every 3.second, 'timer' do
+      # puts "#{i} mississippi"
+      TestBot.perform_async(i, "hat")
+      TestBot.perform_async(i, "hat")
+      TestBot.perform_async(i, "hat")
+      i += 1
+    end
 
 
     # every 30.seconds, 'test.ass' do

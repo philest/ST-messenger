@@ -3,7 +3,7 @@ require_relative '../helpers/fb'
 class BotWorker 
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
-  sidekiq_options :retry => 1
+  sidekiq_options :retry => 1, unique: :while_executing
 
 	def perform(recipient, script_name, sequence, day_increment=nil)
 
