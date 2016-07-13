@@ -123,6 +123,7 @@ Sequel.migration do
       foreign_key :state_table_id, :state_tables, :key=>[:id]
       String :first_name, :text=>true
       String :last_name, :text=>true
+
       Integer :curriculum_version, :default=>0
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true

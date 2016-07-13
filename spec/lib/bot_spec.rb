@@ -108,6 +108,172 @@ describe "Bot", bot:true do
 
 	end
 
+	describe "response-handling" do 
+	
+		describe "STOP" do
+			before(:example) do
+				@user = create(:user)
+				@reply = get_reply("stop", @user)
+	    	end
+
+			it "unsubscribes them" do
+				expect(@user.state_table.subscribed?).to be false
+			end
+
+			it "replies with confirmation" do 
+				expect(@reply).to eq "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+			end 
+		end
+
+		describe "HELP" do 
+			before(:example) do
+				@user = create(:user)
+				@reply = get_reply("help", @user)
+	    	end
+
+			it "replies correctly" do 
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+			end 
+
+		end 
+
+		describe "WHO_IS_THIS" do 
+
+			it "replies correctly to 'who is this'" do 
+				@user = create(:user)
+				@reply = get_reply("who is this", @user)
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+			end 
+
+			it "replies correctly to 'who's this'" do 
+				@user = create(:user)
+				@reply = get_reply("who's this", @user)
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+			end
+
+			it "replies correctly to 'who are you" do 
+				@user = create(:user)
+				@reply = get_reply("who are you", @user)
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+			end 
+
+
+		end 
+
+
+		describe "UNKNOWN message" do 
+			before(:example) do
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("This is a WICKED cool elit intervention!", @user)
+	    	end
+
+			it "replies correctly" do 
+				expect(@reply).to eq "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
+			end 
+		end
+
+		describe "ROBOT message" do 
+			it "replies correctly when asked if robot" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Are you a robot?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+
+			it "replies correctly when asked if automated" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Is this automated?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+
+			it "replies correctly when asked if person" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Are you a person?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+
+
+			it "replies correctly when asked if human" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Are you a human?", @user)
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+			end 
+
+
+
+		end
+
+		describe "HAHA message" do 
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("hahaha", @user)
+				expect(@reply).to eq ":D"
+			end 
+
+			it "replies correctly" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("This is cool haha", @user)
+				expect(@reply).to eq ":D"
+			end 
+		end 		 
+
+
+		describe "THANK" do
+
+			it "replies correctly to \'Thank you\'" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("Thank you", @user)
+				expect(@reply).to eq "You're welcome :)"
+			end 
+
+			it "replies correctly to \'thanks\'" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("thanks", @user)
+				expect(@reply).to eq "You're welcome :)"
+			end
+
+			it "replies correctly to \'THank YOU!!\'" do 
+				@user = create(:user, first_name: "Ramon")
+				@reply = get_reply("THank YOU!!", @user)
+				expect(@reply).to eq "You're welcome :)"
+			end 
+		end  
+
+
+		describe "is_text_only?" do 
+			context "when given a pure-ascii text" do 
+	 
+				it "say yes" do
+					@attachments = nil 
+					expect(is_text_only?(@attachments)).to be true
+				end 
+			end 
+
+			context "when given an image" do 
+				before(:example) do 
+					@attachments = [
+								      {
+								        "type":"image",
+								        "payload":{
+								          "url":"IMAGE_URL"
+								        }
+								      }
+								    ]
+								  
+				end 
+				
+				it "says no" do 
+					expect(is_text_only?(@attachments)).to be false
+				end
+
+
+
+			end
+
+
+		end 
+	end
+
+
 	context "When adding new users to the database" do
 		it "successfully connects to the database" do
 		end
@@ -124,4 +290,9 @@ describe "Bot", bot:true do
 		it "rescues the db exception in the above instance" do
 		end
 	end
+
+
+
+
+
 end

@@ -11,7 +11,7 @@ when "local", "test", "development"
   DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
 when "production"
   Dotenv.load
-  DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
+  DB = Sequel.connect(ENV['DATABASE_URL_PRODUCTION'], :sslmode => 'require')
 end
 
 # Rakefile

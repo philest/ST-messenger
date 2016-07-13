@@ -1,6 +1,6 @@
-Birdv::DSL::ScriptClient.new_script 'day4' do
-	
-	day 4
+Birdv::DSL::ScriptClient.new_script 'day5' do
+
+	day 5
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -11,7 +11,7 @@ Birdv::DSL::ScriptClient.new_script 'day4' do
 		name: 		'tap_here',
 		title: 		"You're next story's coming soon!",
 		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-		buttons: 	[postback_button('Tap here!', script_payload(:birdstory))]
+		buttons: 	[postback_button('Tap here!', script_payload(:dreamstory))]
 	})
 
 	button_normal({
@@ -19,7 +19,6 @@ Birdv::DSL::ScriptClient.new_script 'day4' do
 		window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
 		buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
 	})
-
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
@@ -30,12 +29,12 @@ Birdv::DSL::ScriptClient.new_script 'day4' do
 		send recipient, button({name:'tap_here'})
 	end
 
-	sequence 'birdstory' do |recipient|
+	sequence 'dreamstory' do |recipient|
 		# send out cook story
 		send recipient, story(), 23
-	
-		# one more button
-		delay recipient, 'thanks', 23.seconds 
+
+		# delay 'thanks'
+		delay recipient, 'thanks', 23.seconds
 	end
 
 	sequence 'thanks' do |recipient|

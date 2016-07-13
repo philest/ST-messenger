@@ -27,7 +27,6 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 		# greeting with 4 second delay
 		txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
 		send recipient, text({text:txt}),  4 
-		
 		# send tap_here button
 		send recipient, button({name:'tap_here'})
 	end
@@ -35,13 +34,14 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
 
-		send recipient, story()
+		send recipient, story(), 23
 		
-		img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
-		send recipient, picture({url:img_1}), 23
+		delay recipient, 'thanks', 23.seconds
+	end
 
+	sequence 'thanks' do |recipient|
 		# one more button
-		send recipient, button({name:"thanks"}) 
+		send recipient, button({name:'thanks'})
 	end
 
 	sequence 'yourwelcome' do |recipient|

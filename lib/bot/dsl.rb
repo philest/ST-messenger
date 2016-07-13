@@ -1,12 +1,11 @@
 require_relative '../helpers/fb'
-
-
+require_relative '../helpers/contact_helpers'
+require_relative '../workers/bot_worker'
 
 module Birdv
   module DSL
     class ScriptClient
       @@scripts = {}
-
 
       def self.new_script(script_name, &block)
         puts "adding #{script_name} to thing"
@@ -26,6 +25,7 @@ module Birdv
   module DSL
     class StoryTimeScript
       include Facebook::Messenger::Helpers 
+      include ContactHelpers
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences
       STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
@@ -91,6 +91,7 @@ module Birdv
       def postback_button(title, payload)
         return { type: 'postback', title: title, payload: payload.to_s }
       end
+
 
       def name_codes(str, id)
         user = User.where(:fb_id => id).first
@@ -185,6 +186,10 @@ module Birdv
         register_sequence(sqnce_name, block)
       end
 
+
+
+
+
       def run_sequence(recipient, sqnce_name)
         # puts(@sequences[sqnce_name.to_sym])
         begin
@@ -195,11 +200,14 @@ module Birdv
          # puts "successfully ran #{sqnce_name}!"
         rescue => e  
           puts "#{sqnce_name} from script #{@script_name} failed!"
-          raise e
-          # puts e.message  
-          # puts e.backtrace.join("\n") 
+          puts e.message  
+          puts e.backtrace.join("\n") 
+          email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
         end
       end
+
+
+
 
       def button(btn_name)
         if btn_name.is_a? String
@@ -231,6 +239,10 @@ module Birdv
                   }
                 }
               }
+      end
+
+      def delay(recipient, sequence_name, time_delay)
+        BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name)
       end
 
 

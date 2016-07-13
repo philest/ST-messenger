@@ -40,6 +40,24 @@ class ScheduleWorker
     return filtered
   end
 
+  # is this our student? 
+  def our_friend?(user)
+    if user.teacher.nil? 
+      return false 
+    end 
+
+    match = user.teacher.signature.match(/esterman/i) || 
+    user.teacher.signature.match(/wahl/i) ||
+    user.teacher.signature.match(/mcpeek/i) ||
+    user.teacher.signature.match(/mcesterwahl/)
+
+    if match.nil? 
+      return false 
+    else 
+      return true 
+    end
+  end
+
     # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range)
   	# TODO: ensure that Time.now is in UTC time
@@ -47,11 +65,15 @@ class ScheduleWorker
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
 
+    # our_friend? =
+
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight
 		user_day 	 = get_local_day(Time.now, user)
-		if (user_day==1||user_day==3||user_day==5)
+		if (user_day==1||user_day==3||user_day==5) ||
+      our_friend?(user)
+
 			if now >= user_utc
 				now - user_utc <= range
 			else
