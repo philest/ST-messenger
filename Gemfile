@@ -37,7 +37,6 @@ gem 'sequel', 	'~>4.35.0'
 gem 'json'
 gem 'redis', 	'3.3.0'
 gem 'sidekiq', 	'~>4.1.2'
-gem 'sidekiq-unique-jobs', '~> 4.0', '>= 4.0.17'
 gem 'clockwork','~>2.0.0'
 gem 'pony'
 
