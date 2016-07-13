@@ -1,5 +1,4 @@
 require "clockwork"
-require RUBY_PLATFORM == 'java' ? 'activerecord-jdbcpostgresql-adapter' : 'pg'
 require "sequel"
 require 'sidekiq'
 require 'active_support/time'
@@ -9,15 +8,13 @@ require 'httparty'
 # must be done by us :(
 
 ENV['RACK_ENV'] ||= 'development'
-puts "loading #{ENV['RACK_ENV']} db: #{ENV['DATABASE_URL']}"
+puts "loading #{ENV['RACK_ENV']} db for clock..."
 
 case ENV['RACK_ENV']
 when 'development', 'test'
   DB = Sequel.connect(ENV['DATABASE_URL'])
 when 'production'
   DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => 1)
-else
-  puts "Please set a RACK_ENV in your configuration, thank youuuu!"
 end
 
 DB.timezone = :utc
