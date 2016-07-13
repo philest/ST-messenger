@@ -4,24 +4,29 @@ require 'sidekiq'
 require 'active_support/time'
 require 'httparty'
 
-# we have to open this connection to load the models, which is an unfornate thing that 
+# we have to open this connection to load the models, which is a very unfortunate thing that 
 # must be done by us :(
 
-ENV['RACK_ENV'] ||= 'development'
-puts "loading #{ENV['RACK_ENV']} db for clock..."
+ENV["RACK_ENV"] ||= "development"
+puts "loading #{ENV['RACK_ENV']} db..."
+pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 
-case ENV['RACK_ENV']
-when 'development', 'test'
-  DB = Sequel.connect(ENV['DATABASE_URL'])
-when 'production'
-  DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => 1)
+case ENV["RACK_ENV"]
+when "development", "test"
+  require 'dotenv'
+  Dotenv.load
+  db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
+  DB        = Sequel.connect(db_url)
+when "production"
+  db_url    = "#{pg_driver}#{ENV['PG_URL']}"
+  DB        = Sequel.connect(db_url, :max_connections => (1))
 end
 
 DB.timezone = :utc
 
-# load models
 models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
 Dir[models_dir].each {|file| require_relative file }
+
 
 # we only need the schedule worker
 require_relative 'workers'
@@ -51,44 +56,6 @@ module Clockwork
       )
   	end
 
-    i = 0
-    every 3.second, 'timer' do
-      # puts "#{i} mississippi"
-      TestBot.perform_async(i, "hat")
-      TestBot.perform_async(i, "hat")
-      TestBot.perform_async(i, "hat")
-      i += 1
-    end
-
-
-    # every 30.seconds, 'test.ass' do
-    #   puts "testing this one thing..."
-    #   TestBot.perform_in(15.seconds)
-    # end
-
-
-
-
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
 
 
