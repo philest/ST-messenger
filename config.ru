@@ -30,6 +30,8 @@ if RUBY_PLATFORM == 'jruby'
 	# Jdbc::Postgres.load_driver
 end
 
+require_relative 'config/initializers/locale'
+
 
 run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,

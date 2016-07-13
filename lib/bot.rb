@@ -35,7 +35,7 @@ JOIN    = /join/i
 
 scripts  = Birdv::DSL::ScriptClient.scripts
 
-
+# TODO: add Spanish words here
 DAY_RQST  = /day\d+/i
 HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
 STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
@@ -47,6 +47,7 @@ ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)/i
 
 def get_reply(body, user)
   our_reply = ''
+  I18n.locale = user.locale
 
   case body
   when HELP_RQST

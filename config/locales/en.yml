@@ -1,0 +1,9 @@
+en_US:
+  hello: "hello"
+  user-response:
+    help:   "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+    stop:   "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+    thanks: "You're welcome :)"
+    haha:   ":D"
+    robot:  "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+    default: "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"

@@ -47,7 +47,6 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-    jdbc-postgres (9.4.1206)
     json (1.8.3)
     json (1.8.3-java)
     launchy (2.4.3)
@@ -69,6 +68,7 @@ GEM
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
     nokogiri (1.6.8-java)
+    pg (0.17.1)
     pkg-config (1.1.7)
     pony (1.11)
       mail (>= 2.0)
@@ -150,9 +150,10 @@ DEPENDENCIES
   factory_girl
   fakeredis
   httparty (~> 0.13.7)
-  jdbc-postgres (~> 9.4, >= 9.4.1206)
+  i18n (~> 0.7.0)
   json
   newrelic_rpm
+  pg (= 0.17.1)
   pony
   pry
   pry-nav

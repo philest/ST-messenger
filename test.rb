@@ -1,15 +1,9 @@
+require 'i18n'
 
-class Test
-	def hi
-		Hi.new.hello
-	end
-end
+require_relative 'config/initializers/locale'
 
-class Hi
-	def hello
-		puts "hello"
-	end
-end
+I18n.locale = 'en'
+puts I18n.t('hello')
 
-
-Test.new.hi
+# I18n.locale = 'spanish'
+# puts I18n.t('hello')

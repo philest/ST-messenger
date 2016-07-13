@@ -30,6 +30,7 @@ gem 'puma', 	'~>3.4.0'
 gem 'facebook-messenger'
 gem 'sinatra'
 
+gem 'i18n', '~> 0.7.0'
 
 # birdv stuff
 gem 'httparty', '~>0.13.7'
