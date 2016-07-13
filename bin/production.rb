@@ -1,11 +1,14 @@
-require RUBY_PLATFORM == 'java' ? 'activerecord-jdbcpostgresql-adapter' : 'pg'
+#require RUBY_PLATFORM == 'java' ? 'activerecord-jdbcpostgresql-adapter' : 'pg'
+#require 'activerecord-jdbcpostgresql-adapter'
+#require 'jdbc/postgres'
 require 'sequel'
 # use .env file for local development. no need for extra config files!
 require 'dotenv'
 Dotenv.load
 
 puts "loading production db (storytime)..."
-DB = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require')
+str = 'jdbc:postgresql://ec2-50-17-255-136.compute-1.amazonaws.com/dbucanki0t9she?user=tqagrsafzmxzgm&password=iqk1V54QPOjH5nJul_ee3hSEsb&sslmode=require'
+DB = Sequel.connect(str, :sslmode => 'require')
 
 DB.timezone = :utc
 

@@ -40,7 +40,12 @@ describe Birdv::DSL::StoryTimeScript do
 
 	end
 
-
+	context '#assert_keys' do
+		# should this fail gracefully?
+		it 'fails gracefully when key assertion happens' do
+			false
+		end
+	end
 
 	# testing the button_story generation
 	# => # => # => # => 
