@@ -25,6 +25,10 @@ configure :production do
 	use Airbrake::Rack::Middleware
 end
 
+if RUBY_PLATFORM == 'jruby'
+	require 'jdbc/postgres'
+	# Jdbc::Postgres.load_driver
+end
 
 
 run Rack::URLMap.new({

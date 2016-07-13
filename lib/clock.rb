@@ -4,11 +4,12 @@ require 'sidekiq'
 require 'active_support/time'
 require 'httparty'
 
+
 # we have to open this connection to load the models, which is a very unfortunate thing that 
 # must be done by us :(
 
 ENV["RACK_ENV"] ||= "development"
-puts "loading #{ENV['RACK_ENV']} db..."
+puts "loading #{ENV['RACK_ENV']} db for clock..."
 pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 
 case ENV["RACK_ENV"]

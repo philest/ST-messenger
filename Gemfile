@@ -17,6 +17,7 @@ ruby *params
 
 if RUBY_ENGINE=='jruby'
   	# gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
+  	gem 'jdbc-postgres', '~> 9.4', '>= 9.4.1206'
 else
   gem 'pg', 	'0.17.1'
 end
