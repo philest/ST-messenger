@@ -5,6 +5,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'bundler'
 require 'sidekiq'
+require 'sidekiq-unique-jobs'
 require 'sidekiq/web'
 require_relative 'lib/bot'
 require 'sinatra'
