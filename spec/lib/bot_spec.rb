@@ -239,12 +239,12 @@ describe "Bot", bot:true do
 		end  
 
 
-		describe "is_text_only?" do 
+		describe "is_image?" do 
 			context "when given a pure-ascii text" do 
 	 
-				it "say yes" do
+				it "say no" do
 					@attachments = nil 
-					expect(is_text_only?(@attachments)).to be true
+					expect(is_image?(@attachments)).to be false
 				end 
 			end 
 
@@ -261,8 +261,8 @@ describe "Bot", bot:true do
 								  
 				end 
 				
-				it "says no" do 
-					expect(is_text_only?(@attachments)).to be false
+				it "says yes" do 
+					expect(is_image?(@attachments)).to be true
 				end
 
 
