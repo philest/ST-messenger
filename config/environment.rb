@@ -1,13 +1,11 @@
-require RUBY_PLATFORM == 'java' ? 'activerecord-jdbcpostgresql-adapter' : 'pg'
 require 'sequel'
 
-#The environment variable DATABASE_URL should be in the following format:
-# => postgres://{user}:{password}@{host}:{port}/path
+#The environment variable PG_URL should be in the following format:
+# => postgresql://{host}:{port}/{database}?user={user}&password={password}
 ENV["RACK_ENV"] ||= "development"
 
 case ENV["RACK_ENV"]
 when "development", "test"
-  # use .env file for local development. no need for extra config files!
   require 'dotenv'
   Dotenv.load
   puts "loading local db..."

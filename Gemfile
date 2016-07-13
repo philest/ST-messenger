@@ -16,7 +16,7 @@ params = ruby_version_get
 ruby *params
 
 if RUBY_ENGINE=='jruby'
-  	gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
+  	# gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
 else
   gem 'pg', 	'0.17.1'
 end
@@ -40,7 +40,6 @@ gem 'sidekiq', 	'~>4.1.2'
 gem 'sidekiq-unique-jobs', '~> 4.0', '>= 4.0.17'
 gem 'clockwork','~>2.0.0'
 gem 'pony'
-# gem 'concurrent-ruby', '~> 1.0', '>= 1.0.2'
 
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
