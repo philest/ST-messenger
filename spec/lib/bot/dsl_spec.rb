@@ -40,7 +40,12 @@ describe Birdv::DSL::StoryTimeScript do
 
 	end
 
-
+	context '#assert_keys' do
+		# should this fail gracefully?
+		it 'fails gracefully when key assertion happens' do
+			false
+		end
+	end
 
 	# testing the button_story generation
 	# => # => # => # => 
@@ -420,7 +425,7 @@ describe Birdv::DSL::StoryTimeScript do
 			# should raise error because fallatious
 			expect{
 				script_obj.run_sequence(@aubrey, :pee)
-			}.to raise_error(NoMethodError)
+			}.not_to raise_error(NoMethodError)
 
 			# should not have changed last_sequence_seen
 			expect(User.where(fb_id:@aubrey).first.state_table.last_sequence_seen).to eq('seq1')
@@ -611,3 +616,4 @@ describe Birdv::DSL::StoryTimeScript do
 		end
 	end #=>END context 'when #send, the DB should be updated' do
 end
+
