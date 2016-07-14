@@ -58,14 +58,12 @@ class ScheduleWorker
     end
   end
 
-    # need to make sure the send_time column is a Datetime type
+  # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range)
   	# TODO: ensure that Time.now is in UTC time
 
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
-
-    # our_friend? =
 
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
