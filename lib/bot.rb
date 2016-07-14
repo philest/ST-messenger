@@ -37,11 +37,11 @@ scripts  = Birdv::DSL::ScriptClient.scripts
 
 # TODO: add Spanish words here
 DAY_RQST  = /day\d+/i
-HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)/i
-STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)/i
-THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)/i
-HAHA_MSG = /(ha)+/i 
-ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)/i
+HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien es este)|(quién eres tú)/i
+STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)/i
+THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
+HAHA_MSG = /(ha)+|(ja)+/i 
+ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
 
 
 
@@ -51,18 +51,18 @@ def get_reply(body, user)
 
   case body
   when HELP_RQST
-    our_reply =  "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+    our_reply =  I18n.t 'user-response.help'
   when STOP_RQST
     user.state_table.update(subscribed?: false)
-    our_reply =  "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+    our_reply =  I18n.t 'user-response.stop'
   when THANK_MSG
-    our_reply = "You're welcome :)"
+    our_reply = I18n.t 'user-response.thanks'
   when HAHA_MSG
     our_reply = ":D"
   when ROBOT_MSG
-    our_reply = "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+    our_reply = I18n.t 'user-response.robot'
   else #default msg 
-    our_reply = "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
+    our_reply = I18n.t 'user-response.default'
   end
 
   return our_reply 
