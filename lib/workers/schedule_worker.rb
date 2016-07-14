@@ -49,7 +49,7 @@ class ScheduleWorker
     match = user.teacher.signature.match(/esterman/i) || 
     user.teacher.signature.match(/wahl/i) ||
     user.teacher.signature.match(/mcpeek/i) ||
-    user.teacher.signature.match(/mcesterwahl/)
+    user.teacher.signature.match(/mcesterwahl/i)
 
     if match.nil? 
       return false 

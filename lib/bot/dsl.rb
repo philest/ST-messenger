@@ -69,6 +69,28 @@ module Birdv
         already_registered ? puts(warning) : @num_sequences = @num_sequences+1 
       end
 
+      def sequence_seen? (sqnce_to_send_name, last_sequence_seen)
+
+        if (last_sequence_seen.nil?)
+          return false
+        end
+
+
+
+        sqnce_new = @sequences[sqnce_to_send_name.to_sym] # TODO: ensure non-sym input is ok
+        sqnce_old = @sequences[last_sequence_seen.to_sym]
+
+        # TODO: write spec that ensure nothing bad happens when bade sqnce name given
+        if (sqnce_new != nil && sqnce_old != nil)
+          if sqnce_new[1] > sqnce_old[1]
+            return false
+          end
+        end
+
+        # assume that we have seen the sqnce already
+        return true
+      end
+
       def assert_keys(keys = [], args)
         keys.each{|x| if  !args.key?(x) then raise ArgumentError.new("DSL: need to set :#{x} field") end}
       end
@@ -292,9 +314,9 @@ module Birdv
             # TODO: error stuff
 
             # TODO: make this atomic somehow? slash errors
-            User.where(fb_id:recipient).first.state_table.update(last_story_read_time:Time.now.utc, 
-                                 last_story_read?: true, 
-                                 story_number: Sequel.+(:story_number, 1))
+            User.where(fb_id:recipient).first.state_table.update(
+                                        last_story_read_time:Time.now.utc, 
+                                        last_story_read?: true)
 
           rescue => e
             p e.message + " failed to send user with fb_id #{recipient} a story"
