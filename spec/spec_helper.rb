@@ -19,6 +19,8 @@ require 'pony'
 require "email_spec"
 require "email_spec/rspec"
 
+require_relative '../config/initializers/locale'
+
 
 
 
