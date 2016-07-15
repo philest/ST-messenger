@@ -14,6 +14,12 @@ en:
       - "__TEACHER__: Hi __PARENT__, here’s another story!"
       - "__TEACHER__: Hi __PARENT__, here’s another story!"
     buttons:
+      story_img_url:
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
       window_text: 
         - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"
         - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"

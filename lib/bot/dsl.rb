@@ -1,6 +1,8 @@
 require_relative '../helpers/fb'
 require_relative '../helpers/contact_helpers'
 require_relative '../workers/bot_worker'
+# the translation files
+require_relative '../../config/initializers/locale' 
 
 module Birdv
   module DSL
@@ -19,7 +21,6 @@ module Birdv
     end
   end
 end
-
 
 module Birdv
   module DSL
@@ -298,81 +299,49 @@ module Birdv
 
       def is_txt_button?(thing)
         if thing[:attachment][:payload][:text].nil? or thing[:attachment][:payload][:buttons].nil?
-          puts "its NOT a txt_button!"
           return false 
-        else 
-          puts "it's a txt_button!"
+        else
           return true 
         end
       rescue NoMethodError => e
-        p e.message + " its NOT a txt_button!"
+        p e.message
         return false
       end
 
       def is_story_button?(thing)
-        if thing[:attachment][:payload][:elements].nil? then 
-          puts "it's NOT a story_button!"
-          return false 
-        else 
-          puts "it's a story_button!"
-          return true 
-        end
+        if thing[:attachment][:payload][:elements].nil? then false else true end
       rescue NoMethodError => e
-        p e.message + " it's NOT a story_button!"
+        p e.message
         return false
       end
 
       def is_txt?(thing)
-        if thing[:text].nil? then 
-          puts "it's not text!"
-          return false 
-        else 
-          puts "it's text!"
-          return true 
-        end
+        if thing[:text].nil? then false else true end
       rescue NoMethodError => e
-        p e.message + "it's NOT text!"
+        p e.message
         return false
       end
 
       def is_img?(thing)
-        if [:attachment][:type] == 'image' then 
-          puts "it's an img!"
-          return true 
-        else 
-          puts "it's not an img!"
-          return false 
-        end
+        if [:attachment][:type] == 'image' then true else false end
       rescue NoMethodError => e
-        p e.message + " it's NOT an img!"
+        p e.message
         return false
       end
 
       def is_story?(thing)
-        if thing.is_a? Proc then 
-          puts "it's a story!"
-          return true 
-        else 
-          puts "it's NOT a story!"
-          return false 
-        end
+        if thing.is_a? Proc then true else false end
       rescue NoMethodError => e
-        p e.message + " it's NOT a story!"
+        p e.message
         return false 
       end
 
 
       def process_txt( fb_object, recipient, locale, story_number )
         if locale.nil? then locale = 'en' end
-        
-
-        # puts "translated shit\n" + I18n.t('scripts.teacher_intro').to_s
+        I18n.locale = locale
 
         translate = lambda do |str|
-          require_relative '../../config/initializers/locale'
-
-          I18n.locale = locale
-
 
           if str.nil? or str.empty? then 
             return str   
@@ -411,7 +380,6 @@ module Birdv
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
                 # elements[i][:image_url] = translate.call(elements[i][:image_url]), recipient
                 # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
-                # name, image url, title
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]
                   buttons.each_with_index do |val, i|
