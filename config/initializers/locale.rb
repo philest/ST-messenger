@@ -3,3 +3,5 @@ require 'i18n'
 I18n.load_path += Dir["#{File.dirname(__FILE__)}/../locales/*.{rb,yml}"]
 # I18n.backend.load_translations
 I18n.default_locale = 'en'
+
+# puts I18n.t ''

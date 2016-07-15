@@ -298,47 +298,78 @@ module Birdv
 
       def is_txt_button?(thing)
         if thing[:attachment][:payload][:text].nil? or thing[:attachment][:payload][:buttons].nil?
-          false 
+          return false 
         else 
-          true 
+          return true 
         end
+      rescue NoMethodError => e
+        p e.message
+        return false
       end
 
       def is_story_button?(thing)
         if thing[:attachment][:payload][:elements].nil? then false else true end
+      rescue NoMethodError => e
+        p e.message
+        return false
       end
 
       def is_txt?(thing)
-        if thing[:text].nil? then false else true end
+        if thing[:text].nil? then 
+          puts "it's not text!"
+          return false 
+        else 
+          puts "it's text!"
+          return true 
+        end
+      rescue NoMethodError => e
+        p e.message
+        return false
       end
 
       def is_img?(thing)
         if [:attachment][:type] == 'image' then true else false end
+      rescue NoMethodError => e
+        p e.message
+        return false
       end
 
       def is_story?(thing)
         if thing.is_a? Proc then true else false end
+      rescue NoMethodError => e
+        p e.message
+        return false
       end
 
-      def process_txt( msg, recipient, locale )
+      def process_txt( msg, recipient, locale, story_number )
         if locale.nil? then locale = 'en' end
         I18n.locale = locale
 
+        puts "translated shit\n" + I18n.t('scripts.teacher_intro').to_s
+
         translate = lambda do |str|
+          puts "before translation: " + str.to_s
+          puts "after: " + I18n.t(str).to_s
+
           if str.nil? or str.empty? then 
             return str   
           end
-          return I18n.t str
+
+          trans = I18n.t str
+          return trans.is_a?(Array) ? trans[story_number] : trans
         end
 
         m = msg[:message]
         if !m.nil?
-            if is_text?(m) # just a text message... 
-              m[:text] = name_codes(m[:text], recipient)
+            if is_txt?(m) # just a text message... 
+              puts "text: " + m[:text]
+              puts "translated: " + I18n.t(m[:text])
+
+              m[:text] = name_codes translate.call(m[:text]), recipient
             end
 
-            if is_text_button?(m) # a button with text on it
-              m[:attachment][:payload][:text] = name_codes(m[:attachment][:payload][:text], recipient)
+            if is_txt_button?(m) # a button with text on it
+              m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
               buttons = m[:attachment][:payload][:buttons]
 
               buttons.each_with_index do |val, i|
@@ -351,8 +382,8 @@ module Birdv
               elements = m[:attachment][:payload][:elements]
               elements.each_with_index do |val, i|
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
-                elements[i][:image_url] = name_codes translate.call(elements[i][:image_url]), recipient
-                elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
+                # elements[i][:image_url] = translate.call(elements[i][:image_url]), recipient
+                # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
                 # name, image url, title
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]
@@ -385,12 +416,12 @@ module Birdv
           # do name_codes or process_txt for every type of object that could come through here.....
           # 
 
-          puts to_send.to_s
+          puts "before processing:\n#{to_send}"
 
           usr = User.where(fb_id: recipient).first
-          if usr then process_txt(to_send, recipient, usr.locale) end
-          
-              
+          if usr then process_txt(to_send, recipient, usr.locale, 0) end
+
+          puts "processed:\n#{to_send}"
           puts "sending to #{recipient}"
           puts fb_send_json_to_user(recipient, to_send)
         end

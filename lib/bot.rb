@@ -51,18 +51,18 @@ def get_reply(body, user)
 
   case body
   when HELP_RQST
-    our_reply =  I18n.t 'user-response.help'
+    our_reply =  I18n.t 'user_response.help'
   when STOP_RQST
     user.state_table.update(subscribed?: false)
-    our_reply =  I18n.t 'user-response.stop'
+    our_reply =  I18n.t 'user_response.stop'
   when THANK_MSG
-    our_reply = I18n.t 'user-response.thanks'
+    our_reply = I18n.t 'user_response.thanks'
   when HAHA_MSG
     our_reply = ":D"
   when ROBOT_MSG
-    our_reply = I18n.t 'user-response.robot'
+    our_reply = I18n.t 'user_response.robot'
   else #default msg 
-    our_reply = I18n.t 'user-response.default'
+    our_reply = I18n.t 'user_response.default'
   end
 
   return our_reply 

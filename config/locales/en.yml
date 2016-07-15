@@ -1,14 +1,20 @@
 en:
   hello: "hello"
-  user-response:
+  user_response:
     help:   "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
     stop:   "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
     thanks: "You're welcome :)"
     robot:  "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
     default: "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
   scripts:
+    teacher_intro:
+      - "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
+      - "Hi __PARENT__, it's __TEACHER__. Here’s another story to get __CHILD__ ready for kindergarten."
+      - "__TEACHER__: Hi __PARENT__, here’s another story!"
+      - "__TEACHER__: Hi __PARENT__, here’s another story!"
+      - "__TEACHER__: Hi __PARENT__, here’s another story!"
     buttons:
-      window-text: 
+      window_text: 
         - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"
         - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"
         - "__TEACHER__: I’ll send another story tomorrow night :)"
@@ -23,13 +29,6 @@ en:
       tap: "Tap here!"
       thanks: "Thank you!"
       welcome: "You're welcome :)"
-    teacher-intro:
-      - "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
-      - "Hi __PARENT__, it's __TEACHER__. Here’s another story to get __CHILD__ ready for kindergarten."
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
-
-  stories:
+  stories: "hello there?"
     # (where we keep the adjusted 'espanish' urls)
 

@@ -8,7 +8,7 @@ es:
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
   scripts:
     buttons:
-      window-text: 
+      window_text: 
         - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"
         - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"
         - "__TEACHER__: Voy a enviar otra historia mañana por la noche :)"
@@ -23,7 +23,7 @@ es:
       tap: "¡Pulse aquí!"
       thanks: "¡Gracias!"
       welcome: "De nada :)"
-    teacher-intro:
+    teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer libro de Cuentos gratuita sobre!"
       - "Hola __PARENT__, es __TEACHER__. Aquí es otra historia para conseguir __CHILD__ listo para el jardín de infantes."
       - "__TEACHER__: ¡Hola __PARENT__, aquí es otra historia!"
