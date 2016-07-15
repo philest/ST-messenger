@@ -44,7 +44,6 @@ class ScheduleWorker
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
-      puts "YOOOOO"
 			StartDayWorker.perform_async(user.fb_id) if user.state_table.story_number > 1 #TODO: fix this stuff
 		end
   end
