@@ -1,6 +1,6 @@
 es:
   hello: "hola"
-  user-response:
+  user_response:
     help:   "¡Hola, este es la Hora de Cuentos! Ayudamos a su maestro envía historias nocturnas gratuitas.\n\n - Para detener, respuesta 'parada'\n - Para obtener ayuda, póngase en contacto 561-212-5831"
     stop:   "¡Bien, usted deja de recibir mensajes! Si desea libros gratuitos de nuevo sólo entran en 'Ir'."
     thanks: "De nada :)"

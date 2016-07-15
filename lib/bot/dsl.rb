@@ -298,19 +298,27 @@ module Birdv
 
       def is_txt_button?(thing)
         if thing[:attachment][:payload][:text].nil? or thing[:attachment][:payload][:buttons].nil?
+          puts "its NOT a txt_button!"
           return false 
         else 
+          puts "it's a txt_button!"
           return true 
         end
       rescue NoMethodError => e
-        p e.message
+        p e.message + " its NOT a txt_button!"
         return false
       end
 
       def is_story_button?(thing)
-        if thing[:attachment][:payload][:elements].nil? then false else true end
+        if thing[:attachment][:payload][:elements].nil? then 
+          puts "it's NOT a story_button!"
+          return false 
+        else 
+          puts "it's a story_button!"
+          return true 
+        end
       rescue NoMethodError => e
-        p e.message
+        p e.message + " it's NOT a story_button!"
         return false
       end
 
@@ -323,62 +331,81 @@ module Birdv
           return true 
         end
       rescue NoMethodError => e
-        p e.message
+        p e.message + "it's NOT text!"
         return false
       end
 
       def is_img?(thing)
-        if [:attachment][:type] == 'image' then true else false end
+        if [:attachment][:type] == 'image' then 
+          puts "it's an img!"
+          return true 
+        else 
+          puts "it's not an img!"
+          return false 
+        end
       rescue NoMethodError => e
-        p e.message
+        p e.message + " it's NOT an img!"
         return false
       end
 
       def is_story?(thing)
-        if thing.is_a? Proc then true else false end
+        if thing.is_a? Proc then 
+          puts "it's a story!"
+          return true 
+        else 
+          puts "it's NOT a story!"
+          return false 
+        end
       rescue NoMethodError => e
-        p e.message
-        return false
+        p e.message + " it's NOT a story!"
+        return false 
       end
 
-      def process_txt( msg, recipient, locale, story_number )
-        if locale.nil? then locale = 'en' end
-        I18n.locale = locale
 
-        puts "translated shit\n" + I18n.t('scripts.teacher_intro').to_s
+      def process_txt( fb_object, recipient, locale, story_number )
+        if locale.nil? then locale = 'en' end
+        
+
+        # puts "translated shit\n" + I18n.t('scripts.teacher_intro').to_s
 
         translate = lambda do |str|
-          puts "before translation: " + str.to_s
-          puts "after: " + I18n.t(str).to_s
+          require_relative '../../config/initializers/locale'
+
+          I18n.locale = locale
+
 
           if str.nil? or str.empty? then 
             return str   
           end
 
           trans = I18n.t str
-          return trans.is_a?(Array) ? trans[story_number] : trans
+          return trans.is_a?(Array) ? trans[0] : trans
         end
 
-        m = msg[:message]
+        m = fb_object[:message]
+
+        puts "message = #{m}"
         if !m.nil?
             if is_txt?(m) # just a text message... 
               puts "text: " + m[:text]
-              puts "translated: " + I18n.t(m[:text])
-
               m[:text] = name_codes translate.call(m[:text]), recipient
             end
 
             if is_txt_button?(m) # a button with text on it
+              puts "txt_button txt: " + m[:attachment][:payload][:text].to_s
               m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
               buttons = m[:attachment][:payload][:buttons]
 
               buttons.each_with_index do |val, i|
+                puts "txt button title txt: #{buttons[i][:title]}"
                 buttons[i][:title] = translate.call( buttons[i][:title] )
               end
 
             end
 
             if is_story_button?(m) # a story button, with text and pictures
+              puts "story_button txt: " + m[:attachment][:payload][:elements].to_s
+
               elements = m[:attachment][:payload][:elements]
               elements.each_with_index do |val, i|
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
@@ -388,6 +415,7 @@ module Birdv
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]
                   buttons.each_with_index do |val, i|
+                    puts "story button title txt: #{buttons[i][:title]}"
                     buttons[i][:title] = translate.call(buttons[i][:title])
                   end
                 end
@@ -396,7 +424,7 @@ module Birdv
 
             # if m[:attachment][:payload][:elements][:title] # a story button, with text and pictures
             #   elements = m[:attachment][:payload][:elements]
-            #   translate()
+            #   translate.call()
             # end
 
         end
@@ -419,11 +447,15 @@ module Birdv
           puts "before processing:\n#{to_send}"
 
           usr = User.where(fb_id: recipient).first
-          if usr then process_txt(to_send, recipient, usr.locale, 0) end
+          fb_object = Marshal.load(Marshal.dump(to_send))
 
-          puts "processed:\n#{to_send}"
+          if usr then 
+            process_txt(fb_object, recipient, usr.locale, 0) 
+          end
+
+          puts "processed:\n#{fb_object}"
           puts "sending to #{recipient}"
-          puts fb_send_json_to_user(recipient, to_send)
+          puts fb_send_json_to_user(recipient, fb_object)
         end
         
         # TODO: something about this next line
