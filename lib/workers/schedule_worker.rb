@@ -5,13 +5,36 @@ class StartDayWorker
   #   10
   # end
 
-  def perform(recipient, day_number)
+  def read_yesterday_story?(user)
+    # TODO: add a time-based condition?
+    return user.state_table.last_story_read?
+  end
+  
+  def update_day(user)
+
+    if read_yesterday_story?(user)
+      n = user.state_table.story_number + 1
+      user.state_table.update(story_number: n, 
+                              last_story_read?: false)
+    end
+    return user.state_table.story_number
+    # TODO: do error handling in a smart idempotent way
+  end
+
+  def perform(recipient)
+      u = User.where(fb_id:recipient).first
+
+      day_number =  update_day(u)
+      puts "day#{day_number}"
   		# double quotation
   		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
-		  if not script.nil?
+		  if !script.nil?
         script.run_sequence(recipient, :init) 
+      else
+        #TODO: email?
+        puts 'could not find scripts :('
       end
-		# update the user day! TODO: make this a seperate job!
+
 	end
 end
 
@@ -21,7 +44,8 @@ class ScheduleWorker
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
-			StartDayWorker.perform_async(user.fb_id, user.story_number) if user.story_number > 1 #TODO: fix this stuff
+      puts "YOOOOO"
+			StartDayWorker.perform_async(user.fb_id) if user.state_table.story_number > 1 #TODO: fix this stuff
 		end
   end
 
