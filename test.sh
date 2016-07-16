@@ -1,3 +1,6 @@
+#!/bin/bash
+
+[ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
 echo "Removing Gemfile.lock..."
 rm Gemfile.lock
 echo "Switching to JRuby..."
