@@ -52,7 +52,9 @@ module Facebook
         end
 
         l = locale.split('_').first
-        if not l.nil? and not l.empty?
+        # If user has a language other than English or Spanish, default to English. 
+        # We'll add more languages later. 
+        if ['en', 'es'].include? l and not l.nil? and not l.empty?
           return l
         else 
           return 'en'
@@ -64,7 +66,7 @@ module Facebook
 
 
       def register_user(recipient)
-        # save user in the database.
+        # Save user in the database.
         # TODO : update an existing DB entry to coincide the fb_id with phone_number
         fields = "first_name,last_name,profile_pic,locale,timezone,gender"
         data = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}").body

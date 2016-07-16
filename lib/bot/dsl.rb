@@ -183,6 +183,15 @@ module Birdv
         end
       end
 
+      def get_locale(recipient)
+        user = User.where(fb_id: recipient).first
+        if user
+          return user.locale
+        else # default to the 0th version
+          return 'en'
+        end
+      end
+
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
@@ -241,15 +250,19 @@ module Birdv
 
 
       def send_story(args = {})
-        assert_keys([:library, :title, :num_pages, :recipient], args)
+        assert_keys([:library, :title, :num_pages, :recipient, :locale], args)
         library     = args[:library]
         title       = args[:title]
         num_pages   = args[:num_pages]
         recipient   = args[:recipient]
+        locale      = args[:locale]
         base = STORY_BASE_URL
         puts "the number of pages #{num_pages}"
+        locale_url_seg = (locale == 'es') ? 'es/' : ''
+        puts "locale_url_seg = #{locale_url_seg}"
+
         num_pages.times do |i|
-          url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
+          url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
           puts "sending #{url}!"
           fb_send_json_to_user(recipient, picture(url:url))
         end
@@ -266,6 +279,7 @@ module Birdv
           begin
 
             version = get_curriculum_version(recipient)
+            locale  = get_locale(recipient)
 
             puts "THE CURRICULUM VERSION WE GETTING IS #{version}"
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
@@ -280,7 +294,8 @@ module Birdv
               recipient:  recipient,
               library:    lib,
               title:      title,
-              num_pages:  num_pages.to_i
+              num_pages:  num_pages.to_i,
+              locale:     locale
             })
             
             # TODO: error stuff
@@ -337,7 +352,7 @@ module Birdv
       end
 
 
-      def process_txt( fb_object, recipient, locale, story_number )
+      def process_txt( fb_object, recipient, locale )
         if locale.nil? then locale = 'en' end
         I18n.locale = locale
 
@@ -348,7 +363,7 @@ module Birdv
           end
 
           trans = I18n.t str
-          return trans.is_a?(Array) ? trans[0] : trans
+          return trans.is_a?(Array) ? trans[@script_day - 1] : trans
         end
 
         m = fb_object[:message]
@@ -378,7 +393,7 @@ module Birdv
               elements = m[:attachment][:payload][:elements]
               elements.each_with_index do |val, i|
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
-                # elements[i][:image_url] = translate.call(elements[i][:image_url]), recipient
+                elements[i][:image_url] = translate.call(elements[i][:image_url])
                 # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]
@@ -418,7 +433,7 @@ module Birdv
           fb_object = Marshal.load(Marshal.dump(to_send))
 
           if usr then 
-            process_txt(fb_object, recipient, usr.locale, 0) 
+            process_txt(fb_object, recipient, usr.locale) 
           end
 
           puts "processed:\n#{fb_object}"

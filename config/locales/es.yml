@@ -15,11 +15,11 @@ es:
       - "__TEACHER__: ¡Hola __PARENT__, aquí es otra historia!"
     buttons:
       story_img_url:
-        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
       window_text: 
         - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"
         - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"

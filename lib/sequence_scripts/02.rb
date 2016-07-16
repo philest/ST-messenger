@@ -13,7 +13,7 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 	button_story({
 		name: 		'tap_here',
 		title: 		'scripts.buttons.title',
-		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+		image_url:  'scripts.buttons.story_img_url', 
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:cookstory))]
 	})
 
