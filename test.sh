@@ -14,6 +14,5 @@ read -p "commit message: " commit_message
 git commit -m "${commit_message}"
 echo "Pushing to 'origin-${branch}'"
 git push origin $branch
-echo "Switching back to CRuby..."
-rvm use default
 echo "Done."
+
