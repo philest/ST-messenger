@@ -215,6 +215,7 @@ describe Birdv::DSL::StoryTimeScript do
 									library: 		@lib,
 									title: 	 		@title,
 									num_pages: 	@num_pages,
+									locale: 'en'
 								})
 					)
 			}.not_to raise_error
