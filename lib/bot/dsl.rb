@@ -213,15 +213,14 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-        # puts(@sequences[sqnce_name.to_sym])
         begin
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
           User.where(fb_id:recipient).first.state_table.update(last_sequence_seen: sqnce_name.to_s)
           return ret
 
-         # puts "successfully ran #{sqnce_name}!"
         rescue => e  
           puts "#{sqnce_name} from script #{@script_name} failed!"
+          puts "the known sequences are: #{@sequences}"
           puts e.message  
           puts e.backtrace.join("\n") 
           email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
