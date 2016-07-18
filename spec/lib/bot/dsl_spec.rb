@@ -6,6 +6,13 @@ describe Birdv::DSL::StoryTimeScript do
 
 
 	let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
+
+	def name_codes(str)
+		str = str.gsub(/__TEACHER__/, 'Mr. McEsterWahl')
+        str = str.gsub(/__PARENT__/, 'Aubs')
+        str = str.gsub(/__CHILD__/, 'Lil')
+        return str
+	end
 	
 	before(:all) do
 		ENV['CURRICULUM_VERSION'] = "0" 	# for the purposes of this spec
@@ -225,7 +232,7 @@ describe Birdv::DSL::StoryTimeScript do
 			expect {
 				script_obj.send(
 					@aubrey,
-					script_obj.text({ text: @txt
+					script_obj.text({ text: 'testing.test_texts'
 						})
 				)
 			}.not_to raise_error
@@ -271,7 +278,8 @@ describe Birdv::DSL::StoryTimeScript do
 	# the success of these tests is verified by making the corrext HTTP request
 	context 'name replacement stuff', text_replace: true do
 		before(:all) do
-			@txt = "__PARENT__||__CHILD__||__TEACHER__"
+			# @txt = "__PARENT__||__CHILD__||__TEACHER__"
+			@txt = 'testing.name_codes'
 			@lib 				= 'day1'
 			@title 			= 'chomp'
 			@aubrey 	= '10209571935726081' # aubrey
@@ -463,17 +471,17 @@ describe Birdv::DSL::StoryTimeScript do
 			@cli.new_script 'day1' do
 				button_story({
 					name: 		'tap_here',
-					title: 		"You're next story's coming soon!",
-					image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-					buttons: 	[postback_button('Tap here!', script_payload(:scratchstory))]
+					title: 		"scripts.buttons.title",
+					image_url:'scripts.buttons.story_img_url', 
+					buttons: 	[postback_button('scripts.buttons.tap', script_payload(:scratchstory))]
 				})
 				button_normal({
 					name: 			 'thanks',
-					window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
-					buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+					window_text: "scripts.buttons.window_text",
+					buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
 				})			
 				sequence 'firsttap' do |recipient|
-					txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+					txt = "scripts.teacher_intro"
 					send recipient, text({text: txt})
 					send recipient, button({name:'tap_here'}) 
 				end
@@ -484,7 +492,7 @@ describe Birdv::DSL::StoryTimeScript do
 					send recipient, button({name: 'thanks'})
 				end
 				sequence 'yourwelcome' do |recipient|
-					send recipient, text({text: "You're welcome :)"})
+					send recipient, text({text: "scripts.buttons.welcome"})
 				end					
 			
 			end #=>END @cli.new_script 'day1' do
@@ -492,19 +500,19 @@ describe Birdv::DSL::StoryTimeScript do
 			@cli.new_script 'day2' do
 				button_story({
 					name: 		'tap_here',
-					title: 		"You're next story's coming soon!",
-					image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-					buttons: 	[postback_button('Tap here!', script_payload(:story))]
+					title: 		"scripts.buttons.title",
+					image_url:'scripts.buttons.story_img_url', 
+					buttons: 	[postback_button('scripts.buttons.tap', script_payload(:story))]
 				})
 
 				button_normal({
 					name: 			 'thanks',
-					window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
-					buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+					window_text: "scripts.buttons.window_text",
+					buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
 				})			
 
 				sequence 'differentfirst' do |recipient|
-					txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+					txt = "scripts.teacher_intro"
 					send recipient, text({text: txt})
 					send recipient, button({name:'tap_here'}) 
 				end
@@ -515,7 +523,7 @@ describe Birdv::DSL::StoryTimeScript do
 					send recipient, button({name: 'thanks'})
 				end
 				sequence 'yourwelcome' do |recipient|
-					send recipient, text({text: "You're welcome :)"})
+					send recipient, text({text: "scripts.buttons.welcome"})
 				end					
 			
 			end #=>END @cli.new_script 'day1' do			
@@ -532,13 +540,13 @@ describe Birdv::DSL::StoryTimeScript do
 				t.add_user u
 
 				# init sequence
-				b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"You're next story's coming soon!\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
-				@stub_txt.call("Ms. McEsterWahl: Hi Aubs, here’s another story!")
+				b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
+				@stub_txt.call("Hi Aubs, this is Ms. McEsterWahl. Here's your first free book on StoryTime!")
 				@stub_arb.call(b1)
 
 				# scratchstory sequence
 				b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg\"}}}}"
-				b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Ms. McEsterWahl: I’ll send another story tomorrow night :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"			
+				b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Ms. McEsterWahl: I’ll send another story tomorrow night. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"			
 				@stub_arb.call(b2)
 				@stub_arb.call(b3)
 

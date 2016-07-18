@@ -37,4 +37,7 @@ en:
       welcome: "You're welcome :)"
   stories: "hello there?"
     # (where we keep the adjusted 'espanish' urls)
+  testing: 
+    name_codes: "__PARENT__||__CHILD__||__TEACHER__"
+    test_texts: "hey this is window text, which can be much longer than button text"
 
