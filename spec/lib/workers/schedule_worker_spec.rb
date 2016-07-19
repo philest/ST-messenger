@@ -206,9 +206,24 @@ describe ScheduleWorker do
 				}.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
 
 			end
+				# TODO: i need a trickier way to test this
+			it 'should update day before running the sequence', order:true do
+				# expect(@script).to receive(:run_sequence)
+
+
+				# @u1.state_table.update(last_story_read?:true)
+				# expect{
+				# 	Sidekiq::Testing.inline! do
+				# 		StartDayWorker.perform_async(@u1_id)
+				# 	end
+				# }.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
+
+			end
 			
-			it 'does not increment day number when hasnt read last story' do
-				expect(@script).not_to receive(:run_sequence)
+			it 'does not increment day number when hasnt read last story', nosend:true do
+				day = User.where(fb_id: @u1_id).first.state_table.story_number
+				u1script = Birdv::DSL::ScriptClient.scripts["day#{day+1}"] 
+				expect(u1script).not_to receive(:run_sequence)
 				expect{
 					Sidekiq::Testing.inline! do
 						StartDayWorker.perform_async(@u1_id)

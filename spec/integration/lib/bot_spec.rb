@@ -35,6 +35,10 @@ describe 'TheBot' do
 	include RSpecMixin
 
 	before(:all) do
+
+		Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
+			.each {|f| require_relative f }
+
 		@params = { 
 			:name_0 => "Phil Esterman", :phone_0 => "5612125831",
 			:name_1 => "David McPeek", :phone_1 => "8186897323",
@@ -47,6 +51,11 @@ describe 'TheBot' do
 		@make_aubrey  = lambda do
 			User.create phone:'3013328953', first_name:'Aubs', last_name:'Wahl', fb_id:@aubrey, child_name:'Lil Aubs'
 		end
+	end
+
+	after(:all) do
+		Timecop.return
+		Birdv::DSL::ScriptClient.clear_scripts # TODO, make this happen in spec helper
 	end
 
 	after(:each) do

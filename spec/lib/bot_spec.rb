@@ -58,6 +58,12 @@ describe "Bot", bot:true do
 			expect(user.id).to eq init.id
 		end
 
+		# NOTE: 
+		# V IMPORTANT
+		# DON'T IGNORE THIS
+		# !!!!!!!!!!!!!!!!!!!!!!!
+		# if this test is failing, it may be because you forgot to do Timecop.return in 
+		# another spec!
 		it "picks the first user who matches a child when there are many of such users" do 
 			candidate0 = User.create
 			candidate1 = User.create(:child_name => "Ben McPeek")

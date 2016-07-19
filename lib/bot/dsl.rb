@@ -16,6 +16,10 @@ module Birdv
         @@scripts
       end
 
+      def self.clear_scripts
+        @@scripts = {}
+      end 
+
     end
   end
 end

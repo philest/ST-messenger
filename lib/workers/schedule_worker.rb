@@ -28,6 +28,7 @@ class StartDayWorker
       puts "day#{day_number}"
   		# double quotation
   		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
+      puts script
 		  if !script.nil?
         script.run_sequence(recipient, :init) 
       else
