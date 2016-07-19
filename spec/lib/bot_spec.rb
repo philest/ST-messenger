@@ -21,8 +21,8 @@ describe "Bot", bot:true do
 			stub_request(:get, "https://graph.facebook.com/v2.6/bad_id?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD&fields=first_name,last_name,profile_pic,locale,timezone,gender").
          		to_return(:status => 200, :body => error_resp, :headers => {})
 
-         	stub_request(:get, david_req).
-         		to_return(:status => 200, :body => resp, :headers => {})
+			stub_request(:get, david_req).
+				to_return(:status => 200, :body => resp, :headers => {})
 
 			stub_request(:get, bad_id).
          		with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
@@ -58,6 +58,12 @@ describe "Bot", bot:true do
 			expect(user.id).to eq init.id
 		end
 
+		# NOTE: 
+		# V IMPORTANT
+		# DON'T IGNORE THIS
+		# !!!!!!!!!!!!!!!!!!!!!!!
+		# if this test is failing, it may be because you forgot to do Timecop.return in 
+		# another spec!
 		it "picks the first user who matches a child when there are many of such users" do 
 			candidate0 = User.create
 			candidate1 = User.create(:child_name => "Ben McPeek")

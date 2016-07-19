@@ -5,13 +5,37 @@ class StartDayWorker
   #   10
   # end
 
-  def perform(recipient, day_number)
+  def read_yesterday_story?(user)
+    # TODO: add a time-based condition?
+    return user.state_table.last_story_read?
+  end
+  
+  def update_day(user)
+
+    if read_yesterday_story?(user)
+      n = user.state_table.story_number + 1
+      user.state_table.update(story_number: n, 
+                              last_story_read?: false)
+    end
+    return user.state_table.story_number
+    # TODO: do error handling in a smart idempotent way
+  end
+
+  def perform(recipient)
+      u = User.where(fb_id:recipient).first
+
+      day_number =  update_day(u)
+      puts "day#{day_number}"
   		# double quotation
   		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
-		  if not script.nil?
+      puts script
+		  if !script.nil?
         script.run_sequence(recipient, :init) 
+      else
+        #TODO: email?
+        puts 'could not find scripts :('
       end
-		# update the user day! TODO: make this a seperate job!
+
 	end
 end
 
@@ -21,7 +45,7 @@ class ScheduleWorker
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
-			StartDayWorker.perform_async(user.fb_id, user.story_number) if user.story_number > 1 #TODO: fix this stuff
+			StartDayWorker.perform_async(user.fb_id) if user.state_table.story_number > 1 #TODO: fix this stuff
 		end
   end
 
@@ -49,7 +73,7 @@ class ScheduleWorker
     match = user.teacher.signature.match(/esterman/i) || 
     user.teacher.signature.match(/wahl/i) ||
     user.teacher.signature.match(/mcpeek/i) ||
-    user.teacher.signature.match(/mcesterwahl/)
+    user.teacher.signature.match(/mcesterwahl/i)
 
     if match.nil? 
       return false 
@@ -58,14 +82,17 @@ class ScheduleWorker
     end
   end
 
-    # need to make sure the send_time column is a Datetime type
+  # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range)
   	# TODO: ensure that Time.now is in UTC time
 
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> dubbtn
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight

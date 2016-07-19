@@ -16,6 +16,10 @@ module Birdv
         @@scripts
       end
 
+      def self.clear_scripts
+        @@scripts = {}
+      end 
+
     end
   end
 end
@@ -67,6 +71,28 @@ module Birdv
         # if sqnce wasn't previously registered, increment the number of registered sequences
         warning = 'WARNING: you already registered that sequence :('
         already_registered ? puts(warning) : @num_sequences = @num_sequences+1 
+      end
+
+      def sequence_seen? (sqnce_to_send_name, last_sequence_seen)
+
+        if (last_sequence_seen.nil?)
+          return false
+        end
+
+
+
+        sqnce_new = @sequences[sqnce_to_send_name.to_sym] # TODO: ensure non-sym input is ok
+        sqnce_old = @sequences[last_sequence_seen.to_sym]
+
+        # TODO: write spec that ensure nothing bad happens when bade sqnce name given
+        if (sqnce_new != nil && sqnce_old != nil)
+          if sqnce_new[1] > sqnce_old[1]
+            return false
+          end
+        end
+
+        # assume that we have seen the sqnce already
+        return true
       end
 
       def assert_keys(keys = [], args)
@@ -191,15 +217,14 @@ module Birdv
 
 
       def run_sequence(recipient, sqnce_name)
-        # puts(@sequences[sqnce_name.to_sym])
         begin
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
           User.where(fb_id:recipient).first.state_table.update(last_sequence_seen: sqnce_name.to_s)
           return ret
 
-         # puts "successfully ran #{sqnce_name}!"
         rescue => e  
           puts "#{sqnce_name} from script #{@script_name} failed!"
+          puts "the known sequences are: #{@sequences}"
           puts e.message  
           puts e.backtrace.join("\n") 
           email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
@@ -273,14 +298,12 @@ module Birdv
 
             version = get_curriculum_version(recipient)
 
-            puts "THE CURRICULUM VERSION WE GETTING IS #{version}"
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
-   
+
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
             storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
-            puts "#{lib} #{num_pages}"
 
             send_story({
               recipient:  recipient,
@@ -292,9 +315,9 @@ module Birdv
             # TODO: error stuff
 
             # TODO: make this atomic somehow? slash errors
-            User.where(fb_id:recipient).first.state_table.update(last_story_read_time:Time.now.utc, 
-                                 last_story_read?: true, 
-                                 story_number: Sequel.+(:story_number, 1))
+            User.where(fb_id:recipient).first.state_table.update(
+                                        last_story_read_time:Time.now.utc, 
+                                        last_story_read?: true)
 
           rescue => e
             p e.message + " failed to send user with fb_id #{recipient} a story"

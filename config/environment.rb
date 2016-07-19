@@ -9,6 +9,7 @@ pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 case ENV["RACK_ENV"]
 when "development", "test"
   require 'dotenv'
+  puts '!!! loading up local environment vars...'
   Dotenv.load
   db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
   DB        = Sequel.connect(db_url)
