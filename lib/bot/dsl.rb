@@ -294,14 +294,12 @@ module Birdv
 
             version = get_curriculum_version(recipient)
 
-            puts "THE CURRICULUM VERSION WE GETTING IS #{version}"
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
-   
+
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
             storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
-            puts "#{lib} #{num_pages}"
 
             send_story({
               recipient:  recipient,
