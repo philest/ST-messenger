@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'timecop'
 require 'active_support/time'
 require 'workers/schedule_worker'
+require 'bot/dsl'
 describe ScheduleWorker do
 	before(:each) do
 		# clean everything up
@@ -10,24 +11,32 @@ describe ScheduleWorker do
 
 		@time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
 		@time_range = 10.minutes.to_i
-		@interval = @time_range / 2.0
+		@interval = @time_range / 2.0								
 		Timecop.freeze(@time)
 
 		@s = ScheduleWorker.new
 
-		@on_time = User.create(:send_time => Time.now, :story_number => 2)
+		@story_num = 2
+
+		@on_time = User.create(:send_time => Time.now)
 
 		# 6:55:00 
-		@just_early = User.create(:send_time => Time.now - @interval, :story_number => 2)
+		@just_early = User.create(:send_time => Time.now - @interval)
 
 		#  7:04:59pm
-		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds, :story_number => 2)
+		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds)
 
 		# 6:54:59
-		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds, :story_number => 2)
+		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds)
 
 		# 7:05
-		@late = User.create(:send_time => Time.now + @interval, :story_number => 2)
+		@late = User.create(:send_time => Time.now + @interval)
+
+		@on_time.state_table.update(story_number: @story_num)
+		@just_early.state_table.update(story_number: @story_num)
+		@just_late.state_table.update(story_number: @story_num)
+		@early.state_table.update(story_number: @story_num)
+		@late.state_table.update(story_number: @story_num)
 
 	end
 
@@ -85,7 +94,8 @@ describe ScheduleWorker do
 		it "does not send messages to a user twice" do
 			User.each {|u| u.destroy } # clean database
 
-			user = User.create(:send_time => Time.now + @interval - 1.second, :story_number => 2)
+			user = User.create(:send_time => Time.now + @interval - 1.second)
+			user.state_table.update(story_number: @story_num)
 			expect(@s.within_time_range(user, @interval)).to be true
 			Timecop.freeze(Time.now + @time_range)
 			expect(@s.within_time_range(user, @interval)).to be false			
@@ -137,7 +147,8 @@ describe ScheduleWorker do
 
 		it "does NOT call StartDayWorker when users are at day 1" do
 			User.each {|u| u.destroy } # clean database
-			user = User.create(:send_time => Time.now, :story_number => 1)
+			user = User.create(:send_time => Time.now)
+			user.state_table.update(story_number: 1)
 			expect(ScheduleWorker.jobs.size).to eq(0)
 
 			Sidekiq::Testing.fake! do
@@ -152,7 +163,7 @@ describe ScheduleWorker do
 			# specify exact arguments and people on this one...
 			users = [@on_time, @just_early, @just_late]
 			for user in users
-				expect(StartDayWorker).to receive(:perform_async).with(user.fb_id, user.story_number).once
+				expect(StartDayWorker).to receive(:perform_async).with(user.fb_id).once
 			end
 
 			Sidekiq::Testing.inline! do
@@ -161,6 +172,82 @@ describe ScheduleWorker do
 		end
 	end
 
+
+
+	describe 'StartDayWorker', start_day:true do
+		before(:example) do
+			@starting_story_num = 900
+			@u1_id = '1'
+			@u1 = User.create(fb_id: @u1_id, send_time: Time.now)
+			User.where(fb_id: @u1_id).first
+					.state_table.update(story_number: @starting_story_num)
+
+
+			@s = Birdv::DSL::ScriptClient.new_script 'day901' do
+				day (901) #dang this is kinda dangerless (plz enforce =  @starting_story_num+1)
+				sequence 'dummy_first' do |r|
+					puts 'hey this worked'
+				end
+			end
+
+			@script = Birdv::DSL::ScriptClient.scripts["day#{@starting_story_num+1}"]
+
+		end
+	
+		context '#update_day' do
+
+			it 'increments the day # when last story was read' do
+				expect(@script).to receive(:run_sequence)
+				@u1.state_table.update(last_story_read?:true)
+				expect{
+					Sidekiq::Testing.inline! do
+						StartDayWorker.perform_async(@u1_id)
+					end
+				}.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
+
+			end
+				# TODO: i need a trickier way to test this
+			it 'should update day before running the sequence', order:true do
+				# expect(@script).to receive(:run_sequence)
+
+
+				# @u1.state_table.update(last_story_read?:true)
+				# expect{
+				# 	Sidekiq::Testing.inline! do
+				# 		StartDayWorker.perform_async(@u1_id)
+				# 	end
+				# }.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
+
+			end
+			
+			it 'does not increment day number when hasnt read last story', nosend:true do
+				day = User.where(fb_id: @u1_id).first.state_table.story_number
+				u1script = Birdv::DSL::ScriptClient.scripts["day#{day+1}"] 
+				expect(u1script).not_to receive(:run_sequence)
+				expect{
+					Sidekiq::Testing.inline! do
+						StartDayWorker.perform_async(@u1_id)
+					end
+				}.not_to change{User.where(fb_id: @u1_id).first.state_table.story_number}
+				expect(User.where(fb_id: @u1_id).first.state_table.last_story_read?).to eq(false)
+			end
+
+
+			it 'sets last_story_ready to false' do
+				expect(@script).to receive(:run_sequence)
+				@u1.state_table.update(last_story_read?:true)
+				expect{
+					Sidekiq::Testing.inline! do
+						StartDayWorker.perform_async(@u1_id)
+					end
+				}.to change{User.where(fb_id: @u1_id).first.state_table.last_story_read?}.to false
+			end
+
+		end
+
+		# TODO: idempotency test?
+
+	end
 
 	describe "subscribed" do
 

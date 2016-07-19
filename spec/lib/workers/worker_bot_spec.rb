@@ -86,12 +86,13 @@ describe BotWorker do
 			}.to_not change{usr.story_number}		
 		end
 
-		it 'pressing day4 button jumps story_number to next day (day 5)' do
+		# this should only be done by scheduler
+		it 'pressing day4 button DOES NOT jump story_number to next day (day 5)' do
 			expect {
 				Sidekiq::Testing.inline! do
 					BotWorker.perform_async('12345','day4','one')
 				end
-			}.to change{User.where(:fb_id=>@usr_fb_id).first.story_number}.to 5	
+			}.not_to change{User.where(:fb_id=>@usr_fb_id).first.story_number}	
 		end
 	end
 end

@@ -94,7 +94,8 @@ Bot.on :message do |message|
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s
         if scripts[script_name] != nil
-          scripts[script_name].run_sequence(sender_id, :init)
+#          scripts[script_name].run_sequence(sender_id, :init)
+          BotWorker.perform_async(sender_id, script_name, :init)
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end

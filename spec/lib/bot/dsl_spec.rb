@@ -246,6 +246,87 @@ describe Birdv::DSL::StoryTimeScript do
 		end
 
 	end
+
+	# check if sequence has already been seen within a given script
+	# these are simple unit tests. integration test somewhere else TODO
+	# => 
+	# => 
+	# =>
+	context '#sequence_seen?' do
+		before(:all) do
+
+			# load a script
+			@cli = Birdv::DSL::ScriptClient
+			@cli.new_script 'day1' do
+				sequence 'one' do |recipient|
+				end
+				sequence 'two' do |recipient|
+				end
+				sequence 'three' do |recipient|
+				end				
+				sequence 'four' do |recipient|
+				end
+			end
+
+			@script_copy = @cli.scripts['day1']
+		end
+
+		it 'returns true when last_sequence_seen is nil?' do
+			expect(
+				@script_copy.sequence_seen?('one', nil)
+			).to eq false
+		end
+
+		# TODO: it emails us when some folks have an invalid input
+		# it 'emails phil when the DB has invalid input' do
+		# 	expect{
+		# 		@script_copy.sequence_seen?('nonexistentsequence', 'one')
+		# 	}.to EMAIL_SHIT
+		# end		
+
+		# should also email phil
+		it 'returns true when input is all wrong?' do
+			expect(
+				@script_copy.sequence_seen?('nonexistentsequence', 'one')
+			).to eq true
+		end		
+
+
+		it 'returns false when have not seen' do
+			expect(
+				@script_copy.sequence_seen?('two', 'one')
+			).to eq false		
+
+			expect(
+				@script_copy.sequence_seen?('four', 'two')
+			).to eq false		
+		end
+
+		it 'returns true when have seen' do
+			expect(
+				@script_copy.sequence_seen?('two', 'one')
+			).to eq false	
+		end
+
+		it 'works properly when input is a symbol' do
+			expect(
+				@script_copy.sequence_seen?(:two, :one)
+			).to eq false		
+
+			expect(
+				@script_copy.sequence_seen?(:four, :two)
+			).to eq false		
+
+			expect(
+				@script_copy.sequence_seen?(:nonexistentsequence, :one)
+			).to eq true			
+
+		# 	expect{
+		# 		@script_copy.sequence_seen?(:nonexistentsequence, :one)
+		# 	}.to EMAIL_SHIT
+		end
+	end
+
 	
 	# Visual separation :P
 	# => 
@@ -254,6 +335,7 @@ describe Birdv::DSL::StoryTimeScript do
 	# note the difference between 'send story...' and 'send send_story'.
 	# the former is usually used in a script, the latter not
 	context '#send a #story' do
+		# TODO		
 		# it 'expects certain arguments' do
 
 		# end
@@ -266,7 +348,9 @@ describe Birdv::DSL::StoryTimeScript do
 
 		# end
 
+		# it 'updates last_story_read_time' do
 
+		# end
 	end
 
 
@@ -579,6 +663,35 @@ describe Birdv::DSL::StoryTimeScript do
 				}.not_to raise_error
 		end
 
+<<<<<<< HEAD
+=======
+		it 'send(@aubrey, story()) DOES NOT update story day' do
+			@make_aubrey.call
+			s1 = @s['day1']
+			s2 = @s['day2']
+			expect {
+					@stub_story.call(@aubrey, 'day1', 'coon', 2)
+					s1.send(@aubrey, s1.story())
+					@stub_story.call(@aubrey, 'day1', 'cook', 11)
+					s2.send(@aubrey, s2.story())
+			}.not_to change{User.where(fb_id:@aubrey).first.state_table.story_number}
+		end
+
+		it 'third story should work' do
+			@make_aubrey.call
+			s1 = @s['day1']
+			s2 = @s['day2']
+			expect {
+					@stub_story.call(@aubrey, 'day1', 'coon', 2)
+					s1.send(@aubrey, s1.story())
+					@stub_story.call(@aubrey, 'day1', 'cook', 11)
+					s2.send(@aubrey, s2.story())
+					@stub_story.call(@aubrey, 'day1', 'scratch', 6)
+					s2.send(@aubrey, s2.story())
+			}.not_to change{User.where(fb_id:@aubrey).first.state_table.story_number}
+
+		end		
+>>>>>>> master
 
 		it 'does not confuse last_sequence with last story_read' do
 			@stub_txt.call("You're welcome :)")
@@ -595,7 +708,11 @@ describe Birdv::DSL::StoryTimeScript do
 					s2.run_sequence(@aubrey, 'yourwelcome')
 			}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to('yourwelcome')
 
+<<<<<<< HEAD
 			expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(4)
+=======
+			expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(1)
+>>>>>>> master
 		end
 	end #=>END context 'when #send, the DB should be updated' do
 end
