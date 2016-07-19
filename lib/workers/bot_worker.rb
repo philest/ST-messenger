@@ -27,7 +27,7 @@ class BotWorker
 			b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
 			u.add_button_press_log(b)
 
-			protected_ids = %w(1084495154927802 1042751019139427 1625783961083197 10209967651611613)
+			protected_ids = %w(1084495154927802 1042751019139427 1625783961083197 10209967651611613 10209571935726081)
 			puts "id = #{recipient}"
 			puts "included? #{protected_ids.include?(recipient)}"
 			
