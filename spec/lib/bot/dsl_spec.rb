@@ -555,7 +555,7 @@ describe Birdv::DSL::StoryTimeScript do
 			it 'updates last sequence seen, nil->init->scratchstory' do
 				pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
 				expect(pgs).to eq(2)	# only two pages of coon story
-				expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)
+				expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(1)
 				expect(User.where(fb_id:@aubrey).first.curriculum_version).to eq(0)
 				@stub_story.call(@aubrey, "day1","coon", pgs)
 				#@stub_story.call(@aubrey, "day1","bird", 8)
@@ -579,32 +579,6 @@ describe Birdv::DSL::StoryTimeScript do
 				}.not_to raise_error
 		end
 
-		it 'send(@aubrey, story()) updates story day' do
-			@make_aubrey.call
-			s1 = @s['day1']
-			s2 = @s['day2']
-			expect {
-					@stub_story.call(@aubrey, 'day1', 'coon', 2)
-					s1.send(@aubrey, s1.story())
-					@stub_story.call(@aubrey, 'day1', 'cook', 11)
-					s2.send(@aubrey, s2.story())
-			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(2)
-		end
-
-		it 'third story should work' do
-			@make_aubrey.call
-			s1 = @s['day1']
-			s2 = @s['day2']
-			expect {
-					@stub_story.call(@aubrey, 'day1', 'coon', 2)
-					s1.send(@aubrey, s1.story())
-					@stub_story.call(@aubrey, 'day1', 'cook', 11)
-					s2.send(@aubrey, s2.story())
-					@stub_story.call(@aubrey, 'day1', 'scratch', 6)
-					s2.send(@aubrey, s2.story())
-			}.to change{User.where(fb_id:@aubrey).first.state_table.story_number}.from(0).to(3)
-
-		end		
 
 		it 'does not confuse last_sequence with last story_read' do
 			@stub_txt.call("You're welcome :)")
@@ -621,7 +595,7 @@ describe Birdv::DSL::StoryTimeScript do
 					s2.run_sequence(@aubrey, 'yourwelcome')
 			}.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to('yourwelcome')
 
-			expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(3)
+			expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(4)
 		end
 	end #=>END context 'when #send, the DB should be updated' do
 end
