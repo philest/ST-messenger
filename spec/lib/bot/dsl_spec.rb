@@ -327,6 +327,7 @@ describe Birdv::DSL::StoryTimeScript do
 	# note the difference between 'send story...' and 'send send_story'.
 	# the former is usually used in a script, the latter not
 	context '#send a #story' do
+		# TODO		
 		# it 'expects certain arguments' do
 
 		# end
@@ -339,7 +340,9 @@ describe Birdv::DSL::StoryTimeScript do
 
 		# end
 
+		# it 'updates last_story_read_time' do
 
+		# end
 	end
 
 
