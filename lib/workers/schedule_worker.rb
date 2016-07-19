@@ -89,10 +89,6 @@ class ScheduleWorker
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dubbtn
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight
