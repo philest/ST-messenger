@@ -10,8 +10,6 @@ Sequel.migration do
       add_column :story_number, Integer, default: 1
     end
 
-
-
   end
 
   down do

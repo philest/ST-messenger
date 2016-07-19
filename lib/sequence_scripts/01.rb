@@ -10,15 +10,15 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		"Let's read tonight's story.",
-		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-		buttons: 	[postback_button('Tap here!', script_payload(:greeting))]
+		title: 		'scripts.buttons.title',
+		image_url:  'scripts.buttons.story_img_url', 
+		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:greeting))]
 	})
 
 	button_normal({
 		name: 			 'thanks',
-		window_text: "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)",
-		buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+		window_text: 'scripts.buttons.window_text',
+		buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
 	})
 
 	sequence 'firsttap' do |recipient|
@@ -29,7 +29,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 
 	sequence 'greeting' do |recipient|
 		# greeting with 5 second delay
-		txt = "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
+		txt = 'scripts.teacher_intro'
 		send recipient, text({text:txt})
 
 		delay recipient, 'coonstory', 5.35.seconds
@@ -50,7 +50,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send recipient, text({text:"You're welcome :)"}) 
+		send recipient, text({text:'scripts.buttons.welcome'}) 
 	end
 end 
 

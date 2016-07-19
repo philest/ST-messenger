@@ -5,14 +5,21 @@ require 'dotenv'
 
 ENV["RACK_ENV"] ||= "development"
 
+pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
+
 case ENV["RACK_ENV"]
-when "local", "test", "development"
+when "development", "test"
+  require 'dotenv'
   Dotenv.load
-  DB = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
+  db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
 when "production"
+  require 'dotenv'
   Dotenv.load
-  DB = Sequel.connect(ENV['DATABASE_URL_PRODUCTION'], :sslmode => 'require')
+  db_url    = "#{pg_driver}#{ENV['PG_URL']}"
 end
+
+DB = Sequel.connect(db_url)
+
 
 # Rakefile
 

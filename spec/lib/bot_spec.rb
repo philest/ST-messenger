@@ -138,7 +138,7 @@ describe "Bot", bot:true do
 	    	end
 
 			it "replies correctly" do 
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
 			end 
 
 		end 
@@ -148,19 +148,19 @@ describe "Bot", bot:true do
 			it "replies correctly to 'who is this'" do 
 				@user = create(:user)
 				@reply = get_reply("who is this", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
 			end 
 
 			it "replies correctly to 'who's this'" do 
 				@user = create(:user)
 				@reply = get_reply("who's this", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
 			end
 
 			it "replies correctly to 'who are you" do 
 				@user = create(:user)
 				@reply = get_reply("who are you", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply ‘stop’\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
 			end 
 
 

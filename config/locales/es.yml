@@ -1,0 +1,45 @@
+es:
+  hello: "hola"
+  user_response:
+    help:   "¡Hola, este es la Hora de Cuentos! Ayudamos a su maestro envía historias nocturnas gratuitas.\n\n - Para detener, respuesta 'parada'\n - Para obtener ayuda, póngase en contacto 561-212-5831"
+    stop:   "¡Bien, usted deja de recibir mensajes! Si desea libros gratuitos de nuevo sólo entran en 'Ir'."
+    thanks: "De nada :)"
+    robot:  "¡Hola __PARENT__! Hora de Cuentos es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
+    default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
+  scripts:
+    teacher_intro:
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer libro de Cuentos gratuita sobre!"
+      - "Hola __PARENT__, es __TEACHER__. Aquí es otra historia para conseguir __CHILD__ listo para el jardín de infantes."
+      - "__TEACHER__: ¡Hola __PARENT__, aquí es otra historia!"
+      - "__TEACHER__: ¡Hola __PARENT__, aquí es otra historia!"
+      - "__TEACHER__: ¡Hola __PARENT__, aquí es otra historia!"
+    buttons:
+      story_img_url:
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+      window_text: 
+        - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"
+        - "__TEACHER__: Voy a enviar otra historia mañana por la noche. ¡Los dos están haciendo muy bien! :)"
+        - "__TEACHER__: Voy a enviar otra historia mañana por la noche :)"
+        - "__TEACHER__: Voy a enviar otra historia mañana por la noche :)"
+        - "__TEACHER__: Voy a enviar otra historia mañana por la noche :)"
+      title:
+        - "Vamos a leer la historia de esta noche."
+        - "Vamos a leer la historia de esta noche."
+        - "¡Su siguiente historia es muy pronto!"
+        - "¡Su siguiente historia es muy pronto!"
+        - "¡Su siguiente historia es muy pronto!"
+      tap: "¡Pulse aquí!"
+      thanks: "¡Gracias!"
+      welcome: "De nada :)"
+
+
+  stories:
+    # (where we keep the adjusted 'espanish' urls)
+  testing: 
+    name_codes: "__PARENT__||__CHILD__||__TEACHER__"
+    test_texts: "hey this is window text, which can be much longer than button text"
+

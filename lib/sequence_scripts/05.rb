@@ -9,20 +9,20 @@ Birdv::DSL::ScriptClient.new_script 'day5' do
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		"You're next story's coming soon!",
-		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
-		buttons: 	[postback_button('Tap here!', script_payload(:dreamstory))]
+		title: 		'scripts.buttons.title',
+		image_url:  'scripts.buttons.story_img_url', 
+		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:dreamstory))]
 	})
 
 	button_normal({
 		name: 			 'thanks',
-		window_text: "__TEACHER__: I’ll send another story tomorrow night :)",
-		buttons: 			[postback_button('Thank you!', script_payload(:yourwelcome))]
+		window_text: 'scripts.buttons.window_text',
+		buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
 	})
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
-		txt = "__TEACHER__: Hi __PARENT__, here’s another story!"
+		txt = 'scripts.teacher_intro'
 		send recipient, text({text:txt}),  4 
 		
 		# send tap_here button
@@ -43,6 +43,6 @@ Birdv::DSL::ScriptClient.new_script 'day5' do
 	end
 
 	sequence 'yourwelcome' do |recipient|
-		send recipient, text({text:"You're welcome :)"})
+		send recipient, text({text:'scripts.buttons.welcome'})
 	end
 end 

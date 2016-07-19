@@ -1,6 +1,8 @@
 require_relative '../helpers/fb'
 require_relative '../helpers/contact_helpers'
 require_relative '../workers/bot_worker'
+# the translation files
+require_relative '../../config/initializers/locale' 
 
 module Birdv
   module DSL
@@ -23,7 +25,6 @@ module Birdv
     end
   end
 end
-
 
 module Birdv
   module DSL
@@ -208,13 +209,18 @@ module Birdv
         end
       end
 
+      def get_locale(recipient)
+        user = User.where(fb_id: recipient).first
+        if user
+          return user.locale
+        else # default to the 0th version
+          return 'en'
+        end
+      end
+
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
-
-
-
-
 
       def run_sequence(recipient, sqnce_name)
         begin
@@ -230,9 +236,6 @@ module Birdv
           email_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
         end
       end
-
-
-
 
       def button(btn_name)
         if btn_name.is_a? String
@@ -272,15 +275,19 @@ module Birdv
 
 
       def send_story(args = {})
-        assert_keys([:library, :title, :num_pages, :recipient], args)
+        assert_keys([:library, :title, :num_pages, :recipient, :locale], args)
         library     = args[:library]
         title       = args[:title]
         num_pages   = args[:num_pages]
         recipient   = args[:recipient]
+        locale      = args[:locale]
         base = STORY_BASE_URL
         puts "the number of pages #{num_pages}"
+        locale_url_seg = (locale == 'es') ? 'es/' : ''
+        puts "locale_url_seg = #{locale_url_seg}"
+
         num_pages.times do |i|
-          url = "#{base}#{library}/#{title}/#{title}#{i+1}.jpg"
+          url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
           puts "sending #{url}!"
           fb_send_json_to_user(recipient, picture(url:url))
         end
@@ -297,6 +304,7 @@ module Birdv
           begin
 
             version = get_curriculum_version(recipient)
+            locale  = get_locale(recipient)
 
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
 
@@ -309,7 +317,8 @@ module Birdv
               recipient:  recipient,
               library:    lib,
               title:      title,
-              num_pages:  num_pages.to_i
+              num_pages:  num_pages.to_i,
+              locale:     locale
             })
             
             # TODO: error stuff
@@ -326,27 +335,133 @@ module Birdv
         end
       end
 
+      def is_txt_button?(thing)
+        if thing[:attachment][:payload][:text].nil? or thing[:attachment][:payload][:buttons].nil?
+          return false 
+        else
+          return true 
+        end
+      rescue NoMethodError => e
+        p e.message
+        return false
+      end
+
+      def is_story_button?(thing)
+        if thing[:attachment][:payload][:elements].nil? then false else true end
+      rescue NoMethodError => e
+        p e.message
+        return false
+      end
+
+      def is_txt?(thing)
+        if thing[:text].nil? then false else true end
+      rescue NoMethodError => e
+        p e.message
+        return false
+      end
+
+      def is_img?(thing)
+        if [:attachment][:type] == 'image' then true else false end
+      rescue NoMethodError => e
+        p e.message
+        return false
+      end
+
+      def is_story?(thing)
+        if thing.is_a? Proc then true else false end
+      rescue NoMethodError => e
+        p e.message
+        return false 
+      end
+
+
+      def process_txt( fb_object, recipient, locale )
+        if locale.nil? then locale = 'en' end
+        I18n.locale = locale
+
+        translate = lambda do |str|
+
+          if str.nil? or str.empty? then 
+            return str   
+          end
+
+          trans = I18n.t str
+          return trans.is_a?(Array) ? trans[@script_day - 1] : trans
+        end
+
+        m = fb_object[:message]
+
+        puts "message = #{m}"
+        if !m.nil?
+            if is_txt?(m) # just a text message... 
+              puts "text: " + m[:text]
+              m[:text] = name_codes translate.call(m[:text]), recipient
+            end
+
+            if is_txt_button?(m) # a button with text on it
+              puts "txt_button txt: " + m[:attachment][:payload][:text].to_s
+              m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
+              buttons = m[:attachment][:payload][:buttons]
+
+              buttons.each_with_index do |val, i|
+                puts "txt button title txt: #{buttons[i][:title]}"
+                buttons[i][:title] = translate.call( buttons[i][:title] )
+              end
+
+            end
+
+            if is_story_button?(m) # a story button, with text and pictures
+              puts "story_button txt: " + m[:attachment][:payload][:elements].to_s
+
+              elements = m[:attachment][:payload][:elements]
+              elements.each_with_index do |val, i|
+                elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
+                elements[i][:image_url] = translate.call(elements[i][:image_url])
+                # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
+                if elements[i][:buttons]
+                  buttons = elements[i][:buttons]
+                  buttons.each_with_index do |val, i|
+                    puts "story button title txt: #{buttons[i][:title]}"
+                    buttons[i][:title] = translate.call(buttons[i][:title])
+                  end
+                end
+              end
+            end
+
+            # if m[:attachment][:payload][:elements][:title] # a story button, with text and pictures
+            #   elements = m[:attachment][:payload][:elements]
+            #   translate.call()
+            # end
+
+        end
+
+      end
+
 
       def send( recipient, to_send,  delay=0 )
         
         # if lambda, run it! e.g. send(story(args)) 
-        if to_send.is_a? Proc
+        if is_story?(to_send)
           to_send.call(recipient)
 
         # else, we're dealing with a hash! e.g send(text("stuff"))
         elsif to_send.is_a? Hash
-          msg = to_send[:message]
-          if !msg.nil?
-            # alter text to include teacher/parent/child names... 
-            if msg[:text]
-              msg[:text] = name_codes(msg[:text], recipient)
-            elsif msg[:attachment][:payload][:text]
-              msg[:attachment][:payload][:text] = name_codes(msg[:attachment][:payload][:text], recipient)
-            end
+          # gotta get the job done gotta start a new nation gotta meet my son
+          # do name_codes or process_txt for every type of object that could come through here.....
+          # 
+
+          puts "before processing:\n#{to_send}"
+
+          usr = User.where(fb_id: recipient).first
+          fb_object = Marshal.load(Marshal.dump(to_send))
+
+          if usr then 
+            process_txt(fb_object, recipient, usr.locale) 
           end
-              
+
+          puts "processed:\n#{fb_object}"
           puts "sending to #{recipient}"
-          puts fb_send_json_to_user(recipient, to_send)
+          puts fb_send_json_to_user(recipient, fb_object)
         end
         
         # TODO: something about this next line
