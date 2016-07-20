@@ -16,7 +16,7 @@ puts HTTParty.post(
   },
   :headers => { 'Content-Type' => 'application/json' }
 )
-# payload: { template_type: "generic", elements: [ { title: "Let's read your first story.", image_url: "https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg", buttons: [ { type: "postback", title: "Tap here!", payload: "day1_coonstory"}]}]}
+# payload: { template_type: "generic", elements: [ { title: "Let's read your first story.", image_url: "http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg", buttons: [ { type: "postback", title: "Tap here!", payload: "day1_coonstory"}]}]}
 
 # curl -X POST -H "Content-Type: application/json" -d '{
 #   "setting_type":"call_to_actions",
@@ -32,7 +32,7 @@ puts HTTParty.post(
 #               {
 #                 "title":"Welcome to StoryTime! Let",
 #                 "item_url":"http://www.joinstorytime.com/",
-#                 "image_url":"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg",
+#                 "image_url":"http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg",
 #                 "buttons":[
 #                   {
 #                     "type":"postback",

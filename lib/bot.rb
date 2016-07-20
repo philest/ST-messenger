@@ -29,7 +29,7 @@ INTRO   = /intro/i
 # phil 10209486368143976
 # david 1042751019139427
 
-STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
+STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
 JOIN    = /join/i
 

@@ -11,7 +11,7 @@ Birdv::DSL::ScriptClient.new_script 'day900' do
 	button_story({
 		name: 		'tap_here',
 		title: 		"Let's read tonight's story.",
-		image_url:'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg', 
+		image_url:'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg', 
 		buttons: 	[postback_button('Tap here!', script_payload(:greeting))]
 	})
 
