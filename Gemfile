@@ -52,6 +52,7 @@ end
 
 
 group :test do
+	gem 'fuubar'
 	gem 'email_spec'
 	gem 'pry'
 	gem 'pry-nav'

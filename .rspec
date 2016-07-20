@@ -1,3 +1,6 @@
 --color
 --require spec_helper
 --color
+--format Fuubar
+--color
+
