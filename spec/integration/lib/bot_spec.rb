@@ -35,6 +35,7 @@ describe 'TheBot' do
 	include RSpecMixin
 
 	before(:all) do
+		@sw =  ScheduleWorker.new
 
 		Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
 			.each {|f| require_relative f }
@@ -226,6 +227,9 @@ describe 'TheBot' do
 			@on_time_users = []
 			@late_users = []
 
+			@start_time = @time
+
+			Timecop.freeze(@start_time)
 
 
 			# On-time!!!!  (should be 7 users)
@@ -233,17 +237,17 @@ describe 'TheBot' do
 			# 
 			5.times {
 				@on_time_users  << User.create(fb_id: @get_id.call, 
-																			 send_time: Time.now, first_name: 'David', last_name: 'McPeek',
+																			 send_time: @start_time, first_name: 'David', last_name: 'McPeek',
 																			 curriculum_version: @test_curriculum)
 			}
 
 			# 6:55:00pm, just early enough
 			@on_time_users << User.create(fb_id: @get_id.call, 
-																		send_time: Time.now - @interval, first_name: 'David', last_name: 'McPeek',
+																		send_time: @start_time - @interval, first_name: 'David', last_name: 'McPeek',
 		  															curriculum_version: @test_curriculum)
 			# 7:04:59pm, almost late
 			@on_time_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
-																		send_time: Time.now + (@interval-1.minute) + 59.seconds, 
+																		send_time: @start_time + (@interval-1.minute) + 59.seconds, 
 		  															curriculum_version: @test_curriculum)
 
 			# Late!!!! (should be 2 users)
@@ -251,11 +255,11 @@ describe 'TheBot' do
 			#
 			# 6:54:59
 			@late_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
-																 send_time: Time.now - (@interval+1.minute) + 59.seconds, 
+																 send_time: @start_time - (@interval+1.minute) + 59.seconds, 
 		  													 curriculum_version: @test_curriculum)
 			# 7:05
 			@late_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
-																 send_time: Time.now + @interval, 
+																 send_time: @start_time + @interval, 
 	  														 curriculum_version: @test_curriculum)
 
 			@num_users.times do |x|
@@ -280,11 +284,16 @@ describe 'TheBot' do
 				# i know this isn't really as good as checking the queue, but it'll
 				# have to do for now
 
+				
+				allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+	  			original_method.call(*args, [1,3,5], &block)
+				end
+
 				expect(StartDayWorker).to receive(:perform_async).exactly(@num_ontime).times
 				expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
 
 				Sidekiq::Testing.inline! do
-					ScheduleWorker.perform_async (@time_range/2)
+					@sw.perform (@time_range/2)
 				end
 			end
 
@@ -292,6 +301,11 @@ describe 'TheBot' do
 				# 4 ppl read yesterda (story 900)
 				4.times do |i| 
 					User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
+				end
+
+				
+				allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+	  			original_method.call(*args, [1,3,5], &block)
 				end
 
 				# 1 person who is not scheduled but also read yesterday
@@ -306,7 +320,7 @@ describe 'TheBot' do
 				# run the the clock
 				expect{
 					Sidekiq::Testing.inline! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 				}.to change{User.where(fb_id:@on_time_users[0].fb_id)
 												.first.state_table
@@ -319,6 +333,11 @@ describe 'TheBot' do
 					User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
 				end				
 
+				
+				allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+	  			original_method.call(*args, [1,3,5], &block)
+				end
+
 				expect(@s900).not_to receive(:run_sequence)				
 				expect(@s901).to 		 receive(:run_sequence).with(anything(), :init).exactly(3).times
 				expect(@s902).to 		 receive(:run_sequence).with(anything(), :init).exactly(4).times
@@ -328,7 +347,7 @@ describe 'TheBot' do
 				# run the the clock
 				expect{
 					Sidekiq::Testing.inline! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 				}.not_to change{User.where(fb_id:@late_users[0].fb_id)
 												.first.state_table
@@ -401,7 +420,7 @@ describe 'TheBot' do
 				puts "starting the clock again! we expect no stories<<<<<<<<<<<<<\n\n\n"
 				expect{
 					Sidekiq::Testing.fake! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 					ScheduleWorker.drain
 				}.not_to change{StartDayWorker.jobs.size}				
@@ -414,7 +433,7 @@ describe 'TheBot' do
 				
 				expect{
 					Sidekiq::Testing.fake! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 					ScheduleWorker.drain
 				}.to change{StartDayWorker.jobs.size}.by 7	
@@ -422,11 +441,15 @@ describe 'TheBot' do
 			end
 
 			# this is basically a compressed version of the last one. I was having stubbing issues.
-			it 'does this correctly' do
+			it 'does this correctly', thing:true do
 				# 4 ppl read yesterday (story 900)
 				4.times do |i| 
 					User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
 				end				
+
+				allow_any_instance_of(ScheduleWorker).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+	  			original_method.call(*args, [1,3,5], &block)
+				end
 
 				allow(@s901).to 		 receive(:run_sequence).exactly(3).times
 				allow(@s902).to 		 receive(:run_sequence).exactly(4).times				
@@ -434,7 +457,7 @@ describe 'TheBot' do
 				# run the the clock
 				expect{
 					Sidekiq::Testing.inline! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 				}.not_to change{User.where(fb_id:@late_users[0].fb_id)
 												.first.state_table
@@ -454,9 +477,11 @@ describe 'TheBot' do
 				allow(@s902).to receive(:run_sequence).with('2', :scratchstory).and_call_original
 				allow(@s902).to receive(:run_sequence).with('3', :scratchstory).and_call_original
 				allow(@s902).to receive(:run_sequence).with('4', :scratchstory).and_call_original
-	    	allow(@s902).to receive(:send_story).exactly(3).times	    	
+	    	allow(@s902).to receive(:send_story).exactly(3).times	    
+
 	    	expect{
 	    		Sidekiq::Testing.inline! do 
+	    			puts "POST DAT SHIT\n\n\n\n\n"
 	    			post '/', b1, @make_signature.call(b1)
 	    		end
 	    	}.to change{User.where(fb_id:'2').first.state_table.last_story_read?}
@@ -493,7 +518,7 @@ describe 'TheBot' do
 				puts "starting the clock again! we expect no stories<<<<<<<<<<<<<\n\n\n"
 				expect{
 					Sidekiq::Testing.fake! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 					ScheduleWorker.drain
 				}.not_to change{StartDayWorker.jobs.size}				
@@ -506,10 +531,10 @@ describe 'TheBot' do
 				
 				expect{
 					Sidekiq::Testing.fake! do
-						ScheduleWorker.perform_async (@time_range/2)
+						@sw.perform (@time_range/2)
 					end
 					ScheduleWorker.drain
-				}.to change{StartDayWorker.jobs.size}.by 7	
+				}.to change{StartDayWorker.jobs.size}.from(0).to 7	
 
 				# # we now expect [1] to get 902, [2,4] to get 903, [5] to get 901, [6] 902, [7] to get 901
 				expect(@s900).not_to receive(:run_sequence)				
@@ -540,7 +565,7 @@ describe 'TheBot' do
 			allow(@s901).to 		 receive(:run_sequence).with(anything(), :init).exactly(7).times
 
 			Sidekiq::Testing.inline! do
-				ScheduleWorker.perform_async (@time_range/2)
+				@sw.perform (@time_range/2)
 			end
 
 			bodies = []
@@ -584,7 +609,7 @@ describe 'TheBot' do
 
 			# run the clock
 			Sidekiq::Testing.inline! do
-				ScheduleWorker.perform_async (@time_range/2)
+				@sw.perform (@time_range/2)
 			end		
 
 

@@ -52,9 +52,25 @@ class ScheduleWorker
   # time = current_time
   # range = range of valid times
   def filter_users(time, range)
+    today_day = Time.now.utc
   	filtered = User.all.select do |user|
   		# TODO - exception handling if the timezone isn't the correct name
-  		within_time_range(user, range)
+
+      ut =  user.state_table.last_story_read_time
+
+      puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
+      puts ""
+
+      if !ut
+        last_story_read_ok = true
+      elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
+        last_story_read_ok = true 
+      else    
+        last_story_read_ok = false
+      end
+
+      # ensure is within_time_range and that last story read wasn't today!
+  		within_time_range(user, range) && last_story_read_ok
   	end
   rescue => e
     p e.message " something went wrong, not filtering users"
@@ -83,7 +99,7 @@ class ScheduleWorker
   end
 
   # need to make sure the send_time column is a Datetime type
-  def within_time_range(user, range)
+  def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
 
   	# server timein UTC
@@ -93,13 +109,15 @@ class ScheduleWorker
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight
 		user_day 	 = get_local_day(Time.now, user)
-		if (user_day==1||user_day==3||user_day==5)
+
+    if (acceptable_days.include?(user_day)) # just wednesday for now (see default arg)
 			if now >= user_utc
-				now - user_utc <= range
+				return now - user_utc <= range
 			else
-				user_utc - now <  range
+				return user_utc - now <  range
 			end
 		end
+    return false
   end
 
   # returns the day of the week,
