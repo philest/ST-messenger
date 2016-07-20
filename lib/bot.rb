@@ -5,6 +5,8 @@ require 'httparty'
 # load STScripts
 # load workers
 require_relative '../config/environment'
+require_relative '../config/initializers/redis'
+
 require_relative 'workers'
 
 # configure facebook-messenger gem 
@@ -64,7 +66,6 @@ def get_reply(body, user)
   else #default msg 
     our_reply = I18n.t 'user_response.default'
   end
-
   return our_reply 
 
 end
@@ -73,17 +74,39 @@ def is_image?(message_attachments)
   not message_attachments.nil?
 end
 
+# Was the previous message unknown?
+def prev_unknown?(user)
+  # Look up if bot's last reply was to UNKOWN message
+  redis_msg_key = user.fb_id + "_last_message_text"
+  users_last_msg = REDIS.get(redis_msg_key)
+  bot_last_reply = get_reply(users_last_msg, user)
+  prev_was_unknown  = (bot_last_reply == (I18n.t 'user_response.default')) 
+
+  # Ensure that there also WAS a last message
+  prev_was_unknown  = prev_was_unknown && !users_last_msg.nil?
+  return prev_was_unknown
+end
+
+
 #
 # i.e. when user sends the bot a message.
 #
 Bot.on :message do |message|
-  puts "Received #{message.text} from #{message.sender}"
-  sender_id = message.sender['id']
-
+  #any image attachment
   attachments = message.attachments
+  
+  if !is_image?(attachments)
+    puts "Received #{message.text} from #{message.sender}"
+    the_new_msg = message.text
+  end
+
+  sender_id = message.sender['id']    
 
   # enroll user if they don't exist in db
   db_user = User.where(:fb_id => sender_id).first 
+
+
+
   if db_user.nil?
       register_user(message.sender)
       BotWorker.perform_async(sender_id, 'day1', 'greeting')
@@ -101,10 +124,17 @@ Bot.on :message do |message|
         end
       else # find the appropriate reply
         reply = get_reply(message.text, db_user)
+
+        if (reply == (I18n.t 'user_response.default')) && prev_unknown?(user)
+          reply = "DON'T ASK ME TWICE"
+        end
         fb_send_txt(message.sender, reply)
       end # case message.text
   end # db_user.nil?
 
+  #update the last message
+  redis_msg_key = db_user.fb_id + "_last_message_text"
+  REDIS.set(redis_msg_key, the_new_msg)
    
 end
 
