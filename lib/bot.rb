@@ -124,9 +124,22 @@ Bot.on :message do |message|
         end
       else # find the appropriate reply
         reply = get_reply(message.text, db_user)
+        
+        redis_limit_key = db_user.fb_id + "_limit?"
+        limited = REDIS.get(redis_limit_key)
 
-        if (reply == (I18n.t 'user_response.default')) && prev_unknown?(user)
-          reply = "DON'T ASK ME TWICE"
+
+        if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
+
+          reply = "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
+            
+          if limited == "true"
+            reply = ""
+          end
+
+          # They've gotten as many replies as possible, so limit them for 60s
+          REDIS.set(redis_limit_key, "true")
+          REDIS.expire(redis_limit_key, 60)
         end
         fb_send_txt(message.sender, reply)
       end # case message.text

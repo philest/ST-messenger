@@ -189,15 +189,16 @@ def app() Facebook::Messenger::Server end
 
 				  # expect(app).to receive(:get_reply).and_return("fakeeeee")
 
-stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"Hi Aubs! I'm away now, but I'll see your message soon. If you need help just enter 'help.'\"}}",
+
+       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831\"}}",
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
-     
+
 
 					# simulate an incoming FB message"
 					# expect(User).to receive(:where).and_return([@aub_db])
-			        body = JSON.generate(
+			        @body = JSON.generate(
 						        object: 'page',
 						        entry: [
 						          {
@@ -223,19 +224,18 @@ stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EA
 						        ]
 						      )
 
-				        signature = OpenSSL::HMAC.hexdigest(
+				        @signature = OpenSSL::HMAC.hexdigest(
 				          OpenSSL::Digest.new('sha1'),
 				          Facebook::Messenger.config.app_secret,
-				          body
+				          @body
 				        )
 	      
-					post '/', body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{signature}"
+					# post '/', @body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{@signature}"
 		    	end
 
-		    	 it "gives the second unknown-reply"  
-		    	 # 		post '/', body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{signature}"
-
-		    	 # end 
+		    	 it "gives the second unknown-reply" do
+		    	 		post '/', @body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{@signature}"
+		    	 end 
 
 			end
 
