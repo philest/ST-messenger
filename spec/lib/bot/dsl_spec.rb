@@ -22,7 +22,7 @@ describe Birdv::DSL::StoryTimeScript do
     @stub_story = lambda do |recipient, lib, title, num_pages|
       num_pages.times do |i|
         stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-          with(:body => "{\"recipient\":{\"id\":\"#{recipient}\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/#{lib}/#{title}/#{title}#{i+1}.jpg\"}}}}",
+          with(:body => "{\"recipient\":{\"id\":\"#{recipient}\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"http://d2p8iyobf0557z.cloudfront.net/#{lib}/#{title}/#{title}#{i+1}.jpg\"}}}}",
               :headers => {'Content-Type'=>'application/json'}).
           to_return(:status => 200, :body => @success, :headers => {})
       end
@@ -571,7 +571,7 @@ describe Birdv::DSL::StoryTimeScript do
         end
         sequence 'scratchstory' do |recipient|
           send recipient, story 
-          img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+          img_1 = "http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg"
           send recipient, picture({url: img_1})
           send recipient, button({name: 'thanks'})
         end
@@ -602,7 +602,7 @@ describe Birdv::DSL::StoryTimeScript do
         end
         sequence 'story' do |recipient|
           send recipient, story 
-          img_1 = "https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg"
+          img_1 = "http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg"
           send recipient, picture({url: img_1})
           send recipient, button({name: 'thanks'})
         end
@@ -624,12 +624,12 @@ describe Birdv::DSL::StoryTimeScript do
         t.add_user u
 
         # init sequence
-        b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
+        b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
         @stub_txt.call("Hi Aubs, this is Ms. McEsterWahl. Here's your first free book on StoryTime!")
         @stub_arb.call(b1)
 
         # scratchstory sequence
-        b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"https://s3.amazonaws.com/st-messenger/day1/scroll_up.jpg\"}}}}"
+        b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg\"}}}}"
         b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
         @stub_arb.call(b2)
         @stub_arb.call(b3)

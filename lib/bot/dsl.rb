@@ -33,7 +33,7 @@ module Birdv
       include ContactHelpers
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences
-      STORY_BASE_URL = 'https://s3.amazonaws.com/st-messenger/'
+      STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
       def initialize(script_name, &block)
         @fb_objects  = {}

@@ -17,11 +17,11 @@ es:
 
     buttons:
       story_img_url:
-        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
-        - 'https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
       window_text: 
         - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"
         - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"

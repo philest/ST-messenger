@@ -14,7 +14,6 @@ module Facebook
       end
 
       def name_codes(str, id)
-
         user = User.where(:fb_id => id).first
         parent  = user.first_name
         child   = user.child_name.nil? ? "your child" : user.child_name.split[0]

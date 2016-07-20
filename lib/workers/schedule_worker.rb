@@ -110,7 +110,13 @@ class ScheduleWorker
 		user_utc	 = user_local.utc.seconds_since_midnight
 		user_day 	 = get_local_day(Time.now, user)
 
-    if (acceptable_days.include?(user_day)) # just wednesday for now (see default arg)
+    valid_for_user = acceptable_days.include?(user_day)
+
+    #friends get it three days a week
+    friend_days = [1,3,5]
+    valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
+
+    if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
 			if now >= user_utc
 				return now - user_utc <= range
 			else
