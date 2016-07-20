@@ -323,6 +323,7 @@ module Birdv
             
             # TODO: error stuff
 
+            puts 'SHOULD BE HERE'
             # TODO: make this atomic somehow? slash errors
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 

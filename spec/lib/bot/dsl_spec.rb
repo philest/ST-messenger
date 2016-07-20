@@ -630,7 +630,7 @@ describe Birdv::DSL::StoryTimeScript do
 
         # scratchstory sequence
         b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg\"}}}}"
-        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Ms. McEsterWahl: I’ll send another story tomorrow night. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
+        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
         @stub_arb.call(b2)
         @stub_arb.call(b3)
 
