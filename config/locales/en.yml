@@ -10,9 +10,10 @@ en:
     teacher_intro:
       - "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
       - "Hi __PARENT__, it's __TEACHER__. Here’s another story to get __CHILD__ ready for kindergarten."
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
-      - "__TEACHER__: Hi __PARENT__, here’s another story!"
+      - "Hi __PARENT__, here’s another story!"
+      - "Hi __PARENT__, here’s another story!"
+      - "Hi __PARENT__, here’s another story!"
+      - "Hi __PARENT__, here’s another story!"      
     buttons:
       story_img_url:
         - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
@@ -20,18 +21,21 @@ en:
         - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
         - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
         - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
+        - 'https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg'
       window_text: 
-        - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"
-        - "__TEACHER__: I’ll send another story tomorrow night. You both are doing great! :)"
-        - "__TEACHER__: I’ll send another story tomorrow night :)"
-        - "__TEACHER__: I’ll send another story tomorrow night :)"
-        - "__TEACHER__: I’ll send another story tomorrow night :)"
+        - "You'll get another story next week. You both are doing great! :)"
+        - "Another story will come in a few days. You both are doing great! :)"
+        - "You'll get another story soon :)"
+        - "You'll get another story in a few nights!"
+        - "Another story will come in a few days. Great job! :)"
+        - "You'll get another story in a few nights!"        
       title:
         - "Let's read tonight's story."
         - "Let's read tonight's story."
-        - "You're next story's coming soon!"
-        - "You're next story's coming soon!"
-        - "You're next story's coming soon!"
+        - "Your next story's coming soon!"
+        - "Your next story's coming soon!"
+        - "Your next story's coming soon!"
+        - "Let's read tonight's story."
       tap: "Tap here!"
       thanks: "Thank you!"
       welcome: "You're welcome :)"
