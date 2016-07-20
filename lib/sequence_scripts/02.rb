@@ -14,7 +14,7 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 		name: 		'tap_here',
 		title: 		'scripts.buttons.title',
 		image_url:  'scripts.buttons.story_img_url', 
-		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:cookstory))]
+		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
 
@@ -34,7 +34,7 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 		send recipient, button({name:'tap_here'})
 	end
 
-	sequence 'cookstory' do |recipient|
+	sequence 'storysequence' do |recipient|
 		# send out cook story
 
 		send recipient, story(), 23

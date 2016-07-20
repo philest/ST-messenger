@@ -32,10 +32,10 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		txt = 'scripts.teacher_intro'
 		send recipient, text({text:txt})
 
-		delay recipient, 'coonstory', 5.35.seconds
+		delay recipient, 'storysequence', 5.35.seconds
 	end
 
-	sequence 'coonstory' do |recipient|
+	sequence 'storysequence' do |recipient|
 
 		# send out coon story
 		send recipient, story()
