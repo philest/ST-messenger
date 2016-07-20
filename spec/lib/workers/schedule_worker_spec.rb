@@ -18,6 +18,7 @@ describe ScheduleWorker do
 
 		@story_num = 2
 
+
 		@on_time = User.create(:send_time => Time.now)
 
 		# 6:55:00 
@@ -82,13 +83,13 @@ describe ScheduleWorker do
 	context "within_time_range function", :range => true do
 
 		it "returns true for users within the time interval at a given time" do 
-			expect(@s.within_time_range(@just_early, @interval)).to be true
-			expect(@s.within_time_range(@just_late, @interval)).to be true
+			expect(@s.within_time_range(@just_early, @interval, [Time.now.wday])).to be true
+			expect(@s.within_time_range(@just_late, @interval, [Time.now.wday])).to be true
 		end
 
 		it "returns false for users outside the time interval at a given time" do
-			expect(@s.within_time_range(@early, @interval)).to be false
-			expect(@s.within_time_range(@late, @interval)).to be false
+			expect(@s.within_time_range(@early, @interval, [Time.now.wday])).to be false
+			expect(@s.within_time_range(@late, @interval, [Time.now.wday])).to be false
 		end
 
 		it "does not send messages to a user twice" do
@@ -96,9 +97,9 @@ describe ScheduleWorker do
 
 			user = User.create(:send_time => Time.now + @interval - 1.second)
 			user.state_table.update(story_number: @story_num)
-			expect(@s.within_time_range(user, @interval)).to be true
+			expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
 			Timecop.freeze(Time.now + @time_range)
-			expect(@s.within_time_range(user, @interval)).to be false			
+			expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false			
 		end
 
 	end
@@ -117,7 +118,18 @@ describe ScheduleWorker do
 			expect(filtered.size).to eq(0)
 		end		
 
+# def and_call_original
+#   wrap_original(__method__) do |original, *args, &block|
+#     original.call(*args, &block)
+#   end
+# end
+# permalink
+
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
+			allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+  			original_method.call(*args, [Time.now.wday], &block)
+			end
+
 			users = [@on_time, @just_early, @just_late]
 			filtered = @s.filter_users(@time, @interval)
 			expect(filtered.size).to eq(3)
@@ -134,12 +146,16 @@ describe ScheduleWorker do
 		end
 
 		it "calls StartDayWorker the correct number of times" do
+			sw =  ScheduleWorker.new
+			allow(sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+  			original_method.call(*args, [Time.now.wday], &block)
+			end
 			users = [@on_time, @just_early, @just_late]
 			expect(ScheduleWorker.jobs.size).to eq(0)
 			
 			Sidekiq::Testing.fake! do
 				expect {
-				  ScheduleWorker.new.perform(@interval)
+				 sw.perform(@interval)
 				  ScheduleWorker.drain
 				}.to change(StartDayWorker.jobs, :size).by(3)
 			end
@@ -160,6 +176,12 @@ describe ScheduleWorker do
 		end
 
 		it "calls StartDayWorker on all the right people" do
+
+			sw =  ScheduleWorker.new
+			allow(sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+  			original_method.call(*args, [Time.now.wday], &block)
+			end
+
 			# specify exact arguments and people on this one...
 			users = [@on_time, @just_early, @just_late]
 			for user in users
@@ -167,7 +189,7 @@ describe ScheduleWorker do
 			end
 
 			Sidekiq::Testing.inline! do
-				ScheduleWorker.perform_async
+				sw.perform
 			end
 		end
 	end
