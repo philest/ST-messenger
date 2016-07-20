@@ -42,7 +42,7 @@ DAY_RQST  = /day\d+/i
 HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien es este)|(quién eres tú)/i
 STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)/i
 THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
-HAHA_MSG = /(ha)+|(ja)+/i 
+HAHA_MSG = /(haha)+|(jaja)+/i 
 ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
 
 
