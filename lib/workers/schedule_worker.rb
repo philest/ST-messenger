@@ -22,21 +22,24 @@ class StartDayWorker
   end
 
   def perform(recipient)
-      u = User.where(fb_id:recipient).first
 
-      day_number =  update_day(u)
-      puts "day#{day_number}"
-  		# double quotation
-  		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
-      puts script
-		  if !script.nil?
-        script.run_sequence(recipient, :init) 
-      else
-        #TODO: email?
-        puts 'could not find scripts :('
-      end
+    u = User.where(fb_id:recipient).first
+    return if u.nil?
+
+    day_number =  update_day(u)
+    puts "day#{day_number}"
+		# double quotation
+		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
+    puts script
+	  if !script.nil?
+      script.run_sequence(recipient, :init) 
+    else
+      #TODO: email?
+      puts 'could not find scripts :('
+    end
 
 	end
+
 end
 
 class ScheduleWorker
@@ -45,7 +48,9 @@ class ScheduleWorker
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
-			StartDayWorker.perform_async(user.fb_id) if user.state_table.story_number > 1 #TODO: fix this stuff
+      if user.fb_id
+        StartDayWorker.perform_async(user.fb_id)
+      end
 		end
   end
 

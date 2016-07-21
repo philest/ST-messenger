@@ -19,19 +19,19 @@ describe ScheduleWorker do
 		@story_num = 2
 
 
-		@on_time = User.create(:send_time => Time.now)
+		@on_time = User.create(:send_time => Time.now, fb_id: "12345")
 
 		# 6:55:00 
-		@just_early = User.create(:send_time => Time.now - @interval)
+		@just_early = User.create(:send_time => Time.now - @interval, fb_id: "23456")
 
 		#  7:04:59pm
-		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds)
+		@just_late = User.create(:send_time => Time.now + (@interval-1.minute) + 59.seconds, fb_id: "34567")
 
 		# 6:54:59
-		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds)
+		@early = User.create(:send_time => Time.now - (@interval+1.minute) + 59.seconds, fb_id: "45678")
 
 		# 7:05
-		@late = User.create(:send_time => Time.now + @interval)
+		@late = User.create(:send_time => Time.now + @interval, fb_id: "56789")
 
 		@on_time.state_table.update(story_number: @story_num)
 		@just_early.state_table.update(story_number: @story_num)
