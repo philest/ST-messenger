@@ -195,7 +195,10 @@ def app() Facebook::Messenger::Server end
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
-
+       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"\"}}",
+	         :headers => {'Content-Type'=>'application/json'}).
+	         to_return(:status => 200, :body => "", :headers => {})     	
 					# simulate an incoming FB message"
 					# expect(User).to receive(:where).and_return([@aub_db])
 			        @body = JSON.generate(
