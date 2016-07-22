@@ -44,9 +44,10 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 
 	end
 
+	# No button on the first day! 
 	sequence 'thanks' do |recipient|
-		# one more button
-		send recipient, button({name:'thanks'})
+		txt = 'scripts.buttons.window_text'
+		send recipient, text({text:txt})
 	end
 
 	sequence 'yourwelcome' do |recipient|
