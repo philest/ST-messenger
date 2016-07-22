@@ -3,19 +3,14 @@ class User < Sequel::Model(:users)
 	plugin :validation_helpers
 	plugin :association_dependencies
 	
-	many_to_one :teacher
 	many_to_one :classroom
+	many_to_one :teacher
+	many_to_one :school
 	one_to_many :button_press_logs
 	one_to_one :enrollment_queue
 	one_to_one :state_table
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
-
-	# def before_destroy
-	# 	super
-	# 	update(enrollment_queue_id: nil)
-	# 	enrollment_queue = nil
-	# end
 
 	# ensure that user is added EnrollmentQueue upon creation
 	def after_create
