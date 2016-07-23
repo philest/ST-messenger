@@ -13,6 +13,9 @@ en:
       - "Hi __PARENT__, here’s another story!"
       - "Hi __PARENT__, here’s another story!"
       - "Hi __PARENT__, here’s another story!"
+      - "Hi __PARENT__, here’s another story!"    
+      - "Hi __PARENT__, here’s another story!"    
+      - "Hi __PARENT__, here’s another story!"    
       - "Hi __PARENT__, here’s another story!"      
     buttons:
       story_img_url:
@@ -28,6 +31,9 @@ en:
         - "You'll get another story soon :)"
         - "You'll get another story in a few nights!"
         - "Another story will come in a few days. Great job! :)"
+        - "You'll get another story in a few nights!"   
+        - "You'll get another story in a few nights!"   
+        - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"        
       title:
         - "Let's read tonight's story."
@@ -35,6 +41,9 @@ en:
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
         - "Let's read tonight's story."
       tap: "Tap here!"
       thanks: "Thank you!"

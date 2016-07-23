@@ -115,7 +115,7 @@ Bot.on :message do |message|
   else # user has been enrolled already...
       case message.text
       when DAY_RQST
-        script_name = message.text.match(DAY_RQST).to_s
+        script_name = message.text.match(DAY_RQST).to_s.downcase
         if scripts[script_name] != nil
 #          scripts[script_name].run_sequence(sender_id, :init)
           BotWorker.perform_async(sender_id, script_name, :init)
