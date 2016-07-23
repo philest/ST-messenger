@@ -35,7 +35,10 @@ STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
 JOIN    = /join/i
 
-scripts  = Birdv::DSL::ScriptClient.scripts
+# TODO: make this FB fb_scripts? 
+# fb_scripts  = Birdv::DSL::ScriptClient.fb_scripts
+
+fb_scripts  = Birdv::DSL::ScriptClient.fb_scripts
 
 # TODO: add Spanish words here
 DAY_RQST  = /day\d+/i
@@ -116,8 +119,8 @@ Bot.on :message do |message|
       case message.text
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s.downcase
-        if scripts[script_name] != nil
-#          scripts[script_name].run_sequence(sender_id, :init)
+        if fb_scripts[script_name] != nil
+#          fb_scripts[script_name].run_sequence(sender_id, :init)
           BotWorker.perform_async(sender_id, script_name, :init)
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")

@@ -14,7 +14,6 @@ Sidekiq.configure_server do |config|
     config.average_scheduled_poll_interval = 2
 end
 
-
 # load all of the scripts!
 
 # The scripts can now all be accessed with
@@ -24,6 +23,9 @@ require_relative 'bot/curricula'
 Birdv::DSL::Curricula.load
 
 require_relative 'bot/dsl'
+
+Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/mms_sequence_scripts/*")
+			.each {|f| require_relative f }
 
 Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sequence_scripts/*")
 			.each {|f| require_relative f }

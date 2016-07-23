@@ -61,8 +61,6 @@ module Birdv
         # TODO: something about this
         @script_day = !day.nil? ? day.to_i : 0
 
-
-          
         instance_eval(&block)
         return self
       end
