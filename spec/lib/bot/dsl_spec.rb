@@ -7,12 +7,6 @@ describe Birdv::DSL::StoryTimeScript do
 
   let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
 
-  def name_codes(str)
-    str = str.gsub(/__TEACHER__/, 'Mr. McEsterWahl')
-        str = str.gsub(/__PARENT__/, 'Aubs')
-        str = str.gsub(/__CHILD__/, 'Lil')
-        return str
-  end
   
   before(:all) do
     ENV['CURRICULUM_VERSION'] = "0"   # for the purposes of this spec

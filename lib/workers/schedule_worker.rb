@@ -23,7 +23,12 @@ class StartDayWorker
 
   def perform(recipient, platform='fb')
 
-    u = User.where(fb_id:recipient).first
+    if platform == 'fb'
+      u = User.where(fb_id:recipient).first
+    else
+      u = User.where(phone:recipient).first
+    end
+    
     return if u.nil?
 
     day_number =  update_day(u)
@@ -53,9 +58,9 @@ class ScheduleWorker
         when 'fb'
           StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
         when 'mms'
-          StartDayWorker.perform_async(user.fb_id, platform='mms') if user.phone
+          StartDayWorker.perform_async(user.phone, platform='mms') if user.phone
         when 'sms'
-          StartDayWorker.perform_async(user.fb_id, platform='sms') if user.phone
+          StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
         end
 
 		end

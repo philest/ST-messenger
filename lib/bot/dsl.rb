@@ -3,7 +3,7 @@ require_relative '../helpers/contact_helpers'
 require_relative '../workers/bot_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
-FB_NUM = 9000
+
 module Birdv
   module DSL
     class ScriptClient
@@ -95,7 +95,7 @@ module Birdv
         if (last_sequence_seen.nil?)
           return false
         end
-        
+
         sqnce_new = @sequences[sqnce_to_send_name.to_sym] # TODO: ensure non-sym input is ok
         sqnce_old = @sequences[last_sequence_seen.to_sym]
 
@@ -251,7 +251,13 @@ module Birdv
       def run_sequence(recipient, sqnce_name)
         begin
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
-          User.where(fb_id:recipient).first.state_table.update(last_sequence_seen: sqnce_name.to_s)
+
+          u = User.where(fb_id:recipient).first
+          if u.nil?
+            u = User.where(phone:recipient).first
+          end
+
+          u.state_table.update(last_sequence_seen: sqnce_name.to_s)
           return ret
 
         rescue => e  
@@ -273,8 +279,6 @@ module Birdv
           return @fb_objects[btn_name]
         end
       end
-
-
 
       def text(args = {})
         assert_keys([:text], args)     
