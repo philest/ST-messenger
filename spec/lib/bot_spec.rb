@@ -1,10 +1,14 @@
 require 'spec_helper'
 require 'bot'
 # require_relative '../models/story'
+require 'rack/test'
+
 
 DAVID="10209967651611613"
 
 describe "Bot", bot:true do
+include Rack::Test::Methods
+def app() Facebook::Messenger::Server end
 
 	context "user-fb_id matching", :matching => true do
 
@@ -176,6 +180,68 @@ describe "Bot", bot:true do
 			it "replies correctly" do 
 				expect(@reply).to eq "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
 			end 
+
+			context "when the last message was an unknown message" do
+				before(:example) do
+
+					@aubrey 	= '10209571935726081' # aubrey
+				  @aub_db = User.create phone:'3013328953', first_name:'Aubs', last_name:'Wahl', fb_id:@aubrey, child_name:'Lil Aubs'
+
+				  # expect(app).to receive(:get_reply).and_return("fakeeeee")
+
+
+       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"\"}}",
+	         :headers => {'Content-Type'=>'application/json'}).
+	         to_return(:status => 200, :body => "", :headers => {})     	
+					# simulate an incoming FB message"
+					# expect(User).to receive(:where).and_return([@aub_db])
+			        @body = JSON.generate(
+						        object: 'page',
+						        entry: [
+						          {
+						            id: '1',
+						            time: 145_776_419_824_6,
+						            messaging: [
+						              {
+						                sender: {
+						                  id: @aubrey
+						                },
+						                recipient: {
+						                  id: '3'
+						                },
+						                timestamp: 145_776_419_762_7,
+						                message: {
+						                  mid: 'mid.1457764197618:41d102a3e1ae206a38',
+						                  seq: 5,
+						                  text: 'fake fake fake fake just my analysis'
+						                }
+						              }
+						            ]
+						          }
+						        ]
+						      )
+
+				        @signature = OpenSSL::HMAC.hexdigest(
+				          OpenSSL::Digest.new('sha1'),
+				          Facebook::Messenger.config.app_secret,
+				          @body
+				        )
+	      
+					# post '/', @body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{@signature}"
+		    	end
+
+		    	 it "gives the second unknown-reply" do
+		    	 		post '/', @body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{@signature}"
+		    	 end 
+
+			end
+
 		end
 
 		describe "ROBOT message" do 
@@ -243,6 +309,8 @@ describe "Bot", bot:true do
 				expect(@reply).to eq "You're welcome :)"
 			end 
 		end  
+
+
 
 
 		describe "is_image?" do 

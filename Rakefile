@@ -23,6 +23,11 @@ DB = Sequel.connect(db_url)
 
 # Rakefile
 
+task :tunnel do |t|
+  exec("lt -s quailapp -p 5000")
+end
+
+
 namespace :db do
   require "sequel"
   namespace :data do
