@@ -3,19 +3,35 @@ require_relative '../helpers/contact_helpers'
 require_relative '../workers/bot_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
-
+FB_NUM = 9000
 module Birdv
   module DSL
     class ScriptClient
-      @@scripts = {}
+      @@scripts = {
+        'sms' => {},
+        'mms' => {},
+        'fb'  => {}
+      }
 
-      def self.new_script(script_name, &block)
-        puts "adding #{script_name} to thing"
-        @@scripts[script_name] = StoryTimeScript.new(script_name, &block)
+      def self.new_script(script_name, platform='fb', &block)
+        puts "adding #{script_name} - platform #{platform} to thing"
+        @@scripts[platform][script_name] = StoryTimeScript.new(script_name, &block)
       end
 
       def self.scripts
         @@scripts
+      end
+
+      def sms_scripts 
+        @@scripts['sms']
+      end
+
+      def mms_scripts 
+        @@scripts['mms']
+      end
+
+      def self.fb_scripts
+        @@scripts['fb']
       end
 
       def self.clear_scripts
@@ -46,6 +62,7 @@ module Birdv
         @script_day = !day.nil? ? day.to_i : 0
 
 
+          
         instance_eval(&block)
         return self
       end
@@ -436,6 +453,26 @@ module Birdv
 
         end
 
+      end
+
+      def send_sms( phone, text )
+        HTTParty.post(
+          "https://st-enroll.herokuapp.com/txt", 
+          body: {
+            recipient: phone
+            text: text
+          }
+        )
+      end
+
+      def send_mms( phone, img_url )
+        HTTParty.post(
+          "https://st-enroll.herokuapp.com/mms", 
+          body: {
+            recipient: phone
+            img_url: img_url
+          }
+        )
       end
 
 
