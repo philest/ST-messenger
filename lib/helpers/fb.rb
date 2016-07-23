@@ -71,7 +71,7 @@ module Facebook
         data = JSON.parse HTTParty.get("https://graph.facebook.com/v2.6/#{recipient['id']}?fields=#{fields}&access_token=#{ENV['FB_ACCESS_TKN']}").body
         name = data['first_name'] + " " + data["last_name"]
       rescue => e
-        User.create(:fb_id => recipient["id"])
+        User.create(:fb_id => recipient["id"], platform: 'fb')
         p e.message + ": created user w/o an associated child or phone number"
       else
         puts "successfully found user data for #{name}"
@@ -80,7 +80,7 @@ module Facebook
         begin
           candidates = User.where(:child_name => child_match, :fb_id => nil)
           if candidates.all.empty? # add a new user w/o child info (no matches)
-            User.create(:fb_id => recipient['id'], first_name: data['first_name'], last_name: data['last_name'], :gender => data['gender'], :locale => process_locale(data['locale']), :profile_pic => data['profile_pic'])
+            User.create(:fb_id => recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], :gender => data['gender'], :locale => process_locale(data['locale']), :profile_pic => data['profile_pic'])
           else
             # implement stupid fb_name matching to existing user matching
             candidates.order(:enrolled_on).first.update(:fb_id => recipient['id'], first_name: data['first_name'], last_name: data['last_name'], :gender => data['gender'], :locale => process_locale(data['locale']), :profile_pic => data['profile_pic'])
