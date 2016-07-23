@@ -212,7 +212,7 @@ describe ScheduleWorker do
 				end
 			end
 
-			@script = Birdv::DSL::ScriptClient.scripts["day#{@starting_story_num+1}"]
+			@script = Birdv::DSL::ScriptClient.scripts['fb']["day#{@starting_story_num+1}"]
 
 		end
 	

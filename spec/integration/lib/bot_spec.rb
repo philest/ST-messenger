@@ -179,11 +179,11 @@ describe 'TheBot' do
       Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
          .each {|f| require_relative f }
 
-      @s900 = Birdv::DSL::ScriptClient.scripts["day900"]
-      @s901 = Birdv::DSL::ScriptClient.scripts["day901"]
-      @s902 = Birdv::DSL::ScriptClient.scripts["day902"]
-      @s903 = Birdv::DSL::ScriptClient.scripts["day903"]
-      @s904 = Birdv::DSL::ScriptClient.scripts["day904"]
+      @s900 = Birdv::DSL::ScriptClient.scripts['fb']["day900"]
+      @s901 = Birdv::DSL::ScriptClient.scripts['fb']["day901"]
+      @s902 = Birdv::DSL::ScriptClient.scripts['fb']["day902"]
+      @s903 = Birdv::DSL::ScriptClient.scripts['fb']["day903"]
+      @s904 = Birdv::DSL::ScriptClient.scripts['fb']["day904"]
 
 
       @make_story_btn_press = lambda { |sender_id, script, btn_name|
@@ -664,8 +664,8 @@ describe 'TheBot' do
         u.state_table.update story_number: 1 
       end
 
-      @s1 = Birdv::DSL::ScriptClient.scripts['day1']
-      @s2 = Birdv::DSL::ScriptClient.scripts['day2']
+      @s1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
+      @s2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
       
       allow_any_instance_of(ScheduleWorker).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
         original_method.call(*args, [1,3,5], &block)

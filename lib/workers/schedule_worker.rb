@@ -21,7 +21,7 @@ class StartDayWorker
     # TODO: do error handling in a smart idempotent way
   end
 
-  def perform(recipient)
+  def perform(recipient, platform='fb')
 
     u = User.where(fb_id:recipient).first
     return if u.nil?
@@ -29,8 +29,8 @@ class StartDayWorker
     day_number =  update_day(u)
     puts "day#{day_number}"
 		# double quotation
-		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
-    puts script
+		script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
+    puts script.inspect
 	  if !script.nil?
       script.run_sequence(recipient, :init) 
     else
@@ -48,9 +48,16 @@ class ScheduleWorker
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
-      if user.fb_id
-        StartDayWorker.perform_async(user.fb_id)
-      end
+
+        case user.platform
+        when 'fb'
+          StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
+        when 'mms'
+          StartDayWorker.perform_async(user.fb_id, platform='mms') if user.phone
+        when 'sms'
+          StartDayWorker.perform_async(user.fb_id, platform='sms') if user.phone
+        end
+
 		end
   end
 

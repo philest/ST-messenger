@@ -15,7 +15,7 @@ module Birdv
 
       def self.new_script(script_name, platform='fb', &block)
         puts "adding #{script_name} - platform #{platform} to thing"
-        @@scripts[platform][script_name] = StoryTimeScript.new(script_name, &block)
+        @@scripts[platform][script_name] = StoryTimeScript.new(script_name, platform, &block)
       end
 
       def self.scripts
@@ -51,10 +51,11 @@ module Birdv
       attr_reader :script_name, :script_day, :num_sequences, :sequences
       STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
-      def initialize(script_name, &block)
+      def initialize(script_name, platform, &block)
         @fb_objects  = {}
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
+        @platform = platform
         @num_sequences = 0
         day          = script_name.scan(/\d+/)[0]
         
@@ -94,9 +95,7 @@ module Birdv
         if (last_sequence_seen.nil?)
           return false
         end
-
-
-
+        
         sqnce_new = @sequences[sqnce_to_send_name.to_sym] # TODO: ensure non-sym input is ok
         sqnce_old = @sequences[last_sequence_seen.to_sym]
 
@@ -137,20 +136,32 @@ module Birdv
 
       def name_codes(str, id)
         user = User.where(:fb_id => id).first
-        parent  = user.first_name.nil? ? "" : user.first_name
-        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
-        
-        if !user.teacher.nil?
-          sig = user.teacher.signature
-          teacher = sig.nil?           ? "StoryTime" : sig
-        else
-          teacher = "StoryTime"
+        # if fb_id didn't work, maybe we're on the wrong platform
+        if user.nil?
+          user = User.where(phone: id).first
         end
 
-        str = str.gsub(/__TEACHER__/, teacher)
-        str = str.gsub(/__PARENT__/, parent)
-        str = str.gsub(/__CHILD__/, child)
-        return str
+        if user
+          parent  = user.first_name.nil? ? "" : user.first_name
+          child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+          
+          if !user.teacher.nil?
+            sig = user.teacher.signature
+            teacher = sig.nil?           ? "StoryTime" : sig
+          else
+            teacher = "StoryTime"
+          end
+
+          str = str.gsub(/__TEACHER__/, teacher)
+          str = str.gsub(/__PARENT__/, parent)
+          str = str.gsub(/__CHILD__/, child)
+          return str
+        else # just return what we started with. It's 
+          str = str.gsub(/__TEACHER__/, 'StoryTime')
+          str = str.gsub(/__PARENT__/, '')
+          str = str.gsub(/__CHILD__/, 'your child')
+          return str
+        end
       end
 
 
@@ -285,7 +296,7 @@ module Birdv
       end
 
       def delay(recipient, sequence_name, time_delay)
-        BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name)
+        BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
       end
 
 
@@ -453,7 +464,32 @@ module Birdv
 
       end
 
+      def translate_sms(phone, text)
+        usr = User.where(phone: phone).first
+        I18n.locale = usr.locale
+
+        if text.nil? or text.empty? then 
+          return text   
+        end
+
+        trans = I18n.t text
+        if trans.is_a? Array
+          return name_codes trans[@script_day - 1], phone 
+        else
+          return names_codes trans, phone
+        end
+
+      rescue NoMethodError => e
+        p e.message + " usr doesn't exist, can't translate"
+        return false
+      end
+
       def send_sms( phone, text )
+        text = translate_sms( phone, text )
+        if text == false
+          puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
+          return
+        end
         HTTParty.post(
           "https://st-enroll.herokuapp.com/txt", 
           body: {

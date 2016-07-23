@@ -14,7 +14,7 @@ describe BotWorker do
 		@usr_fb_id						 = '12345'
 
 		# get pointer to scripts
-		@scripts = Birdv::DSL::ScriptClient.scripts
+		@scripts = Birdv::DSL::ScriptClient.scripts['fb']
 
 		# load up some scripts!
 		Birdv::DSL::ScriptClient.new_script 'day3' do

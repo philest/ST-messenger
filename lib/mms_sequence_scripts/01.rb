@@ -7,7 +7,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'mms' do
 
 	# recipients are phone numbers
 	sequence 'firstmessage' do |phone_no|
-		txt = "Hi, this is StoryTime! We send free books by text message. You can start now with Facebook. Click here and enter 'orange cat.'"
+		txt = "scripts.teacher_intro"
 		send_sms phone_no, txt
 
 		# delay the conventional SMS delay
