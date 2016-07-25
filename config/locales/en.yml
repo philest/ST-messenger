@@ -25,6 +25,7 @@ en:
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
       window_text: 
         - "You'll get another story next week. You both are doing great! :)"
         - "Another story will come in a few days. You both are doing great! :)"
@@ -34,6 +35,7 @@ en:
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"   
+        - "You'll get another story in a few nights!"        
         - "You'll get another story in a few nights!"        
       title:
         - "Let's read tonight's story."

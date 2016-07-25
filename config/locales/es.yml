@@ -14,18 +14,21 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
-
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
     buttons:
       story_img_url:
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/es/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+
       window_text: 
         - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"
         - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"
