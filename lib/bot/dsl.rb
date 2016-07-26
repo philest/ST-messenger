@@ -7,14 +7,18 @@ require_relative '../../config/initializers/locale'
 module Birdv
   module DSL
     class ScriptClient
-      @@scripts = {
-        'fb'  => {},
-        'sms' => {},
-        'mms' => {}
-      }
+      @@scripts = Hash.new
+      @@scripts['fb'] = Hash.new
+      @@scripts['mms'] = Hash.new
+      @@scripts['sms'] = Hash.new
+
+      puts "@@scripts = #{@@scripts.inspect}"
 
       def self.new_script(script_name, platform='fb', &block)
         puts "adding #{script_name} - platform #{platform} to thing"
+        puts "scripts = #{scripts.inspect}"
+
+        @@scripts['ass'] = Hash.new 
         puts "scripts = #{@@scripts.inspect}"
 
         @@scripts[platform][script_name] = StoryTimeScript.new(script_name, platform, &block)
@@ -54,7 +58,7 @@ module Birdv
       include Facebook::Messenger::Helpers 
       include ContactHelpers
 
-      attr_reader :script_name, :script_day, :num_sequences, :sequences
+      attr_reader :script_name, :script_day, :num_sequences, :sequences, :platform
       STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
       def initialize(script_name, platform='fb', &block)

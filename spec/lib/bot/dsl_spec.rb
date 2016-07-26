@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'bot/dsl'
 require 'bot/curricula'
 
-describe Birdv::DSL::StoryTimeScript do
+describe 'Birdv::DSL::StoryTimeScript' do
 
 
   let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
