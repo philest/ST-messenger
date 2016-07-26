@@ -15,13 +15,23 @@ class BotWorker
       Sidekiq.logger.warn(s.nil? ? "couldn't find script #{script_name}" : "about to send #{script_name}" )
 
       if not s.nil?
-        # enroll user if they are not in the db
-        if User.where(fb_id:recipient).first.nil?
-          register_user({'id'=>recipient})
+
+        case platform
+        when 'fb'
+          # enroll user if they are not in the db
+          if User.where(fb_id:recipient).first.nil?
+            register_user({'id'=>recipient})
+          end
+          
+          # open DB connection to user
+          u = User.where(fb_id:recipient).first   
+
+        when 'mms', 'sms'
+          puts "looking for #{recipient} phone"
+          u = User.where(phone:recipient).first
+          if u.nil? then return end
         end
-        
-        # open DB connection to user
-        u = User.where(fb_id:recipient).first   
+
 
         # log the button anyway...
         b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
@@ -50,6 +60,7 @@ class BotWorker
 
           # TODO: run this in a worker
           # run the script
+          puts "preparing to run sequence..."
           s.run_sequence(recipient, sequence.to_sym)
           
           # looking for updating user's story#/storyday? well it's 

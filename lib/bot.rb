@@ -38,7 +38,7 @@ JOIN    = /join/i
 # TODO: make this FB fb_scripts? 
 # fb_scripts  = Birdv::DSL::ScriptClient.fb_scripts
 
-fb_scripts  = Birdv::DSL::ScriptClient.fb_scripts
+fb_scripts  = Birdv::DSL::ScriptClient.scripts['fb']
 
 # TODO: add Spanish words here
 DAY_RQST  = /day\d+/i
@@ -90,6 +90,7 @@ def prev_unknown?(user)
   return prev_was_unknown
 end
 
+MMS_RQST = /mms\d+ \d+/i
 
 #
 # i.e. when user sends the bot a message.
@@ -125,6 +126,16 @@ Bot.on :message do |message|
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end
+      when MMS_RQST
+        code, phone = message.text.scan(/\d+/)
+        puts "code = #{code}, phone = #{phone}"
+        script = Birdv::DSL::ScriptClient.scripts['mms']["day#{code}"]
+        if script
+          BotWorker.perform_async(phone, "day#{code}", :init, platform='mms')
+        else
+          fb_send_txt(message.sender, "Sorry, that script is not yet available.")
+        end
+
       else # find the appropriate reply
         reply = get_reply(message.text, db_user)
         
