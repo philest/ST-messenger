@@ -8,14 +8,20 @@ module Birdv
   module DSL
     class ScriptClient
       @@scripts = {
+        'fb'  => {},
         'sms' => {},
-        'mms' => {},
-        'fb'  => {}
+        'mms' => {}
       }
 
       def self.new_script(script_name, platform='fb', &block)
         puts "adding #{script_name} - platform #{platform} to thing"
+        puts "scripts = #{@@scripts.inspect}"
+
         @@scripts[platform][script_name] = StoryTimeScript.new(script_name, platform, &block)
+
+        if platform == 'mms'
+          puts "@@scripts['mms'] = #{@@scripts[platform].inspect}"
+        end
       end
 
       def self.scripts
@@ -51,7 +57,7 @@ module Birdv
       attr_reader :script_name, :script_day, :num_sequences, :sequences
       STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
-      def initialize(script_name, platform, &block)
+      def initialize(script_name, platform='fb', &block)
         @fb_objects  = {}
         @sequences   = {}
         @script_name = script_name # TODO how do we wanna do this?
@@ -497,7 +503,7 @@ module Birdv
         HTTParty.post(
           "https://st-enroll.herokuapp.com/txt", 
           body: {
-            recipient: phone
+            recipient: phone,
             text: text
           }
         )
@@ -507,7 +513,7 @@ module Birdv
         HTTParty.post(
           "https://st-enroll.herokuapp.com/mms", 
           body: {
-            recipient: phone
+            recipient: phone,
             img_url: img_url
           }
         )

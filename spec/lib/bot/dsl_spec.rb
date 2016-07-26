@@ -252,6 +252,7 @@ describe Birdv::DSL::StoryTimeScript do
       # load a script
       @cli = Birdv::DSL::ScriptClient
       @cli.new_script 'day1' do
+        day 1
         sequence 'one' do |recipient|
         end
         sequence 'two' do |recipient|

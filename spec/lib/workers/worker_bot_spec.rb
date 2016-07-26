@@ -16,6 +16,10 @@ describe BotWorker do
 		# get pointer to scripts
 		@scripts = Birdv::DSL::ScriptClient.scripts['fb']
 
+		puts "ass scripts = #{Birdv::DSL::ScriptClient.scripts.inspect}"
+
+		puts "scripts -========  #{@scripts.inspect}"
+
 		# load up some scripts!
 		Birdv::DSL::ScriptClient.new_script 'day3' do
 			sequence 'one' do end
