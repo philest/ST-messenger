@@ -185,7 +185,7 @@ describe ScheduleWorker do
 			# specify exact arguments and people on this one...
 			users = [@on_time, @just_early, @just_late]
 			for user in users
-				expect(StartDayWorker).to receive(:perform_async).with(user.fb_id).once
+				expect(StartDayWorker).to receive(:perform_async).with(user.fb_id, platform='fb').once
 			end
 
 			Sidekiq::Testing.inline! do
@@ -244,7 +244,7 @@ describe ScheduleWorker do
 			
 			it 'does not increment day number when hasnt read last story', nosend:true do
 				day = User.where(fb_id: @u1_id).first.state_table.story_number
-				u1script = Birdv::DSL::ScriptClient.scripts["day#{day+1}"] 
+				u1script = Birdv::DSL::ScriptClient.scripts['fb']["day#{day+1}"] 
 				expect(u1script).not_to receive(:run_sequence)
 				expect{
 					Sidekiq::Testing.inline! do

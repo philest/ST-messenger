@@ -7,25 +7,15 @@ require_relative '../../config/initializers/locale'
 module Birdv
   module DSL
     class ScriptClient
-      @@scripts = Hash.new
-      @@scripts['fb'] = Hash.new
-      @@scripts['mms'] = Hash.new
-      @@scripts['sms'] = Hash.new
-
-      puts "@@scripts = #{@@scripts.inspect}"
+      @@scripts = {
+        'fb' => {},
+        'mms' => {},
+        'sms' => {}
+      }
 
       def self.new_script(script_name, platform='fb', &block)
         puts "adding #{script_name} - platform #{platform} to thing"
-        puts "scripts = #{scripts.inspect}"
-
-        @@scripts['ass'] = Hash.new 
-        puts "scripts = #{@@scripts.inspect}"
-
         @@scripts[platform][script_name] = StoryTimeScript.new(script_name, platform, &block)
-
-        if platform == 'mms'
-          puts "@@scripts['mms'] = #{@@scripts[platform].inspect}"
-        end
       end
 
       def self.scripts
@@ -45,7 +35,11 @@ module Birdv
       end
 
       def self.clear_scripts
-        @@scripts = {}
+        @@scripts = {
+          'fb' => {},
+          'mms' => {},
+          'sms' => {}
+        }
       end 
 
     end
@@ -322,10 +316,7 @@ module Birdv
         recipient   = args[:recipient]
         locale      = args[:locale]
         base = STORY_BASE_URL
-        puts "the number of pages #{num_pages}"
         locale_url_seg = (locale == 'es') ? 'es/' : ''
-        puts "locale_url_seg = #{locale_url_seg}"
-
         num_pages.times do |i|
           url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
           puts "sending #{url}!"
@@ -363,7 +354,6 @@ module Birdv
             
             # TODO: error stuff
 
-            puts 'SHOULD BE HERE'
             # TODO: make this atomic somehow? slash errors
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
@@ -383,28 +373,24 @@ module Birdv
           return true 
         end
       rescue NoMethodError => e
-        p e.message
         return false
       end
 
       def is_story_button?(thing)
         if thing[:attachment][:payload][:elements].nil? then false else true end
       rescue NoMethodError => e
-        p e.message
         return false
       end
 
       def is_txt?(thing)
         if thing[:text].nil? then false else true end
       rescue NoMethodError => e
-        p e.message
         return false
       end
 
       def is_img?(thing)
         if [:attachment][:type] == 'image' then true else false end
       rescue NoMethodError => e
-        p e.message
         return false
       end
 
@@ -432,28 +418,23 @@ module Birdv
 
         m = fb_object[:message]
 
-        puts "message = #{m}"
         if !m.nil?
             if is_txt?(m) # just a text message... 
-              puts "text: " + m[:text]
+
               m[:text] = name_codes translate.call(m[:text]), recipient
             end
 
             if is_txt_button?(m) # a button with text on it
-              puts "txt_button txt: " + m[:attachment][:payload][:text].to_s
               m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
               buttons = m[:attachment][:payload][:buttons]
 
               buttons.each_with_index do |val, i|
-                puts "txt button title txt: #{buttons[i][:title]}"
                 buttons[i][:title] = translate.call( buttons[i][:title] )
               end
 
             end
 
             if is_story_button?(m) # a story button, with text and pictures
-              puts "story_button txt: " + m[:attachment][:payload][:elements].to_s
-
               elements = m[:attachment][:payload][:elements]
               elements.each_with_index do |val, i|
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
@@ -462,7 +443,6 @@ module Birdv
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]
                   buttons.each_with_index do |val, i|
-                    puts "story button title txt: #{buttons[i][:title]}"
                     buttons[i][:title] = translate.call(buttons[i][:title])
                   end
                 end
@@ -536,7 +516,6 @@ module Birdv
           # do name_codes or process_txt for every type of object that could come through here.....
           # 
 
-          puts "before processing:\n#{to_send}"
 
           usr = User.where(fb_id: recipient).first
           fb_object = Marshal.load(Marshal.dump(to_send))
@@ -545,7 +524,6 @@ module Birdv
             process_txt(fb_object, recipient, usr.locale) 
           end
 
-          puts "processed:\n#{fb_object}"
           puts "sending to #{recipient}"
           puts fb_send_json_to_user(recipient, fb_object)
         end

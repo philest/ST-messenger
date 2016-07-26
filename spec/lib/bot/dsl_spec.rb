@@ -250,8 +250,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
     before(:all) do
 
       # load a script
-      @cli = Birdv::DSL::ScriptClient
-      @cli.new_script 'day1' do
+      Birdv::DSL::ScriptClient.new_script 'day1', 'fb' do
         day 1
         sequence 'one' do |recipient|
         end
@@ -263,7 +262,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         end
       end
 
-      @script_copy = @cli.scripts['day1']
+      @script_copy = Birdv::DSL::ScriptClient.scripts['fb']['day1']
     end
 
     it 'returns true when last_sequence_seen is nil?' do
@@ -606,7 +605,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         end         
       
       end #=>END @cli.new_script 'day1' do      
-      @s = @cli.scripts
+      @s = @cli.scripts['fb']
     end #=>END before(:all) do
 
 

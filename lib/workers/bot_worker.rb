@@ -28,8 +28,6 @@ class BotWorker
         u.add_button_press_log(b)
 
         protected_ids = %w(1084495154927802 1042751019139427 1625783961083197 10209967651611613 10209571935726081)
-        puts "id = #{recipient}"
-        puts "included? #{protected_ids.include?(recipient)}"
         
         last_sequence_seen = u.state_table.last_sequence_seen
 
@@ -50,7 +48,6 @@ class BotWorker
           || protected_ids.include?(recipient)
           # TODO: or query?
 
-          puts "we haven't seen this button before..."
           # TODO: run this in a worker
           # run the script
           s.run_sequence(recipient, sequence.to_sym)

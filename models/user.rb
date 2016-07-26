@@ -25,7 +25,6 @@ class User < Sequel::Model(:users)
 		st.user = self
 		# set default curriculum version
 		ENV["CURRICULUM_VERSION"] ||= '0'
-		puts "setting user's curriculum_version to #{ENV['CURRICULUM_VERSION']}"
 		self.update(curriculum_version: ENV["CURRICULUM_VERSION"].to_i)
 	rescue => e
 		p e.message + " could not create and associate a state_table, enrollment_queue, or curriculum_version for this user"
