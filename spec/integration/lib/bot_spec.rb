@@ -652,7 +652,7 @@ describe 'TheBot' do
     #     end   
     #   end
 
-    # end
+    end
 
     # this is basically a compressed version of the last one. I was having stubbing issues.
     it 'correctly transitions from day1 to day2', day1:true do
