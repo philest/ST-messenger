@@ -46,6 +46,36 @@ class ScheduleWorker
   include Sidekiq::Worker
   sidekiq_options :retry => false
 
+  attr_accessor :schedules
+
+  @schedules = 
+  [
+    { 
+      start_day: 1,
+      days: [4] 
+    },
+    {
+      start_day: 3,
+      days: [1,4]
+    },
+    {
+      start_day: 6,
+      days: [1,2,4]
+    }
+  ]
+
+  # very inneficient, redo some day
+  def get_schedule(story_number)
+    puts "FUFUFUFUF"
+    @schedules.each do |s|
+      if story_number >= s[:start_day]
+        puts 
+        return s[:days]
+      end
+    end
+  end
+
+
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
       if user.fb_id
@@ -78,7 +108,7 @@ class ScheduleWorker
   		within_time_range(user, range) && last_story_read_ok
   	end
   rescue => e
-    p e.message " something went wrong, not filtering users"
+    puts "e.message, something went wrong, not filtering users"
     filtered = []
   ensure
     puts "filtered = #{filtered.to_s}"
@@ -106,26 +136,32 @@ class ScheduleWorker
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
-
   	# server timein UTC
-		now 			= Time.now.utc.seconds_since_midnight
+		now 			      = Time.now.utc.seconds_since_midnight
 
 		# DST-adjusted user time
-		user_local = adjust_tz(user)
-		user_utc	 = user_local.utc.seconds_since_midnight
-		user_day 	 = get_local_day(Time.now, user)
+		user_local      = adjust_tz(user)
+		user_utc	      = user_local.utc.seconds_since_midnight
+    # TODO: maybe move the following outside of the function so we don't have to 
+    # compute some part over and over again:
+		user_day 	      = get_local_day(Time.now, user) # current day of the week for user according to server
+            
+    user_curric     = user.curriculum_version
+    user_story_num  = user.state_table.story_number
 
-    valid_for_user = acceptable_days.include?(user_day)
+    user_sched      = get_schedule(user_story_num)
 
-    #friends get it three days a week
+    valid_for_user  = user_sched.include?(user_day)
+    
+    # friends get it three days a week
     friend_days = [1,3,5]
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
 			if now >= user_utc
-				return now - user_utc <= range
+				return (now - user_utc <= range)
 			else
-				return user_utc - now <  range
+				return (user_utc - now <  range)
 			end
 		end
     return false

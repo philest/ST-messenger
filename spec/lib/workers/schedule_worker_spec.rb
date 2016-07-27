@@ -3,6 +3,8 @@ require 'timecop'
 require 'active_support/time'
 require 'workers/schedule_worker'
 require 'bot/dsl'
+require 'bot/curricula'
+
 describe ScheduleWorker do
 	before(:each) do
 		# clean everything up
@@ -38,6 +40,8 @@ describe ScheduleWorker do
 		@just_late.state_table.update(story_number: @story_num)
 		@early.state_table.update(story_number: @story_num)
 		@late.state_table.update(story_number: @story_num)
+
+		@users = [@on_time, @just_early, @just_late, @early, @late]
 
 	end
 
@@ -118,13 +122,6 @@ describe ScheduleWorker do
 			expect(filtered.size).to eq(0)
 		end		
 
-# def and_call_original
-#   wrap_original(__method__) do |original, *args, &block|
-#     original.call(*args, &block)
-#   end
-# end
-# permalink
-
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
 			allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
   			original_method.call(*args, [Time.now.wday], &block)
@@ -192,7 +189,244 @@ describe ScheduleWorker do
 				sw.perform
 			end
 		end
-	end
+
+		context 'people should be following schedule rules nao', timeline:true do
+			before(:all) do
+				@sw_curric = ScheduleWorker.new 
+				
+				@sw_curric.schedules = [
+			    { 
+			      start_day: 1,
+			      days: [4] 
+			    },
+			    {
+			      start_day: 3,
+			      days: [1,4]
+			    },
+			    {
+			      start_day: 6,
+			      days: [1,2,4]
+			    }
+				]
+
+      	dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
+      	@c 	= Birdv::DSL::Curricula.load(dir, absolute=true) 
+			end
+
+			after(:all) do
+
+			end
+
+			before(:each) do
+      	# users = User.all
+				@users.each do |u|
+					u.update(curriculum_version:666)
+					u.state_table.update(story_number:2)
+				end
+
+			end
+
+			describe 'day 1 behaviour' do
+
+				# before each example, the user has already read day1!
+				before(:each) do
+					@users.each do |u|
+						u.update(curriculum_version:666)
+						u.state_table.update(story_number:1)
+						u.state_table.update(last_story_read?:true)
+					end
+				end
+
+				it 'sends next story on [4] of next week if day1 on 2' do
+					start_time = Time.new(2016, 7, 26, 23, 0, 0, 0)
+					# last story read on Tuesday!
+					@users.each do |u|
+						u.state_table.update( last_story_read_time: start_time )
+					end	
+
+					expect{
+						Sidekiq::Testing.fake! {
+							# run that same day to ensure not send stuff						
+							@sw_curric.perform(@interval)
+							(3..11).each do |day|
+								start_time += 1.day
+								Timecop.freeze(start_time)
+								@sw_curric.perform(@interval)
+							end
+						}
+					}.not_to change{StartDayWorker.jobs.size}
+
+					# now we finally reach that [4]
+					start_time += 1.day
+					Timecop.freeze(start_time)		
+
+					expect(StartDayWorker).to receive(:perform_async)
+					@sw_curric.perform(@interval)		
+				end
+				
+				it 'sends next story on [4] of next week if day1 on 3' do
+					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+					# last story read on Wednesday!
+					@users.each do |u|
+						u.state_table.update( last_story_read_time: start_time )
+					end	
+
+					# cycle through the days
+					expect{
+						Sidekiq::Testing.fake! {
+							# run that same day to ensure not send stuff				
+							@sw_curric.perform(@interval)			
+							(4..11).each do |day|
+								start_time += 1.day
+								Timecop.freeze(start_time)
+								@sw_curric.perform(@interval)
+							end
+						}
+					}.not_to change{StartDayWorker.jobs.size}
+
+					# now we finally reach that [4]
+					start_time += 1.day
+					Timecop.freeze(start_time)		
+
+					expect(StartDayWorker).to receive(:perform_async)
+					@sw_curric.perform(@interval)	
+				end
+
+				it 'sends story in same upcoming week if day1 not [2,3]' do
+					start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+					# day1 read on Monday!
+					@users.each do |u|
+						u.state_table.update( last_story_read_time: start_time )
+					end	
+
+					# cycle through the days
+					expect{
+						Sidekiq::Testing.fake! {
+							# run that same day to ensure not send stuff				
+							@sw_curric.perform(@interval)			
+							(2..11).each do |day|
+								start_time += 1.day
+								Timecop.freeze(start_time)
+								@sw_curric.perform(@interval)
+							end
+						}
+					}.not_to change{StartDayWorker.jobs.size}
+
+					# now we finally reach that [4]
+					start_time += 1.day
+					Timecop.freeze(start_time)		
+
+					expect(StartDayWorker).to receive(:perform_async)
+					@sw_curric.perform(@interval)					end
+
+				it 'sends story in 7 days if day1 on a 4' do
+					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+					# last story read on Wednesday!
+					@users.each do |u|
+						u.state_table.update( last_story_read_time: start_time )
+					end	
+
+					# cycle through the days
+					expect{
+						Sidekiq::Testing.fake! {
+						# run that same day to ensure not send stuff				
+							@sw_curric.perform(@interval)			
+							(4..11).each do |day|
+								start_time += 1.day
+								Timecop.freeze(start_time)
+								@sw_curric.perform(@interval)
+							end
+						}
+					}.not_to change{StartDayWorker.jobs.size}
+
+					# now we finally reach that [4]
+					start_time += 1.day
+					Timecop.freeze(start_time)		
+
+					expect(StartDayWorker).to receive(:perform_async)
+					@sw_curric.perform(@interval)	
+				end
+
+			end
+
+			# note that these guys are all on day2
+			it 'sends out stories on the specified day' do
+				# freeze on a Friday of last week!
+				start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+				Timecop.freeze(start_time-6)
+
+				# cycle through the days
+				expect{
+					Sidekiq::Testing.fake! {
+						# run that same day to ensure not send stuff				
+						@sw_curric.perform(@interval)			
+						(4..11).each do |day|
+							start_time += 1.day
+							Timecop.freeze(start_time)
+							@sw_curric.perform(@interval)
+						end
+					}
+				}.not_to change{StartDayWorker.jobs.size}
+
+				# now we finally reach that [4]
+				start_time += 1.day
+				Timecop.freeze(start_time)		
+
+				expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+
+				Sidekiq::Testing.inline! {
+					ScheduleWorker.perform_async(@interval)
+				}
+			end
+
+			it 'sends story when we upgraded to new schedule' do
+      	# users = User.all
+				@users.each do |u|
+					u.state_table.update(story_number:6)
+				end
+
+				# freeze on a Sunday!
+				start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+				Timecop.freeze(start_time)
+
+				expect{
+					Sidekiq::Testing.fake! {
+						@sw_curric.perform(@interval)			
+					}
+				}.not_to change{StartDayWorker.jobs.size}				
+
+				# freeze on a Monday!
+				start_time += 1.day
+				Timecop.freeze(start_time)
+				expect{
+					Sidekiq::Testing.fake! {
+						@sw_curric.perform(@interval)			
+					}
+				}.to change{StartDayWorker.jobs.size}.by 1
+
+				# following two days			
+				Timecop.freeze(start_time)
+				expect{
+					Sidekiq::Testing.fake! {
+						start_time += 1.day
+						@sw_curric.perform(@interval)	
+						start_time += 1.day
+						@sw_curric.perform(@interval)			
+					}
+				}.not_to change{StartDayWorker.jobs.size}
+
+				# now we at Thursday, should send out!
+				start_time += 1.day
+				Timecop.freeze(start_time)
+				expect{
+					Sidekiq::Testing.fake! {
+						@sw_curric.perform(@interval)			
+					}
+				}.to change{StartDayWorker.jobs.size}.by 1
+			end
+
+		end # END context 'when there is a specified story receipt day', timeline:true do
+	end # END context 'filtering users dp'
 
 
 

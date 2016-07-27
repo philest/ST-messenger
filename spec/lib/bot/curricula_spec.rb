@@ -1,14 +1,11 @@
 require 'spec_helper'
 require 'bot/curricula'
 
-
-
 describe Birdv::DSL::Curricula do
 
 	before(:all) do
 		  #load curriculae
       dir = "#{File.expand_path(File.dirname(__FILE__))}/unit_test_curricula/"
-      puts dir
       @c 	= Birdv::DSL::Curricula.load(dir, absolute=true) 
 			puts @c
 	end
