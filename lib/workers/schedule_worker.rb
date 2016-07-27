@@ -66,10 +66,8 @@ class ScheduleWorker
 
   # very inneficient, redo some day
   def get_schedule(story_number)
-    puts "FUFUFUFUF"
     @schedules.each do |s|
-      if story_number >= s[:start_day]
-        puts 
+      if  s[:start_day] >= story_number
         return s[:days]
       end
     end
@@ -108,7 +106,7 @@ class ScheduleWorker
   		within_time_range(user, range) && last_story_read_ok
   	end
   rescue => e
-    puts "e.message, something went wrong, not filtering users"
+    puts "#{e.message}\nsomething went wrong, not filtering users\n#{e.backtrace}"
     filtered = []
   ensure
     puts "filtered = #{filtered.to_s}"
@@ -137,31 +135,49 @@ class ScheduleWorker
   def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
   	# server timein UTC
-		now 			      = Time.now.utc.seconds_since_midnight
+    now                     = Time.now.utc # TODO: do I need to convert to tz?
+		now_seconds 			      = now.seconds_since_midnight
 
 		# DST-adjusted user time
-		user_local      = adjust_tz(user)
-		user_utc	      = user_local.utc.seconds_since_midnight
+		user_local              = adjust_user_tz(user)
+		user_utc_seconds	      = user_local.utc.seconds_since_midnight
+    puts get_local_time(user_local, user.timezone)
     # TODO: maybe move the following outside of the function so we don't have to 
     # compute some part over and over again:
-		user_day 	      = get_local_day(Time.now, user) # current day of the week for user according to server
+		user_day 	      = get_local_day(now, user) # current day of the week for user according to server
             
     user_curric     = user.curriculum_version
     user_story_num  = user.state_table.story_number
 
     user_sched      = get_schedule(user_story_num)
-    puts "user sched #{user_sched}"
-    valid_for_user  = user_sched.include?(user_day)
     
+    puts "today is #{user_day}"
+    valid_for_user  = user_sched.include?(user_day)
+
+    # this deals with the edge case of being on story 1:
+    if (user_story_num == 1)
+                             # TODO: double-check this logic...
+      last_story_read_time = get_local_time(user.state_table.last_story_read_time, user.timezone)
+      days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
+      puts "days_elapsed!!!!!!! #{days_elapsed}"
+      if days_elapsed < 7
+        valid_for_user = false
+      end
+    end
+
+    puts "VALID???? #{valid_for_user}"
+      
+    
+
     # friends get it three days a week
     friend_days = [1,3,5]
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
-			if now >= user_utc
-				return (now - user_utc <= range)
+			if now_seconds >= user_utc_seconds
+				return (now_seconds - user_utc_seconds <= range)
 			else
-				return (user_utc - now <  range)
+				return (user_utc_seconds - now_seconds <  range)
 			end
 		end
     return false
@@ -174,29 +190,33 @@ class ScheduleWorker
   	return server_time.utc.in_time_zone(user_tz).wday
   end
 
-  # returns the user's DST-adjusted local time
-  def adjust_tz(user)
-  	# timezone object in User's timezone
-  	user_tz = ActiveSupport::TimeZone.new(user.timezone)
+  # returns a time in the specified timezone
+  def get_local_time(time, goal_timezone)
+    tz = ActiveSupport::TimeZone.new(goal_timezone)
 
-  	# time that user enrolled, converted from UTC to local time
-  	tz_init = user.enrolled_on.utc.in_time_zone(user_tz)
-
-  	# server time, converted to local time zone
-  	tz_current = Time.now.utc.in_time_zone(user_tz)
-
-  	# check if in daylight savings
-		if tz_init.dst? and not tz_current.dst?
-			send_time = user.send_time + 1.hour
-		elsif not tz_init.dst? and tz_current.dst?
-			send_time = user.send_time - 1.hour
-		else
-			send_time = user.send_time
-		end
-
-		send_time
+    # time that user enrolled, converted from UTC to local time
+    return time.utc.in_time_zone(tz)
   end
 
+
+ 
+ 
+  def adjust_user_tz(user)
+    tz = user.timezone
+    enroll_time = get_local_time(user.enrolled_on, tz)
+    server_time = get_local_time(Time.now.utc, tz)
+    
+    # check if in daylight savings
+    if enroll_time.dst? and not server_time.dst?
+      send_time = user.send_time + 1.hour
+    elsif not enroll_time.dst? and server_time.dst?
+      send_time = user.send_time - 1.hour
+    else
+      send_time = user.send_time
+    end
+
+    return send_time
+  end
 end
 
 

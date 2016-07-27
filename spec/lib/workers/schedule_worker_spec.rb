@@ -226,7 +226,7 @@ describe ScheduleWorker do
 
 			end
 
-			describe 'day 1 behaviour' do
+			describe 'day 1 behaviour', day1:true do
 
 				# before each example, the user has already read day1!
 				before(:each) do
@@ -239,6 +239,7 @@ describe ScheduleWorker do
 
 				it 'sends next story on [4] of next week if day1 on 2' do
 					start_time = Time.new(2016, 7, 26, 23, 0, 0, 0)
+					Timecop.freeze(start_time)
 					# last story read on Tuesday!
 					@users.each do |u|
 						u.state_table.update( last_story_read_time: start_time )
@@ -266,6 +267,7 @@ describe ScheduleWorker do
 				
 				it 'sends next story on [4] of next week if day1 on 3' do
 					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+					Timecop.freeze(start_time)
 					# last story read on Wednesday!
 					@users.each do |u|
 						u.state_table.update( last_story_read_time: start_time )
@@ -294,6 +296,7 @@ describe ScheduleWorker do
 
 				it 'sends story in same upcoming week if day1 not [2,3]' do
 					start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+					Timecop.freeze(start_time)
 					# day1 read on Monday!
 					@users.each do |u|
 						u.state_table.update( last_story_read_time: start_time )
@@ -316,11 +319,14 @@ describe ScheduleWorker do
 					start_time += 1.day
 					Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async)
-					@sw_curric.perform(@interval)					end
+					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+					@sw_curric.perform(@interval)					
+				end
 
 				it 'sends story in 7 days if day1 on a 4' do
 					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+					Timecop.freeze(start_time)
+
 					# last story read on Wednesday!
 					@users.each do |u|
 						u.state_table.update( last_story_read_time: start_time )
