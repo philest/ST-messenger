@@ -485,7 +485,7 @@ module Birdv
           return
         end
         HTTParty.post(
-          "https://st-enroll.herokuapp.com/txt", 
+          "#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
           body: {
             recipient: phone,
             text: text
@@ -495,7 +495,7 @@ module Birdv
 
       def send_mms( phone, img_url )
         HTTParty.post(
-          "https://st-enroll.herokuapp.com/mms", 
+          "#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
           body: {
             recipient: phone,
             img_url: img_url
