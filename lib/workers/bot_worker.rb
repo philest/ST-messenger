@@ -43,24 +43,24 @@ class BotWorker
 			Sidekiq.logger.warn numbers_check_out ? "#{recipient} not yet seen #{sequence}" : "#{recipient} already saw #{sequence}"
 
 			
-			# ...but if they didn't already press the button, send sequence
-			if 	 numbers_check_out 								 \
-				|| last_sequence_seen == 'intro' 			\
-				|| last_sequence_seen == 'teachersend' \
-				|| protected_ids.include?(recipient)
+			# # ...but if they didn't already press the button, send sequence
+			# if 	 numbers_check_out 								 \
+			# 	|| last_sequence_seen == 'intro' 			\
+			# 	|| last_sequence_seen == 'teachersend' \
+			# 	|| protected_ids.include?(recipient)
 				# TODO: or query?
 
-				puts "we haven't seen this button before..."
+				# puts "we haven't seen this button before..."
 				# TODO: run this in a worker
 				# run the script
 				s.run_sequence(recipient, sequence.to_sym)
 				
 				# looking for updating user's story#/storyday? well it's 
 				# actually a clock worker behavior lol sorry
-			else
-				puts "we've seen this button before..."
+			# else
+			# 	puts "we've seen this button before..."
 
-			end
+			# end
 
 			# TODO: do we want an ELSE behavior?
 		end
