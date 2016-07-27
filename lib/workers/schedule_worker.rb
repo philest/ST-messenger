@@ -150,7 +150,7 @@ class ScheduleWorker
     user_story_num  = user.state_table.story_number
 
     user_sched      = get_schedule(user_story_num)
-
+    puts "user sched #{user_sched}"
     valid_for_user  = user_sched.include?(user_day)
     
     # friends get it three days a week
