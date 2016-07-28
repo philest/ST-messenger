@@ -9,6 +9,7 @@ require 'sidekiq-unique-jobs'
 require 'sidekiq/web'
 require_relative 'lib/bot'
 require 'sinatra'
+require_relative 'lib/app' # the app which handles all text messaging stuff
 
 require 'rack'
 require 'airbrake'
@@ -36,6 +37,7 @@ require_relative 'config/initializers/locale'
 
 run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,
+  '/' => SMS,
   '/sidekiq' => Sidekiq::Web
 })
 

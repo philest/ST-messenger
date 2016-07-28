@@ -1,11 +1,18 @@
 es:
   hello: "hola"
+  defaults:
+    teacher: "su maestro"
+    child: "su niño"
   user_response:
     help:   "¡Hola, este es la Hora de Cuentos! Ayudamos a su maestro envía cuentos nocturnas gratuitas.\n\n - Para detener, respuesta 'parada'\n - Para obtener ayuda, póngase en contacto 561-212-5831"
     stop:   "¡Bien, usted deja de recibir mensajes! Si desea libros gratuitos de nuevo sólo entran en 'Ir'."
     thanks: "De nada :)"
     robot:  "¡Hola __PARENT__! Hora de Cuentos es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
+    learn: "StoryTime envía artículos libres de texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara detener, el texto STOP"
+    teacher_reply:
+      session: "Voy a ver su mensaje para esta noche! Si necesita más ayuda, llame al StoryTime 561-212-5831"
+      no_session: "¡Hola! Estoy lejos ahora, pero voy a ver su mensaje pronto! Si necesita ayuda, introduce 'learn'"
   scripts:
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer libro de Cuentos gratuita sobre!"
@@ -57,3 +64,19 @@ es:
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"
 
+  enrollment:
+    body: 
+      has_teacher: "Hola, es %{teacher_name}. Voy a estar enviando mensajes de texto a %{child_name} con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_school: "Hola, es %{school_signature}. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_none: "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+
+    body_sprint:
+      has_teacher: 
+        - "Hola, es %{teacher_name}. Voy a estar enviando mensajes de texto a %{child_name} con StoryTime!\n\n"
+        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_school: 
+        - "Hola, es %{school_signature}. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\n" 
+        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_none: 
+        - "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\n"
+        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"

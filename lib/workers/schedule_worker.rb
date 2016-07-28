@@ -10,13 +10,20 @@ class StartDayWorker
     return user.state_table.last_story_read?
   end
   
-  def update_day(user)
-
-    if read_yesterday_story?(user)
-      n = user.state_table.story_number + 1
-      user.state_table.update(story_number: n, 
-                              last_story_read?: false)
+  def update_day(user, platform)
+    n = user.state_table.story_number + 1
+    if platform == 'fb'
+      if read_yesterday_story?(user)
+        user.state_table.update(story_number: n, 
+                                last_story_read?: false)
+      end
+    else # platform == 'mms' or 'sms'
+      # Update. Since there are no buttons, we just assume peeps have read their story. 
+      # An alternative is we ask that someone reply to an initial text before we send them a story.
+      # Talk to the team about this option. 
+      user.state_table.update(story_number: n)
     end
+
     return user.state_table.story_number
     # TODO: do error handling in a smart idempotent way
   end
@@ -31,7 +38,7 @@ class StartDayWorker
     
     return if u.nil?
 
-    day_number =  update_day(u)
+    day_number =  update_day(u, platform)
     puts "day#{day_number}"
 		# double quotation
 		script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
@@ -59,6 +66,8 @@ class ScheduleWorker
           StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
         when 'mms'
           StartDayWorker.perform_async(user.phone, platform='mms') if user.phone
+          BotWorker.perform_async(user.phone, )
+
         when 'sms'
           StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
         end
@@ -81,6 +90,7 @@ class ScheduleWorker
       if !ut
         last_story_read_ok = true
       elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
+        # if the last story wasn't sent today (has to be at least since yesterday)
         last_story_read_ok = true 
       else    
         last_story_read_ok = false
