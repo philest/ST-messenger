@@ -5,6 +5,7 @@ class StartDayWorker
   #   10
   # end
 
+  # Why does this function exist? Stupid! 
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
     return user.state_table.last_story_read?
@@ -49,9 +50,7 @@ class StartDayWorker
       #TODO: email?
       puts 'could not find scripts :('
     end
-
 	end
-
 end
 
 class ScheduleWorker
