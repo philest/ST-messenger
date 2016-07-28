@@ -5,7 +5,7 @@ class StartDayWorker
   #   10
   # end
 
-  # Why does this function exist? Stupid! 
+  # Why does this function exist? Wasteful! Stupid!
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
     return user.state_table.last_story_read?
@@ -65,8 +65,6 @@ class ScheduleWorker
           StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
         when 'mms'
           StartDayWorker.perform_async(user.phone, platform='mms') if user.phone
-          BotWorker.perform_async(user.phone, )
-
         when 'sms'
           StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
         end

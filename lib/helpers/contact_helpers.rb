@@ -62,9 +62,6 @@ module ContactHelpers
         text: text
       }
     )
-    User.where(phone:phone).first.state_table.update(
-                        last_story_read_time:Time.now.utc, 
-                        last_story_read?: true)
   end
 
   # perhaps mms should also use the send_story function...
@@ -75,10 +72,6 @@ module ContactHelpers
         img_url: img_url
       }
     )
-    User.where(phone:phone).first.state_table.update(
-                        last_story_read_time:Time.now.utc, 
-                        last_story_read?: true)
-
   end
 
   def email_admins(subject, body)
