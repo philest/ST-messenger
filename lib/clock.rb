@@ -33,7 +33,6 @@ Dir[models_dir].each {|file| require_relative file }
 require_relative 'workers'
 
 module Clockwork
-
     #
     # send out stories every sched_pd seconds
     #

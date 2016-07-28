@@ -484,23 +484,29 @@ module Birdv
           puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
           return
         end
-        HTTParty.post(
-          "#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
+        HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
           body: {
             recipient: phone,
             text: text
           }
         )
+        User.where(phone:phone).first.state_table.update(
+                            last_story_read_time:Time.now.utc, 
+                            last_story_read?: true)
       end
 
+      # perhaps mms should also use the send_story function...
       def send_mms( phone, img_url )
-        HTTParty.post(
-          "#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
+        HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
           body: {
             recipient: phone,
             img_url: img_url
           }
         )
+        User.where(phone:phone).first.state_table.update(
+                            last_story_read_time:Time.now.utc, 
+                            last_story_read?: true)
+
       end
 
 
