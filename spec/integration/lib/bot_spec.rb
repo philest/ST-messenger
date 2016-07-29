@@ -558,6 +558,7 @@ describe 'TheBot' do
         end
       end
 
+
       # TODO: reod this test at some point
       # it 'deals with curriculum version correctly', versioning:true do
       #   # hokay, so everyone should start on day 901.
@@ -663,6 +664,7 @@ describe 'TheBot' do
       #     end       
       #   end   
       # end # END it 
+
 
     end
 

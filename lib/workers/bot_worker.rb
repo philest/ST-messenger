@@ -58,7 +58,7 @@ class BotWorker
 				# looking for updating user's story#/storyday? well it's 
 				# actually a clock worker behavior lol sorry
 			else
-				puts "we've seen this button before..."
+				puts "WE SHOULD NEVER GO HERE!... (look in bot_worker.rb)"
 
 			end
 
