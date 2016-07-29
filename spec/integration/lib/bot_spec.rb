@@ -35,6 +35,12 @@ describe 'TheBot' do
   include RSpecMixin
 
   before(:all) do
+    @time = Time.new(2016, 6, 16, 23, 0, 0, 0) # with 0 utc-offset
+    @time_range = 10.minutes.to_i
+    @interval = @time_range / 2.0               
+    
+    Timecop.freeze(@time)
+
     @sw =  ScheduleWorker.new
 
     Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
@@ -162,11 +168,7 @@ describe 'TheBot' do
       # DatabaseCleaner.clean
       
 
-      @time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
-      @time_range = 10.minutes.to_i
-      @interval = @time_range / 2.0               
-      
-      Timecop.freeze(@time)
+
 
       Sidekiq::Worker.clear_all
       
@@ -219,7 +221,7 @@ describe 'TheBot' do
       
       @num_users = 0
 
-      @get_id = lambda do (@num_users += 1).to_s end
+      @get_id = lambda do return (@num_users += 1).to_s end
 
 
       @num_ontime = 7
@@ -229,7 +231,7 @@ describe 'TheBot' do
 
       @start_time = @time
 
-      Timecop.freeze(@start_time)
+      Timecop.freeze(@start_time - 12.days)
 
 
       # On-time!!!!  (should be 7 users)
@@ -264,18 +266,21 @@ describe 'TheBot' do
 
       @num_users.times do |x|
         User.where(fb_id:(x+1).to_s).first.update(curriculum_version: @test_curriculum)
+        puts "User fb id: #{User.where(fb_id:(x+1).to_s).first.fb_id}, num users : #{@num_users}"
       end
 
+      Timecop.freeze(@start_time)
     end
 
     context 'when everyone is on day 901' do
       before(:all) do
         @starting_day =  901
+        @num_users = @num_users
       end
 
       before(:each) do
         @num_users.times do |x|
-          User.where(fb_id:(x+1).to_s).first.state_table.update(story_number: @starting_day)
+          u = User.where(fb_id:(x+1).to_s).first.state_table.update(story_number: @starting_day)
         end
       end
 
@@ -297,19 +302,25 @@ describe 'TheBot' do
         end
       end
 
-      it 'sends next days stories to folks who have read previous days story' do
+      it 'sends next days stories to folks who have read previous days story', simple:true do
+        
+        puts "TODAY IS #{Time.now.wday}"
         # 4 ppl read yesterda (story 900)
-        4.times do |i| 
-          User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
+        Timecop.freeze(@start_time-1.day)
+        4.times do |i|
+          User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true, last_story_read_time: Time.now)
         end
 
+
         
-        allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
-        end
+        # allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        #   original_method.call(*args, [1,3,5], &block)
+        # end
 
         # 1 person who is not scheduled but also read yesterday
         User.all.last.state_table.update(last_story_read?: true)
+
+        Timecop.freeze(@start_time)
         
         expect(@s900).not_to receive(:run_sequence)       
         expect(@s901).to     receive(:run_sequence).exactly(3).times
@@ -334,15 +345,18 @@ describe 'TheBot' do
         end       
 
         
-        allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
-        end
+        # allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        #   puts "OG ARGS #{args}"
+        #   original_method.call(*args, &block)
+        # end
 
         expect(@s900).not_to receive(:run_sequence)       
         expect(@s901).to     receive(:run_sequence).with(anything(), :init).exactly(3).times
         expect(@s902).to     receive(:run_sequence).with(anything(), :init).exactly(4).times
         expect(@s903).not_to receive(:run_sequence)
         expect(@s904).not_to receive(:run_sequence)
+
+        puts Time.now.wday
 
         # run the the clock
         expect{
@@ -357,9 +371,6 @@ describe 'TheBot' do
         # and users 1-4 have gotten :init from s902. What we're 
         # gonna do now is have user's {[2,4]U[6]} press the 
         # story buttons from their respective days.
-
-
-
         b1 = @make_story_btn_press.call('2', @s902, :scratchstory)
         b2 = @make_story_btn_press.call('3', @s902, :scratchstory)
         b3 = @make_story_btn_press.call('4', @s902, :scratchstory)
@@ -695,9 +706,9 @@ describe 'TheBot' do
 
       expect(StateTable.where(last_story_read?:true).count).to eq(@num_ontime-1)
 
-      # move to Monday! Stories be coming out!
+      # move to next Thrusday! Stories be coming out!
       # we would expect fb_ids [1,7] to be recieving something
-      Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))        
+      Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))        
       
       expect{
         Sidekiq::Testing.fake! do

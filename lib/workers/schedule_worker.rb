@@ -48,8 +48,24 @@ class ScheduleWorker
 
   attr_accessor :schedules
 
-  @schedules = 
-  [
+  def self.def_schedules
+    return [
+      { 
+        start_day: 1,
+        days: [4] 
+      },
+      {
+        start_day: 3,
+        days: [1,4]
+      },
+      {
+        start_day: 6,
+        days: [1,2,4]
+      }
+    ]
+  end
+
+  @schedules =  [
     { 
       start_day: 1,
       days: [4] 
@@ -66,17 +82,29 @@ class ScheduleWorker
 
   # very inneficient, redo some day
   def get_schedule(story_number)
-    @schedules.each do |s|
+    if @sched
+      sched = @sched
+    else
+      sched = self.class.def_schedules
+    end
+    last = []
+    sched.each do |s|
+      last = s[:days]
       if  s[:start_day] >= story_number
-        return s[:days]
+        return last
       end
     end
+    return last
   end
 
 
   def perform(range=5.minutes.to_i)
 		filter_users(Time.now, range).each do |user|
+
+      puts user.fb_id
+      puts user.state_table.story_number
       if user.fb_id
+        puts 'feeccckkk'
         StartDayWorker.perform_async(user.fb_id)
       end
 		end
@@ -86,31 +114,38 @@ class ScheduleWorker
   # range = range of valid times
   def filter_users(time, range)
     today_day = Time.now.utc
-  	filtered = User.all.select do |user|
-  		# TODO - exception handling if the timezone isn't the correct name
+    alladem = User.all
+    puts alladem.class 
+    puts alladem.size
+    alladem.each do |x|
+      puts "#fb_id: #{x.fb_id}, reg_id: #{x.id}"
+    end
 
-      ut =  user.state_table.last_story_read_time
+    begin
+  	  filtered = alladem.select do |user|
+    		# TODO - exception handling if the timezone isn't the correct name
 
-      puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
-      puts ""
+        ut =  user.state_table.last_story_read_time
+        # puts "RELEVANT: user_last_read #{Time.at(ut).to_date}, comp: #{Time.at(today_day).to_date}"
+        if !ut
+          puts "nil! #{ut.class}"
+          last_story_read_ok = true
+        elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
+          last_story_read_ok = true 
+        else    
+          last_story_read_ok = false
+        end
 
-      if !ut
-        last_story_read_ok = true
-      elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
-        last_story_read_ok = true 
-      else    
-        last_story_read_ok = false
-      end
-
-      # ensure is within_time_range and that last story read wasn't today!
-  		within_time_range(user, range) && last_story_read_ok
-  	end
-  rescue => e
-    puts "#{e.message}\nsomething went wrong, not filtering users\n#{e.backtrace}"
-    filtered = []
-  ensure
-    puts "filtered = #{filtered.to_s}"
-    return filtered
+        # ensure is within_time_range and that last story read wasn't today!
+    		within_time_range(user, range) && last_story_read_ok
+    	end
+    rescue => e
+      puts "#{e.message}\nsomething went wrong, not filtering users\n#{e.backtrace}"
+      filtered = []
+    ensure
+      puts "filtered = #{filtered.to_s}"
+      return filtered
+    end
   end
 
   # is this our student? 
@@ -133,6 +168,8 @@ class ScheduleWorker
 
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
+
+    puts "KEKFEFKFKEFK"
   	# TODO: ensure that Time.now is in UTC time
   	# server timein UTC
     now                     = Time.now.utc # TODO: do I need to convert to tz?
@@ -141,7 +178,6 @@ class ScheduleWorker
 		# DST-adjusted user time
 		user_local              = adjust_user_tz(user)
 		user_utc_seconds	      = user_local.utc.seconds_since_midnight
-    puts get_local_time(user_local, user.timezone)
     # TODO: maybe move the following outside of the function so we don't have to 
     # compute some part over and over again:
 		user_day 	      = get_local_day(now, user) # current day of the week for user according to server
@@ -151,22 +187,23 @@ class ScheduleWorker
 
     user_sched      = get_schedule(user_story_num)
     
-    puts "today is #{user_day}"
+    puts "USER DAY!! #{user_day} USER SCHED: #{user_sched}"
     valid_for_user  = user_sched.include?(user_day)
 
     # this deals with the edge case of being on story 1:
     if (user_story_num == 1)
+      puts "NOT HERE"
+      lstrt = user.state_table.last_story_read_time
                              # TODO: double-check this logic...
-      last_story_read_time = get_local_time(user.state_table.last_story_read_time, user.timezone)
-      days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
-      puts "days_elapsed!!!!!!! #{days_elapsed}"
-      if days_elapsed < 7
-        valid_for_user = false
+      if !lstrt.nil?
+      last_story_read_time = get_local_time(lstrt, user.timezone)
+      
+        days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
+        if days_elapsed < 7
+          valid_for_user = false
+        end
       end
     end
-
-    puts "VALID???? #{valid_for_user}"
-      
     
 
     # friends get it three days a week
@@ -174,7 +211,8 @@ class ScheduleWorker
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
-			if now_seconds >= user_utc_seconds
+			puts "comp: #{now_seconds}, user: #{user_utc_seconds}"
+      if now_seconds >= user_utc_seconds
 				return (now_seconds - user_utc_seconds <= range)
 			else
 				return (user_utc_seconds - now_seconds <  range)
@@ -198,11 +236,27 @@ class ScheduleWorker
     return time.utc.in_time_zone(tz)
   end
 
+  # TODO: fix specs
+  def adjust_tz(user)
+    adjust_user_tz(user)
+  end
 
- 
- 
   def adjust_user_tz(user)
-    tz = user.timezone
+
+    #TODO comment
+    utz = user.timezone
+    if (utz.nil?)
+      tz = "Eastern Time (US & Canada)" #TODO: add spec for default Eastern
+    elsif (utz.is_a? String)
+      if utz.empty?
+        tz = "Eastern Time (US & Canada)"
+      else
+        tz = utz
+      end
+    else
+      tz = utz
+    end
+
     enroll_time = get_local_time(user.enrolled_on, tz)
     server_time = get_local_time(Time.now.utc, tz)
     

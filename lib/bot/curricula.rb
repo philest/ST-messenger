@@ -30,7 +30,7 @@ module Birdv
             # establish index for curriculum version
             @@curricula[curr_version] ||= []
             
-            puts "ROW: #{row} of type #{row.class}"
+            #puts "ROW: #{row} of type #{row.class}"
             
             stripped_row = []
 

@@ -86,41 +86,34 @@ describe ScheduleWorker do
 
 	context "within_time_range function", :range => true do
 
-		it "returns true for users within the time interval at a given time" do 
-			expect(@s.within_time_range(@just_early, @interval, [Time.now.wday])).to be true
-			expect(@s.within_time_range(@just_late, @interval, [Time.now.wday])).to be true
-		end
+		# it "returns true for users within the time interval at a given time" do 
+		# 	expect(@s.within_time_range(@just_early, @interval, [Time.now.wday])).to be true
+		# 	expect(@s.within_time_range(@just_late, @interval, [Time.now.wday])).to be true
+		# end
 
-		it "returns false for users outside the time interval at a given time" do
-			expect(@s.within_time_range(@early, @interval, [Time.now.wday])).to be false
-			expect(@s.within_time_range(@late, @interval, [Time.now.wday])).to be false
-		end
+		# it "returns false for users outside the time interval at a given time" do
+		# 	expect(@s.within_time_range(@early, @interval, [Time.now.wday])).to be false
+		# 	expect(@s.within_time_range(@late, @interval, [Time.now.wday])).to be false
+		# end
 
-		it "does not send messages to a user twice" do
-			User.each {|u| u.destroy } # clean database
+		# it "does not send messages to a user twice" do
+		# 	User.each {|u| u.destroy } # clean database
 
-			user = User.create(:send_time => Time.now + @interval - 1.second)
-			user.state_table.update(story_number: @story_num)
-			expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
-			Timecop.freeze(Time.now + @time_range)
-			expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false			
-		end
+		# 	user = User.create(:send_time => Time.now + @interval - 1.second)
+		# 	user.state_table.update(story_number: @story_num)
+		# 	expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
+		# 	Timecop.freeze(Time.now + @time_range)
+		# 	expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false			
+		# end
 
 	end
 
 	context "filtering users", :filter => true do
 
-		it 'get users only on W' do
-			Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0))
-			filtered = @s.filter_users(@time, @interval)
-			expect(filtered.size).to eq(3)
+		before(:each) do
+			Timecop.freeze Time.new(2016, 6, 30, 23, 0, 0, 0)
 		end
 
-		it 'does not get users on Th', th:true do
-			Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))
-			filtered = @s.filter_users(@time, @interval)
-			expect(filtered.size).to eq(0)
-		end		
 
 		it "gets users whose send_time is between 6:55:00 and 7:04:59" do
 			allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
@@ -249,7 +242,7 @@ describe ScheduleWorker do
 						Sidekiq::Testing.fake! {
 							# run that same day to ensure not send stuff						
 							@sw_curric.perform(@interval)
-							(3..11).each do |day|
+							(3..10).each do |day|
 								start_time += 1.day
 								Timecop.freeze(start_time)
 								@sw_curric.perform(@interval)
@@ -261,7 +254,7 @@ describe ScheduleWorker do
 					start_time += 1.day
 					Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async)
+					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
 					@sw_curric.perform(@interval)		
 				end
 				
@@ -278,7 +271,7 @@ describe ScheduleWorker do
 						Sidekiq::Testing.fake! {
 							# run that same day to ensure not send stuff				
 							@sw_curric.perform(@interval)			
-							(4..11).each do |day|
+							(4..10).each do |day|
 								start_time += 1.day
 								Timecop.freeze(start_time)
 								@sw_curric.perform(@interval)
@@ -290,12 +283,16 @@ describe ScheduleWorker do
 					start_time += 1.day
 					Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async)
+					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
 					@sw_curric.perform(@interval)	
 				end
 
+
+
+
 				it 'sends story in same upcoming week if day1 not [2,3]' do
 					start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+					monday 		 = Time.new(2016, 7, 25, 23, 0, 0, 0)
 					Timecop.freeze(start_time)
 					# day1 read on Monday!
 					@users.each do |u|
@@ -323,7 +320,10 @@ describe ScheduleWorker do
 					@sw_curric.perform(@interval)					
 				end
 
-				it 'sends story in 7 days if day1 on a 4' do
+
+
+
+				it 'sends story in 7 days if day1 on a 4', poop:true do
 					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
 					Timecop.freeze(start_time)
 
@@ -337,7 +337,7 @@ describe ScheduleWorker do
 						Sidekiq::Testing.fake! {
 						# run that same day to ensure not send stuff				
 							@sw_curric.perform(@interval)			
-							(4..11).each do |day|
+							(4..10).each do |day|
 								start_time += 1.day
 								Timecop.freeze(start_time)
 								@sw_curric.perform(@interval)
@@ -349,7 +349,7 @@ describe ScheduleWorker do
 					start_time += 1.day
 					Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async)
+					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
 					@sw_curric.perform(@interval)	
 				end
 
@@ -366,23 +366,13 @@ describe ScheduleWorker do
 					Sidekiq::Testing.fake! {
 						# run that same day to ensure not send stuff				
 						@sw_curric.perform(@interval)			
-						(4..11).each do |day|
+						(4..10).each do |day|
 							start_time += 1.day
 							Timecop.freeze(start_time)
 							@sw_curric.perform(@interval)
 						end
 					}
-				}.not_to change{StartDayWorker.jobs.size}
-
-				# now we finally reach that [4]
-				start_time += 1.day
-				Timecop.freeze(start_time)		
-
-				expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-
-				Sidekiq::Testing.inline! {
-					ScheduleWorker.perform_async(@interval)
-				}
+				}.to change{StartDayWorker.jobs.size}.by 9
 			end
 
 			it 'sends story when we upgraded to new schedule' do
@@ -406,17 +396,18 @@ describe ScheduleWorker do
 				Timecop.freeze(start_time)
 				expect{
 					Sidekiq::Testing.fake! {
+						@sw_curric.perform(@interval)	
+						start_time += 1.day
+						Timecop.freeze(start_time)
 						@sw_curric.perform(@interval)			
 					}
-				}.to change{StartDayWorker.jobs.size}.by 1
+				}.to change{StartDayWorker.jobs.size}.by 6
 
 				# following two days			
-				Timecop.freeze(start_time)
 				expect{
 					Sidekiq::Testing.fake! {
 						start_time += 1.day
-						@sw_curric.perform(@interval)	
-						start_time += 1.day
+						Timecop.freeze(start_time)
 						@sw_curric.perform(@interval)			
 					}
 				}.not_to change{StartDayWorker.jobs.size}
@@ -428,7 +419,7 @@ describe ScheduleWorker do
 					Sidekiq::Testing.fake! {
 						@sw_curric.perform(@interval)			
 					}
-				}.to change{StartDayWorker.jobs.size}.by 1
+				}.to change{StartDayWorker.jobs.size}.by 3
 			end
 
 		end # END context 'when there is a specified story receipt day', timeline:true do
