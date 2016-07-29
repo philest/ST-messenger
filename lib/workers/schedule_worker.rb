@@ -104,7 +104,6 @@ class ScheduleWorker
       puts user.fb_id
       puts user.state_table.story_number
       if user.fb_id
-        puts 'feeccckkk'
         StartDayWorker.perform_async(user.fb_id)
       end
 		end
@@ -117,9 +116,6 @@ class ScheduleWorker
     alladem = User.all
     puts alladem.class 
     puts alladem.size
-    alladem.each do |x|
-      puts "#fb_id: #{x.fb_id}, reg_id: #{x.id}"
-    end
 
     begin
   	  filtered = alladem.select do |user|
@@ -128,7 +124,6 @@ class ScheduleWorker
         ut =  user.state_table.last_story_read_time
         # puts "RELEVANT: user_last_read #{Time.at(ut).to_date}, comp: #{Time.at(today_day).to_date}"
         if !ut
-          puts "nil! #{ut.class}"
           last_story_read_ok = true
         elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
           last_story_read_ok = true 
@@ -166,10 +161,24 @@ class ScheduleWorker
     end
   end
 
+  def is_us?(user)
+    fname = user.first_name
+    lname = user.last_name
+
+    if    (fname == 'Aubrey')
+      return true
+    elsif (fname =="David" && lname == "McPeek")
+      return true
+    elsif (fname =="Phil"|| fname == "Philip" && lname == "Esterman")
+      return true
+    else
+      return false
+    end
+  end
+
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
 
-    puts "KEKFEFKFKEFK"
   	# TODO: ensure that Time.now is in UTC time
   	# server timein UTC
     now                     = Time.now.utc # TODO: do I need to convert to tz?
@@ -184,15 +193,13 @@ class ScheduleWorker
             
     user_curric     = user.curriculum_version
     user_story_num  = user.state_table.story_number
-
+ 
     user_sched      = get_schedule(user_story_num)
     
-    puts "USER DAY!! #{user_day} USER SCHED: #{user_sched}"
     valid_for_user  = user_sched.include?(user_day)
 
     # this deals with the edge case of being on story 1:
     if (user_story_num == 1)
-      puts "NOT HERE"
       lstrt = user.state_table.last_story_read_time
                              # TODO: double-check this logic...
       if !lstrt.nil?
@@ -210,8 +217,10 @@ class ScheduleWorker
     friend_days = [1,3,5]
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
-    if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
-			puts "comp: #{now_seconds}, user: #{user_utc_seconds}"
+    # we get it all day erryday
+    valid_for_mcesterwahl = is_us?(user)
+
+    if (valid_for_user || valid_for_friend || valid_for_mcesterwahl) # just wednesday for now (see default arg)
       if now_seconds >= user_utc_seconds
 				return (now_seconds - user_utc_seconds <= range)
 			else

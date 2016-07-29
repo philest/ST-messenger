@@ -230,6 +230,8 @@ describe ScheduleWorker do
 					end
 				end
 
+				# TODO: write a test that ensure the get_schedule thing behaves proper
+
 				it 'sends next story on [4] of next week if day1 on 2' do
 					start_time = Time.new(2016, 7, 26, 23, 0, 0, 0)
 					Timecop.freeze(start_time)
@@ -352,8 +354,7 @@ describe ScheduleWorker do
 					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
 					@sw_curric.perform(@interval)	
 				end
-
-			end
+			end  # END describe 'day 1 behaviour', day1:true do
 
 			# note that these guys are all on day2
 			it 'sends out stories on the specified day' do
@@ -375,8 +376,44 @@ describe ScheduleWorker do
 				}.to change{StartDayWorker.jobs.size}.by 9
 			end
 
+
+			it 'sends to us but not others' do
+
+				local_users = @users
+				aub = User.create(first_name: 'Aubrey',
+													last_name:  'Wahl',
+													fb_id: 			'11') 
+				vid = User.create(first_name: 'David',
+													last_name:  'McPeek',
+													fb_id: 			'12') 
+				fil = User.create(first_name: 'Phil',
+													last_name:  'Esterman',
+													fb_id: 			'13') 
+				local_users << aub
+				local_users << vid
+				local_users << fil
+
+				local_users.each do |u|
+					u.state_table.update(story_number:6)
+				end
+				
+				# freeze on a Sunday! no one except us should get them stories!
+				start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+				Timecop.freeze(start_time)
+
+				expect{
+					Sidekiq::Testing.fake! {
+						@sw_curric.perform(@interval)			
+					}
+				}.to change{StartDayWorker.jobs.size}.by 3
+
+				# TODO: check the specifics?
+
+
+			end
+
+
 			it 'sends story when we upgraded to new schedule' do
-      	# users = User.all
 				@users.each do |u|
 					u.state_table.update(story_number:6)
 				end
