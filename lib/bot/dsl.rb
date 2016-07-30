@@ -3,6 +3,8 @@ require_relative '../helpers/contact_helpers'
 require_relative '../workers/bot_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
+require_relative 'fb_dsl.rb'
+require_relative 'mms_dsl.rb'
 
 module Birdv
   module DSL
@@ -22,18 +24,6 @@ module Birdv
         @@scripts
       end
 
-      def sms_scripts 
-        @@scripts['sms']
-      end
-
-      def mms_scripts 
-        @@scripts['mms']
-      end
-
-      def self.fb_scripts
-        @@scripts['fb']
-      end
-
       def self.clear_scripts
         @@scripts = {
           'fb' => {},
@@ -41,7 +31,6 @@ module Birdv
           'sms' => {}
         }
       end 
-
     end
   end
 end
@@ -62,13 +51,48 @@ module Birdv
         @platform = platform
         @num_sequences = 0
         day          = script_name.scan(/\d+/)[0]
-        
+
+        # modularization...
+        if platform == 'fb'
+          self.extend(FB)
+        elsif platform == 'mms'
+          self.extend(SMS)
+        end
+
         # TODO: something about this
         @script_day = !day.nil? ? day.to_i : 0
 
         instance_eval(&block)
         return self
       end
+
+      # Universal methods:
+      # register_sequence
+      # sequence_seen?
+      # assert_keys
+      # day
+      # script_payload
+      # run_sequence
+      # delay
+      # translate
+      # story
+
+      # FB methods that should GET THE FUCK OUTTA HERE!
+      # register_fb_object
+      # button
+      # process_txt
+
+      # problems with these fb methods
+      # register_fb_object
+      #   @fb_objects instance variable
+      # button
+      #   @fb_objects instance var
+      # story
+      #   @script_day (easy, pass as parameter of function)
+      # process_txt
+      #   @script_day (pass as parameter, easy)
+
+
 
       def register_fb_object(obj_key, fb_obj)
         puts 'WARNING: overwriting object #{obj_key.to_s}' if @fb_objects.key?(obj_key.to_sym)
@@ -123,105 +147,20 @@ module Birdv
         @script_day = number
       end
 
-
-      def url_button(title, url)
-        return { type: 'web_url', title: title, url: url }
-      end
-
       def script_payload(sequence_name)
         puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 
-      def postback_button(title, payload)
-        return { type: 'postback', title: title, payload: payload.to_s }
-      end
 
       # name_codes has moved to contact_helpers.rb
 
-      def template_generic(btn_name, elemnts)
-        tjson = { 
-          message: {
-            attachment: {
-              type: 'template',
-              payload: {
-                template_type: 'generic',
-                elements: elemnts
-              }
-            }
-          }
-        }
-        register_fb_object(btn_name, tjson)
-        return tjson
-      end
-
-
-
-      def button_normal(args = {})
-        assert_keys([:name, :window_text, :buttons], args)
-        window_txt = args[:window_text]
-        btns       = args[:buttons]
-        tjson = {
-          message:  {
-            attachment: {
-              type: 'template',
-              payload: {
-                template_type: 'button',
-                text: window_txt,
-                buttons: btns
-              }
-            }
-          }
-        }
-        register_fb_object(args[:name],tjson)
-        return tjson
-      end
-      
-
-      def button_story(args = {})
-        default = {subtitle:'', buttons:[]}
-        assert_keys([:name, :image_url, :title], args)
-        args      = default.merge(args)
-        
-        title     = args[:title]
-        img_url   = args[:image_url]
-        subtitle = args[:subtitle]
-
-        elmnts = {title: title, image_url: img_url, subtitle: subtitle}
-
-        # if buttons are supplied, set 'elements' field
-        if !args[:buttons].empty?
-          elmnts[:buttons]=args[:buttons]
-        else
-          puts "WARNING: no buttons in yo' button_story"
-        end
-
-        # return json hash
-        template_generic(args[:name], [elmnts])
-      end
-
-      def get_curriculum_version(recipient)
-        user = User.where(fb_id: recipient).first
-        if user
-          return user.curriculum_version
-        else # default to the 0th version
-          return 0
-        end
-      end
-
-      def get_locale(recipient)
-        user = User.where(fb_id: recipient).first
-        if user
-          return user.locale
-        else # default to the 0th version
-          return 'en'
-        end
-      end
 
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
 
+      # how do we abstract this?
       def run_sequence(recipient, sqnce_name)
         begin
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
@@ -254,212 +193,57 @@ module Birdv
         end
       end
 
-      def text(args = {})
-        assert_keys([:text], args)     
-        return {message: {text:args[:text]}}
-      end
-
-
-      def picture(args = {})
-        assert_keys([:url], args)
-        return {message: {
-                  attachment: {
-                    type: 'image',
-                    payload: {
-                      url: args[:url]
-                    }
-                  }
-                }
-              }
-      end
 
       def delay(recipient, sequence_name, time_delay)
         BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
       end
 
-
-      def send_story(args = {})
-        assert_keys([:library, :title, :num_pages, :recipient, :locale], args)
-        library     = args[:library]
-        title       = args[:title]
-        num_pages   = args[:num_pages]
-        recipient   = args[:recipient]
-        locale      = args[:locale]
-        base = STORY_BASE_URL
-        locale_url_seg = (locale == 'es') ? 'es/' : ''
-        num_pages.times do |i|
-          url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
-          puts "sending #{url}!"
-          fb_send_json_to_user(recipient, picture(url:url))
-        end
-      end
-
-
-      # TODO: should I delete args? not used
       def story(args={})
-        if !args.empty?
-          puts "(DSL.send.story) WARNING: you don't need to set any args when sending a story. It doesn't do anything!"
-        end
+        create_story(args, @script_day)
+      end
+
+
+      def send( recipient, to_send,  delay=0 )
         
-        return lambda do |recipient|
-          begin
+        case @platform
+        when 'fb'
+          # if lambda, run it! e.g. send(story(args)) 
+          if is_story?(to_send)
+            to_send.call(recipient)
 
-            version = get_curriculum_version(recipient)
-            locale  = get_locale(recipient)
+          # else, we're dealing with a hash! e.g send(text("stuff"))
+          elsif to_send.is_a? Hash
+            # gotta get the job done gotta start a new nation gotta meet my son
+            # do name_codes or process_txt for every type of object that could come through here.....
+            # 
+            usr = User.where(fb_id: recipient).first
+            fb_object = Marshal.load(Marshal.dump(to_send))
 
-            curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
+            if usr then 
+              process_txt(fb_object, recipient, usr.locale, @script_day) 
+            end
 
-            # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
-            storyinfo = curriculum[@script_day - 1]
-
-            lib, title, num_pages = storyinfo
-
-            send_story({
-              recipient:  recipient,
-              library:    lib,
-              title:      title,
-              num_pages:  num_pages.to_i,
-              locale:     locale
-            })
-            
-            # TODO: error stuff
-
-            # TODO: make this atomic somehow? slash errors
-            User.where(fb_id:recipient).first.state_table.update(
-                                        last_story_read_time:Time.now.utc, 
-                                        last_story_read?: true)
-
-          rescue => e
-            p e.message + " failed to send user with fb_id #{recipient} a story"
-            raise e
-          end         
-        end
-      end
-
-      def is_txt_button?(thing)
-        if thing[:attachment][:payload][:text].nil? or thing[:attachment][:payload][:buttons].nil?
-          return false 
-        else
-          return true 
-        end
-      rescue NoMethodError => e
-        return false
-      end
-
-      def is_story_button?(thing)
-        if thing[:attachment][:payload][:elements].nil? then false else true end
-      rescue NoMethodError => e
-        return false
-      end
-
-      def is_txt?(thing)
-        if thing[:text].nil? then false else true end
-      rescue NoMethodError => e
-        return false
-      end
-
-      def is_img?(thing)
-        if [:attachment][:type] == 'image' then true else false end
-      rescue NoMethodError => e
-        return false
-      end
-
-      def is_story?(thing)
-        if thing.is_a? Proc then true else false end
-      rescue NoMethodError => e
-        p e.message
-        return false 
-      end
-
-
-      def process_txt( fb_object, recipient, locale )
-        if locale.nil? then locale = 'en' end
-        I18n.locale = locale
-
-        translate = lambda do |str|
-
-          if str.nil? or str.empty? then 
-            return str   
+            puts "sending to #{recipient}"
+            puts fb_send_json_to_user(recipient, fb_object)
           end
 
-          trans = I18n.t str
-          return trans.is_a?(Array) ? trans[@script_day - 1] : trans
-        end
+        when 'mms'
 
-        m = fb_object[:message]
-
-        if !m.nil?
-            if is_txt?(m) # just a text message... 
-
-              m[:text] = name_codes translate.call(m[:text]), recipient
-            end
-
-            if is_txt_button?(m) # a button with text on it
-              m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
-              buttons = m[:attachment][:payload][:buttons]
-
-              buttons.each_with_index do |val, i|
-                buttons[i][:title] = translate.call( buttons[i][:title] )
-              end
-
-            end
-
-            if is_story_button?(m) # a story button, with text and pictures
-              elements = m[:attachment][:payload][:elements]
-              elements.each_with_index do |val, i|
-                elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
-                elements[i][:image_url] = translate.call(elements[i][:image_url])
-                # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
-                if elements[i][:buttons]
-                  buttons = elements[i][:buttons]
-                  buttons.each_with_index do |val, i|
-                    buttons[i][:title] = translate.call(buttons[i][:title])
-                  end
-                end
-              end
-            end
-
-            # if m[:attachment][:payload][:elements][:title] # a story button, with text and pictures
-            #   elements = m[:attachment][:payload][:elements]
-            #   translate.call()
-            # end
 
         end
 
       end
+
+
+      
+      
 
       # translate_mms has moved to contact_helpers.rb
       # send_sms has moved to contact_helpers.rb
       # send_mms has moved to contact_helpers.rb
 
 
-      def send( recipient, to_send,  delay=0 )
-        
-        # if lambda, run it! e.g. send(story(args)) 
-        if is_story?(to_send)
-          to_send.call(recipient)
 
-        # else, we're dealing with a hash! e.g send(text("stuff"))
-        elsif to_send.is_a? Hash
-          # gotta get the job done gotta start a new nation gotta meet my son
-          # do name_codes or process_txt for every type of object that could come through here.....
-          # 
-
-
-          usr = User.where(fb_id: recipient).first
-          fb_object = Marshal.load(Marshal.dump(to_send))
-
-          if usr then 
-            process_txt(fb_object, recipient, usr.locale) 
-          end
-
-          puts "sending to #{recipient}"
-          puts fb_send_json_to_user(recipient, fb_object)
-        end
-        
-        # TODO: something about this next line
-        #sleep delay if delay > 0
-      end
 
     end
   end
