@@ -90,7 +90,7 @@ def prev_unknown?(user)
   return prev_was_unknown
 end
 
-MMS_RQST = /mms\d+ \d+/i
+MMS_RQST = /sms\d+ \d+/i
 
 #
 # i.e. when user sends the bot a message.
@@ -129,9 +129,9 @@ Bot.on :message do |message|
       when MMS_RQST
         code, phone = message.text.scan(/\d+/)
         puts "code = #{code}, phone = #{phone}"
-        script = Birdv::DSL::ScriptClient.scripts['mms']["day#{code}"]
+        script = Birdv::DSL::ScriptClient.scripts['sms']["day#{code}"]
         if script
-          BotWorker.perform_async(phone, "day#{code}", :init, platform='mms')
+          BotWorker.perform_async(phone, "day#{code}", :init, platform='sms')
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end

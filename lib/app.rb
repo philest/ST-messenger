@@ -82,7 +82,7 @@ class SMS < Sinatra::Base
     else # this is a new user, enroll them in the system 
       puts "someone texted in, creating user..."
 
-      new_user = User.create(phone: phone, platform: 'mms')
+      new_user = User.create(phone: phone, platform: 'sms')
 
       # TODO: process the body text (regex)
       code_regex = /(read|leer)\s*(\d+)/i

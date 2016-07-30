@@ -36,13 +36,10 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	end
 
 	sequence 'storysequence' do |recipient|
-
 		# send out coon story
 		send recipient, story()
 
 		delay recipient, 'thanks', 23.seconds
-
-
 	end
 
 	# No button on the first day! 

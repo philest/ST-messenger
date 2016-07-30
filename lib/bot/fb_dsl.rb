@@ -262,6 +262,29 @@ module Birdv
 
       end
 
+      # the type parameter is useless here
+      def send_helper(fb_id, to_send, script_day, type)
+        # if lambda, run it! e.g. send(story(args)) 
+          if is_story?(to_send)
+            to_send.call(recipient)
+
+          # else, we're dealing with a hash! e.g send(text("stuff"))
+          elsif to_send.is_a? Hash
+            # gotta get the job done gotta start a new nation gotta meet my son
+            # do name_codes or process_txt for every type of object that could come through here.....
+            # 
+            usr = User.where(fb_id: recipient).first
+            fb_object = Marshal.load(Marshal.dump(to_send))
+
+            if usr then 
+              process_txt(fb_object, recipient, usr.locale, script_day) 
+            end
+
+            puts "sending to #{recipient}"
+            puts fb_send_json_to_user(recipient, fb_object)
+          end
+      end
+
 
 
 

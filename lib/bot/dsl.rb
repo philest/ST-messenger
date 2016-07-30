@@ -4,14 +4,13 @@ require_relative '../workers/bot_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
 require_relative 'fb_dsl.rb'
-require_relative 'mms_dsl.rb'
+require_relative 'sms_dsl.rb'
 
 module Birdv
   module DSL
     class ScriptClient
       @@scripts = {
         'fb' => {},
-        'mms' => {},
         'sms' => {}
       }
 
@@ -27,7 +26,6 @@ module Birdv
       def self.clear_scripts
         @@scripts = {
           'fb' => {},
-          'mms' => {},
           'sms' => {}
         }
       end 
@@ -55,7 +53,7 @@ module Birdv
         # modularization...
         if platform == 'fb'
           self.extend(FB)
-        elsif platform == 'mms'
+        elsif platform == 'sms'
           self.extend(SMS)
         end
 
@@ -202,48 +200,13 @@ module Birdv
         create_story(args, @script_day)
       end
 
-
-      def send( recipient, to_send,  delay=0 )
-        
-        case @platform
-        when 'fb'
-          # if lambda, run it! e.g. send(story(args)) 
-          if is_story?(to_send)
-            to_send.call(recipient)
-
-          # else, we're dealing with a hash! e.g send(text("stuff"))
-          elsif to_send.is_a? Hash
-            # gotta get the job done gotta start a new nation gotta meet my son
-            # do name_codes or process_txt for every type of object that could come through here.....
-            # 
-            usr = User.where(fb_id: recipient).first
-            fb_object = Marshal.load(Marshal.dump(to_send))
-
-            if usr then 
-              process_txt(fb_object, recipient, usr.locale, @script_day) 
-            end
-
-            puts "sending to #{recipient}"
-            puts fb_send_json_to_user(recipient, fb_object)
-          end
-
-        when 'mms'
-
-
-        end
-
+      def send( recipient, to_send, type='sms')
+        send_helper(recipient, to_send, @script_day, type='sms')
       end
-
-
-      
-      
 
       # translate_mms has moved to contact_helpers.rb
       # send_sms has moved to contact_helpers.rb
       # send_mms has moved to contact_helpers.rb
-
-
-
 
     end
   end

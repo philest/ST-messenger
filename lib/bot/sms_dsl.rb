@@ -2,7 +2,7 @@ module Birdv
 
   module DSL
 
-    module MMS
+    module SMS
 
       def get_curriculum_version(recipient)
         user = User.where(phone: recipient).first
@@ -69,7 +69,7 @@ module Birdv
       end
 
 
-             # TODO: should I delete args? not used
+      # TODO: make this MMS-specific
       def create_story(args={}, script_day)
         if !args.empty?
           puts "(DSL.send.story) WARNING: you don't need to set any args when sending a story. It doesn't do anything!"
@@ -109,6 +109,56 @@ module Birdv
           end         
         end
       end
+
+
+      def translate_sms(phone, text)
+        usr = User.where(phone: phone).first
+        I18n.locale = usr.locale
+
+        if text.nil? or text.empty? then 
+          return text   
+        end
+
+        trans = I18n.t text
+        if trans.is_a? Array
+          return name_codes trans[@script_day - 1], phone 
+        else
+          return names_codes trans, phone
+        end
+        
+      rescue NoMethodError => e
+        p e.message + " usr doesn't exist, can't translate"
+        return false
+      end
+
+
+      def send_helper(phone, to_send, script_day, type)
+        # create a story() function for mms, which incorporates delays.
+        case type
+        when 'sms'
+
+          text = translate_sms( phone, to_send )
+          if text == false
+            puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
+            return
+          end
+          HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
+            body: {
+              recipient: phone,
+              text: text
+            }
+          )
+
+        when 'mms'
+          HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
+            body: {
+              recipient: phone,
+              img_url: to_send
+            }
+          )
+        end
+      end
+
 
 
 

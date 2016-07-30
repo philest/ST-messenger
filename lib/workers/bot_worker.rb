@@ -26,7 +26,7 @@ class BotWorker
           # open DB connection to user
           u = User.where(fb_id:recipient).first   
 
-        when 'mms', 'sms'
+        when 'sms'
           puts "looking for #{recipient} phone"
           u = User.where(phone:recipient).first
           if u.nil? then return end

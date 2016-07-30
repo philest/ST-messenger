@@ -63,8 +63,6 @@ class ScheduleWorker
         case user.platform
         when 'fb'
           StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
-        when 'mms'
-          StartDayWorker.perform_async(user.phone, platform='mms') if user.phone
         when 'sms'
           StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
         end
