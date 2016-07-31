@@ -1,13 +1,14 @@
 es:
   hello: "hola"
   user_response:
-    help:   "¡Hola, este es la Hora de Cuentos! Ayudamos a su maestro envía cuentos nocturnas gratuitas.\n\n - Para detener, respuesta 'parada'\n - Para obtener ayuda, póngase en contacto 561-212-5831"
-    stop:   "¡Bien, usted deja de recibir mensajes! Si desea libros gratuitos de nuevo sólo entran en 'Ir'."
+    help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con 'ALTO'\n - Para ayuda, póngase en contacto: 561-212-5831"
+    stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
     thanks: "De nada :)"
-    robot:  "¡Hola __PARENT__! Hora de Cuentos es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
-    default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
+    robot:  "¡Hola __PARENT__! StoryTime es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
+    default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto. Si necesitas ayuda, escribe 'ayuda'."
   scripts:
     teacher_intro:
+<<<<<<< HEAD
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer cuento gratis! :)"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otro cuento para :)"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
@@ -16,6 +17,16 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
+=======
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrutes."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para perpara __CHILD__ para el kinder."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+>>>>>>> 1ee3666f7c26b4aef08445694a390bb39da374b3
     buttons:
       story_img_url:
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
@@ -30,6 +41,7 @@ es:
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
 
       window_text: 
+<<<<<<< HEAD
         - "Enviaré otro cuento la próxima semana. ¡Los dos están haciendo muy bien! :)"
         - "Enviaré otro cuento la próxima semana :)"
         - "Enviaré otro cuento la próxima semana :)"
@@ -50,6 +62,28 @@ es:
         - "¡Su siguiente cuento es muy pronto!"
         - "¡Su siguiente cuento es muy pronto!"
       tap: "Toque aquí!"
+=======
+        - "Enviaré otro cuento mañana por la noche. ¡Están leyendo muy bien! :)"
+        - "Enviaré otro cuento mañana por la noche. ¡Van muy bien! :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+      title:
+        - "Vamos a leer el cuento nuevo."
+        - "Vamos a leer el cuento nuevo."
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+      tap: "¡Pulse aquí!"
+>>>>>>> 1ee3666f7c26b4aef08445694a390bb39da374b3
       thanks: "¡Gracias!"
       welcome: "De nada :)"
 

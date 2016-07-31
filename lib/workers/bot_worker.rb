@@ -34,10 +34,10 @@ class BotWorker
 			last_sequence_seen = u.state_table.last_sequence_seen
 
 			# check if the sequence request > last sequence seen in DSL ordering
-			sequence_seen 		 = s.sequence_seen?(sequence, last_sequence_seen)
+			sequence_seen 		 = false #s.sequence_seen?(sequence, last_sequence_seen)
 
 													 # user story# \leq current request AND not seen the sequence?
-			numbers_check_out  = u.state_table.story_number <= s.script_day    && !sequence_seen  
+			numbers_check_out  = true#u.state_table.story_number <= s.script_day    && !sequence_seen  
 
 
 			Sidekiq.logger.warn numbers_check_out ? "#{recipient} not yet seen #{sequence}" : "#{recipient} already saw #{sequence}"
@@ -58,7 +58,7 @@ class BotWorker
 				# looking for updating user's story#/storyday? well it's 
 				# actually a clock worker behavior lol sorry
 			else
-				puts "we've seen this button before..."
+				puts "WE SHOULD NEVER GO HERE!... (look in bot_worker.rb)"
 
 			end
 

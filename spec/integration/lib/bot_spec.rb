@@ -35,6 +35,12 @@ describe 'TheBot' do
   include RSpecMixin
 
   before(:all) do
+    @time = Time.new(2016, 6, 16, 23, 0, 0, 0) # with 0 utc-offset
+    @time_range = 10.minutes.to_i
+    @interval = @time_range / 2.0               
+    
+    Timecop.freeze(@time)
+
     @sw =  ScheduleWorker.new
 
     Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
@@ -162,11 +168,7 @@ describe 'TheBot' do
       # DatabaseCleaner.clean
       
 
-      @time = Time.new(2016, 6, 24, 23, 0, 0, 0) # with 0 utc-offset
-      @time_range = 10.minutes.to_i
-      @interval = @time_range / 2.0               
-      
-      Timecop.freeze(@time)
+
 
       Sidekiq::Worker.clear_all
       
@@ -219,7 +221,7 @@ describe 'TheBot' do
       
       @num_users = 0
 
-      @get_id = lambda do (@num_users += 1).to_s end
+      @get_id = lambda do return (@num_users += 1).to_s end
 
 
       @num_ontime = 7
@@ -229,7 +231,7 @@ describe 'TheBot' do
 
       @start_time = @time
 
-      Timecop.freeze(@start_time)
+      Timecop.freeze(@start_time - 12.days)
 
 
       # On-time!!!!  (should be 7 users)
@@ -237,16 +239,16 @@ describe 'TheBot' do
       # 
       5.times {
         @on_time_users  << User.create(fb_id: @get_id.call, 
-                                       send_time: @start_time, first_name: 'David', last_name: 'McPeek',
+                                       send_time: @start_time, first_name: 'Davidfake', last_name: 'McPeek',
                                        curriculum_version: @test_curriculum)
       }
 
       # 6:55:00pm, just early enough
       @on_time_users << User.create(fb_id: @get_id.call, 
-                                    send_time: @start_time - @interval, first_name: 'David', last_name: 'McPeek',
+                                    send_time: @start_time - @interval, first_name: 'Davidfake', last_name: 'McPeek',
                                     curriculum_version: @test_curriculum)
       # 7:04:59pm, almost late
-      @on_time_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
+      @on_time_users << User.create(fb_id: @get_id.call, first_name: 'Davidfake', last_name: 'McPeek',
                                     send_time: @start_time + (@interval-1.minute) + 59.seconds, 
                                     curriculum_version: @test_curriculum)
 
@@ -254,28 +256,31 @@ describe 'TheBot' do
       #
       #
       # 6:54:59
-      @late_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
+      @late_users << User.create(fb_id: @get_id.call, first_name: 'Davidfake', last_name: 'McPeek',
                                  send_time: @start_time - (@interval+1.minute) + 59.seconds, 
                                  curriculum_version: @test_curriculum)
       # 7:05
-      @late_users << User.create(fb_id: @get_id.call, first_name: 'David', last_name: 'McPeek',
+      @late_users << User.create(fb_id: @get_id.call, first_name: 'Davidfake', last_name: 'McPeek',
                                  send_time: @start_time + @interval, 
                                  curriculum_version: @test_curriculum)
 
       @num_users.times do |x|
         User.where(fb_id:(x+1).to_s).first.update(curriculum_version: @test_curriculum)
+        puts "User fb id: #{User.where(fb_id:(x+1).to_s).first.fb_id}, num users : #{@num_users}"
       end
 
+      Timecop.freeze(@start_time)
     end
 
     context 'when everyone is on day 901' do
       before(:all) do
         @starting_day =  901
+        @num_users = @num_users
       end
 
       before(:each) do
         @num_users.times do |x|
-          User.where(fb_id:(x+1).to_s).first.state_table.update(story_number: @starting_day)
+          u = User.where(fb_id:(x+1).to_s).first.state_table.update(story_number: @starting_day)
         end
       end
 
@@ -297,19 +302,25 @@ describe 'TheBot' do
         end
       end
 
-      it 'sends next days stories to folks who have read previous days story' do
+      it 'sends next days stories to folks who have read previous days story', simple:true do
+        
+        puts "TODAY IS #{Time.now.wday}"
         # 4 ppl read yesterda (story 900)
-        4.times do |i| 
-          User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
+        Timecop.freeze(@start_time-1.day)
+        4.times do |i|
+          User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true, last_story_read_time: Time.now)
         end
 
+
         
-        allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
-        end
+        # allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        #   original_method.call(*args, [1,3,5], &block)
+        # end
 
         # 1 person who is not scheduled but also read yesterday
         User.all.last.state_table.update(last_story_read?: true)
+
+        Timecop.freeze(@start_time)
         
         expect(@s900).not_to receive(:run_sequence)       
         expect(@s901).to     receive(:run_sequence).exactly(3).times
@@ -334,15 +345,18 @@ describe 'TheBot' do
         end       
 
         
-        allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
-        end
+        # allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        #   puts "OG ARGS #{args}"
+        #   original_method.call(*args, &block)
+        # end
 
         expect(@s900).not_to receive(:run_sequence)       
         expect(@s901).to     receive(:run_sequence).with(anything(), :init).exactly(3).times
         expect(@s902).to     receive(:run_sequence).with(anything(), :init).exactly(4).times
         expect(@s903).not_to receive(:run_sequence)
         expect(@s904).not_to receive(:run_sequence)
+
+        puts Time.now.wday
 
         # run the the clock
         expect{
@@ -357,9 +371,6 @@ describe 'TheBot' do
         # and users 1-4 have gotten :init from s902. What we're 
         # gonna do now is have user's {[2,4]U[6]} press the 
         # story buttons from their respective days.
-
-
-
         b1 = @make_story_btn_press.call('2', @s902, :scratchstory)
         b2 = @make_story_btn_press.call('3', @s902, :scratchstory)
         b3 = @make_story_btn_press.call('4', @s902, :scratchstory)
@@ -548,109 +559,112 @@ describe 'TheBot' do
       end
 
 
-      it 'deals with curriculum version correctly', versioning:true do
-        # hokay, so everyone should start on day 901.
-        #
-        # we're gonna set users [5,6] to be on currculum 667
-        # and we're gonna set user [2,3] to be on curriculum 
-        # 668. All else on 666 >:)
-        @on_time_users.each do |u|
-          u.state_table.update(story_number:901)
-        end
-        @on_time_users[4].update(curriculum_version: 667)
-        @on_time_users[5].update(curriculum_version: 667)
-        @on_time_users[1].update(curriculum_version: 668)
-        @on_time_users[2].update(curriculum_version: 668)
+      # TODO: reod this test at some point
+      # it 'deals with curriculum version correctly', versioning:true do
+      #   # hokay, so everyone should start on day 901.
+      #   #
+      #   # we're gonna set users [5,6] to be on currculum 667
+      #   # and we're gonna set user [2,3] to be on curriculum 
+      #   # 668. All else on 666 >:)
+      #   @on_time_users.each do |u|
+      #     u.state_table.update(story_number:901)
+      #   end
+      #   @on_time_users[4].update(curriculum_version: 667)
+      #   @on_time_users[5].update(curriculum_version: 667)
+      #   @on_time_users[1].update(curriculum_version: 668)
+      #   @on_time_users[2].update(curriculum_version: 668)
         
-        expect(@s900).not_to receive(:run_sequence)       
-        allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(7).times
+      #   expect(@s900).not_to receive(:run_sequence)       
+      #   allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(7).times
 
-        Sidekiq::Testing.inline! do
-          @sw.perform (@time_range/2)
-        end
+      #   Sidekiq::Testing.inline! do
+      #     @sw.perform (@time_range/2)
+      #   end
 
-        bodies = []
+      #   bodies = []
 
-        # we're gonna have all users but usr 1 request a story
-        (@num_ontime-1).times do |x|
-          bodies << @make_story_btn_press.call((x+2).to_s, @s901, :cookstory)
-        end
+      #   # we're gonna have all users but usr 1 request a story
+      #   (@num_ontime-1).times do |x|
+      #     bodies << @make_story_btn_press.call((x+2).to_s, @s901, :cookstory)
+      #   end
         
-        # send a story to everyone but user #1
-        allow(@s901).to receive(:run_sequence).with(anything(), :cookstory)
-                    .and_call_original.exactly(7).times
-        # version 666
-        allow(@s901).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
-                    .exactly(2).times
-        # version 667
-        allow(@s901).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'scratch'))
-                    .exactly(2).times
-        # version 668
-        allow(@s901).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'coon'))
-                    .exactly(2).times
+      #   # send a story to everyone but user #1
+      #   allow(@s901).to receive(:run_sequence).with(anything(), :cookstory)
+      #               .and_call_original.exactly(7).times
+      #   # version 666
+      #   allow(@s901).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
+      #               .exactly(2).times
+      #   # version 667
+      #   allow(@s901).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'scratch'))
+      #               .exactly(2).times
+      #   # version 668
+      #   allow(@s901).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'coon'))
+      #               .exactly(2).times
 
-        bodies.each do |b|
-          Sidekiq::Testing.inline! do 
-            post '/', b, @make_signature.call(b)
-          end       
-        end         
+      #   bodies.each do |b|
+      #     Sidekiq::Testing.inline! do 
+      #       post '/', b, @make_signature.call(b)
+      #     end       
+      #   end         
 
-        # move to Monday
-        Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))
+      #   # move to Monday
+      #   Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))
 
-        # so now we send the stories out again, and we expect different scripts
-        # to be activated
+      #   # so now we send the stories out again, and we expect different scripts
+      #   # to be activated
 
-        expect(@s900).not_to receive(:run_sequence)       
-        allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(1).times
-        allow(@s902).to      receive(:run_sequence).with(anything(), :init).exactly(6).times
+      #   expect(@s900).not_to receive(:run_sequence)       
+      #   allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(1).times
+      #   allow(@s902).to      receive(:run_sequence).with(anything(), :init).exactly(6).times
 
-        # run the clock
-        Sidekiq::Testing.inline! do
-          @sw.perform (@time_range/2)
-        end   
-
-
-        # and now we simulates users [1,7] requesting the story!
-        bodies2 = []
-        bodies2 << @make_story_btn_press.call((1).to_s, @s901 , :cookstory)
-
-        (@num_ontime-1).times do |x|
-          bodies2 << @make_story_btn_press.call((x+2).to_s, @s902 , :scratchstory)
-        end     
+      #   # run the clock
+      #   Sidekiq::Testing.inline! do
+      #     @sw.perform (@time_range/2)
+      #   end   
 
 
-        allow(@s901).to receive(:run_sequence).with(anything(), :cookstory)
-                    .and_call_original
+      #   # and now we simulates users [1,7] requesting the story!
+      #   bodies2 = []
+      #   bodies2 << @make_story_btn_press.call((1).to_s, @s901 , :cookstory)
 
-        allow(@s902).to receive(:run_sequence).with(anything(), :cookstory)
-                    .and_call_original.exactly(6).times
+      #   (@num_ontime-1).times do |x|
+      #     bodies2 << @make_story_btn_press.call((x+2).to_s, @s902 , :scratchstory)
+      #   end     
 
-        # version 666
-        allow(@s901).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
 
-        allow(@s902).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'coon'))
-                    .exactly(2).times
-        # version 667
-        allow(@s902).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
-                    .exactly(2).times
-        # version 668
-        allow(@s902).to receive(:send_story)
-                    .with(hash_including(:recipient, :library, :num_pages, :title => 'scratch'))
-                    .exactly(2).times
+      #   allow(@s901).to receive(:run_sequence).with(anything(), :cookstory)
+      #               .and_call_original
 
-        bodies.each do |b|
-          Sidekiq::Testing.inline! do 
-            post '/', b, @make_signature.call(b)
-          end       
-        end   
-      end
+      #   allow(@s902).to receive(:run_sequence).with(anything(), :cookstory)
+      #               .and_call_original.exactly(6).times
+
+      #   # version 666
+      #   allow(@s901).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
+
+      #   allow(@s902).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'coon'))
+      #               .exactly(2).times
+
+      #   # version 667
+      #   allow(@s902).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'bird'))
+      #               .exactly(2).times
+      #   # version 668
+      #   allow(@s902).to receive(:send_story)
+      #               .with(hash_including(:recipient, :library, :num_pages, :title => 'scratch'))
+      #               .exactly(2).times
+
+      #   bodies.each do |b|
+      #     Sidekiq::Testing.inline! do 
+      #       post '/', b, @make_signature.call(b)
+      #     end       
+      #   end   
+      # end # END it 
+
 
     end
 
@@ -695,9 +709,9 @@ describe 'TheBot' do
 
       expect(StateTable.where(last_story_read?:true).count).to eq(@num_ontime-1)
 
-      # move to Monday! Stories be coming out!
+      # move to next Thrusday! Stories be coming out!
       # we would expect fb_ids [1,7] to be recieving something
-      Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))        
+      Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))        
       
       expect{
         Sidekiq::Testing.fake! do

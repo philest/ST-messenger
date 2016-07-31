@@ -33,7 +33,7 @@ Birdv::DSL::ScriptClient.new_script 'day902' do
 
 	sequence 'scratchstory' do |recipient|
 		# send out cook story
-
+		
 		send recipient, story()
 		
 		# delay recipient, 'thanks'
