@@ -8,8 +8,8 @@ es:
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
   scripts:
     teacher_intro:
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer libro de Cuentos gratuita sobre!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento para conseguir __CHILD__ listo para el jardín de infantes."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer cuento gratis! :)"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otro cuento para :)"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí es otra cuento!"
@@ -30,10 +30,10 @@ es:
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
 
       window_text: 
-        - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"
-        - "Voy a enviar otra cuento mañana por la noche. ¡Los dos están haciendo muy bien! :)"
-        - "Voy a enviar otra cuento mañana por la noche :)"
-        - "Voy a enviar otra cuento mañana por la noche :)"
+        - "Enviaré otro cuento la próxima semana. ¡Los dos están haciendo muy bien! :)"
+        - "Enviaré otro cuento la próxima semana :)"
+        - "Enviaré otro cuento la próxima semana :)"
+        - "Enviaré otro cuento la próxima semana :)"
         - "Voy a enviar otra cuento mañana por la noche :)"
         - "Voy a enviar otra cuento mañana por la noche :)"
         - "Voy a enviar otra cuento mañana por la noche :)"
@@ -49,7 +49,7 @@ es:
         - "¡Su siguiente cuento es muy pronto!"
         - "¡Su siguiente cuento es muy pronto!"
         - "¡Su siguiente cuento es muy pronto!"
-      tap: "¡Pulse aquí!"
+      tap: "Toque aquí!"
       thanks: "¡Gracias!"
       welcome: "De nada :)"
 
