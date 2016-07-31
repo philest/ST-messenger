@@ -150,10 +150,6 @@ module Birdv
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 
-
-      # name_codes has moved to contact_helpers.rb
-
-
       def sequence(sqnce_name, &block)
         register_sequence(sqnce_name, block)
       end
@@ -163,12 +159,15 @@ module Birdv
         begin
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
 
-          u = User.where(fb_id:recipient).first
-          if u.nil?
+          case @platform
+          when 'fb'
+            u = User.where(fb_id:recipient).first
+          when 'sms'
             u = User.where(phone:recipient).first
           end
+          
 
-          u.state_table.update(last_sequence_seen: sqnce_name.to_s)
+          u.state_table.update(last_sequence_seen: sqnce_name.to_s) if u
           return ret
 
         rescue => e  

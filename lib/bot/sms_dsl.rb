@@ -64,6 +64,10 @@ module Birdv
         num_pages.times do |i|
           url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
           puts "sending #{url}!"
+
+
+          # THIS IS THE ONLY LINE THAT NEEDS TO CHANGE
+          # ADD ASYNC DELAYS AND SHIT
           fb_send_json_to_user(recipient, picture(url:url))
         end
       end
@@ -75,13 +79,13 @@ module Birdv
           puts "(DSL.send.story) WARNING: you don't need to set any args when sending a story. It doesn't do anything!"
         end
         
-        return lambda do |recipient|
+        return lambda do |phone_no|
           begin
 
-            version = get_curriculum_version(recipient)
-            locale  = get_locale(recipient)
+            # version = get_curriculum_version(phone_no)
+            locale  = get_locale(phone_no)
 
-            curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
+            # curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
 
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
             storyinfo = curriculum[script_day - 1]
@@ -89,7 +93,7 @@ module Birdv
             lib, title, num_pages = storyinfo
 
             send_story({
-              recipient:  recipient,
+              recipient:  phone_no,
               library:    lib,
               title:      title,
               num_pages:  num_pages.to_i,
@@ -99,12 +103,12 @@ module Birdv
             # TODO: error stuff
 
             # TODO: make this atomic somehow? slash errors
-            User.where(fb_id:recipient).first.state_table.update(
+            User.where(fb_id:phone_no).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
                                         last_story_read?: true)
 
           rescue => e
-            p e.message + " failed to send user with fb_id #{recipient} a story"
+            p e.message + " failed to send user with fb_id #{phone_no} a story"
             raise e
           end         
         end

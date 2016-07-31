@@ -15,6 +15,11 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 		delay phone_no, 'image1', SMS_WAIT
 	end
 
+	# this is where we want to go...
+	sequence 'storysequence' do |phone_no|
+		send phone_no, story()
+	end
+
 
 	sequence 'image1' do |phone_no|
 		# send out coon story
