@@ -131,7 +131,7 @@ Bot.on :message do |message|
 
         if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
 
-          reply = "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
+          reply = I18n.t 'user_response.end_conversation'
             
           if limited == "true"
             reply = ""

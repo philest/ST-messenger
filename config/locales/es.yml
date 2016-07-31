@@ -6,6 +6,8 @@ es:
     thanks: "De nada :)"
     robot:  "¡Hola __PARENT__! Hora de Cuentos es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero voy a ver su mensaje pronto. Si necesita ayuda, escribe 'ayuda'."
+    end_conversation: "Voy a ver su mensaje en la noche! Para obtener ayuda, póngase en contacto 561-212-5831"
+
   scripts:
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí está su primer libro de Cuentos gratuita sobre!"
