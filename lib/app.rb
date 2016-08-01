@@ -137,14 +137,63 @@ class SMS < Sinatra::Base
     end
   end
 
-  post '/enroll' do
-    "yo, we're at /enroll now!"
-  end
 
-  post '/' do
-    "yo, we're at / now!"
-  end
+post '/' do
+    puts "enrolling parents..."
 
+
+    signature = params["teacher_signature"]
+    temail    = params["teacher_email"]
+
+    begin
+      teacher = Teacher.create(:signature => signature, email: params['teacher_email'])
+      puts "created new teacher: #{signature}"
+    rescue Sequel::Error => e
+      p e.message + " didn't insert teacher, her email already exists in db"
+      # TODO: return to user that the thing failed if couldn't insert, ask
+      #       to try submitting again
+      teacher = Teacher.where(email: params['teacher_email']).first
+    end
+
+    # Create the parents
+    25.times do |idx| # TODO: this loop is shit
+      
+      if params["phone_#{idx}"] != nil
+        phone_num   = params["phone_#{idx}"]
+        child_name  = params["name_#{idx}"]
+      else 
+        # email Phil
+        next      
+      end
+
+      # TODO some day: when insertion fails, let teacher know that parent already exists
+      # and that if they click confirm, they may be changing the kid's number (make this
+      # happen in seperate worker?)
+      begin
+
+        # I sure hope the phone number made it in!
+        parent = User.where(phone: phone_num).first
+
+        # create new parent if did'nt already exists
+        if parent.nil?   then parent = User.create(:phone => phone_num)      end
+
+        # update parent's student name
+        if not child_name.nil? then parent.update(:child_name => child_name) end
+
+        # add parent to teacher!
+        teacher.add_user(parent)
+        puts "added #{parent.child_name if not params["name_#{idx}"].nil?}, phone => #{parent.phone}"
+      
+      rescue Sequel::Error => e
+        puts e.message
+        # TODO: send email to Phil...
+      end     
+    end
+
+    # success even if twilio stuff not work 'cos
+    # twilio happens in a seperate process :)
+    status 201
+  end
 
 
 

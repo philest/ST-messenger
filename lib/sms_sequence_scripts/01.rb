@@ -70,7 +70,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
     # the new way to do it:
     send phone_no, img, 'mms'
-
+    
   end
 
 
