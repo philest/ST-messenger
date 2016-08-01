@@ -139,7 +139,7 @@ class ScheduleWorker
 		user_utc	 = user_local.utc.seconds_since_midnight
     puts "user's seconds since midnight = #{user_utc}"
     puts "now - user_utc = #{(Time.now.utc - user_local.utc)/60} minutes, #{(Time.now.utc - user_local.utc)/3600} hours"
-		user_day 	 = get_local_day(Time.now, user)
+		user_day 	 = get_local_day(Time.now.utc, user)
 
     valid_for_user = acceptable_days.include?(user_day)
 
@@ -165,38 +165,37 @@ class ScheduleWorker
   # returns the day of the week,
   # e.g. Monday => 1, Saturday => 6
   def get_local_day(server_time, user)
-  	user_tz = ActiveSupport::TimeZone.new(user.timezone)
-  	return server_time.utc.in_time_zone(user_tz).wday
+    return (server_time.utc + user.tz_offset.hours).wday
+  	# user_tz = ActiveSupport::TimeZone.new(user.timezone)
+  	# return server_time.utc.in_time_zone(user_tz).wday
   end
 
   # returns the user's DST-adjusted local time
   def adjust_tz(user)
-  	# timezone object in User's timezone
-  	user_tz = ActiveSupport::TimeZone.new(user.timezone)
+  	# # timezone object in User's timezone
+  	# user_tz = ActiveSupport::TimeZone.new(user.timezone)
 
-  	# time that user enrolled, converted from UTC to local time
-  	tz_init = user.enrolled_on.utc.in_time_zone(user_tz)
+  	# # time that user enrolled, converted from UTC to local time
+  	# tz_init = user.enrolled_on.utc.in_time_zone(user_tz)
 
-  	# server time, converted to local time zone
-  	tz_current = Time.now.utc.in_time_zone(user_tz)
+  	# # server time, converted to local time zone
+  	# tz_current = Time.now.utc.in_time_zone(user_tz)
 
-  	# check if in daylight savings
-		if tz_init.dst? and not tz_current.dst?
-			send_time = user.send_time + 1.hour
-      # add or subtract the offset from one timezone to another
-      
+    # 23:00 - 4 = 19:00 = 7pm
+
+    est_offset = 4 # the tz_offset of EST, the default timezone
+
+    est_adjust = (user.tz_offset + est_offset).hours
+    puts "user tz_offset = #{user.tz_offset}"
+
+    adjusted_send_time = user.send_time - est_adjust
 
 
+    puts "before, user.send_time = #{user.send_time}"
+    puts "after, user.send_time = #{adjusted_send_time}"
 
-		elsif not tz_init.dst? and tz_current.dst?
-			send_time = user.send_time - 1.hour
+    return adjusted_send_time
 
-		else
-			send_time = user.send_time
-
-		end
-
-		send_time
   end
 
 end

@@ -129,6 +129,7 @@ Sequel.migration do
       String :locale, :default=>"en", :text=>true
       foreign_key :school_id, :schools, :key=>[:id]
       String :platform, :default=>"fb", :text=>true
+      Integer :tz_offset
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true

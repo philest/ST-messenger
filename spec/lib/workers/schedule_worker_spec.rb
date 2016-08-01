@@ -54,7 +54,7 @@ describe ScheduleWorker do
         # change those timezones dawg!
         User.each do |user|
           puts "updating users #{user.fb_id}...."
-          user.update(timezone: "Pacific Time (US & Canada)")
+          user.update(tz_offset: -7)
           puts "send_time = #{user.send_time}"
         end
 
@@ -76,20 +76,20 @@ describe ScheduleWorker do
         expect(@s.within_time_range(just_late, @interval, [Time.now.wday])).to be true
       end
 
-      # it "returns false for users outside the time interval at a given time" do
-      #   expect(@s.within_time_range(@early, @interval, [Time.now.wday])).to be false
-      #   expect(@s.within_time_range(@late, @interval, [Time.now.wday])).to be false
-      # end
+      it "returns false for users outside the time interval at a given time" do
+        expect(@s.within_time_range(@early, @interval, [Time.now.wday])).to be false
+        expect(@s.within_time_range(@late, @interval, [Time.now.wday])).to be false
+      end
 
-      # it "does not send messages to a user twice" do
-      #   User.each {|u| u.destroy } # clean database
+      it "does not send messages to a user twice" do
+        User.each {|u| u.destroy } # clean database
 
-      #   user = User.create(:send_time => @west_time + @interval - 1.second)
-      #   user.state_table.update(story_number: @story_num)
-      #   expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
-      #   Timecop.freeze(Time.now + @time_range)
-      #   expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false      
-      # end
+        user = User.create(:send_time => @west_time + @interval - 1.second)
+        user.state_table.update(story_number: @story_num)
+        expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
+        Timecop.freeze(Time.now + @time_range)
+        expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false      
+      end
 
     end
 
@@ -97,38 +97,38 @@ describe ScheduleWorker do
   end
 
 
-  context "timezone conversion function", :zone => true do
-    before(:each) do
-      @summer, @winter = @time, @time + 6.months
-    end
+  # context "timezone conversion function", :zone => true do
+  #   before(:each) do
+  #     @summer, @winter = @time, @time + 6.months
+  #   end
 
-    it "handles summer-summer and winter-winter cases (DST)" do
-    # when the user enrolled in the summer and it's currently summer
-      Timecop.freeze(@summer)
-      user = User.create(:send_time => Time.now)
-      expect(@s.adjust_tz(user)).to eq(user.send_time)
-      # winter-winter case
-      Timecop.freeze(@winter)
-      user = User.create(:send_time => Time.now) # enrolled_on field is wintertime
-      expect(@s.adjust_tz(user)).to eq(user.send_time)
-    end
+  #   it "handles summer-summer and winter-winter cases (DST)" do
+  #   # when the user enrolled in the summer and it's currently summer
+  #     Timecop.freeze(@summer)
+  #     user = User.create(:send_time => Time.now)
+  #     expect(@s.adjust_tz(user)).to eq(user.send_time)
+  #     # winter-winter case
+  #     Timecop.freeze(@winter)
+  #     user = User.create(:send_time => Time.now) # enrolled_on field is wintertime
+  #     expect(@s.adjust_tz(user)).to eq(user.send_time)
+  #   end
 
-    it "subtracts an hour from the UTC clock when it's summer and the user enrolled during the winter" do
-    # when the user enrolled in the winter and it's currently summer
-      Timecop.freeze(@winter)
-      user = User.create(:send_time => Time.now)
-      Timecop.freeze(@summer)
-      expect(@s.adjust_tz(user)).to eq(user.send_time - 1.hour)
-    end
+  #   it "subtracts an hour from the UTC clock when it's summer and the user enrolled during the winter" do
+  #   # when the user enrolled in the winter and it's currently summer
+  #     Timecop.freeze(@winter)
+  #     user = User.create(:send_time => Time.now)
+  #     Timecop.freeze(@summer)
+  #     expect(@s.adjust_tz(user)).to eq(user.send_time - 1.hour)
+  #   end
 
-    it "adds an hour to the UTC clock when it's winter and the user enrolled during the summer" do 
-    # when the user enrolled in the summer and it's currently winter
-      Timecop.freeze(@summer)
-      user = User.create(:send_time => @summer)
-      Timecop.freeze(@winter)
-      expect(@s.adjust_tz(user)).to eq(user.send_time + 1.hour)
-    end
-  end
+  #   it "adds an hour to the UTC clock when it's winter and the user enrolled during the summer" do 
+  #   # when the user enrolled in the summer and it's currently winter
+  #     Timecop.freeze(@summer)
+  #     user = User.create(:send_time => @summer)
+  #     Timecop.freeze(@winter)
+  #     expect(@s.adjust_tz(user)).to eq(user.send_time + 1.hour)
+  #   end
+  # end
 
 
   context "within_time_range function", :range => true do
