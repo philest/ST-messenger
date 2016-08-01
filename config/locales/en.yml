@@ -62,19 +62,19 @@ en:
     test_texts: "hey this is window text, which can be much longer than button text"
   enrollment:
     body: 
-      has_teacher: "Hi, this is %{teacher_name}. I'll be texting %{child_name} books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
-      has_school: "Hi, this is %{school_signature}. We'll be texting you free books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+      has_teacher: "Hi, this is __TEACHER__. I'll be texting __CHILD__ books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+      has_school: "Hi, this is __SCHOOL__. We'll be texting you free books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
       has_none: "Hi, this is StoryTime. We'll be texting you free books!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
 
     body_sprint:
       has_teacher: 
-        - "Hi, this is %{teacher_name}. I'll be texting %{child_name} books with StoryTime!\n\n"
-        - "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+        first: "Hi, this is __TEACHER__. I'll be texting __CHILD__ books with StoryTime!\n\n"
+        second: "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
       has_school: 
-        - "Hi, this is %{school_signature}. We'll be texting you free books with StoryTime!\n\n" 
-        - "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+        first: "Hi, this is __SCHOOL__. We'll be texting you free books with StoryTime!\n\n" 
+        second: "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
       has_none: 
-        - "Hi, this is StoryTime. We'll be texting you free books!\n\n"
-        - "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+        first: "Hi, this is StoryTime. We'll be texting you free books!\n\n"
+        second: "You can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
 
 

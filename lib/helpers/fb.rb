@@ -4,6 +4,7 @@ module Facebook
   module Messenger
     module Helpers
       GRAPH_URL = "https://graph.facebook.com/v2.6/me/messages"
+      
       SMS_WAIT = 10.seconds
       MMS_WAIT = 20.seconds
 

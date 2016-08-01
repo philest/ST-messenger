@@ -139,7 +139,7 @@ describe 'TheBot' do
               post '/', body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{signature}"
               post '/', body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{signature}"
               post '/', body, 'HTTP_X_HUB_SIGNATURE' => "sha1=#{signature}"
-            }.to change(BotWorker.jobs, :size).by(3)
+            }.to change(MessageWorker.jobs, :size).by(3)
           end
       end
 
@@ -691,7 +691,7 @@ describe 'TheBot' do
             post '/', b, @make_signature.call(b)
         end
       end
-      BotWorker.drain
+      MessageWorker.drain
 
       expect(StateTable.where(last_story_read?:true).count).to eq(@num_ontime-1)
 

@@ -1,6 +1,20 @@
 require_relative '../helpers/fb'
 
-class BotWorker 
+
+class GenericMethodWorker
+  include Sidekiq::Worker
+  include Facebook::Messenger::Helpers
+  sidekiq_options :retry => 1, 
+                  unique: :until_and_while_executing, 
+                  unique_expiration: 4
+
+  def perform(recipient, &block)
+    ret = instance_exec(recipient, &block)
+  end
+
+end
+
+class MessageWorker 
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
   sidekiq_options :retry => 1, 

@@ -66,17 +66,17 @@ es:
 
   enrollment:
     body: 
-      has_teacher: "Hola, es %{teacher_name}. Voy a estar enviando mensajes de texto a %{child_name} con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
-      has_school: "Hola, es %{school_signature}. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_teacher: "Hola, es __TEACHER__. Voy a estar enviando mensajes de texto a __CHILD__ con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_school: "Hola, es __SCHOOL__. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
       has_none: "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
 
     body_sprint:
       has_teacher: 
-        - "Hola, es %{teacher_name}. Voy a estar enviando mensajes de texto a %{child_name} con StoryTime!\n\n"
-        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es __TEACHER__. Voy a estar enviando mensajes de texto a __CHILD__ con StoryTime!\n\n"
+        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
       has_school: 
-        - "Hola, es %{school_signature}. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\n" 
-        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es __SCHOOL__. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\n" 
+        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
       has_none: 
-        - "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\n"
-        - "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\n"
+        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"

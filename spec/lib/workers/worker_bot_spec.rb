@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'timecop'
 require 'active_support/time'
-require 'workers/bot_worker'
+require 'workers/message_worker'
 require 'bot/dsl'
 
-describe BotWorker do
+describe MessageWorker do
 
 	let (:usr) {User.create(:fb_id=>@usr_fb_id,:send_time => Time.now, :story_number => @starting_story_number)}
 
@@ -49,7 +49,7 @@ describe BotWorker do
 		it 'adds new log entries when press a day3 button' do
 			expect {
 				Sidekiq::Testing.inline! do
-					BotWorker.perform_async('12345','day3','two')
+					MessageWorker.perform_async('12345','day3','two')
 				end
 			}.to change{ButtonPressLog.count}.by(1)
 		end
@@ -59,7 +59,7 @@ describe BotWorker do
 		# 	# TODO: need to figure out a way to test this
 		# 	expect {
 		# 		Sidekiq::Testing.inline! do
-		# 			5.times { BotWorker.perform_async('12345','day3','two') }
+		# 			5.times { MessageWorker.perform_async('12345','day3','two') }
 		# 		end
 		# 	}.to change{ButtonPressLog.count}.by(1)
 
@@ -72,7 +72,7 @@ describe BotWorker do
 				Sidekiq::Testing.inline! do
 					5.times do
 						Timecop.travel(Time.now + 3.minutes)
-						BotWorker.perform_async('12345','day3','two')
+						MessageWorker.perform_async('12345','day3','two')
 					end
 				end
 			}.to change{ButtonPressLog.count}.by(5)
@@ -81,7 +81,7 @@ describe BotWorker do
 		it 'does not update story_number when user is presses button from old script' do
 			expect {
 				Sidekiq::Testing.inline! do
-					5.times {BotWorker.perform_async('12345','day3','two')}
+					5.times {MessageWorker.perform_async('12345','day3','two')}
 				end
 			}.to_not change{usr.story_number}		
 		end
@@ -90,7 +90,7 @@ describe BotWorker do
 		it 'pressing day4 button DOES NOT jump story_number to next day (day 5)' do
 			expect {
 				Sidekiq::Testing.inline! do
-					BotWorker.perform_async('12345','day4','one')
+					MessageWorker.perform_async('12345','day4','one')
 				end
 			}.not_to change{User.where(:fb_id=>@usr_fb_id).first.story_number}	
 		end

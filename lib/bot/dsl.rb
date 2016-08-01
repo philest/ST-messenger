@@ -1,6 +1,6 @@
 require_relative '../helpers/fb'
 require_relative '../helpers/contact_helpers'
-require_relative '../workers/bot_worker'
+require_relative '../workers/message_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
 require_relative 'fb_dsl.rb'
@@ -192,7 +192,7 @@ module Birdv
 
 
       def delay(recipient, sequence_name, time_delay)
-        BotWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
+        MessageWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
       end
 
       def story(args={})

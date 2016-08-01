@@ -39,8 +39,16 @@ module Birdv
             teacher = "StoryTime"
           end
 
+          if user.school
+            sig = user.school.signature
+            school_signature = sig.nil?   ? "StoryTime" : sig
+          else
+            school_signature = "StoryTime"
+          end
+
           str = str.gsub(/__TEACHER__/, teacher)
           str = str.gsub(/__PARENT__/, parent)
+          str = str.gsub(/__SCHOOL__/, school)
           str = str.gsub(/__CHILD__/, child)
           return str
         else # just return what we started with. It's 
@@ -133,7 +141,7 @@ module Birdv
       rescue NoMethodError => e
         p e.message + " usr doesn't exist, can't translate"
         return false
-      end
+      end # translate_mms
 
 
       def send_helper(phone, to_send, script_day, type)
@@ -150,21 +158,16 @@ module Birdv
             body: {
               recipient: phone,
               text: text
-            }
-          )
+          })
 
         when 'mms'
           HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
             body: {
               recipient: phone,
               img_url: to_send
-            }
-          )
+          })
         end
-      end
-
-
-
+      end # send_helper
 
 
     end # module MMS

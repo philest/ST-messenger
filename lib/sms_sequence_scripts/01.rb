@@ -1,59 +1,78 @@
 Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
-	day 1
+  day 1
 
-	# recipients are phone numbers
-	sequence 'firstmessage' do |phone_no|
-		txt = "scripts.teacher_intro"
-		puts "sending intro txt..."
-		# send_sms phone_no, txt
+  # recipients are phone numbers
+  sequence 'firstmessage' do |phone_no|
+    user = User.where(phone: phone_no).first
 
-		# the new way to do it:
-		send phone_no, txt, 'sms'
+    if user.teacher and user.teacher.signature then
+      puts "has teacher, using teacher text"
+      txt = 'enrollment.body.has_teacher'
+      txt_sprint = 'enrollment.body_sprint.has_teacher.first'
+    elsif user.school and user.school.signature then
+      puts "has school, using school text"
+      txt = 'enrollment.body.has_school'
+      txt_sprint = 'enrollment.body_sprint.has_school.first'
+    else
+      puts "has none, using default text"
+      txt = 'enrollment.body.has_none'
+      txt_sprint = 'enrollment.body_sprint.has_none.first'
+    end
 
-		# delay the conventional SMS delay
-		delay phone_no, 'image1', SMS_WAIT
-	end
+    puts "sending intro txt, part 1 (sprint)..."
 
-	# this is where we want to go...
-	sequence 'storysequence' do |phone_no|
-		send phone_no, story()
-	end
+    # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
+    send phone_no, txt_sprint, 'sms'
+
+    # delay the conventional SMS delay
+    delay phone_no, 'firstmessage2', SMS_WAIT
+
+    # the new way to delay would look something like this.....
+    # delay phone_no do 
+    #   # do something
+    #   send phone_no, txt_sprint, 'sms'
+    # end
+  end
+
+  sequence 'firstmessage2' do |phone_no|
+    user = User.where(phone: phone_no).first
+
+    if user.teacher and user.teacher.signature then
+      puts "has teacher, using teacher text"
+      txt = 'enrollment.body.has_teacher'
+      txt_sprint = 'enrollment.body_sprint.has_teacher.second'
+    elsif user.school and user.school.signature then
+      puts "has school, using school text"
+      txt = 'enrollment.body.has_school'
+      txt_sprint = 'enrollment.body_sprint.has_school.second'
+    else
+      puts "has none, using default text"
+      txt = 'enrollment.body.has_none'
+      txt_sprint = 'enrollment.body_sprint.has_none.second'
+    end
+
+    # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
+    send phone_no, txt_sprint, 'sms'
+
+    delay phone_no, 'image1', SMS_WAIT
+  end
 
 
-	sequence 'image1' do |phone_no|
-		# send out coon story
-		img = 'https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg'
-		"sending first image..."
-		# send_mms phone_no, img
+  sequence 'image1' do |phone_no|
+    user = User.where(phone: phone_no).first
+    if user.teacher and user.teacher.signature then
+      img = 'http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg'
+    else
+      img = 'http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-nhv.jpg'
+    end
+    "sending first image..."
 
-		# the new way to do it:
-		send phone_no, img, 'mms'
+    # the new way to do it:
+    send phone_no, img, 'mms'
 
-		delay phone_no, 'image2', MMS_WAIT
-	end
+  end
 
-	# No button on the first day! 
-	sequence 'image2' do |phone_no|
-		# one more button
-		puts "sending second image..."
-		img = 'https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg'
-		# send_mms phone_no, img
 
-		# the new way to do it:
-		send phone_no, img, 'mms'
-
-		delay phone_no, 'goodbye', MMS_WAIT
-	end
-
-	sequence 'goodbye' do |phone_no|
-		puts "saying goodbye..."
-
-		txt = 'scripts.buttons.window_text'
-		# send_sms phone_no, txt
-
-		# the new way to do it:
-		send phone_no, txt, 'sms'
-	end
 end 
 

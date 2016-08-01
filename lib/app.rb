@@ -55,8 +55,9 @@ class SMS < Sinatra::Base
 
       puts "msg to send = #{msg}"
 
-      # rescue  
-      # end
+      # send that message back! 
+      send_sms( phone, msg )
+
 
       if user.child_name
         name = user.child_name
@@ -66,87 +67,75 @@ class SMS < Sinatra::Base
         name = "A user"
       end
 
-      # send HTTP request to send text here?
-
       email_admins "#{name} - #{phone} texted StoryTime", \
              "Message: #{params[:Body]}<br/>Time: #{Time.now}"
 
 
-      # twiml = Twilio::TwiML::Response.new do |r|
-      #   # r.Message "StoryTime: Hi, we'll send your text to #{user.teacher.signature}. They'll see it next time they are on their computer."
-      #   r.Message msg
-      # end
-      # twiml.text
-
-
     else # this is a new user, enroll them in the system 
-      puts "someone texted in, creating user..."
 
-      new_user = User.create(phone: phone, platform: 'sms')
+      puts "someone texted in, creatin`g user..."
 
-      # TODO: process the body text (regex)
-      code_regex = /(read|leer)\s*(\d+)/i
+      new_user = User.create(phone: phone)
 
-      match_data = code_regex.match params[:Body]
 
-      puts "match data = #{match_data.inspect}"
-      lang = $1
-      code = $2
+      # TODO: error handling, nil-value checking
 
-      puts "$1, $2 = #{lang}, #{code}"
+      # 
+      # FORMAT FOR SCHOOL CODES:
+      # "english_word|spanish_word"
+      # Example: 'read1|leer1'
+      # 
+      # 1. All lower-case
+      # 2. English first, then Spanish
+      # 3. separated by pipe
+      #  
+      School.each do |school|
+        code = school.code
+        code_regex = Regexp.new(code, "i")
+        
 
-      # TODO: make sure locale settings are consistent.
-      #       they must also reset to english and not leak between jobs.
+        body_text = params[:Body].delete(' ')
 
-      # default vals
-      school_signature = nil
-      teacher = nil     
+        match_data = code_regex.match body_text
+        puts "match data = #{match_data.inspect}"
 
-      # if we've matched with a proper code
-      if lang and code
-        case lang
-        when /read/i
-          puts "detected english from #{$1}"
-          I18n.locale = 'en'
-        when /leer/i
-          puts "detected spanish from #{$1}"
-          I18n.locale = 'es'
-        end
+        if match_data then # we've matched this school
+          match_data = match_data.to_s.downcase
+          # codes should be split like this: "read1|leer1"
+          en, sp = code.split('|')
+          # check which language they're going for
+          if match_data == en
+            I18n.locale = 'en'
+          elsif match_data == sp
+            I18n.locale = 'es'
+            new_user.update(locale: 'es')
+          end
 
-        code = code.to_i
-        puts "code = #{code}"
-        # let's just index by school id for now... we'll develop a better system later. 
-        school = School.where(id: code).first
-
-        if school
-          school_signature = school.signature
-          puts "school info: #{school_signature}, #{school}"
+          puts "school info: #{school.signature}, #{school}"
 
           school.add_user(new_user)
           puts "school's users = #{school.users.to_s}"
           puts "user's school = #{new_user.school.inspect}"
-        end
 
+        end
       end
 
-      queue_id = new_user.enrollment_queue.nil? ? nil : new_user.enrollment_queue.id
+      # TODO: make sure locale settings are consistent.
+      #       they must also reset to english and not leak between jobs.
 
-      # send the first text right then and there
-      EnrollTextWorker.perform_async(
-                                     queue_id, 
-                                     phone, 
-                                     teacher, 
-                                     school_signature, 
-                                     I18n.t("defaults.child"),  
-                                     text_in=true,
-                                     locale=I18n.locale
-                                    )
+      # perform the day1 mms sequence
+      MessageWorker.perform_async(phone, script_name='day1', sequence='firstmessage', platform='sms')
 
-      email_admins "A new user with phone #{phone} has enrolled by texting in", \
-             "Phone: #{phone}<br/>Message:#{params[:Body]}<br/>School: #{school_signature}"
+
+      our_phones = ["5612125831", "8186897323", "3013328953"]
+      is_us = our_phones.include? phone 
+
+      if !is_us 
+        email_admins "A new user with phone #{phone} has enrolled by texting in", \
+               "Phone: #{phone}<br/>Message:#{params[:Body]}<br/>School: #{school_signature}"
+      end
     end
   end
-
 
   post '/enroll' do
     "yo, we're at /enroll now!"
@@ -159,20 +148,7 @@ class SMS < Sinatra::Base
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-end
+end # class SMS < Sinatra::Base
 
 
 

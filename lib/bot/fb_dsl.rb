@@ -79,13 +79,22 @@ module Birdv
             teacher = "StoryTime"
           end
 
+          if user.school
+            sig = user.school.signature
+            school_signature = sig.nil?   ? "StoryTime" : sig
+          else
+            school_signature = "StoryTime"
+          end
+
           str = str.gsub(/__TEACHER__/, teacher)
           str = str.gsub(/__PARENT__/, parent)
+          str = str.gsub(/__SCHOOL__/, school)
           str = str.gsub(/__CHILD__/, child)
           return str
         else # just return what we started with. It's 
           str = str.gsub(/__TEACHER__/, 'StoryTime')
           str = str.gsub(/__PARENT__/, '')
+          str = str.gsub(/__SCHOOL__/, 'StoryTime')
           str = str.gsub(/__CHILD__/, 'your child')
           return str
         end
@@ -283,7 +292,7 @@ module Birdv
             puts "sending to #{recipient}"
             puts fb_send_json_to_user(recipient, fb_object)
           end
-      end
+      end # send_helper
 
 
 

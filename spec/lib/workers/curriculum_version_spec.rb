@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timecop'
 require 'active_support/time'
-require 'workers/bot_worker'
+require 'workers/message_worker'
 require 'bot/dsl'
 
 describe "curriculum versions" do
