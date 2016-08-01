@@ -25,7 +25,7 @@ class SMS < Sinatra::Base
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
  
-  get '/sms' do
+  post '/sms' do
     # begin
     # check if user is enrolled in the system
     if params[:From].nil?
@@ -73,9 +73,9 @@ class SMS < Sinatra::Base
 
     else # this is a new user, enroll them in the system 
 
-      puts "someone texted in, creatin`g user..."
+      puts "someone texted in, creating user..."
 
-      new_user = User.create(phone: phone)
+      new_user = User.create(phone: phone, platform: 'sms')
 
 
       # TODO: error handling, nil-value checking
@@ -175,7 +175,7 @@ class SMS < Sinatra::Base
         parent = User.where(phone: phone_num).first
 
         # create new parent if did'nt already exists
-        if parent.nil?   then parent = User.create(:phone => phone_num)      end
+        if parent.nil?   then parent = User.create(:phone => phone_num, platform: 'sms')      end
 
         # update parent's student name
         if not child_name.nil? then parent.update(:child_name => child_name) end

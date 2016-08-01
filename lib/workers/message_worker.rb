@@ -41,7 +41,7 @@ class MessageWorker
           u = User.where(fb_id:recipient).first   
 
         when 'sms'
-          puts "looking for #{recipient} phone"
+          puts "looking for #{recipient} phone in MessageWorker"
           u = User.where(phone:recipient).first
           if u.nil? then return end
         end

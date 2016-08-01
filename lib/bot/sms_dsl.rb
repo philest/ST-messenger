@@ -132,6 +132,7 @@ module Birdv
         end
 
         trans = I18n.t text
+        puts "trans = #{trans}"
         if trans.is_a? Array
           return name_codes trans[@script_day - 1], phone 
         else
