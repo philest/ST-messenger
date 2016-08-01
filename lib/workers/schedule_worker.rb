@@ -13,7 +13,8 @@ class StartDayWorker
   
   def update_day(user, platform)
     n = user.state_table.story_number + 1
-    if platform == 'fb'
+    case platform
+    when 'fb'
       if read_yesterday_story?(user)
         user.state_table.update(story_number: n, 
                                 last_story_read?: false)
@@ -30,8 +31,8 @@ class StartDayWorker
   end
 
   def perform(recipient, platform='fb')
-
-    if platform == 'fb'
+    case platform
+    when 'fb'
       u = User.where(fb_id:recipient).first
     else
       u = User.where(phone:recipient).first
@@ -91,6 +92,9 @@ class ScheduleWorker
         last_story_read_ok = false
       end
 
+      # REMOVE THIS LINE, THIS IS JUST FOR TESTING!!!!!!
+      last_story_read_ok = true
+
       # ensure is within_time_range and that last story read wasn't today!
   		within_time_range(user, range) && last_story_read_ok
   	end
@@ -123,13 +127,18 @@ class ScheduleWorker
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
+    puts "user name = #{user.first_name}"
+    puts "user send_time = #{user.send_time}"
 
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
+    puts "seconds since midnight now = #{now}"
 
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight
+    puts "user's seconds since midnight = #{user_utc}"
+    puts "now - user_utc = #{(Time.now.utc - user_local.utc)/60} minutes, #{(Time.now.utc - user_local.utc)/3600} hours"
 		user_day 	 = get_local_day(Time.now, user)
 
     valid_for_user = acceptable_days.include?(user_day)
@@ -139,12 +148,17 @@ class ScheduleWorker
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
+      puts "valid for user or valid for friend"
 			if now >= user_utc
+        puts "now >= user_utc is #{now - user_utc <= range}"
+
 				return now - user_utc <= range
 			else
+        puts "now < user_utc is #{user_utc - now <  range}"
 				return user_utc - now <  range
 			end
 		end
+    puts "not valid, returning false"
     return false
   end
 
@@ -169,10 +183,17 @@ class ScheduleWorker
   	# check if in daylight savings
 		if tz_init.dst? and not tz_current.dst?
 			send_time = user.send_time + 1.hour
+      # add or subtract the offset from one timezone to another
+      
+
+
+
 		elsif not tz_init.dst? and tz_current.dst?
 			send_time = user.send_time - 1.hour
+
 		else
 			send_time = user.send_time
+
 		end
 
 		send_time

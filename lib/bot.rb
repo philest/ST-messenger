@@ -113,7 +113,7 @@ Bot.on :message do |message|
 
   if db_user.nil?
       register_user(message.sender)
-      BotWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
+      MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
@@ -122,7 +122,7 @@ Bot.on :message do |message|
         script_name = message.text.match(DAY_RQST).to_s.downcase
         if fb_scripts[script_name] != nil
 #          fb_scripts[script_name].run_sequence(sender_id, :init)
-          BotWorker.perform_async(sender_id, script_name, :init, platform='fb')
+          MessageWorker.perform_async(sender_id, script_name, :init, platform='fb')
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end
@@ -131,7 +131,7 @@ Bot.on :message do |message|
         puts "code = #{code}, phone = #{phone}"
         script = Birdv::DSL::ScriptClient.scripts['sms']["day#{code}"]
         if script
-          BotWorker.perform_async(phone, "day#{code}", :init, platform='sms')
+          MessageWorker.perform_async(phone, "day#{code}", :init, platform='sms')
         else
           fb_send_txt(message.sender, "Sorry, that script is not yet available.")
         end
@@ -172,13 +172,13 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    BotWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
+    MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')
     puts script_name
     puts sequence
-    BotWorker.perform_async(sender_id, script_name, sequence, platform='fb')
+    MessageWorker.perform_async(sender_id, script_name, sequence, platform='fb')
   end
 end
 

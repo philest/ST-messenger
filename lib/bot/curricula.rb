@@ -21,7 +21,7 @@ module Birdv
             curr_version = File.basename(f, ".csv").to_i
             @@curricula[curr_version] ||= []
             
-            puts "ROW: #{row} of type #{row.class}"
+            # puts "ROW: #{row} of type #{row.class}"
             @@curricula[curr_version] << row.to_hash.values
           end
         end
