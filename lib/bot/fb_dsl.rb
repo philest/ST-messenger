@@ -46,6 +46,28 @@ module Birdv
         return tjson
       end
 
+      def button_story(args = {})
+        default = {subtitle:'', buttons:[]}
+        assert_keys([:name, :image_url, :title], args)
+        args      = default.merge(args)
+        
+        title     = args[:title]
+        img_url   = args[:image_url]
+        subtitle = args[:subtitle]
+
+        elmnts = {title: title, image_url: img_url, subtitle: subtitle}
+
+        # if buttons are supplied, set 'elements' field
+        if !args[:buttons].empty?
+          elmnts[:buttons]=args[:buttons]
+        else
+          puts "WARNING: no buttons in yo' button_story"
+        end
+
+        # return json hash
+        template_generic(args[:name], [elmnts])
+      end
+
       def get_curriculum_version(recipient)
         user = User.where(fb_id: recipient).first
         if user

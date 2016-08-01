@@ -138,7 +138,7 @@ class SMS < Sinatra::Base
   end
 
 
-post '/' do
+  post '/' do
     puts "enrolling parents..."
 
 
@@ -194,7 +194,6 @@ post '/' do
     # twilio happens in a seperate process :)
     status 201
   end
-
 
 
 end # class SMS < Sinatra::Base
