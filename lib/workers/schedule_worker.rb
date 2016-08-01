@@ -127,18 +127,13 @@ class ScheduleWorker
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
-    puts "user name = #{user.first_name}"
-    puts "user send_time = #{user.send_time}"
 
   	# server timein UTC
 		now 			= Time.now.utc.seconds_since_midnight
-    puts "seconds since midnight now = #{now}"
 
 		# DST-adjusted user time
 		user_local = adjust_tz(user)
 		user_utc	 = user_local.utc.seconds_since_midnight
-    puts "user's seconds since midnight = #{user_utc}"
-    puts "now - user_utc = #{(Time.now.utc - user_local.utc)/60} minutes, #{(Time.now.utc - user_local.utc)/3600} hours"
 		user_day 	 = get_local_day(Time.now.utc, user)
 
     valid_for_user = acceptable_days.include?(user_day)
@@ -148,17 +143,12 @@ class ScheduleWorker
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
-      puts "valid for user or valid for friend"
 			if now >= user_utc
-        puts "now >= user_utc is #{now - user_utc <= range}"
-
 				return now - user_utc <= range
 			else
-        puts "now < user_utc is #{user_utc - now <  range}"
 				return user_utc - now <  range
 			end
 		end
-    puts "not valid, returning false"
     return false
   end
 
@@ -189,7 +179,6 @@ class ScheduleWorker
     puts "user tz_offset = #{user.tz_offset}"
 
     adjusted_send_time = user.send_time - est_adjust
-
 
     puts "before, user.send_time = #{user.send_time}"
     puts "after, user.send_time = #{adjusted_send_time}"

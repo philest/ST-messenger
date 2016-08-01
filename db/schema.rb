@@ -33,6 +33,7 @@ Sequel.migration do
       String :code, :default=>"read\\d+", :text=>true
       String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
       String :signature, :text=>true
+      Integer :tz_offset
     end
     
     create_table(:school_sessions) do
