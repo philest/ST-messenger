@@ -200,7 +200,7 @@ module Birdv
       end
 
       def send( recipient, to_send, type='sms')
-        send_helper(recipient, to_send, @script_day, type='sms')
+        send_helper(recipient, to_send, @script_day, type)
       end
 
       # translate_mms has moved to contact_helpers.rb

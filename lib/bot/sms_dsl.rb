@@ -41,9 +41,9 @@ module Birdv
 
           if user.school
             sig = user.school.signature
-            school_signature = sig.nil?   ? "StoryTime" : sig
+            school = sig.nil?   ? "StoryTime" : sig
           else
-            school_signature = "StoryTime"
+            school = "StoryTime"
           end
 
           str = str.gsub(/__TEACHER__/, teacher)
@@ -136,7 +136,7 @@ module Birdv
         if trans.is_a? Array
           return name_codes trans[@script_day - 1], phone 
         else
-          return names_codes trans, phone
+          return name_codes trans, phone
         end
         
       rescue NoMethodError => e

@@ -53,6 +53,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     end
 
     # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
+    puts "sending second text..."
     send phone_no, txt_sprint, 'sms'
 
     delay phone_no, 'image1', SMS_WAIT
@@ -66,7 +67,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     else
       img = 'http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-nhv.jpg'
     end
-    "sending first image..."
+    puts "sending first image..."
 
     # the new way to do it:
     send phone_no, img, 'mms'

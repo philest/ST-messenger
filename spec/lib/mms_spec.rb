@@ -1,49 +1,67 @@
+require 'spec_helper'
+require 'bot/dsl'
+
 # testing is useful to simulate behavior an uncover blatant bugs.
 # overtesting is just wasteful.
 
+
+
+
 describe 'mms' do
-	context 'StoryTimeScript#translate_mms' do
-		context 'name codes' do
-			it 'finds a user if they have a facebook id but no phone'
+  context 'StoryTimeScript#translate_sms', mms:true do
+    context 'name codes' do
+      it 'translates shit' do
+        @s = Birdv::DSL::StoryTimeScript.new 'day1', 'sms' do
 
-			it 'finds a user if they have a phone but no facebook id'
+        end
 
-			it 'returns the correct string'
-		end
-		it 'translates text correctly'
-	end
+        user = User.create phone: '8186897323'
+        @s.name_codes "hi there", '8186897323'
 
-	context 'ScheduleWorker' do
-		it 'calls perform_async on StartDayWorker with the correct platform arguments'
 
-		it 'filters the right people'
-	end
+      end
 
-	context 'mms scripts' do
-		it 'registers sequences properly'
 
-		it 'makes me proud'
+      it 'finds a user if they have a facebook id but no phone'
 
-		it 'cowers before the Lord'
+      it 'finds a user if they have a phone but no facebook id'
 
-		it 'powers the megalopolips EcoEngine'
+      it 'returns the correct string'
+    end
+    it 'translates text correctly'
+  end
 
-		it 'brings me to the ass kingdom'
+  context 'ScheduleWorker' do
+    it 'calls perform_async on StartDayWorker with the correct platform arguments'
 
-		it 'sends mms to the correct URLS'
-	end
+    it 'filters the right people'
+  end
 
-	context 'when users register with facebook' do 
-		it 'registers them with a fb_id but without a phone number'
+  context 'mms scripts' do
+    it 'registers sequences properly'
 
-		it 'gives users the benefit of the doubt'
+    it 'makes me proud'
 
-		it ''
-	end
+    it 'cowers before the Lord'
 
-	context 'when sending mms' do
-		it 'checks to see if the POST request failed and does something about it'
+    it 'powers the megalopolips EcoEngine'
 
-	end
+    it 'brings me to the ass kingdom'
+
+    it 'sends mms to the correct URLS'
+  end
+
+  context 'when users register with facebook' do 
+    it 'registers them with a fb_id but without a phone number'
+
+    it 'gives users the benefit of the doubt'
+
+    it ''
+  end
+
+  context 'when sending mms' do
+    it 'checks to see if the POST request failed and does something about it'
+
+  end
 
 end
