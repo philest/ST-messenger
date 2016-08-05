@@ -191,8 +191,13 @@ module Birdv
       end
 
 
-      def delay(recipient, sequence_name, time_delay)
-        MessageWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
+      def delay(*args, time_delay, &block)
+        if block_given? 
+          GenericMethodWorker.perform_in(time_delay, &block)
+        else
+          recipient, sequence_name = args
+          MessageWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
+        end
       end
 
       def story(args={})

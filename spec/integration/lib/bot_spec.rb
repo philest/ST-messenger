@@ -13,7 +13,7 @@ module RSpecMixin
 end
 
 # do the stuff here: http://recipes.sinatrarb.com/p/testing/rspec
-describe 'TheBot' do
+describe 'TheBot', integration:true do
 
   # => A crapton of configuration follows!
   #
@@ -683,7 +683,7 @@ describe 'TheBot' do
       expect(@s1).to receive(:send_story).and_return(nil).exactly(6).times
       allow(@s1).to receive(:fb_send_json_to_user).and_return(nil)
 
-      # the scenario is that when theh user clicks 'get_started', they get a
+      # the scenario is that when the user clicks 'get_started', they get a
       # sequence that sends that story. This means that 6 ppl should get
       # a read_yesterday_story state_table field set to true.
       Sidekiq::Testing.fake! do 
@@ -697,10 +697,14 @@ describe 'TheBot' do
 
       # move to Monday! Stories be coming out!
       # we would expect fb_ids [1,7] to be recieving something
-      Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))        
+      some_time = Time.new(2016, 6, 27, 23, 0, 0, 0)
+      Timecop.freeze(some_time)        
       
       expect{
         Sidekiq::Testing.fake! do
+          puts "PERFORMING JOB NOW!!!!!!!!!!!"
+          puts "THERE ARE #{User.count} people in the database"
+          puts "#{User.all.inspect}"
           @sw.perform (@time_range/2)
         end
         ScheduleWorker.drain

@@ -4,16 +4,11 @@ require 'bot/dsl'
 # testing is useful to simulate behavior an uncover blatant bugs.
 # overtesting is just wasteful.
 
-
-
-
 describe 'mms' do
   context 'StoryTimeScript#translate_sms', mms:true do
     context 'name codes' do
       it 'translates shit' do
-        @s = Birdv::DSL::StoryTimeScript.new 'day1', 'sms' do
-
-        end
+        @s = Birdv::DSL::StoryTimeScript.new 'day1', 'sms' do; end
 
         user = User.create phone: '8186897323'
         @s.name_codes "hi there", '8186897323'

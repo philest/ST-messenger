@@ -63,6 +63,10 @@ describe ScheduleWorker do
         Timecop.freeze(@west_time)
       end   
 
+      after(:each) do
+        Timecop.return
+      end
+
       it "returns true for users who are right on time" do
         on_time = User.where(fb_id: "12345").first
         expect(@s.within_time_range(on_time, @interval, [Time.now.wday])).to be true
@@ -84,7 +88,7 @@ describe ScheduleWorker do
       it "does not send messages to a user twice" do
         User.each {|u| u.destroy } # clean database
 
-        user = User.create(:send_time => @west_time + @interval - 1.second)
+        user = User.create(:send_time => @time + @interval - 1.second, tz_offset:-7)
         user.state_table.update(story_number: @story_num)
         expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
         Timecop.freeze(Time.now + @time_range)

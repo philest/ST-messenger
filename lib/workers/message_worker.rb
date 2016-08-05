@@ -7,11 +7,10 @@ class GenericMethodWorker
   sidekiq_options :retry => 1, 
                   unique: :until_and_while_executing, 
                   unique_expiration: 4
-
-  def perform(recipient, &block)
-    ret = instance_exec(recipient, &block)
+                  
+  def perform(&block)
+    instance_exec(&block) 
   end
-
 end
 
 class MessageWorker 
