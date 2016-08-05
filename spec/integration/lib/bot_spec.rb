@@ -76,8 +76,6 @@ describe 'TheBot', integration:true do
   end
   
 
-
-
   # => We do the POST tests
   #
   #

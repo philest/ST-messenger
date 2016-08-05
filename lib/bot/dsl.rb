@@ -190,14 +190,18 @@ module Birdv
         end
       end
 
+      def delay_inline(time_delay, &block)
+        GenericMethodWorker.perform_in(time_delay, &block)
+      end
+
 
       def delay(*args, time_delay, &block)
-        if block_given? 
-          GenericMethodWorker.perform_in(time_delay, &block)
-        else
+        # if block_given?
+          # GenericMethodWorker.perform_in(time_delay, &block)
+        # else
           recipient, sequence_name = args
           MessageWorker.perform_in(time_delay, recipient, @script_name, sequence_name, platform=@platform)
-        end
+        # end
       end
 
       def story(args={})

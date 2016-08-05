@@ -125,7 +125,7 @@ class ScheduleWorker
   end
 
   # need to make sure the send_time column is a Datetime type
-  def within_time_range(user, range, acceptable_days = [3])
+  def within_time_range(user, range, acceptable_days = [3,4,5])
   	# TODO: ensure that Time.now is in UTC time
 
   	# server timein UTC
@@ -193,10 +193,11 @@ class ScheduleWorker
     # problem: sometimes you add a day to new_send_time, sometimes you don't, depending on the timezone.
 
     # check if we go forward or backward a day in adjusting the send time to UTC
-    day_change = adjusted_send_time.day - user.send_time.day
+    # day_change = adjusted_send_time.day - user.send_time.day
+    # puts "day change = #{day_change}"
 
     ast = adjusted_send_time
-    new_send_time = Time.new(Time.now.year, Time.now.month, Time.now.day + day_change, ast.hour, ast.min, ast.sec, ast.utc_offset)
+    new_send_time = Time.new(Time.now.utc.year, Time.now.utc.month, Time.now.utc.day, ast.hour, ast.min, ast.sec, ast.utc_offset)
 
     puts "before, user.send_time = #{user.send_time}"
     puts "after, user.send_time (new_send_time) = #{new_send_time}"

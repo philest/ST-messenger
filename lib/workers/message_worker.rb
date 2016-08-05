@@ -9,7 +9,11 @@ class GenericMethodWorker
                   unique_expiration: 4
                   
   def perform(&block)
-    instance_exec(&block) 
+    if block_given?
+      instance_exec(&block)
+    else
+      puts "not block given"
+    end
   end
 end
 
