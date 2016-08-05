@@ -125,7 +125,7 @@ class ScheduleWorker
   end
 
   # need to make sure the send_time column is a Datetime type
-  def within_time_range(user, range, acceptable_days = [3,4,5])
+  def within_time_range(user, range, acceptable_days = [3])
   	# TODO: ensure that Time.now is in UTC time
 
   	# server timein UTC
