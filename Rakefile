@@ -27,6 +27,10 @@ task :tunnel do |t|
   exec("lt -s quailapp -p 5000")
 end
 
+task :logs do |t|
+  exec("heroku logs --tail -a birdv")
+end
+
 
 namespace :db do
   require "sequel"

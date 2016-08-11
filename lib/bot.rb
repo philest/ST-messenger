@@ -46,6 +46,7 @@ HAHA_MSG = /(haha)+|(jaja)+/i
 ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
 LOVE_MSG = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
 EMOTICON_MSG = /(:\))|(:D)|(;\))|(:p)/
+OK_MSG = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
 
 def get_reply(body, user)
   our_reply = ''
@@ -66,7 +67,9 @@ def get_reply(body, user)
   when LOVE_MSG
     our_reply = "^_^"
   when EMOTICON_MSG
-    our_reply = "^_^"      
+    our_reply = "^_^"  
+  when OK_MSG
+    our_reply = ":)"    
   else #default msg 
     our_reply = I18n.t 'user_response.default'
   end

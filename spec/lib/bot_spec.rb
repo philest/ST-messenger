@@ -347,6 +347,22 @@ def app() Facebook::Messenger::Server end
 
 		end
 
+		describe "OK" do
+			before(:example) do
+				@user = create(:user, first_name: "Ramon")
+	    	end
+
+			it "replies correctly to \'OK\'" do 
+				@reply = get_reply("OK", @user)
+				expect(@reply).to eq ":)"
+			end 
+
+			it "replies correctly to \'k\'" do 
+				@reply = get_reply("k", @user)
+				expect(@reply).to eq ":)"
+			end 
+
+		end
 
 		describe "is_image?" do 
 			context "when given a pure-ascii text" do 
