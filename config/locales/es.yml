@@ -5,8 +5,8 @@ es:
     stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
     thanks: "De nada :)"
     robot:  "¡Hola __PARENT__! StoryTime es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
-    default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto. Si necesitas ayuda, escribe 'ayuda'."
-    end_conversation: "Voy a ver su mensaje en la noche! Para obtener ayuda, póngase en contacto 561-212-5831"
+    default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto :)."
+    end_conversation: "Voy a ver su mensaje en la noche! Si necesitas ayuda, escribe 'ayuda'"
   scripts:
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrutes."
