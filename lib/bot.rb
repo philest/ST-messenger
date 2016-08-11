@@ -44,7 +44,7 @@ STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)/i
 THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
 HAHA_MSG = /(haha)+|(jaja)+/i 
 ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
-
+LOVE_MSG = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
 
 
 def get_reply(body, user)
@@ -63,6 +63,8 @@ def get_reply(body, user)
     our_reply = ":D"
   when ROBOT_MSG
     our_reply = I18n.t 'user_response.robot'
+  when LOVE_MSG
+    our_reply = "^_^"    
   else #default msg 
     our_reply = I18n.t 'user_response.default'
   end

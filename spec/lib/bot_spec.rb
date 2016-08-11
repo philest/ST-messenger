@@ -178,7 +178,7 @@ def app() Facebook::Messenger::Server end
 	    	end
 
 			it "replies correctly" do 
-				expect(@reply).to eq "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
+				expect(@reply).to eq "Hi __PARENT__! I'm away now but I'll see your message soon :)"
 			end 
 
 			context "when the last message was an unknown message" do
@@ -191,7 +191,7 @@ def app() Facebook::Messenger::Server end
 
 
        stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831\"}}",
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help just enter 'help'\"}}",
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
@@ -310,7 +310,42 @@ def app() Facebook::Messenger::Server end
 			end 
 		end  
 
+		describe "LOVE" do
+			before(:example) do
+				@user = create(:user, first_name: "Ramon")
+	    	end
 
+			it "replies correctly to \'I love it\'" do 
+				@reply = get_reply("I love it", @user)
+				expect(@reply).to eq "^_^"
+			end 
+
+			it "replies correctly to \'They will love it\'" do 
+				@reply = get_reply("They will love it", @user)
+				expect(@reply).to eq "^_^"
+			end
+
+			it "replies correctly to \'They will like it\'" do
+				@reply = get_reply("They will like it", @user)
+				expect(@reply).to eq "^_^"
+			end
+
+			it "replies correctly to \'me gusta mucho\'" do
+				@reply = get_reply("me gusta mucho", @user)
+				expect(@reply).to eq "^_^"
+			end
+
+
+			it "replies correctly to \'they will enjoy it\'" do
+				@reply = get_reply("they will enjoy it", @user)
+				expect(@reply).to eq "^_^"
+			end
+
+
+
+			it "replies correctly to \'I do not love it\'"
+
+		end
 
 
 		describe "is_image?" do 
