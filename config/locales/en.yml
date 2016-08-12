@@ -20,8 +20,14 @@ en:
       - "Hi __PARENT__, here’s another story!"    
       - "Hi __PARENT__, here’s another story!"      
       - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"    
+      - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"      
     buttons:
       story_img_url:
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
@@ -41,13 +47,18 @@ en:
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"        
+        - "Another story will come in a few days. Great job! :)"
         - "You'll get another story in a few nights!"        
+        - "Another story will come in a few days. Great job! :)"
       title:
         - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Let's read tonight's story."

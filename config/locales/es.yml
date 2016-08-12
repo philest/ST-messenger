@@ -18,8 +18,14 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"      
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"      
     buttons:
       story_img_url:
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
@@ -41,9 +47,15 @@ es:
         - "Enviaré otro cuento mañana por la noche :)"
         - "Enviaré otro cuento mañana por la noche :)"
         - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
+        - "Enviaré otro cuento mañana por la noche :)"
       title:
         - "Vamos a leer el cuento nuevo."
         - "Vamos a leer el cuento nuevo."
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
+        - "¡Su cuento nuevo ya viene!"
         - "¡Su cuento nuevo ya viene!"
         - "¡Su cuento nuevo ya viene!"
         - "¡Su cuento nuevo ya viene!"
