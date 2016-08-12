@@ -42,6 +42,7 @@ gem 'sidekiq', 	'~>4.1.2'
 gem 'sidekiq-unique-jobs'
 gem 'clockwork','~>2.0.0'
 gem 'pony'
+gem 'twilio-ruby'
 
 gem 'dotenv', '~> 2.1', '>= 2.1.1'
 
