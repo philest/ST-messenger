@@ -18,6 +18,7 @@ require 'json'
 require 'pony'
 require "email_spec"
 require "email_spec/rspec"
+require 'rack/test'
 
 require_relative '../config/initializers/locale'
 
