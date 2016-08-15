@@ -21,7 +21,6 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
     first_msg = txt_sprint + '.first'
     
-    
     send phone_no, first_msg, 'sms'
 
     # the new way to delay would look something like this.....

@@ -1,0 +1,163 @@
+require 'spec_helper'
+require 'bot/dsl'
+require 'workers'
+
+# testing is useful to simulate behavior and uncover blatant bugs.
+# overtesting is just wasteful.
+
+describe 'mms' do
+
+
+  context 'running sequences' do
+    it 'uses phone number instead of fb_id to search for users' do
+      script = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
+        sequence 'test' do; end
+      end
+      # make sure that running the sequence update's the user's last_sequence_seen
+      user = User.create(phone: '8186897323', platform: 'sms')
+
+      script.run_sequence(user.phone, 'test')
+
+      u = User.where(phone: '8186897323').first
+
+      expect(u.state_table.last_sequence_seen).to eq 'test'
+
+    end
+
+    it 'selects from the pool of sms scripts when the script type is sms' do 
+    end
+
+  end
+
+  context 'day1 mms' do
+    before(:each) do
+      @day1 = Birdv::DSL::ScriptClient.scripts['sms']['day1']
+
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20Mx.%20GlottleStop.%20I%27ll%20be%20texting%20your%20child%20books%20with%20StoryTime%21%0A%0A",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+    end
+
+    context 'the user has a teacher' do
+
+      before(:each) do
+        @teacher = Teacher.create(signature: 'Mx. GlottleStop')
+        @user = User.create(phone: '8186897323')
+        @teacher.add_user(@user)
+      end
+      
+      it 'sends the has_teacher.first text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.first", script_day=1, type='sms')
+        
+        @day1.run_sequence(@user.phone, 'firstmessage')
+      end
+
+      it 'sends the has_teacher.second text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.second", script_day=1, type='sms')
+
+        @day1.run_sequence(@user.phone, 'firstmessage2')
+      end
+
+    end 
+
+
+    context 'the user has a school' do
+
+      before(:each) do
+        @school = School.create(signature: 'My Asshole')
+        @user = User.create(phone: '8186897323')
+        @school.add_user(@user)
+      end
+      
+      it 'sends the has_school.first text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_school.first", script_day=1, type='sms')
+        
+        @day1.run_sequence(@user.phone, 'firstmessage')
+      end
+
+      it 'sends the has_school.second text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_school.second", script_day=1, type='sms')
+
+        @day1.run_sequence(@user.phone, 'firstmessage2')
+      end
+
+    end 
+
+    context 'default' do
+
+      before(:each) do
+        @user = User.create(phone: '8186897323')
+      end
+      
+      it 'sends the default text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_none.first", script_day=1, type='sms')
+        
+        @day1.run_sequence(@user.phone, 'firstmessage')
+      end
+
+      it 'sends the has_none.second text to the user' do
+        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_none.second", script_day=1, type='sms')
+
+        @day1.run_sequence(@user.phone, 'firstmessage2')
+      end
+
+    end 
+
+  end
+
+
+
+  context 'StoryTimeScript#translate_sms', mms:true do
+    context 'name codes' do
+      it 'translates shit' do
+        @s = Birdv::DSL::StoryTimeScript.new 'day1', 'sms' do; end
+
+        user = User.create phone: '8186897323'
+        @s.name_codes "hi there", '8186897323'
+
+
+      end
+      it 'finds a user if they have a facebook id but no phone'
+
+      it 'finds a user if they have a phone but no facebook id'
+
+      it 'returns the correct string'
+    end
+    it 'translates text correctly'
+  end
+
+  context 'ScheduleWorker' do
+    it 'calls perform_async on StartDayWorker with the correct platform arguments'
+
+    it 'filters the right people'
+  end
+
+  context 'mms scripts' do
+    it 'registers sequences properly'
+
+
+    it 'sends mms to the correct URLS'
+  end
+
+  context 'when users register with facebook' do 
+    it 'registers them with a fb_id but without a phone number'
+
+  end
+
+  context 'when sending mms' do
+    it 'checks to see if the POST request failed and does something about it'
+
+    it 'sends a POST request to the correct URLs in st-enroll'
+
+
+  end
+
+end
+
+
+
+
+
+
