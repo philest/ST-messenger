@@ -145,6 +145,8 @@ module Birdv
       end # translate_mms
 
 
+      # perhaps add a sequence_name, script_name here and include those params in the post for the callback
+
       def send_helper(phone, to_send, script_day, type)
         # create a story() function for mms, which incorporates delays.
         case type

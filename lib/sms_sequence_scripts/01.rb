@@ -21,6 +21,9 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
     first_msg = txt_sprint + '.first'
     
+
+    # in send(), add an extra parameter: next sequence name, so that we can call on that in the callback
+
     send phone_no, first_msg, 'sms'
 
     # the new way to delay would look something like this.....
@@ -57,6 +60,8 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     # delay_inline SMS_WAIT do 
     #   send phone_no, second_msg, 'sms'
     # end
+
+    # instead of waiting for a delay, wait for the callback response from st-enroll
 
     delay phone_no, 'image1', SMS_WAIT
   end

@@ -5,7 +5,23 @@ require 'workers'
 # testing is useful to simulate behavior and uncover blatant bugs.
 # overtesting is just wasteful.
 
-describe 'mms' do
+describe 'sms' do
+
+  context 'when sending sms/mms to st-enroll' do
+
+    # TODO: have to figure out a way to get the correct responses from st-enroll back to birdv.
+    # 
+    # The thing is, we're calling a worker in st-enroll/txt, meaning that we can't immediately get
+    # the Twilio results. We somehow have to tie st-enroll and birdv together, perhaps through some job id or something.
+    # Or maybe just the person's phone number or something, which is POSTED back through the callback url 
+    # on the st-enroll side (the Twilio callback url, that is).
+
+
+    it 'checks to see if the POST request failed and does something about it'
+
+    it 'sends a POST request to the correct URLs in st-enroll'
+
+  end
 
 
   context 'running sequences' do
@@ -24,7 +40,7 @@ describe 'mms' do
 
     end
 
-    it 'selects from the pool of sms scripts when the script type is sms' do 
+    it 'selects from the pool of sms scripts when the script type is sms' do
     end
 
   end
@@ -107,8 +123,6 @@ describe 'mms' do
 
   end
 
-
-
   context 'StoryTimeScript#translate_sms', mms:true do
     context 'name codes' do
       it 'translates shit' do
@@ -128,31 +142,9 @@ describe 'mms' do
     it 'translates text correctly'
   end
 
-  context 'ScheduleWorker' do
-    it 'calls perform_async on StartDayWorker with the correct platform arguments'
-
-    it 'filters the right people'
-  end
-
-  context 'mms scripts' do
-    it 'registers sequences properly'
 
 
-    it 'sends mms to the correct URLS'
-  end
 
-  context 'when users register with facebook' do 
-    it 'registers them with a fb_id but without a phone number'
-
-  end
-
-  context 'when sending mms' do
-    it 'checks to see if the POST request failed and does something about it'
-
-    it 'sends a POST request to the correct URLs in st-enroll'
-
-
-  end
 
 end
 
