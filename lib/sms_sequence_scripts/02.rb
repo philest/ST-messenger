@@ -8,10 +8,10 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		puts "sending intro txt..."
 
 		# the new way to do it:
-		send phone_no, txt, 'sms'
+		send_sms phone_no, txt, 'image1'
 
 		# delay the conventional SMS delay
-		delay phone_no, 'image1', SMS_WAIT
+		# delay phone_no, 'image1', SMS_WAIT
 	end
 
 
@@ -21,9 +21,9 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		"sending first image..."
 
 		# the new way to do it:
-		send phone_no, img, 'mms'
+		send_mms phone_no, img, 'image2'
 
-		delay phone_no, 'image2', MMS_WAIT
+		# delay phone_no, 'image2', MMS_WAIT
 	end
 
 	# No button on the first day! 
@@ -33,9 +33,9 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		img = 'https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg'
 
 		# the new way to do it:
-		send phone_no, img, 'mms'
+		send_mms phone_no, img, 'goodbye'
 
-		delay phone_no, 'goodbye', MMS_WAIT
+		# delay phone_no, 'goodbye', MMS_WAIT
 	end
 
 	sequence 'goodbye' do |phone_no|
@@ -44,7 +44,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		txt = 'scripts.buttons.window_text'
 
 		# the new way to do it:
-		send phone_no, txt, 'sms'
+		send_sms phone_no, txt
 	end
 end 
 

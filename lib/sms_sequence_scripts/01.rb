@@ -24,14 +24,23 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
     # in send(), add an extra parameter: next sequence name, so that we can call on that in the callback
 
-    send phone_no, first_msg, 'sms'
+    send_sms phone_no, text=first_msg, next_sequence='firstmessage2'
+
+
+    next_sequence phone_no, 'firstmessage2'
+
+
+    # wait, can we disover the next sequence by the data structure that sequences are stored in?
+    # like, can they go in order naturally? 
+    # 
+    # or do we have to have a separate column for next_sequence for users?
 
     # the new way to delay would look something like this.....
     # delay_inline SMS_WAIT do 
     #   send phone_no, second_msg, 'sms'
     # end
 
-    delay phone_no, 'firstmessage2', SMS_WAIT
+    # delay phone_no, 'firstmessage2', SMS_WAIT
   end
 
 
@@ -54,7 +63,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
     second_msg = txt_sprint + '.second'
     
-    send phone_no, second_msg, 'sms'
+    send_sms phone_no, second_msg, 'image1'
 
     # # the new way to delay would look something like this.....
     # delay_inline SMS_WAIT do 
@@ -63,7 +72,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
     # instead of waiting for a delay, wait for the callback response from st-enroll
 
-    delay phone_no, 'image1', SMS_WAIT
+    # delay phone_no, 'image1', SMS_WAIT
   end
 
 
@@ -77,7 +86,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     puts "sending first image..."
 
     # the new way to do it:
-    send phone_no, img, 'mms'
+    send_mms phone_no, img
     
   end
 

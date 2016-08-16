@@ -294,7 +294,7 @@ module Birdv
       end
 
       # the type parameter is useless here
-      def send_helper(fb_id, to_send, script_day, type)
+      def send_helper(fb_id, to_send, script_day)
         # if lambda, run it! e.g. send(story(args)) 
           if is_story?(to_send)
             to_send.call(fb_id)

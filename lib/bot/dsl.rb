@@ -208,14 +208,23 @@ module Birdv
         create_story(args, @script_day)
       end
 
-      def send( recipient, to_send, type='sms')
-        send_helper(recipient, to_send, @script_day, type)
+      # the old way of sending....
+      # def send( recipient, to_send, type='sms')
+      #   send_helper(recipient, to_send, @script_day, type)
+      # end
+
+      def send( fb_id, to_send )
+        send_helper(fb_id, to_send, @script_day)
       end
 
-      # translate_mms has moved to contact_helpers.rb
-      # send_sms has moved to contact_helpers.rb
-      # send_mms has moved to contact_helpers.rb
+      def send_sms( phone, text, next_sequence=nil )
+        send_sms_helper( phone, text, @script_name, next_sequence )
+      end
 
+      def send_mms( phone, img_url, next_sequence=nil )
+        send_mms_helper( phone, img_url, @script_name, next_sequence )
+      end
+      
     end
   end
 end
