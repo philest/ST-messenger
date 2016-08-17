@@ -77,7 +77,7 @@ describe 'sms' do
 
     end 
 
-    it 'does the first three stories totally right' do
+    it 'does the first night of the program correctly for @u1 (on story 2) and @u2 (on story 1)' do
       Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday
       allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
         original_method.call(*args, [1,3,5], &block)
@@ -90,6 +90,10 @@ describe 'sms' do
       # allow_any_instance_of(StartDayWorker).to receive(:perform).and_wrap_original do |original_method, *args| 
       #   puts "ASSSSSSSS!!!!!!!"
       # end 
+
+      # users' initial state...
+      expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 0
+      expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 1
 
       expect(User.count).to eq 2
       # expect(StartDayWorker).to receive(:perform_async).exactly(User.count).times
@@ -104,7 +108,6 @@ describe 'sms' do
       expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 1
       expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 2
 
-
       # Tuesday, we're not sending any over!
       Timecop.freeze(Time.now + 1.days)
 
@@ -117,49 +120,44 @@ describe 'sms' do
       # Wednesday, it's StoryTime day!
       Timecop.freeze(Time.now + 1.days)
 
-      # expect(@day2).to receive(:run_sequence).once.with('5612125831', :init)
-      # expect(@day3).to receive(:run_sequence).once.with('8186897323', :init)
-
-      # Sidekiq::Testing.inline! do
-      #   @sw.perform
-      # end
-
-
-      # expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 2
-      # expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 3
-
-
-
-
-
-
-
-
-      # expect{
-      #   Sidekiq::Testing.fake! do
-      #     @sw.perform
-      #   end
-      #   ScheduleWorker.drain
-      # }.to change{StartDayWorker.jobs.size}.by 2
+      expect {
+        Sidekiq::Testing.fake! do
+          @sw.perform
+        end
+        ScheduleWorker.drain
+      }.to change{StartDayWorker.jobs.size}.by 2
 
 
     end
 
-    it 'sends day1 to @u2' do
-      # I think there may be a problem with the default story_number or how we're updating story_number for new users.  
-      # It's possible the first story won't get sent... it'll skip to day2. 
-      # 
+    it 'moves up a day for both users' do
+
+      Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0)) # Wednesday
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, [1,3,5], &block)
+      end
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      User.where(phone: '5612125831').first.state_table.update(story_number: 1)
+      User.where(phone: '8186897323').first.state_table.update(story_number: 2)
+
+
+      expect(@day2).to receive(:run_sequence).once.with('5612125831', :init)
+      expect(@day3).to receive(:run_sequence).once.with('8186897323', :init)
+
+
+      Sidekiq::Testing.inline! do
+        @sw.perform
+      end
+
+      expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 2
+      expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 3
 
     end
-
-
-
-
-
 
   end
-
-
-
 
 end
