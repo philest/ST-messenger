@@ -27,7 +27,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     send_sms phone_no, text=first_msg, next_sequence='firstmessage2'
 
 
-    next_sequence phone_no, 'firstmessage2'
+    # next_sequence phone_no, 'firstmessage2'
 
 
     # wait, can we disover the next sequence by the data structure that sequences are stored in?

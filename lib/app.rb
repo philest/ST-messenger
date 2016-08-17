@@ -195,38 +195,62 @@ class SMS < Sinatra::Base
     status 201
   end
 
+  get '/test' do
+    MessageWorker.perform_async('8186897323', script_name='day2', sequence='firstmessage', platform='sms')
+  end
 
 
-  post '/sequence_callback' do
-    # have some params like:
-    #   params[:sequence_name]
-    #   params[:script_name]
-    #   params[:recipient] 
+  post '/twilio_callback_url' do
 
-    # use MessageSID from the callback to lookup the phone number that the message was sent to.
-    # i.e. 8186897323
-    # then lookup that phone number from the database to check what the last_sequence_seen was
-    # for that user
-    #   meaning that somewhere, maybe in the dsl or scripts, we have to update a user's last_sequence_seen column
-    #
-    # 
-    # we need some way of telling the next sequence from last_sequence_seen, but the point is, from the last sequence
-    # that a user saw which we can record on the birdv side, we can figure out what next to send them. 
+    puts "IN THE BIRDV TWILIO CALLBACK URL YAY BIRDV!!!"
+    puts params.inspect
 
-    messageSID = params[:MessageSid]
+    phone         = params['phone']
+    script        = params['script']
+    next_sequence = params['next_sequence'] 
+    messageSid    = params['MessageSid']
+    puts script, next_sequence, messageSid
 
-    # do GET to twilio api to get the fucking message. Then lookup the phone number. This may have to
-    # be done on the st-enroll side because it's using the Twilio api, fuck it. 
-    # If it's done on the twilio side, just have that POST to fucking birdv with the phone number and status info
-    phone = params[:phone]
+    status = params['MessageStatus']
+    puts status
 
-    user = User.where(phone: phone)
 
-    next_sequence = user.state_table.next_sequence
-    # somehow get the user's script_day, should be easy 
+    if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
+      MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform='sms') 
+    elsif next_sequence.to_s == ''
+      puts "no more sequences, we're all done with this script :)"
+    elsif status == 'failed'
+      # do something else
+      puts "message failed to send."
+    end
 
-    MessageWorker.perform_async(phone, script_name='scriptDay, whatever', sequence=next_sequence, platform='sms') 
 
+    # # have some params like:
+    # #   params[:sequence_name]
+    # #   params[:script_name]
+    # #   params[:recipient] 
+
+    # # use MessageSID from the callback to lookup the phone number that the message was sent to.
+    # # i.e. 8186897323
+    # # then lookup that phone number from the database to check what the last_sequence_seen was
+    # # for that user
+    # #   meaning that somewhere, maybe in the dsl or scripts, we have to update a user's last_sequence_seen column
+    # #
+    # # 
+    # # we need some way of telling the next sequence from last_sequence_seen, but the point is, from the last sequence
+    # # that a user saw which we can record on the birdv side, we can figure out what next to send them. 
+
+    # messageSID = params[:MessageSid]
+
+    # # do GET to twilio api to get the fucking message. Then lookup the phone number. This may have to
+    # # be done on the st-enroll side because it's using the Twilio api, fuck it. 
+    # # If it's done on the twilio side, just have that POST to fucking birdv with the phone number and status info
+    # phone = params[:phone]
+
+    # user = User.where(phone: phone)
+
+    # next_sequence = user.state_table.next_sequence
+    # # somehow get the user's script_day, should be easy 
 
   end
 

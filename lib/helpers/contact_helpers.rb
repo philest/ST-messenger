@@ -1,3 +1,5 @@
+require_relative '../../config/pony'
+
 module ContactHelpers
 
   def send_sms( phone_no, text )

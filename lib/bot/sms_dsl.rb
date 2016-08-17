@@ -147,14 +147,17 @@ module Birdv
 
       # perhaps add a sequence_name, script_name here and include those params in the post for the callback
 
-      def next_sequence( phone, sequence_name )
-        user = User.where( phone: phone ).first
-        user.state_table.update( next_sequence: sequence_name )
-        return true # or whatever
-      end
+      # def next_sequence( phone, sequence_name )
+      #   user = User.where( phone: phone ).first
+      #   user.state_table.update( next_sequence: sequence_name )
+      #   return true # or whatever
+      # end
 
 
       def send_sms_helper( phone, text, script_name, next_sequence_name )
+        puts "in send_sms_helper, next_sequence is #{next_sequence_name}"
+        puts "in send_sms_helper, script_name is #{script_name}"
+
         text = translate_sms(phone, text)
         if text == false
           puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
@@ -170,7 +173,7 @@ module Birdv
         })
       end
 
-      def send_mms_helper( phone, img_url, script_name, sequence_name )
+      def send_mms_helper( phone, img_url, script_name, next_sequence_name )
         HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
           body: {
             recipient: phone,

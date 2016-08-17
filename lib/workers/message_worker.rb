@@ -46,7 +46,10 @@ class MessageWorker
         when 'sms'
           puts "looking for #{recipient} phone in MessageWorker"
           u = User.where(phone:recipient).first
-          if u.nil? then return end
+          if u.nil? then 
+            puts "user with phone #{recipient} doesn't exist bro"
+            return 
+          end
         end
 
 
