@@ -76,6 +76,8 @@ class SMS < Sinatra::Base
       puts "someone texted in, creating user..."
 
       new_user = User.create(phone: phone, platform: 'sms')
+      # story_number needs to start at 0 for texting
+      # new_user.state_table.update(story_number: 0)
 
 
       # TODO: error handling, nil-value checking
@@ -124,7 +126,7 @@ class SMS < Sinatra::Base
       #       they must also reset to english and not leak between jobs.
 
       # perform the day1 mms sequence
-      MessageWorker.perform_async(phone, script_name='day1', sequence='firstmessage', platform='sms')
+      StartDayWorker.perform_async(phone, platform='sms')
 
 
       our_phones = ["5612125831", "8186897323", "3013328953"]
@@ -175,7 +177,10 @@ class SMS < Sinatra::Base
         parent = User.where(phone: phone_num).first
 
         # create new parent if did'nt already exists
-        if parent.nil?   then parent = User.create(:phone => phone_num, platform: 'sms')      end
+        if parent.nil? then 
+          parent = User.create(:phone => phone_num, platform: 'sms')
+          # parent.state_table.update(story_number: 0)
+        end
 
         # update parent's student name
         if not child_name.nil? then parent.update(:child_name => child_name) end

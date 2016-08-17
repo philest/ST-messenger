@@ -24,26 +24,26 @@ describe 'sms' do
   end
 
 
-  # context 'running sequences' do
-  #   it 'uses phone number instead of fb_id to search for users' do
-  #     script = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
-  #       sequence 'test' do; end
-  #     end
-  #     # make sure that running the sequence update's the user's last_sequence_seen
-  #     user = User.create(phone: '8186897323', platform: 'sms')
+  context 'running sequences' do
+    it 'uses phone number instead of fb_id to search for users' do
+      script = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
+        sequence 'test' do; end
+      end
+      # make sure that running the sequence update's the user's last_sequence_seen
+      user = User.create(phone: '8186897323', platform: 'sms')
 
-  #     script.run_sequence(user.phone, 'test')
+      script.run_sequence(user.phone, 'test')
 
-  #     u = User.where(phone: '8186897323').first
+      u = User.where(phone: '8186897323').first
 
-  #     expect(u.state_table.last_sequence_seen).to eq 'test'
+      expect(u.state_table.last_sequence_seen).to eq 'test'
 
-  #   end
+    end
 
-  #   it 'selects from the pool of sms scripts when the script type is sms' do
-  #   end
+    it 'selects from the pool of sms scripts when the script type is sms' do
+    end
 
-  # end
+  end
 
   context 'day1 mms' do
     before(:each) do
@@ -58,7 +58,7 @@ describe 'sms' do
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
-           stub_request(:post, "http://localhost:4567/txt").
+      stub_request(:post, "http://localhost:4567/txt").
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20My%20Asshole.%20We%27ll%20be%20texting%20you%20free%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
@@ -70,11 +70,20 @@ describe 'sms' do
          to_return(:status => 200, :body => "", :headers => {})
 
 
-       stub_request(:post, "http://localhost:4567/txt").
+      stub_request(:post, "http://localhost:4567/txt").
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
     end
+
+    # it 'sends a user the first story on text-in' do
+    #   sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>"Please, you have to help me, I've been trapped in the Phantom Zone for centuries, there's not much tiiiiiiiiiiiiiiiiiiiiiiiiii.......", "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+    #   expect(@day1).to receive(:run_sequence).with('5555555555', 'firstmessage'.to_sym)
+    #   Sidekiq::Testing.inline! do
+    #     post '/sms', sms_params
+    #   end
+
+    # end
 
     context 'the user has a teacher' do
 

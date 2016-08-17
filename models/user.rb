@@ -23,6 +23,12 @@ class User < Sequel::Model(:users)
 		st = StateTable.create(user_id: self.id)
 		self.state_table = st
 		st.user = self
+
+		# new users on sms need to have a story_number of 0
+		if self.platform == 'sms'
+			self.state_table.update(story_number: 0)
+		end
+
 		# set default curriculum version
 		ENV["CURRICULUM_VERSION"] ||= '0'
 		self.update(curriculum_version: ENV["CURRICULUM_VERSION"].to_i)

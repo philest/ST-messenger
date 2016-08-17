@@ -80,8 +80,8 @@ class ScheduleWorker
 
       ut =  user.state_table.last_story_read_time
 
-      puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
-      puts ""
+      # puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
+      # puts ""
 
       if !ut
         last_story_read_ok = true
@@ -102,7 +102,7 @@ class ScheduleWorker
     p e.message " something went wrong, not filtering users"
     filtered = []
   ensure
-    puts "filtered = #{filtered.to_s}"
+    # puts "filtered = #{filtered.to_s}"
     return filtered
   end
 
@@ -136,8 +136,8 @@ class ScheduleWorker
     user_sendtime_local = adjust_tz(user)
     # user_sendtime_utc  = user_sendtime_local.utc.seconds_since_midnight
     user_sendtime_utc   = user_sendtime_local.utc
-    puts "now = #{now}"
-    puts "user utc = #{user_sendtime_utc}"
+    # puts "now = #{now}"
+    # puts "user utc = #{user_sendtime_utc}"
 		user_day 	 = get_local_day(Time.now.utc, user)
 
     valid_for_user = acceptable_days.include?(user_day)
@@ -148,12 +148,12 @@ class ScheduleWorker
 
     if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
 			if now >= user_sendtime_utc
-        puts "now >= user_sendtime_utc"
-        puts "now - user_sendtime_utc = #{now-user_sendtime_utc}"
+        # puts "now >= user_sendtime_utc"
+        # puts "now - user_sendtime_utc = #{now-user_sendtime_utc}"
 				return now - user_sendtime_utc <= range
 			else
-        puts "now < user_sendtime_utc"
-        puts "user_sendtime_utc - now = #{user_sendtime_utc - now}"
+        # puts "now < user_sendtime_utc"
+        # puts "user_sendtime_utc - now = #{user_sendtime_utc - now}"
 				return user_sendtime_utc - now <  range
 			end
 		end
@@ -184,7 +184,7 @@ class ScheduleWorker
     est_offset = 4 # the tz_offset of EST, the default timezone
 
     est_adjust = (user.tz_offset + est_offset).hours
-    puts "user tz_offset = #{user.tz_offset}"
+    # puts "user tz_offset = #{user.tz_offset}"
 
     # in Pacific time, this would be adding a positive number of hours
     adjusted_send_time = user.send_time - est_adjust
@@ -199,8 +199,8 @@ class ScheduleWorker
     ast = adjusted_send_time
     new_send_time = Time.new(Time.now.utc.year, Time.now.utc.month, Time.now.utc.day, ast.hour, ast.min, ast.sec, ast.utc_offset)
 
-    puts "before, user.send_time = #{user.send_time}"
-    puts "after, user.send_time (new_send_time) = #{new_send_time}"
+    # puts "before, user.send_time = #{user.send_time}"
+    # puts "after, user.send_time (new_send_time) = #{new_send_time}"
 
     return new_send_time
 
