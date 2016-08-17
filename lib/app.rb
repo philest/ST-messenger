@@ -132,7 +132,7 @@ class SMS < Sinatra::Base
 
       if !is_us 
         email_admins "A new user with phone #{phone} has enrolled by texting in", \
-               "Phone: #{phone}<br/>Message:#{params[:Body]}<br/>School: #{school_signature}"
+               "Phone: #{phone}<br/>Message:#{params[:Body]}"
       end
     end
   end

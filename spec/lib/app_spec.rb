@@ -141,5 +141,20 @@ describe SMS do
 
   end
 
+  # webmock stub template
+  context "enrolling users" do
+
+    it "says hello" do
+      get '/'
+      expect(last_response).to be_ok
+      expect(last_response.body).to eq("Bring me to the Kingdom of Angels")
+    end
+
+    it "does enroll" do 
+      require 'httparty'
+      post '/enroll', { time_interval: 600 }
+    end
+  end
+
 
 end

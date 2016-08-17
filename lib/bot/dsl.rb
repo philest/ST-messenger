@@ -15,7 +15,7 @@ module Birdv
       }
 
       def self.new_script(script_name, platform='fb', &block)
-        puts "adding #{script_name} - platform #{platform} to thing"
+        # puts "adding #{script_name} - platform #{platform} to thing"
         @@scripts[platform][script_name] = StoryTimeScript.new(script_name, platform, &block)
       end
 
@@ -146,7 +146,7 @@ module Birdv
       end
 
       def script_payload(sequence_name)
-        puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
+        # puts "cool payload: #{@script_name.to_s}_#{sequence_name.to_s}"
         return "#{@script_name.to_s}_#{sequence_name.to_s}"
       end
 

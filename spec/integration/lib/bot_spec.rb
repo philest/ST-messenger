@@ -439,7 +439,7 @@ describe 'TheBot', integration:true do
       end
 
       # this is basically a compressed version of the last one. I was having stubbing issues.
-      it 'does this correctly', thing:true do
+      it 'does this correctly' do
         # 4 ppl read yesterday (story 900)
         4.times do |i| 
           User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
