@@ -73,7 +73,7 @@ describe SMS do
           post '/sms', @sms_params
 
           # to change some other job, whatever it is....
-        }.to change(MessageWorker.jobs, :size).by(1)
+        }.to change(StartDayWorker.jobs, :size).by(1)
       end
     end
 
@@ -83,7 +83,7 @@ describe SMS do
       Sidekiq::Testing::fake! do
         expect {
           post '/sms', @sms_params
-        }.to change(MessageWorker.jobs, :size).by(0)
+        }.to change(StartDayWorker.jobs, :size).by(0)
       end
 
     end
