@@ -218,13 +218,14 @@ module Birdv
       end
 
       def send_sms( phone, text, next_sequence=nil )
+        puts "in send_sms, next_sequence is #{next_sequence}"
         send_sms_helper( phone, text, @script_name, next_sequence )
       end
 
       def send_mms( phone, img_url, next_sequence=nil )
         send_mms_helper( phone, img_url, @script_name, next_sequence )
       end
-      
+
     end
   end
 end

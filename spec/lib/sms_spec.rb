@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'bot/dsl'
-require 'workers'
+load 'workers.rb'
 
 # testing is useful to simulate behavior and uncover blatant bugs.
 # overtesting is just wasteful.
@@ -24,34 +24,54 @@ describe 'sms' do
   end
 
 
-  context 'running sequences' do
-    it 'uses phone number instead of fb_id to search for users' do
-      script = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
-        sequence 'test' do; end
-      end
-      # make sure that running the sequence update's the user's last_sequence_seen
-      user = User.create(phone: '8186897323', platform: 'sms')
+  # context 'running sequences' do
+  #   it 'uses phone number instead of fb_id to search for users' do
+  #     script = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
+  #       sequence 'test' do; end
+  #     end
+  #     # make sure that running the sequence update's the user's last_sequence_seen
+  #     user = User.create(phone: '8186897323', platform: 'sms')
 
-      script.run_sequence(user.phone, 'test')
+  #     script.run_sequence(user.phone, 'test')
 
-      u = User.where(phone: '8186897323').first
+  #     u = User.where(phone: '8186897323').first
 
-      expect(u.state_table.last_sequence_seen).to eq 'test'
+  #     expect(u.state_table.last_sequence_seen).to eq 'test'
 
-    end
+  #   end
 
-    it 'selects from the pool of sms scripts when the script type is sms' do
-    end
+  #   it 'selects from the pool of sms scripts when the script type is sms' do
+  #   end
 
-  end
+  # end
 
   context 'day1 mms' do
     before(:each) do
+      # have to reload the damn script....
+      load 'sms_sequence_scripts/01.rb'
       @day1 = Birdv::DSL::ScriptClient.scripts['sms']['day1']
+
+      puts "scripts = #{Birdv::DSL::ScriptClient.scripts}"
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20Mx.%20GlottleStop.%20I%27ll%20be%20texting%20your%20child%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+           stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20My%20Asshole.%20We%27ll%20be%20texting%20you%20free%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
 
 
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20Mx.%20GlottleStop.%20I%27ll%20be%20texting%20your%20child%20books%20with%20StoryTime%21%0A%0A",
+         with(:body => "recipient=8186897323&text=You%20can%20start%20early%20if%20you%20have%20Facebook%20Messenger.%20Tap%20here%20and%20enter%20%27go%27%3A%0Ajoinstorytime.com%2Fgo&script=day1&next_sequence=image1",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+
+       stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
     end
@@ -65,13 +85,13 @@ describe 'sms' do
       end
       
       it 'sends the has_teacher.first text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.first", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.first", 'day1', 'firstmessage2')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_teacher.second text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.second", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_teacher.second", 'day1', 'image1')
 
         @day1.run_sequence(@user.phone, 'firstmessage2')
       end
@@ -88,13 +108,13 @@ describe 'sms' do
       end
       
       it 'sends the has_school.first text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_school.first", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_school.first", 'day1', 'firstmessage2')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_school.second text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_school.second", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_school.second", 'day1', 'image1')
 
         @day1.run_sequence(@user.phone, 'firstmessage2')
       end
@@ -108,13 +128,13 @@ describe 'sms' do
       end
       
       it 'sends the default text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_none.first", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_none.first", 'day1', 'firstmessage2')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_none.second text to the user' do
-        expect(@day1).to receive(:send_helper).with(@user.phone, "enrollment.body_sprint.has_none.second", script_day=1, type='sms')
+        expect(@day1).to receive(:send_sms_helper).with(@user.phone, "enrollment.body_sprint.has_none.second", 'day1', 'image1')
 
         @day1.run_sequence(@user.phone, 'firstmessage2')
       end

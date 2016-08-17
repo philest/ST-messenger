@@ -209,10 +209,11 @@ class SMS < Sinatra::Base
     script        = params['script']
     next_sequence = params['next_sequence'] 
     messageSid    = params['MessageSid']
-    puts script, next_sequence, messageSid
+    puts "script: #{script}"
+    puts "next_sequence: #{next_sequence}"
 
     status = params['MessageStatus']
-    puts status
+    puts "status: #{status}"
 
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
