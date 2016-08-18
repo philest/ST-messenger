@@ -76,14 +76,6 @@ describe 'sms' do
          to_return(:status => 200, :body => "", :headers => {})
     end
 
-    # it 'sends a user the first story on text-in' do
-    #   sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>"Please, you have to help me, I've been trapped in the Phantom Zone for centuries, there's not much tiiiiiiiiiiiiiiiiiiiiiiiiii.......", "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
-    #   expect(@day1).to receive(:run_sequence).with('5555555555', 'firstmessage'.to_sym)
-    #   Sidekiq::Testing.inline! do
-    #     post '/sms', sms_params
-    #   end
-
-    # end
 
     context 'the user has a teacher' do
 
@@ -152,6 +144,7 @@ describe 'sms' do
 
   end
 
+  # TODO: THIS!!!
   context 'StoryTimeScript#translate_sms', mms:true do
     context 'name codes' do
       it 'translates shit' do
