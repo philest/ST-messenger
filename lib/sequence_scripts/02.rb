@@ -1,6 +1,6 @@
 Birdv::DSL::ScriptClient.new_script 'day2' do
 
-	day 2
+	# day 2
 
 
 	#

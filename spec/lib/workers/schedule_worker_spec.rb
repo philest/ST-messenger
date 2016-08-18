@@ -474,7 +474,7 @@ describe ScheduleWorker do
 
 
 			@s = Birdv::DSL::ScriptClient.new_script 'day901' do
-				day (901) #dang this is kinda dangerless (plz enforce =  @starting_story_num+1)
+				# day (901) #dang this is kinda dangerless (plz enforce =  @starting_story_num+1)
 				sequence 'dummy_first' do |r|
 					puts 'hey this worked'
 				end

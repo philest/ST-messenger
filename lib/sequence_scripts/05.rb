@@ -1,6 +1,6 @@
 Birdv::DSL::ScriptClient.new_script 'day5' do
 
-	day 5
+	# day 5
 	#
 	# register some buttons for reuse!
 	# ================================
