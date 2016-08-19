@@ -30,12 +30,13 @@ class StartDayWorker
     puts "day#{day_number}"
 		# double quotation
 		script = Birdv::DSL::ScriptClient.scripts["day#{day_number}"]
-    puts script
+    puts script.inspect
 	  if !script.nil?
       script.run_sequence(recipient, :init) 
     else
       #TODO: email?
       puts 'could not find scripts :('
+      puts "likely, user #{recipient} has finished their curriculum"
     end
 
 	end
