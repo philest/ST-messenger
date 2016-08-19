@@ -18,13 +18,38 @@ module Birdv
         Dir.glob(file_path).each do |f|
           puts f
           CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
-            curr_version = File.basename(f, ".csv").to_i
+            file_base = File.basename(f, ".csv")
+
+            # if file is an integer
+            if !(file_base =~ /\A[-+]?\d+\z/).nil?
+              curr_version = file_base.to_i
+            else
+              curr_version = file_base
+            end
+
+            # establish index for curriculum version
             @@curricula[curr_version] ||= []
             
+<<<<<<< HEAD
             # puts "ROW: #{row} of type #{row.class}"
             @@curricula[curr_version] << row.to_hash.values
+=======
+            #puts "ROW: #{row} of type #{row.class}"
+            
+            stripped_row = []
+
+            # strip white space if unecesarry whitespace exists
+            row.to_hash.values.each do |x|
+              stripped_row << (x.is_a?(String) ? x.gsub(/\s/, '') : x)
+            end
+
+            @@curricula[curr_version] << stripped_row
+>>>>>>> master
           end
+
         end
+
+        return @@curricula
       end
       
       def self.curricula

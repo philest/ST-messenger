@@ -8,11 +8,12 @@ en:
     stop:   "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
     thanks: "You're welcome :)"
     robot:  "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
-    default: "Hi __PARENT__! I'm away now, but I'll see your message soon. If you need help just enter 'help.'"
     learn: "StoryTime sends free stories by text and Facebook.\n\nFor help: 561-212-5831\nTo stop, text STOP"
     teacher_reply:
       session: "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
       no_session: "Hi! I'm away now, but I'll see your message soon! If you need help just enter 'learn'"
+    default: "Hi __PARENT__! I'm away now but I'll see your message soon :)"
+    end_conversation: "I'll see your message by tonight! If you need more help just enter 'help'"
   scripts:
     teacher_intro:
       - "Hi __PARENT__, this is __TEACHER__. Here's your first free book on StoryTime!"
@@ -24,8 +25,18 @@ en:
       - "Hi __PARENT__, here’s another story!"    
       - "Hi __PARENT__, here’s another story!"    
       - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"    
+      - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"      
     buttons:
       story_img_url:
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
         - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
@@ -42,12 +53,20 @@ en:
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"   
         - "You'll get another story in a few nights!"        
+        - "Another story will come in a few days. Great job! :)"
+        - "You'll get another story in a few nights!"        
+        - "Another story will come in a few days. Great job! :)"
       title:
         - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
         - "Your next story's coming soon!"
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
+        - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Let's read tonight's story."

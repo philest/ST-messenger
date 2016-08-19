@@ -47,8 +47,9 @@ STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)/i
 THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
 HAHA_MSG = /(haha)+|(jaja)+/i 
 ROBOT_MSG = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
-
-
+LOVE_MSG = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
+EMOTICON_MSG = /(:\))|(:D)|(;\))|(:p)/
+OK_MSG = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
 
 def get_reply(body, user)
   our_reply = ''
@@ -66,6 +67,12 @@ def get_reply(body, user)
     our_reply = ":D"
   when ROBOT_MSG
     our_reply = I18n.t 'user_response.robot'
+  when LOVE_MSG
+    our_reply = "^_^"
+  when EMOTICON_MSG
+    our_reply = "^_^"  
+  when OK_MSG
+    our_reply = ":)"    
   else #default msg 
     our_reply = I18n.t 'user_response.default'
   end
@@ -145,7 +152,7 @@ Bot.on :message do |message|
 
         if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
 
-          reply = "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
+          reply = I18n.t 'user_response.end_conversation'
             
           if limited == "true"
             reply = ""

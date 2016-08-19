@@ -1,6 +1,6 @@
-Birdv::DSL::ScriptClient.new_script 'day5' do
+Birdv::DSL::ScriptClient.new_script 'day7' do
 
-	# day 5
+	# day 6
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -30,7 +30,8 @@ Birdv::DSL::ScriptClient.new_script 'day5' do
 	end
 
 	sequence 'storysequence' do |recipient|
-		# send out cook story
+		
+		# send out story
 		send recipient, story(), 23
 
 		# delay 'thanks'
