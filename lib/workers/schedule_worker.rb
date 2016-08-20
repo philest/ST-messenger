@@ -195,7 +195,7 @@ class ScheduleWorker
 
 
   # need to make sure the send_time column is a Datetime type
-  def within_time_range(user, range, acceptable_days = [3])
+  def within_time_range(user, range, acceptable_days = [])
 
   	# TODO: ensure that Time.now is in UTC time
   	# server timein UTC
@@ -217,7 +217,7 @@ class ScheduleWorker
  
     user_sched      = get_schedule(user_story_num)
     
-    valid_for_user  = user_sched.include?(user_day)
+    valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day)
 
         # this deals with the edge case of being on story 1:
     if (user_story_num == 1)

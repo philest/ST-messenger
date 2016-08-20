@@ -56,7 +56,7 @@ class SMS < Sinatra::Base
       puts "msg to send = #{msg}"
 
       # send that message back! 
-      send_sms( phone, msg )
+      sms( phone, msg )
 
 
       if user.child_name

@@ -289,7 +289,7 @@ describe 'TheBot', integration:true do
 
         
         allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
+          original_method.call(*args, [], &block)
         end
 
         expect(StartDayWorker).to receive(:perform_async).exactly(@num_ontime).times
@@ -312,7 +312,7 @@ describe 'TheBot', integration:true do
 
         
         # allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-        #   original_method.call(*args, [1,3,5], &block)
+        #   original_method.call(*args, [], &block)
         # end
 
         # 1 person who is not scheduled but also read yesterday
@@ -457,7 +457,7 @@ describe 'TheBot', integration:true do
         end       
 
         allow_any_instance_of(ScheduleWorker).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-          original_method.call(*args, [1,3,5], &block)
+          original_method.call(*args, [], &block)
         end
 
         allow(@s901).to      receive(:run_sequence).exactly(3).times
@@ -680,7 +680,7 @@ describe 'TheBot', integration:true do
       @s2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
       
       allow_any_instance_of(ScheduleWorker).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
-        original_method.call(*args, [1,3,5], &block)
+        original_method.call(*args, [], &block)
       end
       
 

@@ -2,7 +2,7 @@ require_relative '../../config/pony'
 
 module ContactHelpers
 
-  def send_sms( phone_no, text )
+  def sms( phone_no, text )
     HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
       body: {
         recipient: phone_no,
@@ -10,7 +10,7 @@ module ContactHelpers
     })
   end
 
-  def send_mms( phone_no, img_url )
+  def mms( phone_no, img_url )
     HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
       body: {
         recipient: phone_no,
@@ -30,14 +30,10 @@ module ContactHelpers
 
 
 	def notify_admins(subject, body)
-		Pony.mail(:to => 'phil.esterman@yale.edu',
-	            :cc => 'david.mcpeek@yale.edu',
-	            :from => 'david.mcpeek@yale.edu',
-	            :subject => subject,
-	            :body => body)
 
-    send_sms('+15612125831', subject) # phil
-    send_sms('+18186897323', subject) # david
+    email_admins(subject, body)
+    sms('+15612125831', subject) # phil
+    sms('+18186897323', subject) # david
 
 	end
   

@@ -58,8 +58,7 @@ describe ScheduleWorker do
         # change those timezones dawg!
         User.each do |user|
           puts "updating users #{user.fb_id}...."
-          # name these people "Aubrey" so we don't fail tests due to scheduling issues
-          user.update(tz_offset: -7, first_name: "Aubrey")
+          user.update(tz_offset: -7)
           puts "send_time = #{user.send_time}"
         end
 
@@ -92,7 +91,7 @@ describe ScheduleWorker do
 
       it "does not send messages to a user twice" do
         User.each {|u| u.destroy } # clean database
-        user = User.create(:send_time => @time + @interval - 1.second, tz_offset:-7, first_name: "Aubrey")
+        user = User.create(:send_time => @time + @interval - 1.second, tz_offset:-7)
         user.state_table.update(story_number: @story_num)
         expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
         Timecop.freeze(Time.now + @time_range)
@@ -144,9 +143,8 @@ describe ScheduleWorker do
 
 
     it "returns true for users within the time interval at a given time" do
-      @just_early.update(first_name: "Aubrey") 
+
       expect(@s.within_time_range(@just_early, @interval, [Time.now.wday])).to be true
-      @just_late.update(first_name: "Aubrey") 
       expect(@s.within_time_range(@just_late, @interval, [Time.now.wday])).to be true
     end
 
@@ -158,7 +156,7 @@ describe ScheduleWorker do
     it "does not send messages to a user twice" do
       User.each {|u| u.destroy } # clean database
 
-      user = User.create(:send_time => Time.now + @interval - 1.second, first_name: "Aubrey")
+      user = User.create(:send_time => Time.now + @interval - 1.second)
       user.state_table.update(story_number: @story_num)
       expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
       Timecop.freeze(Time.now + @time_range)

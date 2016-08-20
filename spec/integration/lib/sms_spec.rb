@@ -58,6 +58,7 @@ describe 'sms' do
       @u1 = User.where(phone: '8186897323').first
       @u2 = User.where(phone: '5612125831').first
 
+
       Sidekiq::Worker.clear_all
       # @time_range = 10.minutes
     end
@@ -108,6 +109,8 @@ describe 'sms' do
       expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 1
       expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 2
 
+
+
       # Tuesday, we're not sending any over!
       Timecop.freeze(Time.now + 1.days)
 
@@ -119,6 +122,7 @@ describe 'sms' do
 
       # Wednesday, it's StoryTime day!
       Timecop.freeze(Time.now + 1.days)
+
 
       expect {
         Sidekiq::Testing.fake! do

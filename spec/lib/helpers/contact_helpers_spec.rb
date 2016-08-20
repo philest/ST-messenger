@@ -16,6 +16,14 @@ describe ContactHelpers do
 	         with(:body => {"Body"=>"Here's the body", "From"=>"+12032023505", "To"=>"+15612125831"},
 	              :headers => {'Accept'=>'application/json', 'Accept-Charset'=>'utf-8', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Authorization'=>'Basic QUNlYTE3ZTBiYmEzMDY2MDc3MGY2MmIxZTI4ZTEyNjk0NDo3MTZlMDU0N2JiZDgyYzE3OWI5YWFlOGViZmVmMGU5NQ==', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'twilio-ruby/4.11.1 (ruby/x86_64-darwin14 2.2.3-p173)'}).
 	         to_return(:status => 200, :body => body, :headers => {})
+
+	      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=%2B15612125831&text=Here%27s%20the%20body").
+         to_return(:status => 200, :body => "", :headers => {})
+
+               stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=%2B18186897323&text=Here%27s%20the%20body").
+         to_return(:status => 200, :body => "", :headers => {})
 		end		     
 
 
