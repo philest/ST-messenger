@@ -29,11 +29,7 @@ module Birdv
 
             # establish index for curriculum version
             @@curricula[curr_version] ||= []
-            
-<<<<<<< HEAD
-            # puts "ROW: #{row} of type #{row.class}"
-            @@curricula[curr_version] << row.to_hash.values
-=======
+          
             #puts "ROW: #{row} of type #{row.class}"
             
             stripped_row = []
@@ -44,7 +40,6 @@ module Birdv
             end
 
             @@curricula[curr_version] << stripped_row
->>>>>>> master
           end
 
         end

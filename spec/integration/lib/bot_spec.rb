@@ -709,12 +709,12 @@ describe 'TheBot', integration:true do
 
       # move to next Thrusday! Stories be coming out!
       # we would expect fb_ids [1,7] to be recieving something
-<<<<<<< HEAD
-      some_time = Time.new(2016, 6, 27, 23, 0, 0, 0)
-      Timecop.freeze(some_time)        
-=======
+# <<<<<<< HEAD
+      # some_time = Time.new(2016, 6, 27, 23, 0, 0, 0)
+      # Timecop.freeze(some_time)        
+# =======
       Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))        
->>>>>>> master
+# >>>>>>> master
       
       expect{
         Sidekiq::Testing.fake! do

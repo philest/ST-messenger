@@ -20,13 +20,8 @@ describe ContactHelpers do
 
 
 		it "should email the admins" do
-<<<<<<< HEAD
     		expect(Pony).to(receive(:mail).with( {:to=>"phil.esterman@yale.edu", :cc=>"david.mcpeek@yale.edu", :from=>"david.mcpeek@yale.edu", :subject=>"Here's the body", :body=>"Here's the subject", :headers=>{ 'Content-Type' => 'text/html' }}))
-    		email_admins("Here's the body", "Here's the subject")	      # 	}
-=======
-    		expect(Pony).to(receive(:mail).with( {:to=>"phil.esterman@yale.edu", :cc=>"david.mcpeek@yale.edu", :from=>"david.mcpeek@yale.edu", :subject=>"Here's the body", :body=>"Here's the subject"}))
     		notify_admins("Here's the body", "Here's the subject")	      # 	}
->>>>>>> master
 		end
 	end
 

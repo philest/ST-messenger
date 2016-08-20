@@ -193,12 +193,12 @@ class ScheduleWorker
     end
   end
 
+
   # need to make sure the send_time column is a Datetime type
   def within_time_range(user, range, acceptable_days = [3])
 
   	# TODO: ensure that Time.now is in UTC time
   	# server timein UTC
-<<<<<<< HEAD
 		# now 			= Time.now.utc.seconds_since_midnight
     now       = Time.now.utc
 
@@ -210,26 +210,16 @@ class ScheduleWorker
     # puts "user utc = #{user_sendtime_utc}"
 		user_day 	 = get_local_day(Time.now.utc, user)
 
-    valid_for_user = acceptable_days.include?(user_day)
-=======
-    now                     = Time.now.utc # TODO: do I need to convert to tz?
-		now_seconds 			      = now.seconds_since_midnight
+    # TODO: deprecated?
+    # valid_for_user = acceptable_days.include?(user_day) # deprecated?
 
-		# DST-adjusted user time
-		user_local              = adjust_user_tz(user)
-		user_utc_seconds	      = user_local.utc.seconds_since_midnight
-    # TODO: maybe move the following outside of the function so we don't have to 
-    # compute some part over and over again:
-		user_day 	      = get_local_day(now, user) # current day of the week for user according to server
-            
-    user_curric     = user.curriculum_version
     user_story_num  = user.state_table.story_number
  
     user_sched      = get_schedule(user_story_num)
     
     valid_for_user  = user_sched.include?(user_day)
 
-    # this deals with the edge case of being on story 1:
+        # this deals with the edge case of being on story 1:
     if (user_story_num == 1)
       lstrt = user.state_table.last_story_read_time
                              # TODO: double-check this logic...
@@ -242,15 +232,16 @@ class ScheduleWorker
         end
       end
     end
-    
->>>>>>> master
 
     # friends get it three days a week
     friend_days = [1,3,5]
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
 
-<<<<<<< HEAD
-    if (valid_for_user || valid_for_friend) # just wednesday for now (see default arg)
+
+    # we get it all day erryday
+    valid_for_mcesterwahl = is_us?(user)
+
+    if (valid_for_user || valid_for_friend || valid_for_mcesterwahl) # just wednesday for now (see default arg)
 			if now >= user_sendtime_utc
         # puts "now >= user_sendtime_utc"
         # puts "now - user_sendtime_utc = #{now-user_sendtime_utc}"
@@ -259,16 +250,7 @@ class ScheduleWorker
         # puts "now < user_sendtime_utc"
         # puts "user_sendtime_utc - now = #{user_sendtime_utc - now}"
 				return user_sendtime_utc - now <  range
-=======
-    # we get it all day erryday
-    valid_for_mcesterwahl = is_us?(user)
 
-    if (valid_for_user || valid_for_friend || valid_for_mcesterwahl) # just wednesday for now (see default arg)
-      if now_seconds >= user_utc_seconds
-				return (now_seconds - user_utc_seconds <= range)
-			else
-				return (user_utc_seconds - now_seconds <  range)
->>>>>>> master
 			end
 		end
     # else, not valid for user, friend, or mcesterwahl
@@ -283,7 +265,19 @@ class ScheduleWorker
   	# return server_time.utc.in_time_zone(user_tz).wday
   end
 
-<<<<<<< HEAD
+  # returns a time in the specified timezone offset
+  def get_local_time(last_story_read_time, tz_offset)
+    return last_story_read_time + tz_offset
+  end
+
+  #   # returns a time in the specified timezone
+  # def get_local_time(time, goal_timezone)
+  #   tz = ActiveSupport::TimeZone.new(goal_timezone)
+
+  #   # time that user enrolled, converted from UTC to local time
+  #   return time.utc.in_time_zone(tz)
+  # end
+
   # returns the user's DST-adjusted local time
   def adjust_tz(user)
   	# # timezone object in User's timezone
@@ -320,50 +314,6 @@ class ScheduleWorker
 
     return new_send_time
 
-=======
-  # returns a time in the specified timezone
-  def get_local_time(time, goal_timezone)
-    tz = ActiveSupport::TimeZone.new(goal_timezone)
-
-    # time that user enrolled, converted from UTC to local time
-    return time.utc.in_time_zone(tz)
-  end
-
-  # TODO: fix specs
-  def adjust_tz(user)
-    adjust_user_tz(user)
-  end
-
-  def adjust_user_tz(user)
-
-    #TODO comment
-    utz = user.timezone
-    if (utz.nil?)
-      tz = "Eastern Time (US & Canada)" #TODO: add spec for default Eastern
-    elsif (utz.is_a? String)
-      if utz.empty?
-        tz = "Eastern Time (US & Canada)"
-      else
-        tz = utz
-      end
-    else
-      tz = utz
-    end
-
-    enroll_time = get_local_time(user.enrolled_on, tz)
-    server_time = get_local_time(Time.now.utc, tz)
-    
-    # check if in daylight savings
-    if enroll_time.dst? and not server_time.dst?
-      send_time = user.send_time + 1.hour
-    elsif not enroll_time.dst? and server_time.dst?
-      send_time = user.send_time - 1.hour
-    else
-      send_time = user.send_time
-    end
-
-    return send_time
->>>>>>> master
   end
 end
 
