@@ -26,7 +26,7 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay
 		txt = 'scripts.teacher_intro'
-		send recipient, text({text:txt}),  4 
+		send recipient, text({text:txt})
 		# send tap_here button
 		send recipient, button({name:'tap_here'})
 	end
@@ -34,7 +34,7 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 	sequence 'storysequence' do |recipient|
 		# send out cook story
 
-		send recipient, story(), 23
+		send recipient, story()
 		
 		delay recipient, 'thanks', 23.seconds
 	end

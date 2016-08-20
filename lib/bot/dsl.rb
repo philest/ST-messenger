@@ -157,6 +157,9 @@ module Birdv
       # how do we abstract this?
       def run_sequence(recipient, sqnce_name)
         begin
+          puts "sequences = #{@sequences}"
+
+
           ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
 
           case @platform
@@ -175,7 +178,7 @@ module Birdv
           puts "the known sequences are: #{@sequences}"
           puts e.message  
           puts e.backtrace.join("\n") 
-          notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
+          # notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
         end
       end
 

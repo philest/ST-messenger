@@ -1,6 +1,6 @@
 Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
-  day 1
+  # day 1
 
   # recipients are phone numbers
   sequence 'firstmessage' do |phone_no|
