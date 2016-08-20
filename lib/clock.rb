@@ -46,22 +46,22 @@ module Clockwork
   		ScheduleWorker.perform_async(sched_range)
   	end
 
-    #
-    # ping the enrollment server every enrollment_time_pd seconds 
-    # to check if anyone needs to be sent an enrollment text
-    #
-    enrollment_time_pd = 10.minutes
-    enrollment_range   = enrollment_time_pd / 2.0
+   #  #
+   #  # ping the enrollment server every enrollment_time_pd seconds 
+   #  # to check if anyone needs to be sent an enrollment text
+   #  #
+   #  enrollment_time_pd = 10.minutes
+   #  enrollment_range   = enrollment_time_pd / 2.0
 
-  	every enrollment_time_pd, 'enroll.db' do
-      puts "enrollment_time_pd = #{enrollment_time_pd}"
-      puts "enrollment_range = #{enrollment_range}"
-     HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
-        body: {
-          time_interval: enrollment_range
-        }
-      )
-  	end
+  	# every enrollment_time_pd, 'enroll.db' do
+   #    puts "enrollment_time_pd = #{enrollment_time_pd}"
+   #    puts "enrollment_range = #{enrollment_range}"
+   #   HTTParty.post('https://st-enroll.herokuapp.com/enroll', 
+   #      body: {
+   #        time_interval: enrollment_range
+   #      }
+   #    )
+  	# end
 
 end
 

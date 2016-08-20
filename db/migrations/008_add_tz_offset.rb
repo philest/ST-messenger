@@ -1,11 +1,11 @@
 Sequel.migration do
   up do
     alter_table(:users) do
-      add_column :tz_offset, Integer, default: -4
+      add_column :tz_offset, Float, default: -4.0
     end
 
     alter_table(:schools) do
-      add_column :tz_offset, Integer, default: -4
+      add_column :tz_offset, Float, default: -4.0
     end
   end
   down do

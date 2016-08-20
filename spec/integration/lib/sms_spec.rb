@@ -63,6 +63,8 @@ describe 'sms' do
       # @time_range = 10.minutes
     end
 
+    after(:each) { Timecop.return }
+
     it 'added the users to the db correctly' do
       expect(@u1).to_not be_nil
       expect(@u2).to_not be_nil

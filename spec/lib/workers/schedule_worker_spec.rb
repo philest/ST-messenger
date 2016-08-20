@@ -171,6 +171,10 @@ describe ScheduleWorker do
       Timecop.freeze Time.new(2016, 6, 30, 23, 0, 0, 0)
     end
 
+    after(:each) do
+      Timecop.return
+    end
+
     it "gets users whose send_time is between 6:55:00 and 7:04:59" do
       allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
         original_method.call(*args, [Time.now.wday], &block)
@@ -266,7 +270,7 @@ describe ScheduleWorker do
 			end
 
 			after(:all) do
-
+        Timecop.return
 			end
 
 			before(:each) do

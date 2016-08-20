@@ -78,6 +78,9 @@ def app() Facebook::Messenger::Server end
 			#puts User.all.inspect
 			expect(User.count).to eq 3
 			
+			puts "ALL THE FUCKING USERS"
+			puts "#{User.all}"
+
 			expect(User.where(:id => candidate1.id).first.first_name).to eq "David"
 			expect(User.where(:id => candidate1.id).first.last_name).to eq "McPeek"
 		end
