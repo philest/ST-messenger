@@ -175,7 +175,7 @@ module Birdv
           puts "the known sequences are: #{@sequences}"
           puts e.message  
           puts e.backtrace.join("\n") 
-          # notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
+          notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
         end
       end
 
