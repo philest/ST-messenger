@@ -153,10 +153,10 @@ class ScheduleWorker
   		within_time_range(user, range) && last_story_read_ok
   	end
   rescue => e
-    p e.message " something went wrong, not filtering users\n#{e.backtrace}"
+    p e.message + "... something went wrong, not filtering users"
     filtered = []
   ensure
-    puts "filtered = #{filtered.to_s}"
+    # puts "filtered = #{filtered.inspect}"
     return filtered
   end
 
@@ -224,7 +224,7 @@ class ScheduleWorker
       lstrt = user.state_table.last_story_read_time
                              # TODO: double-check this logic...
       if !lstrt.nil?
-      last_story_read_time = get_local_time(lstrt, user.timezone)
+      last_story_read_time = get_local_time(lstrt, user.tz_offset)
       
         days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
         if days_elapsed < 7

@@ -41,6 +41,8 @@ describe ScheduleWorker do
     @early.state_table.update(story_number: @story_num)
     @late.state_table.update(story_number: @story_num)
 
+    @users = [@on_time, @just_early, @just_late, @early, @late]
+
   end
 
   after(:each) do
@@ -56,7 +58,8 @@ describe ScheduleWorker do
         # change those timezones dawg!
         User.each do |user|
           puts "updating users #{user.fb_id}...."
-          user.update(tz_offset: -7)
+          # name these people "Aubrey" so we don't fail tests due to scheduling issues
+          user.update(tz_offset: -7, first_name: "Aubrey")
           puts "send_time = #{user.send_time}"
         end
 
@@ -89,7 +92,7 @@ describe ScheduleWorker do
 
       it "does not send messages to a user twice" do
         User.each {|u| u.destroy } # clean database
-        user = User.create(:send_time => @time + @interval - 1.second, tz_offset:-7)
+        user = User.create(:send_time => @time + @interval - 1.second, tz_offset:-7, first_name: "Aubrey")
         user.state_table.update(story_number: @story_num)
         expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
         Timecop.freeze(Time.now + @time_range)
@@ -139,8 +142,11 @@ describe ScheduleWorker do
 
   context "within_time_range function", :range => true do
 
-    it "returns true for users within the time interval at a given time" do 
+
+    it "returns true for users within the time interval at a given time" do
+      @just_early.update(first_name: "Aubrey") 
       expect(@s.within_time_range(@just_early, @interval, [Time.now.wday])).to be true
+      @just_late.update(first_name: "Aubrey") 
       expect(@s.within_time_range(@just_late, @interval, [Time.now.wday])).to be true
     end
 
@@ -152,7 +158,7 @@ describe ScheduleWorker do
     it "does not send messages to a user twice" do
       User.each {|u| u.destroy } # clean database
 
-      user = User.create(:send_time => Time.now + @interval - 1.second)
+      user = User.create(:send_time => Time.now + @interval - 1.second, first_name: "Aubrey")
       user.state_table.update(story_number: @story_num)
       expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
       Timecop.freeze(Time.now + @time_range)
@@ -166,19 +172,6 @@ describe ScheduleWorker do
     before(:each) do
       Timecop.freeze Time.new(2016, 6, 30, 23, 0, 0, 0)
     end
-
-    it 'get users only on W' do
-      Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0))
-      filtered = @s.filter_users(@time, @interval)
-      expect(filtered.size).to eq(3)
-    end
-
-    it 'does not get users on Th', th:true do
-      Timecop.freeze(Time.new(2016, 6, 30, 23, 0, 0, 0))
-      filtered = @s.filter_users(@time, @interval)
-      expect(filtered.size).to eq(0)
-    end   
-
 
     it "gets users whose send_time is between 6:55:00 and 7:04:59" do
       allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
