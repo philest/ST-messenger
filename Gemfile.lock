@@ -50,11 +50,7 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-<<<<<<< HEAD
-    json (1.8.3)
-=======
     jdbc-postgres (9.4.1206)
->>>>>>> master
     json (1.8.3-java)
     jwt (1.5.4)
     launchy (2.4.3-java)
@@ -71,11 +67,6 @@ GEM
     multi_xml (0.5.5)
     newrelic_rpm (3.16.1.320)
     nokogiri (1.6.8-java)
-<<<<<<< HEAD
-    pg (0.17.1)
-    pkg-config (1.1.7)
-=======
->>>>>>> master
     pony (1.11)
       mail (>= 2.0)
     pry (0.10.4-java)
@@ -160,9 +151,9 @@ DEPENDENCIES
   fuubar
   httparty (~> 0.13.7)
   i18n (~> 0.7.0)
+  jdbc-postgres (~> 9.4, >= 9.4.1206)
   json
   newrelic_rpm
-  pg (= 0.17.1)
   pony
   pry
   pry-nav
