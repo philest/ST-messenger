@@ -15,10 +15,13 @@ Dotenv.load if ENV['RACK_ENV'] != 'production'
 require_relative '../config/pony'
 require_relative 'workers'
 require 'httparty'
-require_relative 'helpers/contact_helpers'
+require_relative 'helpers/contact_helpers' 
+require_relative 'helpers/reply_helpers'
 
 class SMS < Sinatra::Base
   include ContactHelpers
+  include MessageReplyHelpers
+
 
   get '/' do
     params[:kingdom] ||= "Angels"
@@ -37,37 +40,20 @@ class SMS < Sinatra::Base
     puts "user = #{user}, phone = #{phone}"
 
     if user # is enrolled in the system already
-      teacher = (user.nil? or user.teacher.nil?) ? I18n.t('defaults.teacher') : user.teacher.signature
-      session["teacher_reply"] ||= false
-      case params[:Body]
-      when /learn/i
-        # run help message
-        msg = I18n.t 'user_response.learn'
-      else
-        if session["teacher_reply"]
-          msg = I18n.t 'user_response.teacher_reply.session'
-
-        else
-          msg = I18n.t 'user_response.teacher_reply.no_session'
-          session["teacher_reply"] = true 
-        end
-      end
-
+      
+      msg = get_reply(params[:Body], user)
       puts "msg to send = #{msg}"
 
-      # send that message back! 
-      sms( phone, msg )
-
-
-      if user.child_name
-        name = user.child_name
-      elsif user.first_name and user.last_name
-        name = user.first_name + " " + user.last_name
+      if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
+        # do nothing, don't send message
+      elsif (msg == (I18n.t 'user_response.default')) && session['end_conversation'] != true
+        session['end_conversation'] = true
+        sms(phone, msg)
       else
-        name = "A user"
+        sms(phone, msg)
       end
-
-      email_admins "#{name} - #{phone} texted StoryTime", \
+          
+      email_admins "A user (phone #{phone}) texted StoryTime", \
              "Message: #{params[:Body]}<br/>Time: #{Time.now}"
 
 
