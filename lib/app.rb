@@ -17,6 +17,7 @@ require_relative 'workers'
 require 'httparty'
 require_relative 'helpers/contact_helpers' 
 require_relative 'helpers/reply_helpers'
+require_relative 'bot/sms_dsl'
 
 class SMS < Sinatra::Base
   include ContactHelpers
@@ -42,15 +43,18 @@ class SMS < Sinatra::Base
     if user # is enrolled in the system already
       
       msg = get_reply(params[:Body], user)
-      puts "msg to send = #{msg}"
-
+      
       if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
         # do nothing, don't send message
       elsif (msg == (I18n.t 'user_response.default')) && session['end_conversation'] != true
         session['end_conversation'] = true
-        sms(phone, msg)
+        reply = SMSReplies.name_codes(msg, user)
+        puts "reply to send = #{reply}"
+        sms(phone, reply)
       else
-        sms(phone, msg)
+        reply = SMSReplies.name_codes(msg, user)
+        puts "reply to send = #{reply}"
+        sms(phone, reply)
       end
           
       email_admins "A user (phone #{phone}) texted StoryTime", \
