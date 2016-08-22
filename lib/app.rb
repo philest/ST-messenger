@@ -23,6 +23,7 @@ class SMS < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
 
+  enable :sessions
 
   get '/' do
     params[:kingdom] ||= "Angels"
@@ -43,13 +44,16 @@ class SMS < Sinatra::Base
     if user # is enrolled in the system already
       
       msg = get_reply(params[:Body], user)
+
+      puts "session = #{session.inspect}"
       
       if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
         # do nothing, don't send message
+        puts "should not send a message reply until session expires.........."
       elsif (msg == (I18n.t 'user_response.default')) && session['end_conversation'] != true
         session['end_conversation'] = true
         reply = SMSReplies.name_codes(msg, user)
-        puts "reply to send = #{reply}"
+        puts "reply to send (end_conversation is now true) = #{reply}"
         sms(phone, reply)
       else
         reply = SMSReplies.name_codes(msg, user)
