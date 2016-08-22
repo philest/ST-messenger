@@ -618,7 +618,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         t.add_user u
 
         # init sequence
-        b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
+        b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/coon/coon-button.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
         @stub_txt.call("Hi Aubs, this is Ms. McEsterWahl. Here's your first free book on StoryTime!")
         @stub_arb.call(b1)
 

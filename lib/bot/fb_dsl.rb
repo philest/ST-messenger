@@ -241,13 +241,13 @@ module Birdv
         if locale.nil? then locale = 'en' end
         I18n.locale = locale
 
-        translate = lambda do |str|
+        translate = lambda do |str, interpolation={}|
 
           if str.nil? or str.empty? then 
             return str   
           end
 
-          trans = I18n.t str
+          trans = I18n.t(str, interpolation)
           return trans.is_a?(Array) ? trans[script_day - 1] : trans
         end
 
@@ -273,7 +273,12 @@ module Birdv
               elements = m[:attachment][:payload][:elements]
               elements.each_with_index do |val, i|
                 elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
-                elements[i][:image_url] = translate.call(elements[i][:image_url])
+                # now, substitute story_name by getting story_name from curriculum
+                version = get_curriculum_version(recipient)
+                curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
+                title = curriculum[script_day - 1][1] # title is at index 1 for curriculum rows
+                elements[i][:image_url] = translate.call(elements[i][:image_url], {story_name: title})
+
                 # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
                 if elements[i][:buttons]
                   buttons = elements[i][:buttons]

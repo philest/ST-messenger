@@ -1,7 +1,7 @@
 module MessageReplyHelpers
   # TODO: add Spanish words here
   DAY_RQST  = /day\d+/i
-  HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien es este)|(quién eres tú)/i
+  HELP_RQST = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien)|(quién)/i
   STOP_RQST = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)/i
   THANK_MSG = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
   HAHA_MSG = /(haha)+|(jaja)+/i 
