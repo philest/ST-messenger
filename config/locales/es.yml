@@ -29,21 +29,22 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"      
     buttons:
-      story_img_url:
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      story_img_url: 'http://d2p8iyobf0557z.cloudfront.net/day1/%{story_name}-button.jpg'
+      # story_img_url:
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
       window_text: 
         - "Enviaré otro cuento mañana por la noche. ¡Están leyendo muy bien! :)"
         - "Enviaré otro cuento mañana por la noche. ¡Van muy bien! :)"

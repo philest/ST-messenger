@@ -30,19 +30,20 @@ en:
       - "Hi __PARENT__, here’s another story!"      
       - "Hi __PARENT__, here’s another story!"      
     buttons:
-      story_img_url:
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-        - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
+      # story_img_url:
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
+      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
       window_text: 
         - "You'll get another story next week. You both are doing great! :)"
         - "Another story will come in a few days. You both are doing great! :)"
