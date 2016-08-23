@@ -8,6 +8,8 @@ class StartDayWorker
   # Why does this function exist? Wasteful! Stupid!
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
+    return true if user.state_table.story_number == 0
+
     return user.state_table.last_story_read?
   end
   
@@ -94,6 +96,15 @@ class ScheduleWorker
     }
   ]
 
+
+  # story_number = 1  [4]
+  #              = 2  [1, 4]
+  #              = 3  [1, 4]
+  #              = 4  [1, 2, 4]
+  #              = 5  [1, 2, 4]
+  #              = 6  [1, 2, 4]
+  #              = 10 [1, 2, 4]
+ 
   # very inneficient, redo some day
   def get_schedule(story_number)
     if @sched
@@ -137,7 +148,7 @@ class ScheduleWorker
       # puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
       # puts ""
 
-      if !ut
+      if ut.nil?
         last_story_read_ok = true
       elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
         # if the last story wasn't sent today (has to be at least since yesterday)
@@ -209,6 +220,7 @@ class ScheduleWorker
     # puts "now = #{now}"
     # puts "user utc = #{user_sendtime_utc}"
 		user_day 	 = get_local_day(Time.now.utc, user)
+    puts "user_day = #{user_day}"
 
     # TODO: deprecated?
     # valid_for_user = acceptable_days.include?(user_day) # deprecated?
@@ -216,15 +228,33 @@ class ScheduleWorker
     user_story_num  = user.state_table.story_number
  
     user_sched      = get_schedule(user_story_num)
+
+    puts "user_sched = #{user_sched}"
     
-    valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day)
+    valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day) || user_story_num == 0
+
+    # check if we've already sent them a story and should send them a reminder...
+    if user.state_table.last_story_read? == false
+      # check to see if it's been over two cycles away...
+      
+      
+
+
+      # if yes, then send a reminder text....
+
+      # if no, then don't send a reminder text, and don't send anything at all!
+
+      # TODO: figure out how we're doing reminder text as sequences.
+    end
+
+
 
         # this deals with the edge case of being on story 1:
     if (user_story_num == 1)
       lstrt = user.state_table.last_story_read_time
                              # TODO: double-check this logic...
       if !lstrt.nil?
-      last_story_read_time = get_local_time(lstrt, user.tz_offset)
+        last_story_read_time = get_local_time(lstrt, user.tz_offset)
       
         days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
         if days_elapsed < 7

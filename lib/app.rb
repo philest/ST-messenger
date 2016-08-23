@@ -64,7 +64,6 @@ class SMS < Sinatra::Base
       email_admins "A user (phone #{phone}) texted StoryTime", \
              "Message: #{params[:Body]}<br/>Time: #{Time.now}"
 
-
     else # this is a new user, enroll them in the system 
 
       puts "someone texted in, creating user..."

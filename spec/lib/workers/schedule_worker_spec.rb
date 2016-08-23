@@ -141,6 +141,16 @@ describe ScheduleWorker do
 
   context "within_time_range function", :range => true do
 
+    it 'gets fucked', myshit: false do
+      puts "FUCKED!"
+      Timecop.freeze(Time.now + 8.days)
+      @on_time.state_table.update(story_number: 9)
+      @on_time = User.where(fb_id: "12345").first
+      puts "#{@on_time.state_table.inspect}"
+      expect(@s.within_time_range(@on_time, @interval)).to be true
+
+    end
+
 
     it "returns true for users within the time interval at a given time" do
 
@@ -273,6 +283,11 @@ describe ScheduleWorker do
         Timecop.return
 			end
 
+      after(:each) do
+        Timecop.return
+      end
+
+
 			before(:each) do
       	# users = User.all
 				@users.each do |u|
@@ -292,6 +307,44 @@ describe ScheduleWorker do
 						u.state_table.update(last_story_read?:true)
 					end
 				end
+
+        it 'doesn\'t send a goddamn story button to those who haven\'t read their last story, you hear me bitch?', myshit: true do
+          @users.each do |u|
+            u.state_table.update(last_story_read?:false)
+            # u.state_table.update(last_story_read_time: Time.now.utc - 1.week)
+          end
+          start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+          Timecop.freeze(start_time)  
+
+          expect {
+            Sidekiq::Testing.fake! {
+              @sw_curric.perform(@interval)
+            }
+          }.not_to change{StartDayWorker.jobs.size}
+
+
+        end
+
+        it 'day 2 doesn\'t send a goddamn story button to those who haven\'t read their last story, you hear me bitch?', myshit: true do
+          @users.each do |u|
+            u.state_table.update(last_story_read?:false, story_number: 2)
+            # u.state_table.update(last_story_read_time: Time.now.utc - 1.week)
+          end
+          start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+          Timecop.freeze(start_time)  
+
+          expect {
+            Sidekiq::Testing.fake! {
+              @sw_curric.perform(@interval)
+            }
+          }.not_to change{StartDayWorker.jobs.size}
+
+
+        end
+
+
+
+
 
 				# TODO: write a test that ensure the get_schedule thing behaves proper
 
