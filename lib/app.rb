@@ -86,9 +86,12 @@ class SMS < Sinatra::Base
       #  
       School.each do |school|
         code = school.code
+        # text in "casa malta"
+        # 'casa malta'
+
+        # "Malta|Casa Malta"
         code_regex = Regexp.new(code, "i")
         
-
         body_text = params[:Body].delete(' ')
 
         match_data = code_regex.match body_text
@@ -111,7 +114,6 @@ class SMS < Sinatra::Base
           school.add_user(new_user)
           puts "school's users = #{school.users.to_s}"
           puts "user's school = #{new_user.school.inspect}"
-
         end
       end
 
