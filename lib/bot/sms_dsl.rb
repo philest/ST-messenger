@@ -30,7 +30,8 @@ module Birdv
 
         if user
           parent  = user.first_name.nil? ? "" : user.first_name
-          child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+          I18n.locale = user.locale
+          child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
           
           if !user.teacher.nil?
             sig = user.teacher.signature
@@ -107,7 +108,7 @@ module Birdv
       #   return true # or whatever
       # end
 
-      def send_sms( phone, text, next_sequence_name )
+      def send_sms( phone, text, next_sequence_name=nil )
         puts "in send_sms_helper, next_sequence is #{next_sequence_name}"
         puts "in send_sms_helper, script_name is #{script_name}"
 
@@ -126,7 +127,7 @@ module Birdv
         })
       end
 
-      def send_mms( phone, img_url, next_sequence_name )
+      def send_mms( phone, img_url, next_sequence_name=nil )
         img_url = translate_sms(phone, img_url)
 
         HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 

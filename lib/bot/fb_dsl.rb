@@ -98,7 +98,8 @@ module Birdv
 
         if user
           parent  = user.first_name.nil? ? "" : user.first_name
-          child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+          I18n.locale = user.locale
+          child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
           
           if !user.teacher.nil?
             sig = user.teacher.signature
