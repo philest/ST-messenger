@@ -14,8 +14,8 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
 
 	sequence 'image1' do |phone_no|
 		# send out coon story
-		img = 'https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg'
-		"sending first image..."
+		img = 'mms.stories.clouds[0]'
+		puts "sending first image..."
 		send_mms phone_no, img, 'image2'
 
 		# delay phone_no, 'image2', MMS_WAIT
@@ -25,7 +25,7 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
 	sequence 'image2' do |phone_no|
 		# one more button
 		puts "sending second image..."
-		img = 'https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg'
+		img = 'mms.stories.clouds[1]'
 		send_mms phone_no, img, 'goodbye'
 
 		# delay phone_no, 'goodbye', MMS_WAIT

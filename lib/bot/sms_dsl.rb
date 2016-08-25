@@ -67,6 +67,21 @@ module Birdv
           return text   
         end
 
+        re_index = /\[\d+\]/i
+        match = re_index.match(text)
+        if match
+          index = $1
+          code_regex = /[^\[\d+\]]/i
+          translation_code = code_regex.match(text)
+          translation_array = I18n.t translation_code.to_s.downcase
+          if translation_array.is_a? Array
+            return translation_array[index]
+          else
+            raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
+          end
+        
+        end
+
         trans = I18n.t text
         puts "trans = #{trans}"
         if trans.is_a? Array
@@ -77,6 +92,10 @@ module Birdv
         
       rescue NoMethodError => e
         p e.message + " usr doesn't exist, can't translate"
+        return false
+
+      rescue StandardError => e
+        p e.message
         return false
       end # translate_mms
 

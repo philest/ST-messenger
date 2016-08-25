@@ -64,7 +64,12 @@ en:
       welcome: "You're welcome :)"
   mms:
     stories:
-      one: 
+      floating_shoe:
+        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg
+      clouds:
+        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg
 
 
     # (where we keep the adjusted 'espanish' urls)
