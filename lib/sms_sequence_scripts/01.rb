@@ -69,9 +69,9 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
   sequence 'image1' do |phone_no|
     user = User.where(phone: phone_no).first
     if user.teacher and user.teacher.signature then
-      img = 'http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg'
+      img = 'enrollment.img.has_teacher'
     else
-      img = 'http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-nhv.jpg'
+      img = 'enrollment.img.default'
     end
     puts "sending first image..."
 

@@ -1,7 +1,5 @@
 module Test
-  module FB
-    
-    
+  module FB  
     def print_thing
       puts "FB script"
     end
@@ -15,6 +13,22 @@ module Test
 
 end
 
+
+module Fuck
+
+  def ass_me
+    puts @my_ass.to_s + "whatever, i don't care"
+  end
+
+end
+
+class FuckingShit
+  extend Fuck
+  @my_ass = "is really huuuuuuuuge!"
+
+end
+
+FuckingShit.ass_me
 
 module Test
 
@@ -53,12 +67,3 @@ end
 
 
 s.print_thing
-
-
-
-
-
-
-
-
-

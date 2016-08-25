@@ -108,6 +108,8 @@ module Birdv
       end
 
       def send_mms_helper( phone, img_url, script_name, next_sequence_name )
+        img_url = translate_sms(phone, img_url)
+
         HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
           body: {
             recipient: phone,

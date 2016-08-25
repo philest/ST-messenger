@@ -3,21 +3,22 @@ es:
   defaults:
     teacher: "su maestro"
     child: "su niño"
+  demo: "¡Hola! Estamos lejos ahora, pero vamos a ver su mensaje pronto. Para obtener más información acerca de StoryTime, llame al 561-212-5831."
   user_response:
     help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con 'ALTO'\n - Para ayuda, póngase en contacto: 561-212-5831"
     stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
     thanks: "De nada :)"
-    learn: "StoryTime envía artículos libres de texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara detener, el texto STOP"
+    learn: "StoryTime envía cuento gratis a través de mensaje texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara dejar de recibir mensajes, responde con ALTO"
     teacher_reply:
-      session: "Voy a ver su mensaje para esta noche! Si necesita más ayuda, llame al StoryTime 561-212-5831"
-      no_session: "¡Hola! Estoy lejos ahora, pero voy a ver su mensaje pronto! Si necesita ayuda, introduce 'learn'"
+      session: "Veré su mensaje esta noche! Si necesita más ayuda, llame al StoryTime: 561-212-5831"
+      no_session: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto! Si necesita ayuda, introduce 'learn'"
     robot:  "¡Hola __PARENT__! StoryTime es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto :)."
-    end_conversation: "Voy a ver su mensaje en la noche! Si necesitas ayuda, escribe 'ayuda'"
+    end_conversation: "Voy a ver su mensaje en la noche! Si necesita ayuda, escribe 'ayuda'"
   scripts:
     teacher_intro:
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrutes."
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para perpara __CHILD__ para el kinder."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para preparar __CHILD__ para el kinder."
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
@@ -30,21 +31,6 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"      
     buttons:
       story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
-      # story_img_url:
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
       window_text: 
         - "Enviaré otro cuento mañana por la noche. ¡Están leyendo muy bien! :)"
         - "Enviaré otro cuento mañana por la noche. ¡Van muy bien! :)"
@@ -76,7 +62,7 @@ es:
       welcome: "De nada :)"
 
 
-  stories:
+  stories: "hola?"
     # (where we keep the adjusted 'espanish' urls)
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
@@ -84,17 +70,20 @@ es:
 
   enrollment:
     body: 
-      has_teacher: "Hola, es __TEACHER__. Voy a estar enviando mensajes de texto a __CHILD__ con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
-      has_school: "Hola, es __SCHOOL__. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
-      has_none: "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\nUsted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+      has_teacher: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\nPuede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
+      has_school: "Hola, es __SCHOOL__. Vamos a enviar mensajes de texto a usted con StoryTime!\n\nPuede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
+      has_none: "Hola, es StoryTime. Le enviaremos mensajes de texto con libros de cuento gratis!\n\nPuede empezar ahora si tiene Facebook Messenger.  Visite este enlace para entrar:\njoinstorytime.com/go"
+    img:
+      has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
+      default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
 
     body_sprint:
       has_teacher: 
-        first: "Hola, es __TEACHER__. Voy a estar enviando mensajes de texto a __CHILD__ con StoryTime!\n\n"
-        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\n"
+        second: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
       has_school: 
-        first: "Hola, es __SCHOOL__. Vamos a estar enviando mensajes de texto a usted con StoryTime!\n\n" 
-        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es __SCHOOL__. Vamos enviarle mensajes de texto a usted con StoryTime!\n\n" 
+        second: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
       has_none: 
-        first: "Hola, es StoryTime. Vamos a estar enviando mensajes de texto a usted!\n\n"
-        second: "Usted puede empezar ahora si tiene Facebook Messenger. Toque aquí y entrar en IR:\njoinstorytime.com/go"
+        first: "Hola, es StoryTime. Vamos enviarle mensajes de texto con libros de cuento gratis!\n\n"
+        second: "Puede empezar ahora si tiene Facebook Messenger.  Visite este enlace para entrar:\njoinstorytime.com/go"
