@@ -158,7 +158,7 @@ describe 'sms' do
       it 'really translates it, I mean it!' do
         puts I18n.t 'hello'
 
-        puts @s.translate_sms('8186897323', 'mms.stories.floating_shoe[0]')
+        puts @s.translate_sms('8186897323', 'mms.stories.floating_shoe[1]')
 
       end
 

@@ -68,7 +68,7 @@ module Birdv
           return text   
         end
 
-        re_index = /\[\d+\]/i
+        re_index = /\[(\d+)\]/i
         match = re_index.match(text)
         if match
           index = $1
