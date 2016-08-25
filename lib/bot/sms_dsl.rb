@@ -72,11 +72,12 @@ module Birdv
         match = re_index.match(text)
         if match
           index = $1
-          code_regex = /[^\[\d+\]]/i
+          code_regex = /.*[^\[\d+\]]/i
           translation_code = code_regex.match(text)
           translation_array = I18n.t translation_code.to_s.downcase
           if translation_array.is_a? Array
-            return translation_array[index]
+            puts "translation array element = #{translation_array[index.to_i]}"
+            return translation_array[index.to_i]
           else
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end

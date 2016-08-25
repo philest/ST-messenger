@@ -147,14 +147,21 @@ describe 'sms' do
   # TODO: THIS!!!
   context 'StoryTimeScript#translate_sms', mms:true do
     context 'name codes' do
-      it 'translates shit' do
-        @s = Birdv::DSL::StoryTimeScript.new 'day1', 'sms' do; end
+      before(:each) do
+        @s = Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do; end
+        puts "script = #{@s.inspect}"
 
-        user = User.create phone: '8186897323'
-        @s.name_codes "hi there", '8186897323'
-
+        @user = User.create phone: '8186897323'
 
       end
+
+      it 'really translates it, I mean it!' do
+        puts I18n.t 'hello'
+
+        puts @s.translate_sms('8186897323', 'mms.stories.floating_shoe[0]')
+
+      end
+
       it 'finds a user if they have a facebook id but no phone'
 
       it 'finds a user if they have a phone but no facebook id'
