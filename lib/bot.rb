@@ -84,7 +84,8 @@ Bot.on :message do |message|
 
   if db_user.nil?
       register_user(message.sender)
-      MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
+      StartDayWorker.perform_async(sender_id, platform='fb')
+      # MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
@@ -143,7 +144,8 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
+    StartDayWorker.perform_async(sender_id, platform='fb')
+    # MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

@@ -156,27 +156,27 @@ module Birdv
 
       # how do we abstract this?
       def run_sequence(recipient, sqnce_name)
-        begin
-          ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
+        ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
 
-          case @platform
-          when 'fb'
-            u = User.where(fb_id:recipient).first
-          when 'sms'
-            u = User.where(phone:recipient).first
-          end
-          
-
-          u.state_table.update(last_sequence_seen: sqnce_name.to_s) if u
-          return ret
-
-        rescue => e  
-          puts "#{sqnce_name} from script #{@script_name} failed!"
-          puts "the known sequences are: #{@sequences}"
-          puts e.message  
-          puts e.backtrace.join("\n") 
-          notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
+        case @platform
+        when 'fb'
+          u = User.where(fb_id:recipient).first
+        when 'sms'
+          u = User.where(phone:recipient).first
         end
+
+        if u then # u might not exist because it's a demo
+          u.state_table.update(last_sequence_seen: sqnce_name.to_s)
+        end
+        
+        return ret
+
+      rescue => e  
+        puts "#{sqnce_name} from script #{@script_name} failed!"
+        puts "the known sequences are: #{@sequences}"
+        puts e.message  
+        puts e.backtrace.join("\n") 
+        notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
       end
 
       def button(btn_name)

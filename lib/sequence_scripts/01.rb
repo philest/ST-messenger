@@ -21,11 +21,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
 	})
 
-	sequence 'firsttap' do |recipient|
-		# no longer a text before.
-		# send tap_here button
-		send recipient, button({name:'tap_here'}) 
-	end
+
 
 	sequence 'greeting' do |recipient|
 		# greeting with 5 second delay
@@ -48,6 +44,13 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		txt = 'scripts.buttons.window_text'
 		send recipient, text({text:txt})	
 
+	end
+
+	# optional sequence to include a day1 button! 
+	sequence 'firsttap' do |recipient|
+		# no longer a text before.
+		# send tap_here button
+		send recipient, button({name:'tap_here'}) 
 	end
 
 end 

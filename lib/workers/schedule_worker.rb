@@ -5,14 +5,31 @@ class StartDayWorker
   #   10
   # end
 
-  # Why does this function exist? Wasteful! Stupid!
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
     return true if user.state_table.story_number == 0
 
     return user.state_table.last_story_read?
   end
-  
+
+  def remind?(user)
+    if read_yesterday_story?(user)
+      false
+    elsif user.platform == 'sms'
+      false # we don't want reminders for sms, dawg.........
+    else # fb user did NOT read yesterday's story
+       # check to see if it's been over four days away...
+        last_script_sent_time = user.state_table.last_script_sent_time
+        if last_script_sent_time != nil then 
+          days_elapsed = (Time.now.utc - last_script_sent_time) / 1.day
+          # if more than four days have elapsed after the user did not read their last story, it's time to remind them
+          return days_elapsed < 4 ? false : true
+        else
+          return false # don't remind them
+        end
+    end
+  end
+
   def update_day(user, platform)
     n = user.state_table.story_number + 1
     case platform
@@ -23,13 +40,11 @@ class StartDayWorker
       end
     else # platform == 'mms' or 'sms'
       # Update. Since there are no buttons, we just assume peeps have read their story. 
-      # An alternative is we ask that someone reply to an initial text before we send them a story.
-      # Talk to the team about this option. 
       user.state_table.update(story_number: n)
     end
 
     return user.state_table.story_number
-    # TODO: do error handling in a smart idempotent way
+    # TODO: do error handling in a smart idempotent way (I mean, MAYBE)
   end
 
   def perform(recipient, platform='fb')
@@ -40,7 +55,11 @@ class StartDayWorker
       u = User.where(phone:recipient).first
     end
     
-    return if u.nil?
+    if u.nil? or not u.state_table.subscribed?
+      puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
+      return
+    end
+
 
     day_number =  update_day(u, platform)
     puts "day#{day_number}"
@@ -49,7 +68,85 @@ class StartDayWorker
 
     puts script.inspect
 	  if !script.nil?
-      script.run_sequence(recipient, :init) 
+      puts "the script is not nil, everyone!"
+      # do I need to do reminders over here? yes! 
+
+      # ok, if it's been at least four days since we received our last story and we still
+      # haven't read it, we get a reminder. great.
+      #   so the last_reminded_time becomes now, while the last_script_send_time remains at least 
+      #   4 days ago. great.
+      # 
+      # if it's been at least 10 days since we received our last story, unsubscribe
+      # 
+      # 
+      # so....... let's say it's 6 days since we received our last story and we still haven't read it. 
+      # 2 days ago, we got our first reminder. meaning that
+      #   on day1, we read our first story
+      #   on day4, we got our first reminder
+      # it's now day6 and we've already been sent a reminder. we don't want to send any more reminders 
+      # after that. 
+      # last_script_sent_time < last_reminded_time, but now - last_script_send_time < 10 days, 
+      # so we shouldn't send anything to the user.
+      # if we were on day10, we would definitely send the unsubscribe message. 
+      # 
+      # 
+      # 
+      # 
+      # 
+      # on a normal day, if it's time to remind the user (and this is our first reminder)
+      # also, let's assume that we're on day 60 and we've reminded the guy before
+      #   last_script_sent_time > last_reminded_time
+      # so we won't inadvertently send an unsubscribe message
+      # 
+
+      if remind?(u)
+
+        reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
+        # if the last_reminded_time was more recent than the last_script_sent_time, 
+        # send the "unsubscribe" message to these folks
+        # "We noticed you haven't been reading stories for a few days. If you'd like 
+        # to stop getting stories, just click 'unsubscibe'"
+        last_reminded_time = u.state_table.last_reminded_time
+        num_reminders = u.state_table.num_reminders
+
+        puts "state_table = #{u.state_table.inspect}"
+        puts "I AM A PARIAH"
+
+        # we've never sent a reminder before, so send one now
+        if last_reminded_time.nil? || num_reminders == 0
+          puts "WE'RE IN THAT FIRST THING!!!!!"
+          # send a regular reminder
+          u.state_table.update(last_reminded_time: Time.now.utc, num_reminders: 1)
+          reminder.run_sequence(recipient, :remind)
+          # send the button again, but don't update last_script_sent_time
+          script.run_sequence(recipient, :init)
+        else # we have send a reminder, so either unsubscribe or do nothing
+          puts "WE'RE UNSUBSCRIBING NOW!!!!!!!!!"
+          last_script_sent_time = u.state_table.last_script_sent_time
+          # our last reminder was sent more recently than the last story that was sent
+          unsubscribe = last_reminded_time > last_script_sent_time
+          # the last story that was sent (and not read) was sent over 10 days ago
+          unsubscribe &&= (Time.now.utc - last_script_sent_time) > 10.days
+
+          puts "unsubscribe = #{unsubscribe}"
+
+          if unsubscribe
+            # send the unsubscribe message
+            u.state_table.update(subscribed?: false)
+            reminder.run_sequence(recipient, :unsubscribe)
+          end
+          
+          # otherwise, do nothing
+
+        end
+
+      else # send a story button, the usual way, yippee!!!!!!!!!
+
+        puts "I DON'T NEED TO REMIND ANYONE OF ANYTHING!!!!!!!!!!!!!"
+        u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
+        script.run_sequence(recipient, :init) 
+      end
+
     else
       #TODO: email?
       puts 'could not find scripts :('
@@ -141,13 +238,7 @@ class ScheduleWorker
   def filter_users(time, range)
     today_day = Time.now.utc
   	filtered = User.all.select do |user|
-  		# TODO - exception handling if the timezone isn't the correct name
-
       ut =  user.state_table.last_story_read_time
-
-      # puts "THE COMP #{Time.at(today_day)} THE USER #{ut}, #{ut.class}, #{ut.nil?}"
-      # puts ""
-
       if ut.nil?
         last_story_read_ok = true
       elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
@@ -156,10 +247,6 @@ class ScheduleWorker
       else    
         last_story_read_ok = false
       end
-
-      # # REMOVE THIS LINE, THIS IS JUST FOR TESTING!!!!!!
-      # last_story_read_ok = true
-
       # ensure is within_time_range and that last story read wasn't today!
   		within_time_range(user, range) && last_story_read_ok
   	end
@@ -167,7 +254,6 @@ class ScheduleWorker
     p e.message + "... something went wrong, not filtering users"
     filtered = []
   ensure
-    # puts "filtered = #{filtered.inspect}"
     return filtered
   end
 
@@ -181,7 +267,6 @@ class ScheduleWorker
             user.teacher.signature.match(/wahl/i) ||
             user.teacher.signature.match(/mcpeek/i) ||
             user.teacher.signature.match(/mcesterwahl/i)
-
     if match.nil? 
       return false 
     else 
@@ -215,44 +300,17 @@ class ScheduleWorker
 
     # DST-adjusted user time
     user_sendtime_local = adjust_tz(user)
-    # user_sendtime_utc  = user_sendtime_local.utc.seconds_since_midnight
     user_sendtime_utc   = user_sendtime_local.utc
-    # puts "now = #{now}"
-    # puts "user utc = #{user_sendtime_utc}"
 		user_day 	 = get_local_day(Time.now.utc, user)
     puts "user_day = #{user_day}"
-
-    # TODO: deprecated?
-    # valid_for_user = acceptable_days.include?(user_day) # deprecated?
-
     user_story_num  = user.state_table.story_number
- 
     user_sched      = get_schedule(user_story_num)
-
     puts "user_sched = #{user_sched}"
-    
     valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day) || user_story_num == 0
-
-    # check if we've already sent them a story and should send them a reminder...
-    if user.state_table.last_story_read? == false
-      # check to see if it's been over two cycles away...
-      
-      
-
-
-      # if yes, then send a reminder text....
-
-      # if no, then don't send a reminder text, and don't send anything at all!
-
-      # TODO: figure out how we're doing reminder text as sequences.
-    end
-
-
-
-        # this deals with the edge case of being on story 1:
+    # this deals with the edge case of being on story 1:
     if (user_story_num == 1)
       lstrt = user.state_table.last_story_read_time
-                             # TODO: double-check this logic...
+      # TODO: double-check this logic...
       if !lstrt.nil?
         last_story_read_time = get_local_time(lstrt, user.tz_offset)
       
@@ -266,21 +324,13 @@ class ScheduleWorker
     # friends get it three days a week
     friend_days = [1,3,5]
     valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
-
-
     # we get it all day erryday
     valid_for_mcesterwahl = is_us?(user)
-
     if (valid_for_user || valid_for_friend || valid_for_mcesterwahl) # just wednesday for now (see default arg)
 			if now >= user_sendtime_utc
-        # puts "now >= user_sendtime_utc"
-        # puts "now - user_sendtime_utc = #{now-user_sendtime_utc}"
 				return now - user_sendtime_utc <= range
 			else
-        # puts "now < user_sendtime_utc"
-        # puts "user_sendtime_utc - now = #{user_sendtime_utc - now}"
-				return user_sendtime_utc - now <  range
-
+				return user_sendtime_utc - now < range
 			end
 		end
     # else, not valid for user, friend, or mcesterwahl
@@ -291,8 +341,6 @@ class ScheduleWorker
   # e.g. Monday => 1, Saturday => 6
   def get_local_day(server_time, user)
     return (server_time.utc + user.tz_offset.hours).wday
-  	# user_tz = ActiveSupport::TimeZone.new(user.timezone)
-  	# return server_time.utc.in_time_zone(user_tz).wday
   end
 
   # returns a time in the specified timezone offset
@@ -300,50 +348,15 @@ class ScheduleWorker
     return last_story_read_time + tz_offset
   end
 
-  #   # returns a time in the specified timezone
-  # def get_local_time(time, goal_timezone)
-  #   tz = ActiveSupport::TimeZone.new(goal_timezone)
-
-  #   # time that user enrolled, converted from UTC to local time
-  #   return time.utc.in_time_zone(tz)
-  # end
-
   # returns the user's DST-adjusted local time
   def adjust_tz(user)
-  	# # timezone object in User's timezone
-  	# user_tz = ActiveSupport::TimeZone.new(user.timezone)
-
-  	# # time that user enrolled, converted from UTC to local time
-  	# tz_init = user.enrolled_on.utc.in_time_zone(user_tz)
-
-  	# # server time, converted to local time zone
-  	# tz_current = Time.now.utc.in_time_zone(user_tz)
-
-    # 23:00 - 4 = 19:00 = 7pm
-
     est_offset = 4 # the tz_offset of EST, the default timezone
-
     est_adjust = (user.tz_offset + est_offset).hours
-    # puts "user tz_offset = #{user.tz_offset}"
-
     # in Pacific time, this would be adding a positive number of hours
     adjusted_send_time = user.send_time - est_adjust
-
-
-    # problem: sometimes you add a day to new_send_time, sometimes you don't, depending on the timezone.
-
-    # check if we go forward or backward a day in adjusting the send time to UTC
-    # day_change = adjusted_send_time.day - user.send_time.day
-    # puts "day change = #{day_change}"
-
     ast = adjusted_send_time
     new_send_time = Time.new(Time.now.utc.year, Time.now.utc.month, Time.now.utc.day, ast.hour, ast.min, ast.sec, ast.utc_offset)
-
-    # puts "before, user.send_time = #{user.send_time}"
-    # puts "after, user.send_time (new_send_time) = #{new_send_time}"
-
     return new_send_time
-
   end
 end
 

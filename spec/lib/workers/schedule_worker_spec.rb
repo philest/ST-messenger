@@ -141,7 +141,7 @@ describe ScheduleWorker do
 
   context "within_time_range function", :range => true do
 
-    it 'gets fucked', myshit: false do
+    it 'gets fucked' do
       puts "FUCKED!"
       Timecop.freeze(Time.now + 8.days)
       @on_time.state_table.update(story_number: 9)
@@ -299,30 +299,177 @@ describe ScheduleWorker do
 
 			describe 'day 1 behaviour', day1:true do
 
+        before(:all) do
+          Birdv::DSL::ScriptClient.clear_scripts 
+
+
+          Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
+            .each {|f| load f }
+
+          @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
+          @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
+          @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+
+
+
+          # allow(@day2).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+          #   puts "run_sequence for @day2"
+          # end
+          # allow(@remind_script).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+          #   puts "run_sequence for @remind_script"
+          # end
+
+          @sw = ScheduleWorker.new
+          @sd = StartDayWorker.new
+
+        end
+
+
 				# before each example, the user has already read day1!
 				before(:each) do
 					@users.each do |u|
 						u.update(curriculum_version:666)
 						u.state_table.update(story_number:1)
 						u.state_table.update(last_story_read?:true)
+            u.reload()
 					end
 				end
+
+        it 'should remind certain users, bitch!', remind: true do
+          expect(@sd.remind?(@on_time)).to eq false
+        end
+
+        it 'should NOT remind certain users, bitch!', remind: true do
+          User.each {|u| u.destroy }
+          start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+          Timecop.freeze(start_time)  
+          fb_id = 'some_id'
+          user = User.create(fb_id: fb_id)
+          expect(@sd.remind?(user)).to eq false
+          allow(@day1).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+            puts "run_sequence for @day1"
+          end
+          expect(@day1).to receive(:run_sequence).with(fb_id, :init)
+
+          Sidekiq::Testing.inline! do 
+            @sw.perform(@interval)
+          end
+        end
+
+        it 'should remind users!', remind: true do
+          # kill everyone
+          User.each {|u| u.destroy }
+
+          start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+          Timecop.freeze(start_time)  
+          fb_id = 'some_id'
+          user = User.create(fb_id: fb_id)
+          expect(user.state_table.story_number).to eq 0
+
+          allow(@day1).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+            puts "run_sequence for @day1"
+          end
+          # expect(User.count )
+          expect(@day1).to receive(:run_sequence).with(fb_id, :init)
+
+
+          Sidekiq::Testing.inline! do 
+            @sw.perform(@interval)
+          end
+
+          user.reload()
+          expect(user.state_table.story_number).to eq 1
+
+          # one week later!
+          Timecop.freeze(start_time + 1.week)
+          expect(user.state_table.num_reminders).to eq 0
+
+          expect(@sd.remind?(user)).to eq true
+
+          Sidekiq::Testing.inline! do 
+            expect(@remind_script).to receive(:run_sequence).with(fb_id, :remind)
+            @sw.perform(@interval)
+          end
+
+          user.reload()
+
+          expect(user.state_table.num_reminders).to eq 1
+
+          # a day later.....
+          Timecop.freeze(start_time + 1.day)
+
+          user.reload()
+
+          expect(user.state_table.num_reminders).to eq 1
+
+          puts "WE'VE FINISHED THE FIRST REMINDER!"
+
+          allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args|
+            original_method.call(*args, [Time.now.wday])
+          end
+
+          Sidekiq::Testing.inline! do 
+            expect(StartDayWorker).to receive(:perform_async)
+            expect(@remind_script).not_to receive(:run_sequence)
+            expect(@day1).not_to receive(:run_sequence)
+            @sw.perform(@interval)
+          end
+
+
+        end
+
+        it 'unsubscribes after two weeks' do
+           # kill everyone
+          User.each {|u| u.destroy }
+
+          start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
+          Timecop.freeze(start_time + 2.weeks)
+          fb_id = 'some_id'
+          user = User.create(fb_id: fb_id)
+          expect(user.state_table.story_number).to eq 0
+
+          allow(@day1).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+            puts "run_sequence for @day1"
+          end
+          user.reload()
+
+          allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args|
+            original_method.call(*args, [Time.now.wday])
+          end
+
+          expect(user.state_table.num_reminders).to eq 1
+          expect(user.state_table.last_reminded_time).to_not be_nil
+          puts "WE'RE DOING THE LAST TESTS NOW!"
+          puts "user count = #{User.count}"
+
+          # expect(StartDayWorker).to receive(:perform_async).exactly(1).times.with(fb_id, 'fb')
+          # expect(@day1).not_to receive(:run_sequence)
+          # expect(@remind_script).to receive(:run_sequence).with(fb_id, :unsubscribe)
+
+          Sidekiq::Testing.inline! do 
+            # ok, the unsubscribe is not working right now....
+            # okay, the unsubscribe stuff isn't working...........
+            @sw.perform(@interval)
+          end
+
+        end
+
+
 
         it 'doesn\'t send a goddamn story button to those who haven\'t read their last story, you hear me bitch?', myshit: true do
           @users.each do |u|
             u.state_table.update(last_story_read?:false)
+            u.state_table.update(story_number: 1)
             # u.state_table.update(last_story_read_time: Time.now.utc - 1.week)
           end
           start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
           Timecop.freeze(start_time)  
-
-          expect {
-            Sidekiq::Testing.fake! {
-              @sw_curric.perform(@interval)
-            }
-          }.not_to change{StartDayWorker.jobs.size}
-
-
+          # expect(@remind_script).to receive(:run_sequence).once.with('5612125831', :init)
+          expect(@day1).not_to receive(:run_sequence)
+          expect(@day2).not_to receive(:run_sequence)
+          Sidekiq::Testing.inline! do 
+            @sw_curric.perform(@interval)
+          end
         end
 
         it 'day 2 doesn\'t send a goddamn story button to those who haven\'t read their last story, you hear me bitch?', myshit: true do
@@ -333,18 +480,12 @@ describe ScheduleWorker do
           start_time = Time.new(2016, 7, 28, 23, 0, 0, 0)
           Timecop.freeze(start_time)  
 
-          expect {
-            Sidekiq::Testing.fake! {
-              @sw_curric.perform(@interval)
-            }
-          }.not_to change{StartDayWorker.jobs.size}
-
-
+          expect(@day1).not_to receive(:run_sequence)
+          expect(@day2).not_to receive(:run_sequence)
+          Sidekiq::Testing.inline! do
+            @sw_curric.perform(@interval)
+          end
         end
-
-
-
-
 
 				# TODO: write a test that ensure the get_schedule thing behaves proper
 

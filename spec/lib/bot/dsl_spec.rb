@@ -633,7 +633,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
       it 'updates last sequence seen, nil->init->scratchstory' do
         pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
         expect(pgs).to eq(2)  # only two pages of coon story
-        expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(1)
+        expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)
         expect(User.where(fb_id:@aubrey).first.curriculum_version).to eq(0)
         @stub_story.call(@aubrey, "day1","coon", pgs)
         #@stub_story.call(@aubrey, "day1","bird", 8)
@@ -674,7 +674,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
           s2.run_sequence(@aubrey, 'yourwelcome')
       }.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to('yourwelcome')
 
-      expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(1)
+      # expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(1)
 
     end
   end #=>END context 'when #send, the DB should be updated' do

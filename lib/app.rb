@@ -254,6 +254,27 @@ class SMS < Sinatra::Base
   end
 
 
+    # send the demo
+  post '/demo' do
+    phone = params[:phone]
+    puts "sending demo to #{phone}"
+    MessageWorker.perform_async(phone, script_name='demo', sequence='firstmessage', platform='demo')
+  end 
+
+  post '/demo/sms' do
+    # msg = "Hi! We're away now, but we'll see your messsage soon. "+
+    # "To learn more about StoryTime, call 561-212-5831."
+    msg = I18n.t 'demo.response'
+
+    twiml = Twilio::TwiML::Response.new do |r|
+      # r.Message "StoryTime: Hi, we'll send your text to #{user.teacher.signature}. They'll see it next time they are on their computer."
+      r.Message msg
+    end
+    twiml.text
+  end
+
+
+
 
 end # class SMS < Sinatra::Base
 
