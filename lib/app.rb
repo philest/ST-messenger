@@ -224,7 +224,6 @@ class SMS < Sinatra::Base
       puts "message failed to send."
     end
 
-
     # # have some params like:
     # #   params[:sequence_name]
     # #   params[:script_name]

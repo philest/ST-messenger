@@ -52,7 +52,6 @@ class MessageWorker
           end
         end
 
-
         # log the button anyway...
         b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
         u.add_button_press_log(b)
