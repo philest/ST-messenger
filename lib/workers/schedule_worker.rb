@@ -113,16 +113,65 @@ class ScheduleWorker
 
 
   def perform(range=5.minutes.to_i)
-		filter_users(Time.now, range).each do |user|
-        case user.platform
-        when 'fb'
-          puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
-          StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
-        when 'sms'
-          puts "phone = #{user.phone}, story_number = #{user.state_table.story_number}"
-          StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
-        end
-		end
+
+    filtered = filter_users(Time.now, range)
+    fb       = filtered.select { |u| u.platform == 'fb' }
+    sms      = filtered.select { |u| u.platform == 'sms' }
+
+    for user in fb
+      puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
+      StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
+    end
+
+    # split them up into chunks of size = 3
+    # each of those are a second or two apart
+    #   but each chunk is thirty seconds apart from the neighboring chunks
+    group_size = 3
+    num_groups = sms.size / group_size
+
+    # upperbound our time to 1 hour so we don't go overboard with waiting
+    total_time = 1.hour
+    group_time = 45.minutes
+    individual_time = total_time - group_time
+
+    # for each chunk, run StartDayWorker a few seconds apart. 
+    # group_delay = 30.seconds
+    # individual_delay = 5.seconds
+    
+    group_delay = group_time / num_groups
+    individual_delay = individual_time.to_f / sms.size # where sms.size is the number of individuals
+
+    group_index = 0
+    individual_index = 0
+
+    for i in sms.size
+      puts "individual_index = #{individual_index}"
+      puts "group_index = #{group_index}"
+      if i % group_size == 0
+        group_index += 1 # increment
+        individual_index = 0 # reset
+      end
+
+      delay = (group_delay * group_index) + (individual_delay * individual_index)
+      puts "delay = #{delay.inspect}"
+      user = sms[i]
+      StartDayWorker.perform_in(delay.seconds, user.phone, platform='sms') if user.phone
+
+      individual_index += 1
+
+    end
+
+		# filter_users(Time.now, range).each do |user|
+  #     case user.platform
+  #     when 'fb'
+  #       puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
+  #       StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
+  #     when 'sms'
+  #       puts "phone = #{user.phone}, story_number = #{user.state_table.story_number}"
+  #       StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
+  #     end
+		# end
+
   end
 
   # time = current_time
