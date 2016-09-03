@@ -214,11 +214,35 @@ class SMS < Sinatra::Base
     status = params['MessageStatus']
     puts "status: #{status}"
 
+    # or maybe the clock worker happens here...
+
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
       MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform='sms') 
     elsif next_sequence.to_s == ''
       puts "no more sequences, we're all done with this script :)"
+    elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
+      TimerWorker.perform_in(20.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
+      # maybe we just 
+      # just send the message
+      # this requires that we include the last_time_received as a url query param
+      # so when do we do that? let's find out, shall we?
+      # 
+      # problem: we don't want the message that is still waiting to be delivered 
+      # to fucking be delivered. then we'd get two of the same fucking texts. 
+      # I need to figure out a way to cancel SMS in transit. 
+
+      # The sequence of events
+      # 1: 
+      #   We send sms1. st-enroll schedules send_sms with script and next_sequence arguments.
+      #   send_sms creates a Twilio message with a callback URL to birdv
+      # 2: 
+      #   birdv receives a POST to its callback url with parameters.
+      #   status = 'sent'
+      # 3:
+      #   birdv waits. and waits. and waits. 
+      # 4:
+      #   someone decides that enough is enough and to send sms2. fair is fair.
     elsif status == 'failed'
       # do something else
       puts "message failed to send."

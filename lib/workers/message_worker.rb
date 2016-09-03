@@ -1,22 +1,5 @@
 require_relative '../helpers/fb'
 
-
-class GenericMethodWorker
-  include Sidekiq::Worker
-  include Facebook::Messenger::Helpers
-  sidekiq_options :retry => 1, 
-                  unique: :until_and_while_executing, 
-                  unique_expiration: 4
-                  
-  def perform(&block)
-    if block_given?
-      instance_exec(&block)
-    else
-      puts "not block given"
-    end
-  end
-end
-
 class MessageWorker 
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
@@ -90,5 +73,21 @@ class MessageWorker
 
       # TODO: do we want an ELSE behavior?
       end
+  end
+end
+
+class GenericMethodWorker
+  include Sidekiq::Worker
+  include Facebook::Messenger::Helpers
+  sidekiq_options :retry => 1, 
+                  unique: :until_and_while_executing, 
+                  unique_expiration: 4
+                  
+  def perform(&block)
+    if block_given?
+      instance_exec(&block)
+    else
+      puts "not block given"
+    end
   end
 end

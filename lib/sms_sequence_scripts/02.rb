@@ -8,6 +8,8 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		# the new way to do it:
 		send_sms phone_no, txt, 'image1'
 
+		# there is a timer within send_sms() that checks shit
+
 		# delay the conventional SMS delay
 		# delay phone_no, 'image1', SMS_WAIT
 	end
