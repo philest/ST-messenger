@@ -64,39 +64,6 @@ module Birdv
         return self
       end
 
-      # Universal methods:
-      # register_sequence
-      # sequence_seen?
-      # assert_keys
-      # day
-      # script_payload
-      # run_sequence
-      # delay
-      # translate
-      # story
-
-      # FB methods that should GET THE FUCK OUTTA HERE!
-      # register_fb_object
-      # button
-      # process_txt
-
-      # problems with these fb methods
-      # register_fb_object
-      #   @fb_objects instance variable
-      # button
-      #   @fb_objects instance var
-      # story
-      #   @script_day (easy, pass as parameter of function)
-      # process_txt
-      #   @script_day (pass as parameter, easy)
-
-
-
-      def register_fb_object(obj_key, fb_obj)
-        puts 'WARNING: overwriting object #{obj_key.to_s}' if @fb_objects.key?(obj_key.to_sym)
-        @fb_objects[obj_key.to_sym] =  fb_obj
-      end
-
 
       def register_sequence(sqnce_name, block)
         sqnce = sqnce_name.to_sym
@@ -179,16 +146,7 @@ module Birdv
         notify_admins("StoryTime Script error: #{sqnce_name} failed!", e.backtrace.join("\n"))
       end
 
-      def button(btn_name)
-        if btn_name.is_a? String
-          return @fb_objects[btn_name.to_sym]
-        elsif btn_name.is_a? Hash 
-          # TODO: ensure is not nil?
-          return @fb_objects[btn_name[:name].to_sym]
-        else
-          return @fb_objects[btn_name]
-        end
-      end
+
 
       def delay_inline(time_delay, &block)
         GenericMethodWorker.perform_in(time_delay, &block)
@@ -204,27 +162,27 @@ module Birdv
         # end
       end
 
-      def story(args={})
-        create_story(args, @script_day)
-      end
+      # def story(args={})
+      #   create_story(args, @script_day)
+      # end
 
       # the old way of sending....
       # def send( recipient, to_send, type='sms')
       #   send_helper(recipient, to_send, @script_day, type)
       # end
 
-      def send( fb_id, to_send )
-        send_helper(fb_id, to_send, @script_day)
-      end
+      # def send( fb_id, to_send )
+      #   send_helper(fb_id, to_send, @script_day)
+      # end
 
-      def send_sms( phone, text, next_sequence=nil )
-        puts "in send_sms, next_sequence is #{next_sequence}"
-        send_sms_helper( phone, text, @script_name, next_sequence )
-      end
+      # def send_sms( phone, text, next_sequence=nil )
+      #   puts "in send_sms, next_sequence is #{next_sequence}"
+      #   send_sms_helper( phone, text, @script_name, next_sequence )
+      # end
 
-      def send_mms( phone, img_url, next_sequence=nil )
-        send_mms_helper( phone, img_url, @script_name, next_sequence )
-      end
+      # def send_mms( phone, img_url, next_sequence=nil )
+      #   send_mms_helper( phone, img_url, @script_name, next_sequence )
+      # end
 
     end
   end

@@ -26,6 +26,12 @@ module Birdv
         return tjson
       end
 
+
+      def register_fb_object(obj_key, fb_obj)
+        puts 'WARNING: overwriting object #{obj_key.to_s}' if @fb_objects.key?(obj_key.to_sym)
+        @fb_objects[obj_key.to_sym] =  fb_obj
+      end
+
       def button_normal(args = {})
         assert_keys([:name, :window_text, :buttons], args)
         window_txt = args[:window_text]
@@ -92,7 +98,8 @@ module Birdv
 
         if user
           parent  = user.first_name.nil? ? "" : user.first_name
-          child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+          I18n.locale = user.locale
+          child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
           
           if !user.teacher.nil?
             sig = user.teacher.signature
@@ -158,8 +165,20 @@ module Birdv
       end
 
 
+      def button(btn_name)
+        if btn_name.is_a? String
+          return @fb_objects[btn_name.to_sym]
+        elsif btn_name.is_a? Hash 
+          # TODO: ensure is not nil?
+          return @fb_objects[btn_name[:name].to_sym]
+        else
+          return @fb_objects[btn_name]
+        end
+      end
+
+
        # TODO: should I delete args? not used
-      def create_story(args={}, script_day)
+      def story(args={})
         if !args.empty?
           puts "(DSL.send.story) WARNING: you don't need to set any args when sending a story. It doesn't do anything!"
         end
@@ -173,7 +192,7 @@ module Birdv
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
 
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
-            storyinfo = curriculum[script_day - 1]
+            storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
 
@@ -299,7 +318,7 @@ module Birdv
       end
 
       # the type parameter is useless here
-      def send_helper(fb_id, to_send, script_day)
+      def send(fb_id, to_send)
         # if lambda, run it! e.g. send(story(args)) 
           if is_story?(to_send)
             to_send.call(fb_id)
@@ -312,8 +331,8 @@ module Birdv
             usr = User.where(fb_id: fb_id).first
             fb_object = Marshal.load(Marshal.dump(to_send))
 
-            if usr then 
-              process_txt(fb_object, fb_id, usr.locale, script_day) 
+            if usr then
+              process_txt(fb_object, fb_id, usr.locale, @script_day) 
             end
 
             puts "sending to #{fb_id}"

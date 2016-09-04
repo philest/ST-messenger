@@ -11,7 +11,7 @@ end
 
 Sidekiq.configure_server do |config|
     config.redis = { url: redis_url, size: 8 }
-    config.average_scheduled_poll_interval = 2
+    config.average_scheduled_poll_interval = 4
 end
 
 # load all of the scripts!

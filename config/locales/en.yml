@@ -40,19 +40,6 @@ en:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep receiving them?  
       resubscribe: Yes!
       story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
-      # story_img_url:
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt.jpg'
-      #   - 'http://d2p8iyobf0557z.cloudfront.net/day1/tap_here-alt2.jpg'
       window_text: 
         - "You'll get another story next week. You both are doing great! :)"
         - "Another story will come in a few days. You both are doing great! :)"
@@ -84,7 +71,16 @@ en:
       tap: "Tap here!"
       thanks: "Thank you!"
       welcome: "You're welcome :)"
-  stories: "hello there?"
+  mms:
+    stories:
+      floating_shoe:
+        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg
+      clouds:
+        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg
+
+
     # (where we keep the adjusted 'espanish' urls)
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
@@ -94,6 +90,9 @@ en:
       has_teacher: "Hi, this is __TEACHER__. I'll be texting __CHILD__ books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
       has_school: "Hi, this is __SCHOOL__. We'll be texting you free books with StoryTime!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
       has_none: "Hi, this is StoryTime. We'll be texting you free books!\n\nYou can start early if you have Facebook Messenger. Tap here and enter 'go':\njoinstorytime.com/go"
+    img:
+      has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+      default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child.jpg
 
     body_sprint:
       has_teacher: 
