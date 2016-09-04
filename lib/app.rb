@@ -166,7 +166,6 @@ class SMS < Sinatra::Base
       # and that if they click confirm, they may be changing the kid's number (make this
       # happen in seperate worker?)
       begin
-
         # I sure hope the phone number made it in!
         parent = User.where(phone: phone_num).first
 
@@ -195,7 +194,12 @@ class SMS < Sinatra::Base
   end
 
   get '/test' do
-    MessageWorker.perform_async('8186897323', script_name='day2', sequence='firstmessage', platform='sms')
+    day = params['day']
+    if day
+      MessageWorker.perform_async('8186897323', script_name="day#{day}", sequence='firstmessage', platform='sms')
+    else
+      MessageWorker.perform_async('8186897323', script_name='day1', sequence='firstmessage', platform='sms')
+    end
   end
 
 
@@ -222,7 +226,7 @@ class SMS < Sinatra::Base
     elsif next_sequence.to_s == ''
       puts "no more sequences, we're all done with this script :)"
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
-      TimerWorker.perform_in(20.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
+      TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
       # maybe we just 
       # just send the message
       # this requires that we include the last_time_received as a url query param

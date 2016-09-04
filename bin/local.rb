@@ -2,6 +2,8 @@ require 'sequel'
 require 'dotenv'
 Dotenv.load
 
+require 'active_support/time'
+
 puts "loading local db (test)..."
 
 pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''

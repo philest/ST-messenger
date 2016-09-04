@@ -41,11 +41,11 @@ class StartDayWorker
     return if u.nil?
 
     day_number =  update_day(u, platform)
-    puts "day#{day_number}"
+
 		# double quotation
 		script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
 
-    puts script.inspect
+
 	  if !script.nil?
       script.run_sequence(recipient, :init) 
     else
@@ -123,34 +123,50 @@ class ScheduleWorker
       StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
     end
 
+    if sms.size == 0 then 
+      return 
+    end
+
     # split them up into chunks of size = 3
     # each of those are a second or two apart
     #   but each chunk is thirty seconds apart from the neighboring chunks
-    group_size = 3
-    num_groups = sms.size / group_size
+    group_size = 1.0
+    num_groups = (sms.size / group_size).ceil
+    puts "num_groups = #{num_groups}"
 
     # upperbound our time to 1 hour so we don't go overboard with waiting
     total_time = 1.hour
-    group_time = 45.minutes
+
+    if sms.size < 60 # if there are under 60 people, give them a minute each
+      group_time = sms.size.minutes
+    else
+      group_time = total_time
+    end
+
     individual_time = total_time - group_time
 
     # for each chunk, run StartDayWorker a few seconds apart. 
     # group_delay = 30.seconds
     # individual_delay = 5.seconds
-    
+
     group_delay = group_time / num_groups
     individual_delay = individual_time.to_f / sms.size # where sms.size is the number of individuals
+          puts "group_delay = #{group_delay}"
+    puts "individual_delay = #{individual_delay}"
 
     group_index = 0
     individual_index = 0
 
-    for i in sms.size
-      puts "individual_index = #{individual_index}"
-      puts "group_index = #{group_index}"
-      if i % group_size == 0
+    sms.size.times do |i|
+
+      if i % group_size == 0 and i != 0
         group_index += 1 # increment
         individual_index = 0 # reset
       end
+
+      puts "individual_index = #{individual_index}"
+      puts "group_index = #{group_index}"
+
 
       delay = (group_delay * group_index) + (individual_delay * individual_index)
       puts "delay = #{delay.inspect}"

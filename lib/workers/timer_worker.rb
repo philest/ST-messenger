@@ -4,9 +4,14 @@ class TimerWorker
   include Sidekiq::Worker
 
   def perform(messageSid, phone, script_name, next_sequence)
+    puts "******************************************"
+    puts "WE'RE IN THE TIMERWORKER BITCHES!!!!!\n\n"
+    puts "script_name = #{script_name}"
+    puts "next_sequence = #{next_sequence}"
+    puts "******************************************"
 
     res = HTTParty.get("#{ENV['ST_ENROLL_WEBHOOK']}/delivery_status?messageSid=#{messageSid}")
-
+    
     if res.code == 200
       status = res.response.body
 
@@ -21,7 +26,6 @@ class TimerWorker
         puts "This motherfucker is still at 'sent'! WTF?? We're just gonna send the next one... fuck."
         MessageWorker.perform_async(phone, script_name, next_sequence, platform='sms')
       end
-
     else
       puts "http://st-enroll.herokuapp.com/delivery_status failed with status #{res.code}"
       return

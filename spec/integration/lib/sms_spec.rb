@@ -14,6 +14,70 @@ describe 'sms' do
     SMS 
   end
 
+  context 'delay test', delay: true do
+    before(:all) do
+      # load scripts
+      Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_sms_scripts/*")
+         .each {|f| require_relative f }
+
+      @day1 = Birdv::DSL::ScriptClient.scripts['sms']["day1"]
+      @day2 = Birdv::DSL::ScriptClient.scripts['sms']["day2"]
+      @day3 = Birdv::DSL::ScriptClient.scripts['sms']["day3"]
+
+      @sw = ScheduleWorker.new
+
+    end
+
+    before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
+
+    before(:each) do
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=5612125831&text=Hi%2C%20this%20is%20McEsterWahl.%20I%27ll%20be%20texting%20Phil%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+    end
+
+    before(:each) do
+      20.times do |i|
+        User.create(phone: "#{i}", platform: "sms")
+      end
+
+      Sidekiq::Worker.clear_all
+
+    end
+
+    after(:each) { Timecop.return }
+
+    it 'does the first night correctly for all 30 guys' do
+
+      Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, [1,3,5], &block)
+      end
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      Sidekiq::Testing.inline! do
+        @sw.perform
+      end
+
+    end
+
+
+
+  end
+
+
+  # DIFFERENT THING NOW
+
 
   context 'multi-day test' do
     before(:all) do
