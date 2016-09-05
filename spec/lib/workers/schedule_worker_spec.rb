@@ -310,6 +310,7 @@ describe ScheduleWorker do
 
           @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
           @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+          
 
 
 

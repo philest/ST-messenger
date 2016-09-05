@@ -22,7 +22,7 @@ GEM
       activesupport
       tzinfo
     coderay (1.1.1)
-    concurrent-ruby (1.0.2)
+    concurrent-ruby (1.0.2-java)
     connection_pool (2.2.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -40,6 +40,7 @@ GEM
       activesupport (>= 3.0.0)
     fakeredis (0.6.0)
       redis (~> 3.2)
+    ffi (1.9.14-java)
     fuubar (2.2.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
@@ -49,35 +50,33 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-    json (1.8.3)
+    jdbc-postgres (9.4.1206)
+    json (1.8.3-java)
     jwt (1.5.4)
-    launchy (2.4.3)
+    launchy (2.4.3-java)
       addressable (~> 2.3)
+      spoon (~> 0.0.1)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
     method_source (0.8.2)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
-    mini_portile2 (2.1.0)
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     newrelic_rpm (3.16.2.321)
-    nokogiri (1.6.8)
-      mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
-    pg (0.17.1)
-    pkg-config (1.1.7)
+    nokogiri (1.6.8-java)
     pony (1.11)
       mail (>= 2.0)
-    pry (0.10.4)
+    pry (0.10.4-java)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+      spoon (~> 0.0)
     pry-nav (0.2.4)
       pry (>= 0.9.10, < 0.11.0)
-    puma (3.4.0)
+    puma (3.4.0-java)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -89,7 +88,7 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.2)
+    rspec-core (3.5.3)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -117,11 +116,13 @@ GEM
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
     slop (3.6.0)
+    spoon (0.0.4)
+      ffi
     thor (0.19.1)
-    thread_safe (0.3.5)
+    thread_safe (0.3.5-java)
     tilt (2.0.5)
     timecop (0.8.1)
-    twilio-ruby (4.11.1)
+    twilio-ruby (4.12.1)
       builder (>= 2.1.2)
       jwt (~> 1.0)
       multi_json (>= 1.3.0)
@@ -135,7 +136,7 @@ GEM
       nokogiri (~> 1.3)
 
 PLATFORMS
-  ruby
+  java
 
 DEPENDENCIES
   airbrake
@@ -150,9 +151,9 @@ DEPENDENCIES
   fuubar
   httparty (~> 0.13.7)
   i18n (~> 0.7.0)
+  jdbc-postgres (~> 9.4, >= 9.4.1206)
   json
   newrelic_rpm
-  pg (= 0.17.1)
   pony
   pry
   pry-nav
@@ -172,7 +173,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.2.3p173
+   ruby 2.2.3p0 (jruby 9.0.5.0)
 
 BUNDLED WITH
    1.12.5

@@ -17,6 +17,7 @@ describe "Reminders" do
 
     @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
     @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+    @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
 
     dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
     @c  = Birdv::DSL::Curricula.load(dir, absolute=true) 
@@ -96,7 +97,7 @@ describe "Reminders" do
 
     end
     allow(@day2).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
-      puts "running sequence for @day1"
+      puts "running sequence for @day2"
       recipient, sequence_name = args
       puts "args = #{args}"
       puts "help me, please!"
@@ -106,7 +107,7 @@ describe "Reminders" do
       end
     end
     allow(@day2).to receive(:send).and_wrap_original do |original_method, *args|
-      puts "send() for @day1"
+      puts "send() for @day2"
       fb_id, to_send = args
       if is_story?(to_send)
         to_send.call(fb_id)
@@ -116,7 +117,35 @@ describe "Reminders" do
     end
 
     allow(@day2).to receive(:story).and_wrap_original do |original_method, *args|
-      puts "sending story for @day1"
+      puts "sending story for @day2"
+      recipient = args[0]
+      User.where(fb_id:recipient).first.state_table.update(
+                                        last_story_read_time:Time.now.utc, 
+                                        last_story_read?: true)
+    
+    end
+    allow(@day4).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
+      puts "running sequence for @day4"
+      recipient, sequence_name = args
+      puts "args = #{args}"
+      puts "help me, please!"
+      u = User.where(fb_id:recipient).first
+      if u then # u might not exist because it's a demo
+        u.state_table.update(last_sequence_seen: sequence_name.to_s)
+      end
+    end
+    allow(@day4).to receive(:send).and_wrap_original do |original_method, *args|
+      puts "send() for @day4"
+      fb_id, to_send = args
+      if is_story?(to_send)
+        to_send.call(fb_id)
+      elsif to_send.is_a? Hash
+        puts "sending to #{fb_id}.... blech"
+      end
+    end
+
+    allow(@day4).to receive(:story).and_wrap_original do |original_method, *args|
+      puts "sending story for @day4"
       recipient = args[0]
       User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
@@ -253,6 +282,12 @@ describe "Reminders" do
       @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
       @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
       @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+      @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
+      puts "HERE LIE THE SCRIPTS!"
+      puts "#{@remind_script.inspect}"
+      puts "#{@day1.inspect}"
+      puts "#{@day2.inspect}"
+      puts "#{@day4.inspect}"
       dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
       @c  = Birdv::DSL::Curricula.load(dir, absolute=true) 
     end
@@ -305,12 +340,126 @@ describe "Reminders" do
 
   end
 
-  context "another reminder for story 2" do
-    before(:each) do
-      configure_shit()
-      
+  context "another reminder for story 4" do
+    before(:all) do
+      Birdv::DSL::ScriptClient.clear_scripts 
+      Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*").each {|f| load f }
+      @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
+      @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
+      @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+      @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
+      dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
+      @c  = Birdv::DSL::Curricula.load(dir, absolute=true) 
     end
 
+    before(:each) do
+      configure_shit()
+      @after_spatial_time = Time.parse "2016-07-05 23:00:00 UTC"
+      @now = @after_spatial_time + 1.week
+      @on_time.state_table.update(last_story_read?:false,
+                                  last_script_sent_time: @now,
+                                  last_story_read_time: @now,
+                                  last_sequence_seen: "init",
+                                  story_number: 4
+                                 )
+      @on_time.reload()
+      @on_time.state_table.reload()
+    end
+
+    it "doesn't send anything only a few days after" do
+      Timecop.freeze(@now + 2.days)
+
+      expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform(@interval)
+      end
+    end
+
+    it "should remind the user after 5 days of silence" do
+      configure_shit()
+      Timecop.freeze(@now + 5.days)
+
+      expect(@startday.remind?(@on_time)).to eq true
+
+      expect(@remind_script).to receive(:run_sequence).with(@on_time.fb_id, :remind)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform(@interval)
+      end
+
+      @on_time.reload()
+      expect(@on_time.state_table.last_reminded_time).to eq Time.now
+      expect(@on_time.state_table.num_reminders).to eq 1
+      puts "state table after remind = #{@on_time.state_table.inspect}"
+
+    end
+
+    it "should not remind users again after they've already gotten a reminder" do
+      configure_shit()
+      Timecop.freeze(@now + 7.days)
+
+      @on_time.state_table.update(last_reminded_time: @now + 5.days, num_reminders: 1)
+
+
+      expect(@startday.remind?(@on_time)).to eq true
+      expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform(@interval)
+      end
+    end
+    it "should unsubscribe users after 10 days of no signal" do
+      configure_shit()
+      @on_time.state_table.update(last_reminded_time: @now + 5.days, num_reminders: 1)
+      Timecop.freeze(@now + 11.days)
+
+      expect(@startday.remind?(@on_time)).to eq true
+      expect(@remind_script).to receive(:run_sequence).with(@on_time.fb_id, :unsubscribe)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform(@interval)
+      end
+
+      @on_time.reload
+      @on_time.state_table.reload
+      expect(@on_time.state_table.subscribed?).to eq false
+
+      puts "that state table though #{@on_time.state_table.inspect}"
+    end
+
+    it "should resubscribe after receiving the resubscribe postback" do
+      configure_shit()
+
+      @on_time.state_table.update(last_reminded_time: @now + 5.days, 
+                                  num_reminders: 1,
+                                  subscribed?: false,
+                                  last_story_read?: false
+                                  )
+      Timecop.freeze(@now + 12.days)
+      @on_time.reload()
+      @on_time.state_table.reload()
+      previous_story_number = @on_time.state_table.story_number
+      puts "previous_story_number = #{previous_story_number}"
+
+      load 'sequence_scripts/remind.rb'
+      real_remind_sript = Birdv::DSL::ScriptClient.scripts['fb']['remind']
+
+      allow(real_remind_sript).to  receive(:send).and_wrap_original do |original_method, *args|
+        puts "sending to #{args[0]}"
+      end
+
+      real_remind_sript.run_sequence(@on_time.fb_id, :resubscribe)
+      @on_time.reload()
+      @on_time.state_table.reload()
+      expect(@on_time.state_table.subscribed?).to eq true
+      expect(@on_time.state_table.story_number).to eq (previous_story_number - 1)
+      expect(@on_time.state_table.last_story_read?).to eq true
+      expect(@on_time.state_table.last_script_sent_time).to be_nil
+      expect(@on_time.state_table.last_reminded_time).to be_nil
+      puts "the state table of the ages = #{@on_time.state_table.inspect}"
+      # expect the num_reminders to reset
+    end
 
   end
 

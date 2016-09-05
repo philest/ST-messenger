@@ -37,7 +37,6 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
   sequence 'resubscribe' do |recipient|
 
     txt = 'scripts.resubscribe'
-    puts 'MY ASS'
     send recipient, text({text:txt})
 
     resubscribe recipient
