@@ -37,6 +37,10 @@ describe SMS do
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
+       stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831").
+         to_return(:status => 200, :body => "", :headers => {})
+
     end
 
     it "adds a user to the db" do

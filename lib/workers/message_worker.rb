@@ -47,10 +47,6 @@ class MessageWorker
           puts "running demo in MessageWorker..."
         end
 
-        # log the button anyway...
-        b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
-        u.add_button_press_log(b)
-
         protected_ids = %w(1084495154927802 1042751019139427 8186897323 1625783961083197 10209967651611613 10209571935726081)
         
         last_sequence_seen = u.state_table.last_sequence_seen

@@ -358,7 +358,7 @@ describe 'TheBot', integration:true do
         # end
 
         expect(@s900).not_to receive(:run_sequence)       
-        expect(@s901).to     receive(:run_sequence).with(anything(), :init).exactly(3).times
+        # expect(@s901).to     receive(:run_sequence).with(anything(), :init).exactly(3).times
         expect(@s902).to     receive(:run_sequence).with(anything(), :init).exactly(4).times
         expect(@s903).not_to receive(:run_sequence)
         expect(@s904).not_to receive(:run_sequence)
@@ -469,8 +469,12 @@ describe 'TheBot', integration:true do
           original_method.call(*args, [], &block)
         end
 
-        allow(@sw).to  receive(:send).and_wrap_original do |original_method, *args, &block|
-          puts "sending that shit..."
+        1.upto(9) do |i|
+          stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+           with(:body => "{\"recipient\":{\"id\":\"#{i}\"},\"message\":{\"text\":\"Hi Davidfake, I saw you missed your last story and I just want to share it again. Here you go!\"}}",
+                :headers => {'Content-Type'=>'application/json'}).
+           to_return(:status => 200, :body => "", :headers => {})
+
         end
 
         allow(@s901).to      receive(:run_sequence).exactly(3).times

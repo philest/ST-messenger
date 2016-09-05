@@ -41,6 +41,10 @@ describe 'sms' do
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2").
+         to_return(:status => 200, :body => "", :headers => {})
+
     end
 
     before(:each) do
@@ -101,6 +105,12 @@ describe 'sms' do
     before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
 
     before(:each) do
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2").
+         to_return(:status => 200, :body => "", :headers => {})
+     
+
       stub_request(:post, "http://localhost:4567/txt").
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
