@@ -8,7 +8,7 @@ class StartDayWorker
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
     return true if user.state_table.story_number == 0
-
+    return true if user.platform == 'sms'
     return user.state_table.last_story_read?
   end
 
@@ -60,7 +60,7 @@ class StartDayWorker
       return
     end
 
-
+    read_yesterday_story = read_yesterday_story?(u)
     day_number =  update_day(u, platform)
 
 		# double quotation
@@ -121,7 +121,7 @@ class StartDayWorker
           # send the button again, but don't update last_script_sent_time
           script.run_sequence(recipient, :init)
         else # we have send a reminder, so either unsubscribe or do nothing
-          puts "WE'RE UNSUBSCRIBING NOW!!!!!!!!!"
+          puts "WE MIGHT UNSUBSCRIBE NOW!!!!!!!!!"
           last_script_sent_time = u.state_table.last_script_sent_time
           # our last reminder was sent more recently than the last story that was sent
           unsubscribe = last_reminded_time > last_script_sent_time
@@ -139,6 +139,11 @@ class StartDayWorker
           # otherwise, do nothing
 
         end
+
+
+      elsif not read_yesterday_story
+        puts "this motherfucker hasn't read his last story. let's just leave him alone." 
+          
 
       else # send a story button, the usual way, yippee!!!!!!!!!
 
@@ -312,8 +317,10 @@ class ScheduleWorker
       else    
         last_story_read_ok = false
       end
+
       # ensure is within_time_range and that last story read wasn't today!
-  		within_time_range(user, range) && last_story_read_ok
+      # the user has to be subscribed!!!!!!
+  		last_story_read_ok && user.state_table.subscribed? && within_time_range(user, range)
   	end
   rescue => e
     p e.message + "... something went wrong, not filtering users"

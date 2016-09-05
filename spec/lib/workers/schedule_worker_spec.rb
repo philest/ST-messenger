@@ -307,6 +307,7 @@ describe ScheduleWorker do
             .each {|f| load f }
 
           @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
+
           @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
           @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
 
@@ -320,7 +321,7 @@ describe ScheduleWorker do
           # end
 
           @sw = ScheduleWorker.new
-          @sd = StartDayWorker.new
+          @startday = StartDayWorker.new
 
         end
 
@@ -336,7 +337,7 @@ describe ScheduleWorker do
 				end
 
         it 'should remind certain users, bitch!', remind: true do
-          expect(@sd.remind?(@on_time)).to eq false
+          expect(@startday.remind?(@on_time)).to eq false
         end
 
         it 'should NOT remind certain users, bitch!', remind: true do
@@ -345,7 +346,7 @@ describe ScheduleWorker do
           Timecop.freeze(start_time)  
           fb_id = 'some_id'
           user = User.create(fb_id: fb_id)
-          expect(@sd.remind?(user)).to eq false
+          expect(@startday.remind?(user)).to eq false
           allow(@day1).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
             puts "run_sequence for @day1"
           end
@@ -384,7 +385,7 @@ describe ScheduleWorker do
           Timecop.freeze(start_time + 1.week)
           expect(user.state_table.num_reminders).to eq 0
 
-          expect(@sd.remind?(user)).to eq true
+          expect(@startday.remind?(user)).to eq true
 
           Sidekiq::Testing.inline! do 
             expect(@remind_script).to receive(:run_sequence).with(fb_id, :remind)

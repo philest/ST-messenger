@@ -35,7 +35,6 @@ en:
       - "Hi __PARENT__, here’s another story!"      
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     resubscribe: Great! You'll keep getting stories :)
-
     buttons:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep receiving them?  
       resubscribe: Yes!

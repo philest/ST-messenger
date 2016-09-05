@@ -11,7 +11,11 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
 end 
 
 
-Birdv::DSL::ScriptClient.new_script 'day1' do; end
+Birdv::DSL::ScriptClient.new_script 'day1' do
+  sequence 'storysequence' do
+    send recipient, story()
+  end
+end
 Birdv::DSL::ScriptClient.new_script 'day2' do; end
 Birdv::DSL::ScriptClient.new_script 'day3' do; end
 Birdv::DSL::ScriptClient.new_script 'day4' do; end

@@ -162,6 +162,28 @@ module Birdv
         # end
       end
 
+
+      def resubscribe(recipient)
+        puts "IN RESUBSCRIBE BITCHES"
+        u = User.where(fb_id: recipient).first
+        if u.nil? then
+          u = User.where(phone: recipient).first
+          if u.nil? then return end
+        end
+        # case for story 3
+
+        # have to reset everything so the user's back to normal, receiving the same
+        # same story as they normally would
+        current_story_no = u.state_table.story_number
+        u.state_table.update(subscribed?: true,
+                             num_reminders: 0,
+                             last_story_read?: true,
+                             story_number: (current_story_no - 1),
+                             last_script_sent_time: nil,
+                             last_reminded_time: nil
+                            )
+      end
+
       # def story(args={})
       #   create_story(args, @script_day)
       # end

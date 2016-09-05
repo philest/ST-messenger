@@ -19,6 +19,8 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
   })
 
 
+  # I should handle resubscribing within the sequence, probably...
+
   sequence 'remind' do |recipient|
     # greeting with 5 second delay
     txt = 'scripts.remind'
@@ -35,7 +37,10 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
   sequence 'resubscribe' do |recipient|
 
     txt = 'scripts.resubscribe'
+    puts 'MY ASS'
     send recipient, text({text:txt})
+
+    resubscribe recipient
 
   end
 

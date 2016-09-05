@@ -42,6 +42,9 @@ class MessageWorker
             puts "user with phone #{recipient} doesn't exist bro"
             return 
           end
+
+        when 'demo'
+          puts "running demo in MessageWorker..."
         end
 
         # log the button anyway...
@@ -74,15 +77,9 @@ class MessageWorker
           puts "preparing to run sequence..."
           s.run_sequence(recipient, sequence.to_sym)
 
-          
-        when 'demo'
-          puts "running demo in MessageWorker..."
+        else # numbers don't check out for some reason...
+          puts "we're not running the sequence, everybody. sorry to those who drove here."
         end
-
-        # TODO: run this in a worker
-        # run the script
-        puts "preparing to run sequence..."
-        s.run_sequence(recipient, sequence.to_sym)
           
       # TODO: do we want an ELSE behavior?
       end
