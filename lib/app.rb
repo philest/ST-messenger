@@ -203,6 +203,16 @@ class SMS < Sinatra::Base
     end
   end
 
+  get '/run_sequence' do
+    script = params['script']
+    sequence = params['sequence']
+
+    fb_id = "10209967651611613"
+
+    MessageWorker.perform_async(fb_id, script, sequence, 'fb')
+
+  end
+
 
   post '/twilio_callback_url' do
 
