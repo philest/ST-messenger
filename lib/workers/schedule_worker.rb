@@ -90,9 +90,6 @@ class StartDayWorker
       # if we were on day10, we would definitely send the unsubscribe message. 
       # 
       # 
-      # 
-      # 
-      # 
       # on a normal day, if it's time to remind the user (and this is our first reminder)
       # also, let's assume that we're on day 60 and we've reminded the guy before
       #   last_script_sent_time > last_reminded_time
@@ -140,10 +137,8 @@ class StartDayWorker
 
         end
 
-
       elsif not read_yesterday_story
         puts "this motherfucker hasn't read his last story. let's just leave him alone." 
-          
 
       else # send a story button, the usual way, yippee!!!!!!!!!
 
@@ -393,12 +388,12 @@ class ScheduleWorker
       end
     end
 
-    # friends get it three days a week
-    friend_days = [1,3,5]
-    valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
+    # remove the friend thing...
+    # friend_days = []
+    # valid_for_friend = our_friend?(user) && friend_days.include?(user_day)
     # we get it all day erryday
     valid_for_mcesterwahl = is_us?(user)
-    if (valid_for_user || valid_for_friend || valid_for_mcesterwahl) # just wednesday for now (see default arg)
+    if (valid_for_user || valid_for_mcesterwahl) # just wednesday for now (see default arg)
 			if now >= user_sendtime_utc
 				return now - user_sendtime_utc <= range
 			else
@@ -416,8 +411,8 @@ class ScheduleWorker
   end
 
   # returns a time in the specified timezone offset
-  def get_local_time(last_story_read_time, tz_offset)
-    return last_story_read_time + tz_offset
+  def get_local_time(time, tz_offset)
+    return time + tz_offset
   end
 
   # returns the user's DST-adjusted local time

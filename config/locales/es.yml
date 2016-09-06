@@ -35,19 +35,17 @@ es:
       unsubscribe_window_text: Hola __PARENT__, vi que no haya leído sus historias desde hace tiempo... le gustaría seguir recibiendo ellos?
       resubscribe: Sí!
       story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
-      window_text: 
-        - "Enviaré otro cuento mañana por la noche. ¡Están leyendo muy bien! :)"
-        - "Enviaré otro cuento mañana por la noche. ¡Van muy bien! :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
-        - "Enviaré otro cuento mañana por la noche :)"
+      window_text:
+        this_week:
+          - "Le enviaré un cuento nuevo este __DAY__ :)"
+          - "Le enviaré un cuento nuevo este __DAY__. ¡Están leyendo muy bien! :)"
+          - "Le enviaré otro cuento este __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaré otro cuento este __DAY__ :)"
+        next_week:
+          - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
+          - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Están leyendo muy bien! :)"
+          - "Le enviaré otro cuento el próximo __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaré otro cuento el próximo __DAY__ :)"
       title:
         - "Vamos a leer el cuento nuevo."
         - "Vamos a leer el cuento nuevo."

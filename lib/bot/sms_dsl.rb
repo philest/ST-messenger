@@ -68,6 +68,39 @@ module Birdv
           return text   
         end
 
+        # Translate the weekday here. do it, why don't you?
+        # if it matches a day of the week thing
+        window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
+        if window_text_regex.match(text)
+          # get the code thing to transfer over
+          bracket_index = $1.to_s
+          just_the_text_regex = /.*[^\[\d+\]]/i
+          just_the_text = just_the_text_regex.match(m[:text]).to_s
+          # ok, so now we have the bracket and the text
+          # so now we want to get this_week or next_week
+
+          # first, grab their current day of the week
+          require_relative '../workers/schedule_worker'
+          sw = ScheduleWorker.new
+          schedule = sw.get_schedule(@script_day)
+
+          # what is our current day?
+          current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
+          current_weekday = current_date.wday
+
+          week = '.next_week'
+          schedule.each do |day|
+            # make me proud
+            if day > current_weekday
+              week = '.this_week'
+              break
+            end
+          end
+
+          text = just_the_text + week + bracket_index
+        end # window_text_regex.match
+
+        # other indexing stuff. ay yay yay....
         re_index = /\[(\d+)\]/i
         match = re_index.match(text)
         if match
@@ -81,9 +114,7 @@ module Birdv
           else
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end
-        
         end
-
         trans = I18n.t text
         puts "trans = #{trans}"
         if trans.is_a? Array

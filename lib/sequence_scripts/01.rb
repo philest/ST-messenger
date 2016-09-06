@@ -15,11 +15,11 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:greeting))]
 	})
 
-	button_normal({
-		name: 			 'thanks',
-		window_text: 'scripts.buttons.window_text',
-		buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
-	})
+	# button_normal({
+	# 	name: 			 'thanks',
+	# 	window_text: 'scripts.buttons.window_text',
+	# 	buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
+	# })
 
 
 
@@ -32,7 +32,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	end
 
 	sequence 'storysequence' do |recipient|
-		# send out coon story
 		send recipient, story()
 
 		delay recipient, 'thanks', 23.seconds
@@ -41,7 +40,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	# No button on the first day! 
 	sequence 'thanks' do |recipient|
 		# one more button
-		txt = 'scripts.buttons.window_text'
+		txt = 'scripts.buttons.window_text[0]'
 		send recipient, text({text:txt})	
 
 	end

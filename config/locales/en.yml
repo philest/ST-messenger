@@ -39,19 +39,17 @@ en:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep receiving them?  
       resubscribe: Yes!
       story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
-      window_text: 
-        - "You'll get another story next week. You both are doing great! :)"
-        - "Another story will come in a few days. You both are doing great! :)"
-        - "You'll get another story soon :)"
-        - "You'll get another story in a few nights!"
-        - "Another story will come in a few days. Great job! :)"
-        - "You'll get another story in a few nights!"   
-        - "You'll get another story in a few nights!"   
-        - "You'll get another story in a few nights!"   
-        - "You'll get another story in a few nights!"        
-        - "Another story will come in a few days. Great job! :)"
-        - "You'll get another story in a few nights!"        
-        - "Another story will come in a few days. Great job! :)"
+      window_text:
+        this_week: 
+          - "You'll get another story this __DAY__!"
+          - "You'll get another story this __DAY__. You both are doing great! :)"
+          - "Another story will come this __DAY__. You both are doing great! :)"
+          - "Another story will come this __DAY__. Great job! :)"
+        next_week: 
+          - "You'll get another story next __DAY__!"
+          - "You'll get another story next __DAY__. You both are doing great! :)"
+          - "Another story will  come next __DAY__. You both are doing great! :)"
+          - "Another story will come next __DAY__. Great job! :)"
       title:
         - "Let's read tonight's story."
         - "Let's read tonight's story."
