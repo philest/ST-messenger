@@ -555,7 +555,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         })
         button_normal({
           name:        'thanks',
-          window_text: "scripts.buttons.window_text",
+          window_text: "scripts.buttons.window_text[0]",
           buttons:      [postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
         })      
         sequence 'firsttap' do |recipient|
@@ -585,7 +585,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         button_normal({
           name:        'thanks',
-          window_text: "scripts.buttons.window_text",
+          window_text: "scripts.buttons.window_text[0]",
           buttons:      [postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
         })      
 
@@ -613,7 +613,6 @@ describe 'Birdv::DSL::StoryTimeScript' do
     context 'when updating last_sequence_seen it' do
       let (:u) {@make_aubrey.call}
       let (:t) {@make_teacher.call}
-
       before(:example) do
         t.add_user u
 
@@ -627,7 +626,6 @@ describe 'Birdv::DSL::StoryTimeScript' do
         b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
         @stub_arb.call(b2)
         @stub_arb.call(b3)
-
       end
 
       it 'updates last sequence seen, nil->init->scratchstory' do
@@ -656,8 +654,6 @@ describe 'Birdv::DSL::StoryTimeScript' do
           script.send(@aubrey, script.story())
         }.not_to raise_error
     end
-
-
 
     it 'does not confuse last_sequence with last story_read' do
       @stub_txt.call("You're welcome :)")

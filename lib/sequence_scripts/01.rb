@@ -33,7 +33,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 
 	sequence 'storysequence' do |recipient|
 		send recipient, story()
-
 		delay recipient, 'thanks', 23.seconds
 	end
 

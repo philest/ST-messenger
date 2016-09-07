@@ -93,7 +93,7 @@ module Birdv
       end
 
 
-      def name_codes(str, fb_id)
+      def name_codes(str, fb_id, day=nil)
         user = User.where(:fb_id => fb_id).first
 
         if user
@@ -113,6 +113,11 @@ module Birdv
             school = sig.nil?   ? "StoryTime" : sig
           else
             school = "StoryTime"
+          end
+
+          if !day.nil?
+            weekday = I18n.t('week')[day]
+            str = str.gsub(/__DAY__/, weekday)
           end
 
           str = str.gsub(/__TEACHER__/, teacher)
@@ -267,11 +272,11 @@ module Birdv
               end
 
               re_index = /\[(\d+)\]/i
-              match = re_index.match(text)
+              match = re_index.match(str)
               if match
                 index = $1
                 code_regex = /.*[^\[\d+\]]/i
-                translation_code = code_regex.match(text)
+                translation_code = code_regex.match(str)
                 translation_array = I18n.t(translation_code.to_s.downcase, interpolation)
                 if translation_array.is_a? Array
                   puts "translation array element = #{translation_array[index.to_i]}"
@@ -293,6 +298,7 @@ module Birdv
               if is_txt?(m) # just a text message... 
                 # default
                 trans_code = m[:text]
+                next_day = nil
                 # 
                 # Translate the weekday here. do it, why don't you?
                 # if it matches a day of the week thing
@@ -311,57 +317,29 @@ module Birdv
                   schedule = sw.get_schedule(@script_day)
 
                   # what is our current day?
-                  current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
+                  current_date = sw.get_local_time(Time.now.utc + 2.days, user.tz_offset)
                   current_weekday = current_date.wday
 
+                  next_day = schedule[0] # the first part of the next week by default
                   week = '.next_week'
                   schedule.each do |day|
                     # make me proud
                     if day > current_weekday
+                      next_day = day
                       week = '.this_week'
                       break
                     end
                   end
 
                   trans_code = just_the_text + week + bracket_index
-
-
-                  # now, an algorithm that'll tell us the next day you should get a story,
-                  # SHOULD you read your current one. 
-                  # Some examples:
-                  #   [1] (today = 1)
-                  #   "you'll get your next story next monday"
-                  #   
-                  #   [1, 2] (today = 1)
-                  #   "this tuesday"
-                  #   
-                  #   [1, 2, 4] (today = 2)
-                  #   "this thursday"
-                  #   
-                  #   [1, 2, 4] (today = 4)
-                  #   "next monday"
-                  # 
-                  # but what about cases for us or our friends?
-                  # examples:
-                  # 
-                  #   [1, 2] (today = 3)
-                  #   "next monday"
-                  #   
-                  #   general algorithm:
-                  #   
-                  #   iterate through to find any number higher than current day
-                  #     if there exists a higher number, that's the next day
-                  #     if no such number exists, the next day is next week, the first number in the list
-
-
+                  
                 end # window_text_regex.match
 
-                m[:text] = name_codes translate.call(trans_code), recipient
+                m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
               end
 
               if is_txt_button?(m) # a button with text on it
                 # do the next day of the week outro message here
-
 
                 m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
                 buttons = m[:attachment][:payload][:buttons]

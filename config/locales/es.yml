@@ -1,5 +1,13 @@
 es:
   hello: "hola"
+  week:
+    - domingo
+    - lunes
+    - martes
+    - miércoles
+    - jueves
+    - viernes
+    - sábado
   defaults:
     teacher: "su maestro"
     child: "su niño"

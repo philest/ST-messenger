@@ -1,5 +1,13 @@
 en:
   hello: "hello"
+  week:
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
   demo:
     intro: "Hi, this is StoryTime! Here's the first two pages of one of our favorites."
     thanks: "Thanks for trying StoryTime :)"

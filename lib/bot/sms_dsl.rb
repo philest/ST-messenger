@@ -25,7 +25,7 @@ module Birdv
 
 
 
-      def name_codes(str, phone)
+      def name_codes(str, phone, day)
         user = User.where(:phone => phone).first
 
         if user
@@ -45,6 +45,11 @@ module Birdv
             school = sig.nil?   ? "StoryTime" : sig
           else
             school = "StoryTime"
+          end
+
+          if !day.nil?
+            weekday = I18n.t('week')[day]
+            str = str.gsub(/__DAY__/, weekday)
           end
 
           str = str.gsub(/__TEACHER__/, teacher)
@@ -68,6 +73,8 @@ module Birdv
           return text   
         end
 
+        next_day = nil # by default
+
         # Translate the weekday here. do it, why don't you?
         # if it matches a day of the week thing
         window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
@@ -75,7 +82,7 @@ module Birdv
           # get the code thing to transfer over
           bracket_index = $1.to_s
           just_the_text_regex = /.*[^\[\d+\]]/i
-          just_the_text = just_the_text_regex.match(m[:text]).to_s
+          just_the_text = just_the_text_regex.match(text).to_s
           # ok, so now we have the bracket and the text
           # so now we want to get this_week or next_week
 
@@ -88,10 +95,12 @@ module Birdv
           current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
           current_weekday = current_date.wday
 
+          next_day = schedule[0] # the first part of the next week by default
           week = '.next_week'
           schedule.each do |day|
             # make me proud
             if day > current_weekday
+              next_day = day
               week = '.this_week'
               break
             end
@@ -118,9 +127,9 @@ module Birdv
         trans = I18n.t text
         puts "trans = #{trans}"
         if trans.is_a? Array
-          return name_codes trans[@script_day - 1], phone 
+          return name_codes trans[@script_day - 1], phone, next_day
         else
-          return name_codes trans, phone
+          return name_codes trans, phone, next_day
         end
         
       rescue NoMethodError => e
