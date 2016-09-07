@@ -65,8 +65,7 @@ module Facebook
         p e.message + " something went wrong with processing the user's locale..."
         return 'en'
       end
-
-
+      
       def register_user(recipient)
         # Save user in the database.
         # TODO : update an existing DB entry to coincide the fb_id with phone_number

@@ -54,8 +54,14 @@ class StartDayWorker
     else
       u = User.where(phone:recipient).first
     end
+
+    if u.nil? # user doesn't exist, they must be new
+      puts "this user #{recipient} doesn't exist in StartDayWorker, creating them now..."
+      register_user({'id'=>recipient})
+      u = User.where(fb_id:recipient).first
+    end
     
-    if u.nil? or not u.state_table.subscribed?
+    if not u.state_table.subscribed?
       puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
       return
     end

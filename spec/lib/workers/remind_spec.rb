@@ -162,6 +162,22 @@ describe "Reminders" do
     @on_time.state_table.reload
   end
 
+  it 'should send the first story when the user does not exist at all through startdayworker', ass:true do
+    configure_shit()
+    User.each {|u| u.destroy }
+    
+    expect(User.count).to eq 0
+
+    Sidekiq::Testing.inline! do
+      StartDayWorker.perform_async('my asshole', 'fb')
+    end
+
+    expect(User.count).to eq 1
+    puts "#{User.first.inspect}"
+    puts "#{User.first.state_table.inspect}"
+
+  end
+
   it "should send the first day's button" do 
     configure_shit()
     puts "story_number = #{@on_time.state_table.story_number}"
