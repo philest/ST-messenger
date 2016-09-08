@@ -216,6 +216,9 @@ class SMS < Sinatra::Base
         recipient = "8186897323"
       end
     end
+
+    puts script, sequence, platform, recipient
+
     MessageWorker.perform_async(recipient, script, sequence, platform)
   end
 
