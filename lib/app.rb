@@ -211,7 +211,7 @@ class SMS < Sinatra::Base
 
     if recipient.nil? 
       if platform == 'fb'
-        recipient = "10209967651611613"
+        recipient = "1042751019139427"
       else
         recipient = "8186897323"
       end

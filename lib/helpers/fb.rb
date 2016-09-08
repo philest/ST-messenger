@@ -65,7 +65,7 @@ module Facebook
         p e.message + " something went wrong with processing the user's locale..."
         return 'en'
       end
-      
+
       def register_user(recipient)
         # Save user in the database.
         # TODO : update an existing DB entry to coincide the fb_id with phone_number
@@ -78,18 +78,23 @@ module Facebook
       else
         puts "successfully found user data for #{name}"
         last_name = data['last_name']
-        child_match = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
         begin
-          candidates = User.where(:child_name => child_match, :fb_id => nil)
-          if candidates.all.empty? # add a new user w/o child info (no matches)
-            User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
-          else
-            # implement stupid fb_name matching to existing user matching
-            candidates.order(:enrolled_on).first.update(fb_id: recipient['id'], first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
-          end
+          User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
         rescue Sequel::Error => e
           p e.message + " did not insert, already exists in db"
         end # rescue - db transaction
+        # child_match = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
+        # begin
+        #   candidates = User.where(:child_name => child_match, :fb_id => nil)
+        #   if candidates.all.empty? # add a new user w/o child info (no matches)
+        #     User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
+        #   else
+        #     # implement stupid fb_name matching to existing user matching
+        #     candidates.order(:enrolled_on).first.update(fb_id: recipient['id'], first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
+        #   end
+        # rescue Sequel::Error => e
+        #   p e.message + " did not insert, already exists in db"
+        # end # rescue - db transaction
       end
 
 
