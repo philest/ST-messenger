@@ -94,7 +94,6 @@ module Birdv
         end
       end
 
-
       def name_codes(str, fb_id, day=nil)
         user = User.where(:fb_id => fb_id).first
 
@@ -135,6 +134,7 @@ module Birdv
           return str
         end
       end
+
 
 
       def text(args = {})

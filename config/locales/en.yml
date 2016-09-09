@@ -50,13 +50,13 @@ en:
       window_text:
         this_week: 
           - "You'll get another story this __DAY__!"
-          - "You'll get another story this __DAY__. You both are doing great! :)"
-          - "Another story will come this __DAY__. You both are doing great! :)"
+          - "You'll get another story this __DAY__. I hope you and __CHILD__ enjoyed this one! :)"
+          - "Another story will come this __DAY__. Enjoy! :)"
           - "Another story will come this __DAY__. Great job! :)"
         next_week: 
           - "You'll get another story next __DAY__!"
-          - "You'll get another story next __DAY__. You both are doing great! :)"
-          - "Another story will  come next __DAY__. You both are doing great! :)"
+          - "You'll get another story next __DAY__. I hope you and __CHILD__ enjoyed this one! :)"
+          - "Another story will  come next __DAY__. Enjoy! :)"
           - "Another story will come next __DAY__. Great job! :)"
       title:
         - "Let's read tonight's story."

@@ -80,8 +80,6 @@ Bot.on :message do |message|
   # enroll user if they don't exist in db
   db_user = User.where(:fb_id => sender_id).first 
 
-
-
   if db_user.nil?
       register_user(message.sender)
       StartDayWorker.perform_async(sender_id, platform='fb')
@@ -132,7 +130,7 @@ Bot.on :message do |message|
   end # db_user.nil?
 
   #update the last message
-  redis_msg_key = db_user.fb_id + "_last_message_text"
+  redis_msg_key = sender_id + "_last_message_text"
   REDIS.set(redis_msg_key, the_new_msg)
    
 end

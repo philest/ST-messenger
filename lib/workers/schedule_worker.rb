@@ -54,8 +54,14 @@ class StartDayWorker
     else
       u = User.where(phone:recipient).first
     end
-    
-    if u.nil? or not u.state_table.subscribed?
+
+    if u.nil? # user doesn't exist, they must be new
+      puts "this user #{recipient} doesn't exist in StartDayWorker, creating them now..."
+      register_user({'id'=>recipient})
+      u = User.where(fb_id:recipient).first
+    end
+
+    if not u.state_table.subscribed?
       puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
       return
     end
@@ -151,6 +157,13 @@ class StartDayWorker
       #TODO: email?
       puts 'could not find scripts :('
       puts "likely, user #{recipient} has finished their curriculum"
+
+      # if the person was on sms, go back 1 story because they shouldn't have updated their story_number
+      if u.platform == 'sms'
+        current_no = u.state_table.story_number
+        u.state_table.update(story_number: current_no - 1)
+      end
+
     end
 	end
 end
@@ -369,10 +382,8 @@ class ScheduleWorker
     user_sendtime_local = adjust_tz(user)
     user_sendtime_utc   = user_sendtime_local.utc
 		user_day 	 = get_local_day(Time.now.utc, user)
-    puts "user_day = #{user_day}"
     user_story_num  = user.state_table.story_number
     user_sched      = get_schedule(user_story_num)
-    puts "user_sched = #{user_sched}"
     valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day) || user_story_num == 0
     # this deals with the edge case of being on story 1:
     if (user_story_num == 1)

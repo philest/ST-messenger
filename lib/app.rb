@@ -206,11 +206,20 @@ class SMS < Sinatra::Base
   get '/run_sequence' do
     script = params['script']
     sequence = params['sequence']
+    platform = params['platform']
+    recipient = params['recipient']
 
-    fb_id = "10209967651611613"
+    if recipient.nil? 
+      if platform == 'fb'
+        recipient = "1042751019139427"
+      else
+        recipient = "8186897323"
+      end
+    end
 
-    MessageWorker.perform_async(fb_id, script, sequence, 'fb')
+    puts script, sequence, platform, recipient
 
+    MessageWorker.perform_async(recipient, script, sequence, platform)
   end
 
 
