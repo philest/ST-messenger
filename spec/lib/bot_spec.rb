@@ -47,20 +47,20 @@ def app() Facebook::Messenger::Server end
 			expect(user.phone).to be_nil
 		end
 
-		it "matches fb_id to existing user with the same last name in the db" do
-			init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
-			fb_id = DAVID
-			recipient = { "id" => fb_id }
-			register_user(recipient)
-			expect(User.count).to eq 1
-			user = User.first
-			expect(user.fb_id).to eq fb_id
-			expect(user.first_name).to eq "David"
-			expect(user.last_name).to eq "McPeek"
-			expect(user.child_name).to eq "Galen McPeek"
-			expect(user.phone).to eq "8186897323"
-			expect(user.id).to eq init.id
-		end
+		# it "matches fb_id to existing user with the same last name in the db" do
+		# 	init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
+		# 	fb_id = DAVID
+		# 	recipient = { "id" => fb_id }
+		# 	register_user(recipient)
+		# 	expect(User.count).to eq 1
+		# 	user = User.first
+		# 	expect(user.fb_id).to eq fb_id
+		# 	expect(user.first_name).to eq "David"
+		# 	expect(user.last_name).to eq "McPeek"
+		# 	expect(user.child_name).to eq "Galen McPeek"
+		# 	expect(user.phone).to eq "8186897323"
+		# 	expect(user.id).to eq init.id
+		# end
 
 		# NOTE: 
 		# V IMPORTANT
@@ -68,35 +68,35 @@ def app() Facebook::Messenger::Server end
 		# !!!!!!!!!!!!!!!!!!!!!!!
 		# if this test is failing, it may be because you forgot to do Timecop.return in 
 		# another spec!
-		it "picks the first user who matches a child when there are many of such users" do 
-			candidate0 = User.create
-			candidate1 = User.create(:child_name => "Ben McPeek")
-			candidate2 = User.create(:child_name => "Emily McPeek")
-			fb_id = DAVID
-			recipient = { "id" => fb_id }
-			register_user(recipient)
-			#puts User.all.inspect
-			expect(User.count).to eq 3
+		# it "picks the first user who matches a child when there are many of such users" do 
+		# 	candidate0 = User.create
+		# 	candidate1 = User.create(:child_name => "Ben McPeek")
+		# 	candidate2 = User.create(:child_name => "Emily McPeek")
+		# 	fb_id = DAVID
+		# 	recipient = { "id" => fb_id }
+		# 	register_user(recipient)
+		# 	#puts User.all.inspect
+		# 	expect(User.count).to eq 3
 			
-			puts "ALL THE FUCKING USERS"
-			puts "#{User.all}"
+		# 	puts "ALL THE FUCKING USERS"
+		# 	puts "#{User.all}"
 
-			expect(User.where(:id => candidate1.id).first.first_name).to eq "David"
-			expect(User.where(:id => candidate1.id).first.last_name).to eq "McPeek"
-		end
+		# 	expect(User.where(:id => candidate1.id).first.first_name).to eq "David"
+		# 	expect(User.where(:id => candidate1.id).first.last_name).to eq "McPeek"
+		# end
 
-		it "retains teacher info for parents" do
-			teacher = Teacher.create
-			User.create(:child_name => "Fun Town USA")
-			init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
-			teacher.add_user(init)
-			fb_id = DAVID
-			recipient = { "id" => fb_id }
-			register_user(recipient)
-			user = User.where(:fb_id => fb_id).first
-			expect(user.teacher.id).to eq teacher.id
-			expect(user.phone).to eq init.phone
-		end
+		# it "retains teacher info for parents" do
+		# 	teacher = Teacher.create
+		# 	User.create(:child_name => "Fun Town USA")
+		# 	init = User.create(:child_name => "Galen McPeek", :phone => "8186897323")
+		# 	teacher.add_user(init)
+		# 	fb_id = DAVID
+		# 	recipient = { "id" => fb_id }
+		# 	register_user(recipient)
+		# 	user = User.where(:fb_id => fb_id).first
+		# 	expect(user.teacher.id).to eq teacher.id
+		# 	expect(user.phone).to eq init.phone
+		# end
 
 		it "creates a new user when there is no matching user for the child in the database" do
 			some_user = User.create(:child_name => "Phil Esterman", :phone => "phil_phone") 

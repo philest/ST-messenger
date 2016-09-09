@@ -1,6 +1,8 @@
 module Birdv
   module DSL
     module FB
+      include Facebook::Messenger::Helpers 
+      STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
       def url_button(title, url)
         return { type: 'web_url', title: title, url: url }
@@ -260,8 +262,9 @@ module Birdv
       end
 
 
-      # can we bring this out to the fb module? 
-      def process_txt( fb_object, recipient, user)
+
+      def process_txt( fb_object, user)
+          recipient = user.fb_id
           locale = user.locale
           if locale.nil? then locale = 'en' end
           I18n.locale = locale
@@ -270,6 +273,7 @@ module Birdv
               if str.nil? or str.empty? then 
                 return str   
               end
+              puts "str = #{str}"
 
               re_index = /\[(\d+)\]/i
               match = re_index.match(str)
@@ -277,7 +281,9 @@ module Birdv
                 index = $1
                 code_regex = /.*[^\[\d+\]]/i
                 translation_code = code_regex.match(str)
+                puts "translation_code = #{translation_code}"
                 translation_array = I18n.t(translation_code.to_s.downcase, interpolation)
+                puts "translation_array = #{translation_array}"
                 if translation_array.is_a? Array
                   puts "translation array element = #{translation_array[index.to_i]}"
                   return translation_array[index.to_i]
@@ -290,6 +296,7 @@ module Birdv
               trans = I18n.t(str, interpolation)
               return trans.is_a?(Array) ? trans[@script_day - 1] : trans
           end
+
 
           m = fb_object[:message]
 
@@ -317,7 +324,7 @@ module Birdv
                   schedule = sw.get_schedule(@script_day)
 
                   # what is our current day?
-                  current_date = sw.get_local_time(Time.now.utc + 2.days, user.tz_offset)
+                  current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
                   current_weekday = current_date.wday
 
                   next_day = schedule[0] # the first part of the next week by default
@@ -336,6 +343,7 @@ module Birdv
                 end # window_text_regex.match
 
                 m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
+                puts m[:text]
               end
 
               if is_txt_button?(m) # a button with text on it
@@ -394,7 +402,7 @@ module Birdv
             fb_object = Marshal.load(Marshal.dump(to_send))
 
             if usr then
-              process_txt(fb_object, fb_id, usr) 
+              process_txt(fb_object, usr)
             end
 
             puts "sending to #{fb_id}"

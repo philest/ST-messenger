@@ -36,11 +36,10 @@ end
 module Birdv
   module DSL
     class StoryTimeScript
-      include Facebook::Messenger::Helpers 
       include ContactHelpers
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences, :platform
-      STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
+      
 
       def initialize(script_name, platform='fb', &block)
         @fb_objects  = {}

@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'bot/dsl'
 require 'bot/curricula'
+require 'timecop'
 
 describe 'Birdv::DSL::StoryTimeScript' do
 
@@ -347,6 +348,274 @@ describe 'Birdv::DSL::StoryTimeScript' do
     # end
   end
 
+  context 'outro message sms', outro_sms: true do
+    before(:all) do
+      @day1 = Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do; end
+      @day2 = Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do; end
+      @day3 = Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do; end
+      @day4 = Birdv::DSL::ScriptClient.new_script 'day4', 'sms' do; end
+      @day5 = Birdv::DSL::ScriptClient.new_script 'day7', 'sms' do; end
+      @txt = 'scripts.buttons.window_text[0]'
+    end
+
+    before(:each) do
+      @phone = '12345'
+      @aubrey = User.create(phone: @phone, first_name:'Aubs', last_name:'Wahl', child_name:'Lil Aubs')
+    end
+
+    after(:each) do
+      Timecop.return
+    end
+
+    context 'on day1' do
+      it "says 'next Thursday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        text = @day1.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story next Thursday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day1.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo el próximo jueves :)" 
+      end
+    end
+
+    context 'on day2' do 
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        text = @day2.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day2.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo el próximo lunes :)" 
+      end
+
+      it "says 'this Thursday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        text = @day2.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story this Thursday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day2.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo este jueves :)" 
+      end
+    end
+
+    context 'on day4' do
+      it "says 'this Tuesday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story this Tuesday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo este martes :)" 
+      end
+      it "says 'this Thursday' when it's Tuesday" do
+        Timecop.freeze(Time.new(2016, 9, 6, 23, 0, 0, 0))
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story this Thursday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo este jueves :)" 
+
+      end
+
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        text = @day4.translate_sms(@phone, @txt)
+        expect(text).to eq "Le enviaré un cuento nuevo el próximo lunes :)" 
+      end
+    end
+
+
+
+
+
+  end
+
+  context 'outro message', outro: true do
+    before(:all) do
+      # Birdv::DSL::ScriptClient.clear_scripts 
+      Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../workers/test_scripts/*")
+        .each {|f| load f }
+      @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
+      @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
+      @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
+      @day3 = Birdv::DSL::ScriptClient.scripts['fb']['day3']
+      @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
+      @day7 = Birdv::DSL::ScriptClient.scripts['fb']['day7']
+
+      @txt = 'scripts.buttons.window_text[0]'
+      @fb_object = @day1.text({text:@txt}) 
+      puts @fb_object.inspect 
+    end
+
+    before(:each) do
+      @aubrey   = User.create(fb_id: '10209571935726081', first_name:'Aubs', last_name:'Wahl', child_name:'Lil Aubs')
+    end
+    # also have to test for sms....
+    # it 'loaded the scripts' do
+    #   puts @day1.inspect, @day2.inspect, @day3.inspect, @day7.inspect, @aubrey.inspect
+    # end
+
+    context 'on day1' do
+      it "says 'next Thursday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day1.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story next Thursday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day1.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo el próximo jueves :)" 
+        # "Le enviaré un cuento nuevo este jueves :)"
+
+        # - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
+      end
+    end
+
+    context 'on day2' do 
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day2.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day2.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo el próximo lunes :)"
+      end
+
+
+      it "says 'this Thursday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day2.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Thursday!"
+
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day2.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este jueves :)"
+      end
+    end
+
+    context 'on day3' do
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day3.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day3.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo el próximo lunes :)"
+
+      end
+      it "says 'this Thursday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day3.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Thursday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day3.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este jueves :)"
+
+      end
+    end
+
+    context 'on day4' do
+      it "says 'this Tuesday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Tuesday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este martes :)"
+
+      end
+      it "says 'this Thursday' when it's Tuesday" do
+        Timecop.freeze(Time.new(2016, 9, 6, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Thursday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este jueves :)"
+
+      end
+
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day4.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo el próximo lunes :)"
+
+      end
+    end
+
+    context 'on day7' do
+      it "says 'this Tuesday' when it's Monday" do
+        Timecop.freeze(Time.new(2016, 9, 5, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Tuesday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este martes :)"
+
+      end
+      it "says 'this Thursday' when it's Tuesday" do
+        Timecop.freeze(Time.new(2016, 9, 6, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story this Thursday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo este jueves :)"
+      end
+
+      it "says 'next Monday' when it's Thursday" do
+        Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "You'll get another story next Monday!"
+
+        @aubrey.update(locale: 'es')
+        fb_object = Marshal.load(Marshal.dump(@fb_object))
+        @day7.process_txt(fb_object, @aubrey)
+        expect(fb_object[:message][:text]).to eq "Le enviaré un cuento nuevo el próximo lunes :)"
+
+      end
+    end
+  end
+
 
 
   # Visual separation :P
@@ -463,6 +732,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
   end 
 
 
+
+
   # Visual separation :P
   # => 
   # => 
@@ -564,10 +835,10 @@ describe 'Birdv::DSL::StoryTimeScript' do
           send recipient, button({name:'tap_here'}) 
         end
         sequence 'scratchstory' do |recipient|
-          send recipient, story 
+          send recipient, story()
           img_1 = "http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg"
           send recipient, picture({url: img_1})
-          send recipient, button({name: 'thanks'})
+          send recipient, text({text: 'scripts.buttons.window_text[0]'})
         end
         sequence 'yourwelcome' do |recipient|
           send recipient, text({text: "scripts.buttons.welcome"})
@@ -628,12 +899,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @stub_arb.call(b3)
       end
 
-      it 'updates last sequence seen, nil->init->scratchstory' do
+      it 'updates last sequence seen, nil->init->scratchstory', scratchstory:true do
         pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
         expect(pgs).to eq(2)  # only two pages of coon story
         expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)
         expect(User.where(fb_id:@aubrey).first.curriculum_version).to eq(0)
         @stub_story.call(@aubrey, "day1","coon", pgs)
+        @stub_txt.call("You'll get another story next Thursday!")
         #@stub_story.call(@aubrey, "day1","bird", 8)
         expect {
           @s['day1'].run_sequence(@aubrey, :init)

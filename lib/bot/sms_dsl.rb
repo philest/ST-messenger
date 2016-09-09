@@ -92,7 +92,7 @@ module Birdv
           schedule = sw.get_schedule(@script_day)
 
           # what is our current day?
-          current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
+          current_date = sw.get_local_time(Time.now.utc, usr.tz_offset)
           current_weekday = current_date.wday
 
           next_day = schedule[0] # the first part of the next week by default
@@ -118,8 +118,9 @@ module Birdv
           translation_code = code_regex.match(text)
           translation_array = I18n.t translation_code.to_s.downcase
           if translation_array.is_a? Array
-            puts "translation array element = #{translation_array[index.to_i]}"
-            return translation_array[index.to_i]
+            translation = name_codes translation_array[index.to_i], phone, next_day
+            puts translation
+            return translation
           else
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end

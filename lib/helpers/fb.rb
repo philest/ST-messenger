@@ -16,15 +16,50 @@ module Facebook
         GRAPH_URL
       end
 
-      def name_codes(str, id)
-        user = User.where(:fb_id => id).first
-        parent  = user.first_name
-        child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
-        teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
-        str = str.gsub(/__TEACHER__/, teacher)
-        str = str.gsub(/__PARENT__/, parent)
-        str = str.gsub(/__CHILD__/, child)
-        return str
+      # def name_codes(str, id)
+      #   user = User.where(:fb_id => id).first
+      #   parent  = user.first_name
+      #   child   = user.child_name.nil? ? "your child" : user.child_name.split[0]
+      #   teacher = user.teacher.nil? ? "StoryTime" : user.teacher.signature        
+      #   str = str.gsub(/__TEACHER__/, teacher)
+      #   str = str.gsub(/__PARENT__/, parent)
+      #   str = str.gsub(/__CHILD__/, child)
+      #   return str
+      # end
+
+      def name_codes(str, fb_id)
+        user = User.where(:fb_id => fb_id).first
+        if user
+          parent  = user.first_name.nil? ? "" : user.first_name
+          I18n.locale = user.locale
+          child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
+
+          if !user.teacher.nil?
+            sig = user.teacher.signature
+            teacher = sig.nil?           ? "StoryTime" : sig
+          else
+            teacher = "StoryTime"
+          end
+
+          if user.school
+            sig = user.school.signature
+            school = sig.nil?   ? "StoryTime" : sig
+          else
+            school = "StoryTime"
+          end
+          
+          str = str.gsub(/__TEACHER__/, teacher)
+          str = str.gsub(/__PARENT__/, parent)
+          str = str.gsub(/__SCHOOL__/, school)
+          str = str.gsub(/__CHILD__/, child)
+          return str
+        else # just return what we started with. It's 
+          str = str.gsub(/__TEACHER__/, 'StoryTime')
+          str = str.gsub(/__PARENT__/, '')
+          str = str.gsub(/__SCHOOL__/, 'StoryTime')
+          str = str.gsub(/__CHILD__/, 'your child')
+          return str
+        end
       end
 
 
@@ -66,7 +101,6 @@ module Facebook
         return 'en'
       end
 
-
       def register_user(recipient)
         # Save user in the database.
         # TODO : update an existing DB entry to coincide the fb_id with phone_number
@@ -79,18 +113,24 @@ module Facebook
       else
         puts "successfully found user data for #{name}"
         last_name = data['last_name']
-        child_match = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
+        puts "name = #{data['first_name']} #{data['last_name']}"
         begin
-          candidates = User.where(:child_name => child_match, :fb_id => nil)
-          if candidates.all.empty? # add a new user w/o child info (no matches)
-            User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
-          else
-            # implement stupid fb_name matching to existing user matching
-            candidates.order(:enrolled_on).first.update(fb_id: recipient['id'], first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
-          end
+          User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
         rescue Sequel::Error => e
           p e.message + " did not insert, already exists in db"
         end # rescue - db transaction
+        # child_match = /[a-zA-Z]*( )?#{last_name}/i  # if child's last name matches, go for it
+        # begin
+        #   candidates = User.where(:child_name => child_match, :fb_id => nil)
+        #   if candidates.all.empty? # add a new user w/o child info (no matches)
+        #     User.create(fb_id: recipient['id'], platform: 'fb', first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
+        #   else
+        #     # implement stupid fb_name matching to existing user matching
+        #     candidates.order(:enrolled_on).first.update(fb_id: recipient['id'], first_name: data['first_name'], last_name: data['last_name'], gender: data['gender'], locale: process_locale(data['locale']), tz_offset: data['timezone'], profile_pic: data['profile_pic'])
+        #   end
+        # rescue Sequel::Error => e
+        #   p e.message + " did not insert, already exists in db"
+        # end # rescue - db transaction
       end
 
 
