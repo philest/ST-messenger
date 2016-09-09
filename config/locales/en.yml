@@ -40,7 +40,21 @@ en:
       - "Hi __PARENT__, here’s another story!"      
       - "Hi __PARENT__, here’s another story!"    
       - "Hi __PARENT__, here’s another story!"      
-      - "Hi __PARENT__, here’s another story!"      
+      - "Hi __PARENT__, here’s another story!"
+    teacher_intro_sms:
+      - "Hi! This is __TEACHER__. Here's your first free book on StoryTime!"
+      - "Hi! It's __TEACHER__. Here’s another story to get __CHILD__ ready for kindergarten."
+      - "Hi, here’s another story!"
+      - "Hi, here’s another story!"
+      - "Hi, here’s another story!"
+      - "Hi, here’s another story!"    
+      - "Hi, here’s another story!"    
+      - "Hi, here’s another story!"    
+      - "Hi, here’s another story!"      
+      - "Hi, here’s another story!"      
+      - "Hi, here’s another story!"    
+      - "Hi, here’s another story!"      
+      - "Hi, here’s another story!"    
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     resubscribe: Great! You'll keep getting stories :)
     buttons:

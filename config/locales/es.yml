@@ -37,6 +37,19 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+    teacher_intro_sms:
+      - "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento para preparar __CHILD__ para el kinder."
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"      
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
     remind: Hola __PARENT__, vi se ha perdido su última historia y yo sólo desea compartir de nuevo. ¡Aqui tienes!
     resubscribe: Gran! Vas a seguir recibiendo historias
     buttons:
