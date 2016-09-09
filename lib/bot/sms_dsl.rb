@@ -25,7 +25,7 @@ module Birdv
 
 
 
-      def name_codes(str, phone)
+      def name_codes(str, phone, day)
         user = User.where(:phone => phone).first
 
         if user
@@ -45,6 +45,11 @@ module Birdv
             school = sig.nil?   ? "StoryTime" : sig
           else
             school = "StoryTime"
+          end
+
+          if !day.nil?
+            weekday = I18n.t('week')[day]
+            str = str.gsub(/__DAY__/, weekday)
           end
 
           str = str.gsub(/__TEACHER__/, teacher)
@@ -68,6 +73,43 @@ module Birdv
           return text   
         end
 
+        next_day = nil # by default
+
+        # Translate the weekday here. do it, why don't you?
+        # if it matches a day of the week thing
+        window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
+        if window_text_regex.match(text)
+          # get the code thing to transfer over
+          bracket_index = $1.to_s
+          just_the_text_regex = /.*[^\[\d+\]]/i
+          just_the_text = just_the_text_regex.match(text).to_s
+          # ok, so now we have the bracket and the text
+          # so now we want to get this_week or next_week
+
+          # first, grab their current day of the week
+          require_relative '../workers/schedule_worker'
+          sw = ScheduleWorker.new
+          schedule = sw.get_schedule(@script_day)
+
+          # what is our current day?
+          current_date = sw.get_local_time(Time.now.utc, usr.tz_offset)
+          current_weekday = current_date.wday
+
+          next_day = schedule[0] # the first part of the next week by default
+          week = '.next_week'
+          schedule.each do |day|
+            # make me proud
+            if day > current_weekday
+              next_day = day
+              week = '.this_week'
+              break
+            end
+          end
+
+          text = just_the_text + week + bracket_index
+        end # window_text_regex.match
+
+        # other indexing stuff. ay yay yay....
         re_index = /\[(\d+)\]/i
         match = re_index.match(text)
         if match
@@ -76,20 +118,19 @@ module Birdv
           translation_code = code_regex.match(text)
           translation_array = I18n.t translation_code.to_s.downcase
           if translation_array.is_a? Array
-            puts "translation array element = #{translation_array[index.to_i]}"
-            return translation_array[index.to_i]
+            translation = name_codes translation_array[index.to_i], phone, next_day
+            puts translation
+            return translation
           else
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end
-        
         end
-
         trans = I18n.t text
         puts "trans = #{trans}"
         if trans.is_a? Array
-          return name_codes trans[@script_day - 1], phone 
+          return name_codes trans[@script_day - 1], phone, next_day
         else
-          return name_codes trans, phone
+          return name_codes trans, phone, next_day
         end
         
       rescue NoMethodError => e

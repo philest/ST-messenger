@@ -36,11 +36,10 @@ end
 module Birdv
   module DSL
     class StoryTimeScript
-      include Facebook::Messenger::Helpers
       include ContactHelpers
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences, :platform
-      STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
+      
 
       def initialize(script_name, platform='fb', &block)
         @fb_objects  = {}
@@ -183,28 +182,6 @@ module Birdv
                              last_reminded_time: nil
                             )
       end
-
-      # def story(args={})
-      #   create_story(args, @script_day)
-      # end
-
-      # the old way of sending....
-      # def send( recipient, to_send, type='sms')
-      #   send_helper(recipient, to_send, @script_day, type)
-      # end
-
-      # def send( fb_id, to_send )
-      #   send_helper(fb_id, to_send, @script_day)
-      # end
-
-      # def send_sms( phone, text, next_sequence=nil )
-      #   puts "in send_sms, next_sequence is #{next_sequence}"
-      #   send_sms_helper( phone, text, @script_name, next_sequence )
-      # end
-
-      # def send_mms( phone, img_url, next_sequence=nil )
-      #   send_mms_helper( phone, img_url, @script_name, next_sequence )
-      # end
 
     end
   end

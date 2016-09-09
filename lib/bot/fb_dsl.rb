@@ -1,6 +1,8 @@
 module Birdv
   module DSL
     module FB
+      include Facebook::Messenger::Helpers 
+      STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
       def url_button(title, url)
         return { type: 'web_url', title: title, url: url }
@@ -91,6 +93,48 @@ module Birdv
           return 'en'
         end
       end
+
+      def name_codes(str, fb_id, day=nil)
+        user = User.where(:fb_id => fb_id).first
+
+        if user
+          parent  = user.first_name.nil? ? "" : user.first_name
+          I18n.locale = user.locale
+          child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
+          
+          if !user.teacher.nil?
+            sig = user.teacher.signature
+            teacher = sig.nil?           ? "StoryTime" : sig
+          else
+            teacher = "StoryTime"
+          end
+
+          if user.school
+            sig = user.school.signature
+            school = sig.nil?   ? "StoryTime" : sig
+          else
+            school = "StoryTime"
+          end
+
+          if !day.nil?
+            weekday = I18n.t('week')[day]
+            str = str.gsub(/__DAY__/, weekday)
+          end
+
+          str = str.gsub(/__TEACHER__/, teacher)
+          str = str.gsub(/__PARENT__/, parent)
+          str = str.gsub(/__SCHOOL__/, school)
+          str = str.gsub(/__CHILD__/, child)
+          return str
+        else # just return what we started with. It's 
+          str = str.gsub(/__TEACHER__/, 'StoryTime')
+          str = str.gsub(/__PARENT__/, '')
+          str = str.gsub(/__SCHOOL__/, 'StoryTime')
+          str = str.gsub(/__CHILD__/, 'your child')
+          return str
+        end
+      end
+
 
 
       def text(args = {})
@@ -218,65 +262,128 @@ module Birdv
       end
 
 
-      # can we bring this out to the fb module? 
-      def process_txt( fb_object, recipient, locale, script_day )
-        if locale.nil? then locale = 'en' end
-        I18n.locale = locale
 
-        translate = lambda do |str, interpolation={}|
+      def process_txt( fb_object, user)
+          recipient = user.fb_id
+          locale = user.locale
+          if locale.nil? then locale = 'en' end
+          I18n.locale = locale
+          # translate
+          translate = lambda do |str, interpolation={}|
+              if str.nil? or str.empty? then 
+                return str   
+              end
+              puts "str = #{str}"
 
-          if str.nil? or str.empty? then 
-            return str   
-          end
-
-          trans = I18n.t(str, interpolation)
-          return trans.is_a?(Array) ? trans[script_day - 1] : trans
-        end
-
-        m = fb_object[:message]
-
-        if !m.nil?
-            if is_txt?(m) # just a text message... 
-
-              m[:text] = name_codes translate.call(m[:text]), recipient
-            end
-
-            if is_txt_button?(m) # a button with text on it
-              m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
-              buttons = m[:attachment][:payload][:buttons]
-
-              buttons.each_with_index do |val, i|
-                buttons[i][:title] = translate.call( buttons[i][:title] )
+              re_index = /\[(\d+)\]/i
+              match = re_index.match(str)
+              if match
+                index = $1
+                code_regex = /.*[^\[\d+\]]/i
+                translation_code = code_regex.match(str)
+                puts "translation_code = #{translation_code}"
+                translation_array = I18n.t(translation_code.to_s.downcase, interpolation)
+                puts "translation_array = #{translation_array}"
+                if translation_array.is_a? Array
+                  puts "translation array element = #{translation_array[index.to_i]}"
+                  return translation_array[index.to_i]
+                else
+                  raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
+                end
+              
               end
 
-            end
+              trans = I18n.t(str, interpolation)
+              return trans.is_a?(Array) ? trans[@script_day - 1] : trans
+          end
 
-            if is_story_button?(m) # a story button, with text and pictures
-              elements = m[:attachment][:payload][:elements]
-              elements.each_with_index do |val, i|
-                elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
-                # now, substitute story_name by getting story_name from curriculum
-                version = get_curriculum_version(recipient)
-                curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
-                title = curriculum[script_day - 1][1] # title is at index 1 for curriculum rows
-                elements[i][:image_url] = translate.call(elements[i][:image_url], {story_name: title})
 
-                # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
-                if elements[i][:buttons]
-                  buttons = elements[i][:buttons]
-                  buttons.each_with_index do |val, i|
-                    buttons[i][:title] = translate.call(buttons[i][:title])
+          m = fb_object[:message]
+
+          if !m.nil?
+
+              if is_txt?(m) # just a text message... 
+                # default
+                trans_code = m[:text]
+                next_day = nil
+                # 
+                # Translate the weekday here. do it, why don't you?
+                # if it matches a day of the week thing
+                window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
+                if window_text_regex.match(m[:text])
+                  # get the code thing to transfer over
+                  bracket_index = $1.to_s
+                  just_the_text_regex = /.*[^\[\d+\]]/i
+                  just_the_text = just_the_text_regex.match(m[:text]).to_s
+                  # ok, so now we have the bracket and the text
+                  # so now we want to get this_week or next_week
+
+                  # first, grab their current day of the week
+                  require_relative '../workers/schedule_worker'
+                  sw = ScheduleWorker.new
+                  schedule = sw.get_schedule(@script_day)
+
+                  # what is our current day?
+                  current_date = sw.get_local_time(Time.now.utc, user.tz_offset)
+                  current_weekday = current_date.wday
+
+                  next_day = schedule[0] # the first part of the next week by default
+                  week = '.next_week'
+                  schedule.each do |day|
+                    # make me proud
+                    if day > current_weekday
+                      next_day = day
+                      week = '.this_week'
+                      break
+                    end
+                  end
+
+                  trans_code = just_the_text + week + bracket_index
+                  
+                end # window_text_regex.match
+
+                m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
+                puts m[:text]
+              end
+
+              if is_txt_button?(m) # a button with text on it
+                # do the next day of the week outro message here
+
+                m[:attachment][:payload][:text] = name_codes translate.call( m[:attachment][:payload][:text] ), recipient
+                buttons = m[:attachment][:payload][:buttons]
+
+                buttons.each_with_index do |val, i|
+                  buttons[i][:title] = translate.call( buttons[i][:title] )
+                end
+
+              end
+
+              if is_story_button?(m) # a story button, with text and pictures
+                elements = m[:attachment][:payload][:elements]
+                elements.each_with_index do |val, i|
+                  elements[i][:title] = name_codes translate.call(elements[i][:title]), recipient
+                  # now, substitute story_name by getting story_name from curriculum
+                  version = get_curriculum_version(recipient)
+                  curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
+                  title = curriculum[@script_day - 1][1] # title is at index 1 for curriculum rows
+                  elements[i][:image_url] = translate.call(elements[i][:image_url], {story_name: title})
+
+                  # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
+                  if elements[i][:buttons]
+                    buttons = elements[i][:buttons]
+                    buttons.each_with_index do |val, i|
+                      buttons[i][:title] = translate.call(buttons[i][:title])
+                    end
                   end
                 end
               end
-            end
 
-            # if m[:attachment][:payload][:elements][:title] # a story button, with text and pictures
-            #   elements = m[:attachment][:payload][:elements]
-            #   translate.call()
-            # end
+              # if m[:attachment][:payload][:elements][:title] # a story button, with text and pictures
+              #   elements = m[:attachment][:payload][:elements]
+              #   translate.call()
+              # end
 
-        end
+          end
 
       end
 
@@ -295,7 +402,7 @@ module Birdv
             fb_object = Marshal.load(Marshal.dump(to_send))
 
             if usr then
-              process_txt(fb_object, fb_id, usr.locale, @script_day) 
+              process_txt(fb_object, usr)
             end
 
             puts "sending to #{fb_id}"

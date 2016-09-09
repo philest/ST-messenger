@@ -41,7 +41,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 	sequence 'goodbye' do |phone_no|
 		puts "saying goodbye..."
 
-		txt = 'scripts.buttons.window_text'
+		txt = 'scripts.buttons.window_text[0]'
 
 		# the new way to do it:
 		send_sms phone_no, txt
