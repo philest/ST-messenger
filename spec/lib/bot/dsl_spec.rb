@@ -879,8 +879,6 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @s = @cli.scripts['fb']
     end #=>END before(:all) do
 
-
-
     context 'when updating last_sequence_seen it' do
       let (:u) {@make_aubrey.call}
       let (:t) {@make_teacher.call}

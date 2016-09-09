@@ -25,7 +25,7 @@ class MessageWorker
             # though, come to think of it, this situation shouldn't happen because if a user gets to MessageWorker
             # without existing in the db, then they'll press the "Get Started" button which will trigger 
             # the StartDayWorker event. Yay! 
-            User.where(id:recipient).first.update(story_number: 1)
+            User.where(fb_id:recipient).first.update(story_number: 1)
           end
           
           # open DB connection to user
