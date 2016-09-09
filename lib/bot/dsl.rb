@@ -36,7 +36,7 @@ end
 module Birdv
   module DSL
     class StoryTimeScript
-      include Facebook::Messenger::Helpers 
+      include Facebook::Messenger::Helpers
       include ContactHelpers
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences, :platform
