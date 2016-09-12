@@ -83,8 +83,6 @@ Bot.on :message do |message|
   if db_user.nil?
       register_user(message.sender)
       StartDayWorker.perform_async(sender_id, platform='fb')
-  elsif db_user.state_table.subscribed? == false
-
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
