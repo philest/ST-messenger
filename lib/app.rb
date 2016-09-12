@@ -38,11 +38,12 @@ class SMS < Sinatra::Base
     end
     phone = params[:From][2..-1]
     puts "params[:From] = #{params[:From]}"
+    puts "params[:Body] = #{params[:Body]}"
     user = User.where(phone: phone.to_s).first
     puts "user = #{user}, phone = #{phone}"
 
     if user # is enrolled in the system already
-      
+
       msg = get_reply(params[:Body], user)
 
       puts "session = #{session.inspect}"
@@ -55,20 +56,20 @@ class SMS < Sinatra::Base
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
         sms(phone, reply)
-      elsif /sms/i.match(msg)
-        # resubscribe and send a welcome message
-        user.state_table.update(subscribed?:true)
-        reply = SMSReplies.name_codes('enrollment.sms_optin', user)
-        sms(phone, reply)
       else
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send = #{reply}"
         sms(phone, reply)
       end
-          
-      notify_admins "A user (phone #{phone}) texted StoryTime", \
-             "Message: #{params[:Body]}<br/>Time: #{Time.now}"
 
+      our_phones = ["5612125831", "8186897323", "3013328953"]
+      is_us = our_phones.include? phone 
+
+      if !is_us 
+        notify_admins "A user (phone #{phone}) texted StoryTime", \
+             "Message: #{params[:Body]}<br/>Time: #{Time.now}"
+      end
+          
     else # this is a new user, enroll them in the system 
 
       puts "someone texted in, creating user..."
@@ -172,6 +173,7 @@ class SMS < Sinatra::Base
         # create new parent if did'nt already exists
         if parent.nil? then 
           parent = User.create(:phone => phone_num, platform: 'sms')
+          parent.state_table.update(subscribed?: false)
           # parent.state_table.update(story_number: 0)
         end
 

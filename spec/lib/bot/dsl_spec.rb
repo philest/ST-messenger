@@ -887,7 +887,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         # init sequence
         b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/coon/coon-button.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
-        @stub_txt.call("Hi Aubs, this is StoryTime. We'll send you free books for you and your child. We hope you like them :)")
+        @stub_txt.call("Hi Aubs, this is StoryTime. We'll be sending you free books for you and your child :)")
         @stub_arb.call(b1)
 
         # scratchstory sequence

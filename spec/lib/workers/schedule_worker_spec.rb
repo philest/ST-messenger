@@ -49,6 +49,26 @@ describe ScheduleWorker do
     Timecop.return
   end
 
+  context "unsubscribed users", unsubscribed:true do
+
+    it "doesn't send anything to peeps who are unsubscribed" do
+
+      user = User.create(send_time: Time.now, fb_id: 'ass me')
+      user.state_table.update(subscribed?: false)
+
+      allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, [Time.now.wday], &block)
+      end
+
+      expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
+
+      Sidekiq::Testing.inline! do
+        ScheduleWorker.perform_async(@interval)
+      end
+    end
+    
+  end
+
   context "it handles Pacific time cases", pacific:true do
 
     context "within_time_range function", :range => true do

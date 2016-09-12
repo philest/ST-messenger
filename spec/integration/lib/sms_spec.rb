@@ -5,6 +5,7 @@ require 'active_support/time'
 require 'app'
 
 
+
 describe 'sms' do
   include Rack::Test::Methods
   include EmailSpec::Helpers
@@ -164,6 +165,14 @@ describe 'sms' do
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction").
          to_return(:status => 200, :body => "", :headers => {})
 
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29").
+         to_return(:status => 200, :body => "", :headers => {})
+
 
     end
 
@@ -197,6 +206,60 @@ describe 'sms' do
       end
 
     end
+
+
+    it 'adds a user to the db, but unsubscribed' do
+
+      expect(@u1.state_table.subscribed?).to eq false
+      expect(@u2.state_table.subscribed?).to eq false
+
+    end
+
+    it 'sends the initial sms to these users, but not the second one' do
+      Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, (0..7).to_a, &block)
+      end
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      Sidekiq::Testing.inline! do
+        expect(@day1).to receive(:run_sequence).once.with('5612125831', :init)
+        @sw.perform
+      end
+
+      Timecop.freeze(Time.now + 3.days)
+
+      expect(@sw.within_time_range(@u2, 5.minutes)).to be true
+
+      Sidekiq::Testing.inline! do
+        expect(StartDayWorker).to receive(:perform_in).twice
+        expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
+        @sw.perform
+      end
+    end
+
+    it 're-subscribes folks after they text \'sms\'' do
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>"SMS", "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+18186897323", "ApiVersion"=>"2010-04-01"}
+      Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0)) # Monday
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, (0..7).to_a, &block)
+      end
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      @u1.reload()
+      expect(@u1.state_table.subscribed?).to be false
+
+      expect {
+        post '/sms', sms_params
+        @u1.reload()
+      }.to change{@u1.state_table.subscribed?}.to true
+
+    end
+
 
     it 'does the first night of the program correctly for @u1 (on story 2) and @u2 (on story 1)' do
       Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday

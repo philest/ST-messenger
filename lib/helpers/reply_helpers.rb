@@ -9,20 +9,28 @@ module MessageReplyHelpers
   LOVE_MSG = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
-  RESUBSCRIBE_MSG = /go/i
+  RESUBSCRIBE_MSG = /(go)/i
+  ENROLL_MSG = /(sms)/i
 
   def get_reply(body, user)
     our_reply = ''
     I18n.locale = user.locale
 
-    if user.state_table.subscribed? == false
-      unless body.match RESUBSCRIBE_MSG; return; end
-    end
+    # puts "body.match ENROLL_MSG = #{body.match ENROLL_MSG}"
+
+    # if user.state_table.subscribed? == false
+    #   unless body.match RESUBSCRIBE_MSG or body.match ENROLL_MSG
+    #     return
+    #   end
+    # end
     
     case body
     when RESUBSCRIBE_MSG
       user.state_table.update(subscribed?: true)
       our_reply = I18n.t 'scripts.resubscribe'
+    when ENROLL_MSG
+      user.state_table.update(subscribed?: true)
+      our_reply = I18n.t 'enrollment.sms_optin'
     when HELP_RQST
       our_reply =  I18n.t 'user_response.help'
     when STOP_RQST
@@ -43,6 +51,7 @@ module MessageReplyHelpers
     else #default msg 
       our_reply = I18n.t 'user_response.default'
     end
+    # puts "our_reply = #{our_reply}"
     return our_reply 
   end
 

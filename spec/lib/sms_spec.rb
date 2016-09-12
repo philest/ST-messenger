@@ -51,8 +51,6 @@ describe 'sms' do
       load 'sms_sequence_scripts/01.rb'
       @day1 = Birdv::DSL::ScriptClient.scripts['sms']['day1']
 
-      puts "scripts = #{Birdv::DSL::ScriptClient.scripts}"
-
       stub_request(:post, "http://localhost:4567/txt").
          with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20Mx.%20GlottleStop.%20I%27ll%20be%20texting%20your%20child%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
