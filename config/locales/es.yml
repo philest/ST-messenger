@@ -38,20 +38,20 @@ es:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
     teacher_intro_sms:
-      - "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento para preparar __CHILD__ para el kinder."
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"      
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "Hola, es __SCHOOL__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
+      - "Hola, es __SCHOOL__. Aquí viene otro cuento para preparar __CHILD__ para el kinder."
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
+      - "Hola! Aquí viene otro cuento de StoryTime :)"
     remind: Hola __PARENT__, vi se ha perdido su última historia y yo sólo desea compartir de nuevo. ¡Aqui tienes!
-    resubscribe: Gran! Vas a seguir recibiendo historias
+    resubscribe: Gran! Vas a seguir recibiendo historias :)
     buttons:
       unsubscribe_window_text: Hola __PARENT__, vi que no haya leído sus historias desde hace tiempo... le gustaría seguir recibiendo ellos?
       resubscribe: Sí!
@@ -91,27 +91,20 @@ es:
       clouds:
         - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg
-    # (where we keep the adjusted 'espanish' urls)
+  call_to_action:
+    intro: Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros.
+    fb: "Para recibir más cuentos, toque aquí y escribir ‘ir’\n\njoinstorytime.com/go"
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"
 
   enrollment:
-    body: 
-      has_teacher: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\nPuede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
-      has_school: "Hola, es __SCHOOL__. Vamos a enviar mensajes de texto a usted con StoryTime!\n\nPuede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
-      has_none: "Hola, es StoryTime. Le enviaremos mensajes de texto con libros de cuento gratis!\n\nPuede empezar ahora si tiene Facebook Messenger.  Visite este enlace para entrar:\njoinstorytime.com/go"
     img:
       has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
       default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
-
-    body_sprint:
-      has_teacher: 
-        first: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\n"
-        second: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
-      has_school: 
-        first: "Hola, es __SCHOOL__. Vamos enviarle mensajes de texto a usted con StoryTime!\n\n" 
-        second: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
-      has_none: 
-        first: "Hola, es StoryTime. Vamos enviarle mensajes de texto con libros de cuento gratis!\n\n"
-        second: "Puede empezar ahora si tiene Facebook Messenger.  Visite este enlace para entrar:\njoinstorytime.com/go"
+    body: 
+      has_teacher: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\n"
+      has_school: "Hola, es __SCHOOL__. Vamos enviarle mensajes de texto a usted con StoryTime!\n\n" 
+      has_none: "Hola, es StoryTime. Vamos enviarle mensajes de texto con libros de cuento gratis!\n\n"
+      sms_call_to_action: "Para recibir cuentos por mensaje de texto, responder con SMS"
+      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"

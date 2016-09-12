@@ -1,9 +1,6 @@
 class StartDayWorker
   include Sidekiq::Worker
   sidekiq_options :retry => 3
-  #  sidekiq_retry_in do |count|
-  #   10
-  # end
 
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
@@ -62,8 +59,12 @@ class StartDayWorker
     end
 
     if not u.state_table.subscribed?
-      puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
-      return
+      unless u.platform == 'sms' and u.state_table.story_number == 0 then
+        puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
+        return
+        # otherwise, we haven't even sent out our first story to this poor sms user
+        # and we ought to, for them, y'know?
+      end
     end
 
     read_yesterday_story = read_yesterday_story?(u)
@@ -71,7 +72,6 @@ class StartDayWorker
 
 		# double quotation
 		script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
-
 
 	  if !script.nil?
       puts "the script is not nil, everyone!"
@@ -105,10 +105,7 @@ class StartDayWorker
       if remind?(u)
 
         reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
-        # if the last_reminded_time was more recent than the last_script_sent_time, 
-        # send the "unsubscribe" message to these folks
-        # "We noticed you haven't been reading stories for a few days. If you'd like 
-        # to stop getting stories, just click 'unsubscibe'"
+
         last_reminded_time = u.state_table.last_reminded_time
         num_reminders = u.state_table.num_reminders
 
@@ -151,6 +148,7 @@ class StartDayWorker
         puts "I DON'T NEED TO REMIND ANYONE OF ANYTHING!!!!!!!!!!!!!"
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
         script.run_sequence(recipient, :init) 
+
       end
 
     else
@@ -327,8 +325,7 @@ class ScheduleWorker
       end
 
       # ensure is within_time_range and that last story read wasn't today!
-      # the user has to be subscribed!!!!!!
-  		last_story_read_ok && user.state_table.subscribed? && within_time_range(user, range)
+  		last_story_read_ok && within_time_range(user, range)
   	end
   rescue => e
     p e.message + "... something went wrong, not filtering users"

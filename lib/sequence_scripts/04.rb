@@ -14,12 +14,6 @@ Birdv::DSL::ScriptClient.new_script 'day4' do
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
-	# button_normal({
-	# 	name: 			 'thanks',
-	# 	window_text: 'scripts.buttons.window_text',
-	# 	buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
-	# })
-
 
 	sequence 'firsttap' do |recipient|
 		# greeting with 4 second delay

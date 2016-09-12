@@ -31,19 +31,29 @@ describe 'sms' do
     before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
 
     before(:each) do
+      
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2",
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=5612125831&text=Hi%2C%20this%20is%20McEsterWahl.%20I%27ll%20be%20texting%20Phil%20books%20with%20StoryTime%21%0A%0A&script=day1&next_sequence=firstmessage2",
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=firstmessage2").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
+
+
 
     end
 
@@ -121,6 +131,44 @@ describe 'sms' do
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction").
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction").
+         to_return(:status => 200, :body => "", :headers => {})
+     
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction").
+         to_return(:status => 200, :body => "", :headers => {})
+
+      stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction").
+         to_return(:status => 200, :body => "", :headers => {})
+
+
     end
 
     before(:each) do
@@ -152,7 +200,9 @@ describe 'sms' do
         post '/sms', sms_params
       end
 
-    end 
+    end
+
+
 
     it 'does the first night of the program correctly for @u1 (on story 2) and @u2 (on story 1)' do
       Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday
@@ -175,6 +225,8 @@ describe 'sms' do
       expect(User.count).to eq 2
       # expect(StartDayWorker).to receive(:perform_async).exactly(User.count).times
 
+      User.where(phone: '8186897323').first.state_table.update(subscribed?: true)
+
       expect(@day1).to receive(:run_sequence).once.with('5612125831', :init)
       expect(@day2).to receive(:run_sequence).once.with('8186897323', :init)
 
@@ -182,9 +234,10 @@ describe 'sms' do
         @sw.perform
       end
 
+
+
       expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 1
       expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 2
-
 
 
       # Tuesday, we're not sending any over!
@@ -221,8 +274,8 @@ describe 'sms' do
         puts "running sequence with args #{args}"
       end
 
-      User.where(phone: '5612125831').first.state_table.update(story_number: 1)
-      User.where(phone: '8186897323').first.state_table.update(story_number: 2)
+      User.where(phone: '5612125831').first.state_table.update(story_number: 1, subscribed?: true)
+      User.where(phone: '8186897323').first.state_table.update(story_number: 2, subscribed?: true)
 
 
       expect(@day2).to receive(:run_sequence).once.with('5612125831', :init)

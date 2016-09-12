@@ -1,68 +1,30 @@
 Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
 
-  # day 1
-
   # recipients are phone numbers
   sequence 'firstmessage' do |phone_no|
     user = User.where(phone: phone_no).first
     if user.teacher and user.teacher.signature then
-      puts "has teacher, using teacher text"
-      txt_sprint = 'enrollment.body_sprint.has_teacher'
+      text = 'enrollment.body.has_teacher'
     elsif user.school and user.school.signature then
-      puts "has school, using school text"
-      txt_sprint = 'enrollment.body_sprint.has_school'
+      text = 'enrollment.body.has_school'
     else
-      puts "has none, using default text"
-      txt_sprint = 'enrollment.body_sprint.has_none'
+      text = 'enrollment.body.has_none'
     end
-
-    puts "sending intro txt (sprint)..."
-
-    # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
-    first_msg = txt_sprint + '.first'
-    
-
+    puts "sending intro txt..."
     # in send(), add an extra parameter: next sequence name, so that we can call on that in the callback
-    send_sms phone_no, text=first_msg, next_sequence='firstmessage2'
-
-    # the new way to delay would look something like this.....
-    # delay_inline SMS_WAIT do 
-    #   send phone_no, second_msg, 'sms'
-    # end
-
-    # delay phone_no, 'firstmessage2', SMS_WAIT
+    send_sms phone_no, text=text, next_sequence='smsCallToAction'
   end
 
+  # recipients are phone numbers
+  sequence 'smsCallToAction' do |phone_no|
+    text = 'enrollment.body.sms_call_to_action'
+    send_sms phone_no, text, 'fbCallToAction'
+  end
 
-    # recipients are phone numbers
-  sequence 'firstmessage2' do |phone_no|
-    user = User.where(phone: phone_no).first
-    if user.teacher and user.teacher.signature then
-      puts "has teacher, using teacher text"
-      txt_sprint = 'enrollment.body_sprint.has_teacher'
-    elsif user.school and user.school.signature then
-      puts "has school, using school text"
-      txt_sprint = 'enrollment.body_sprint.has_school'
-    else
-      puts "has none, using default text"
-      txt_sprint = 'enrollment.body_sprint.has_none'
-    end
-
-    puts "sending intro txt (sprint)..."
-
-    # because it'll be annoying to try to get the carrier from here, just send these texts as if it's for Sprint.
-    second_msg = txt_sprint + '.second'
-    
-    send_sms phone_no, second_msg, 'image1'
-
-    # # the new way to delay would look something like this.....
-    # delay_inline SMS_WAIT do 
-    #   send phone_no, second_msg, 'sms'
-    # end
-
-    # instead of waiting for a delay, wait for the callback response from st-enroll
-
-    # delay phone_no, 'image1', SMS_WAIT
+  # recipients are phone numbers
+  sequence 'fbCallToAction' do |phone_no|
+    text = 'enrollment.body.fb_call_to_action'
+    send_sms phone_no, text, 'image1'
   end
 
 
@@ -75,9 +37,7 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     end
     puts "sending first image..."
 
-    # the new way to do it:
     send_mms phone_no, img
-    
   end
 
 

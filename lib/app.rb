@@ -55,13 +55,18 @@ class SMS < Sinatra::Base
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
         sms(phone, reply)
+      elsif /sms/i.match(msg)
+        # resubscribe and send a welcome message
+        user.state_table.update(subscribed?:true)
+        reply = SMSReplies.name_codes('enrollment.sms_optin', user)
+        sms(phone, reply)
       else
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send = #{reply}"
         sms(phone, reply)
       end
           
-      email_admins "A user (phone #{phone}) texted StoryTime", \
+      notify_admins "A user (phone #{phone}) texted StoryTime", \
              "Message: #{params[:Body]}<br/>Time: #{Time.now}"
 
     else # this is a new user, enroll them in the system 
@@ -69,9 +74,10 @@ class SMS < Sinatra::Base
       puts "someone texted in, creating user..."
 
       new_user = User.create(phone: phone, platform: 'sms')
+      # user start out as unsubscribed and needs to opt-in to SMS
+      new_user.state_table.update(subscribed?: false)
       # story_number needs to start at 0 for texting
       # new_user.state_table.update(story_number: 0)
-
 
       # TODO: error handling, nil-value checking
 
@@ -86,14 +92,8 @@ class SMS < Sinatra::Base
       #  
       School.each do |school|
         code = school.code
-        # text in "casa malta"
-        # 'casa malta'
-
-        # "Malta|Casa Malta"
         code_regex = Regexp.new(code, "i")
-        
         body_text = params[:Body].delete(' ')
-
         match_data = code_regex.match body_text
         puts "match data = #{match_data.inspect}"
 

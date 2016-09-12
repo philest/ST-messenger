@@ -83,7 +83,8 @@ Bot.on :message do |message|
   if db_user.nil?
       register_user(message.sender)
       StartDayWorker.perform_async(sender_id, platform='fb')
-      # MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
+  elsif db_user.state_table.subscribed? == false
+
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
@@ -112,7 +113,6 @@ Bot.on :message do |message|
         redis_limit_key = db_user.fb_id + "_limit?"
         limited = REDIS.get(redis_limit_key)
 
-
         if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
 
           reply = I18n.t 'user_response.end_conversation'
@@ -125,7 +125,7 @@ Bot.on :message do |message|
           REDIS.set(redis_limit_key, "true")
           REDIS.expire(redis_limit_key, 60)
         end
-        fb_send_txt(message.sender, reply)
+        fb_send_txt(message.sender, reply) unless reply.nil?
       end # case message.text
   end # db_user.nil?
 
@@ -143,7 +143,6 @@ Bot.on :postback do |postback|
   case postback.payload
   when INTRO
     StartDayWorker.perform_async(sender_id, platform='fb')
-    # MessageWorker.perform_async(sender_id, 'day1', 'greeting', platform='fb')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')
