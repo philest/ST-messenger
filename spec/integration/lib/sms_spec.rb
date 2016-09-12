@@ -84,15 +84,11 @@ describe 'sms' do
       end
 
     end
-
-
-
+    
   end
 
 
   # DIFFERENT THING NOW
-
-
   context 'multi-day test' do
     before(:all) do
       # load scripts
@@ -201,8 +197,6 @@ describe 'sms' do
       end
 
     end
-
-
 
     it 'does the first night of the program correctly for @u1 (on story 2) and @u2 (on story 1)' do
       Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday

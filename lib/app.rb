@@ -80,7 +80,6 @@ class SMS < Sinatra::Base
       # new_user.state_table.update(story_number: 0)
 
       # TODO: error handling, nil-value checking
-
       # 
       # FORMAT FOR SCHOOL CODES:
       # "english_word|spanish_word"

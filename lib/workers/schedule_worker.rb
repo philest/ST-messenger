@@ -102,7 +102,7 @@ class StartDayWorker
       # so we won't inadvertently send an unsubscribe message
       # 
 
-      if remind?(u)
+      if remind?(u) and u.platform == 'fb'
 
         reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
 
@@ -139,6 +139,9 @@ class StartDayWorker
           # otherwise, do nothing
 
         end
+
+      elsif remind?(u) and u.platform == 'sms'
+        # do something completely fucking different
 
       elsif not read_yesterday_story
         puts "this motherfucker hasn't read his last story. let's just leave him alone." 
