@@ -9,13 +9,12 @@ module MessageReplyHelpers
   LOVE_MSG = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
-  RESUBSCRIBE_MSG = /(go)/i
-  ENROLL_MSG = /(sms)/i
+  RESUBSCRIBE_MSG = /\A\s*go\s*\z/i
+  ENROLL_MSG = /\A\s*TEXT\s*\z/i
 
   def get_reply(body, user)
     our_reply = ''
     I18n.locale = user.locale
-
     # puts "body.match ENROLL_MSG = #{body.match ENROLL_MSG}"
 
     # if user.state_table.subscribed? == false
@@ -23,7 +22,7 @@ module MessageReplyHelpers
     #     return
     #   end
     # end
-    
+
     case body
     when RESUBSCRIBE_MSG
       user.state_table.update(subscribed?: true)

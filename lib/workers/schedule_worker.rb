@@ -119,7 +119,7 @@ class StartDayWorker
           u.state_table.update(last_reminded_time: Time.now.utc, num_reminders: 1)
           reminder.run_sequence(recipient, :remind)
           # send the button again, but don't update last_script_sent_time
-          script.run_sequence(recipient, :init)
+          script.run_sequence(recipient, :storysequence)
         else # we have send a reminder, so either unsubscribe or do nothing
           puts "WE MIGHT UNSUBSCRIBE NOW!!!!!!!!!"
           last_script_sent_time = u.state_table.last_script_sent_time

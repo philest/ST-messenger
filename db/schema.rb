@@ -33,7 +33,7 @@ Sequel.migration do
       String :code, :default=>"read\\d+", :text=>true
       String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
       String :signature, :text=>true
-      Integer :tz_offset
+      Float :tz_offset
     end
     
     create_table(:school_sessions) do
@@ -78,6 +78,8 @@ Sequel.migration do
       Integer :day_number
       String :sequence_name, :text=>true
       Integer :user_id
+      String :platform, :default=>"fb", :text=>true
+      String :script_name, :text=>true
       
       index [:day_number, :sequence_name]
     end
@@ -130,7 +132,7 @@ Sequel.migration do
       String :locale, :default=>"en", :text=>true
       foreign_key :school_id, :schools, :key=>[:id]
       String :platform, :default=>"fb", :text=>true
-      Integer :tz_offset
+      Float :tz_offset
       
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true

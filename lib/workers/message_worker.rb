@@ -32,8 +32,11 @@ class MessageWorker
           u = User.where(fb_id:recipient).first   
 
           # log the button anyway...
-          b = ButtonPressLog.new(:day_number=>s.script_day, :sequence_name=>sequence)
-          u.add_button_press_log(b)
+          b = ButtonPressLog.new(day_number:s.script_day,
+                                 script_name:script_name, 
+                                 sequence_name:sequence, 
+                                 platform: 'fb')
+          u.add_button_press_log(b) unless u.nil? 
 
         when 'sms'
           puts "looking for #{recipient} phone in MessageWorker"

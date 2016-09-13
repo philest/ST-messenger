@@ -1,7 +1,5 @@
 Birdv::DSL::ScriptClient.new_script 'day900' do
 
-	day 900
-
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -33,6 +31,10 @@ Birdv::DSL::ScriptClient.new_script 'day900' do
 		send recipient, text({text:txt})
 
 		delay recipient, 'coonstory', 5.35.seconds
+	end
+
+	sequence 'storysequence' do |recipient|
+		run_sequence recipient, 'coonstory'
 	end
 
 	sequence 'coonstory' do |recipient|

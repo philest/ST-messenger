@@ -6,7 +6,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		puts "sending intro txt..."
 
 		# the new way to do it:
-		send_sms phone_no, txt, 'image1'
+		send_sms phone_no, txt, 'firstmessage', 'image1'
 
 		# there is a timer within send_sms() that checks shit
 
@@ -21,7 +21,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		puts "sending first image..."
 
 		# the new way to do it:
-		send_mms phone_no, img, 'image2'
+		send_mms phone_no, img, 'image1', 'image2'
 
 		# delay phone_no, 'image2', MMS_WAIT
 	end
@@ -33,7 +33,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		img = 'mms.stories.floating_shoe[1]'
 
 		# the new way to do it:
-		send_mms phone_no, img, 'goodbye'
+		send_mms phone_no, img, 'image2', 'goodbye'
 
 		# delay phone_no, 'goodbye', MMS_WAIT
 	end
@@ -44,7 +44,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		txt = 'scripts.buttons.window_text[0]'
 
 		# the new way to do it:
-		send_sms phone_no, txt
+		send_sms phone_no, txt, 'goodbye'
 	end
 end 
 

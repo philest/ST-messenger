@@ -184,6 +184,7 @@ describe 'TheBot', integration:true do
       @s902 = Birdv::DSL::ScriptClient.scripts['fb']["day902"]
       @s903 = Birdv::DSL::ScriptClient.scripts['fb']["day903"]
       @s904 = Birdv::DSL::ScriptClient.scripts['fb']["day904"]
+      @remind = Birdv::DSL::ScriptClient.scripts['fb']["remind"]
 
 
       @make_story_btn_press = lambda { |sender_id, script, btn_name|
@@ -459,7 +460,7 @@ describe 'TheBot', integration:true do
       end
 
       # this is basically a compressed version of the last one. I was having stubbing issues.
-      it 'does this correctly' do
+      it 'does this correctly', correct:true do
         # 4 ppl read yesterday (story 900)
         4.times do |i| 
           User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)
@@ -474,11 +475,15 @@ describe 'TheBot', integration:true do
            with(:body => "{\"recipient\":{\"id\":\"#{i}\"},\"message\":{\"text\":\"Hi Davidfake, I saw you missed your last story and I just want to share it again. Here you go!\"}}",
                 :headers => {'Content-Type'=>'application/json'}).
            to_return(:status => 200, :body => "", :headers => {})
-
         end
 
         allow(@s901).to      receive(:run_sequence).exactly(3).times
-        allow(@s902).to      receive(:run_sequence).exactly(4).times        
+
+        allow(@s902).to receive(:run_sequence).and_wrap_original do |original_method, *args|
+          puts "@s902 RECEIVES :RUN_SEQUENCE WITH #{args}"
+        end
+
+        allow(@s902).to      receive(:run_sequence).exactly(5).times        
 
         # run the the clock
         expect{
@@ -493,7 +498,6 @@ describe 'TheBot', integration:true do
         # and users 1-4 have gotten :init from s902. What we're 
         # gonna do now is have user's {[2,4]U[6]} press the 
         # story buttons from their respective days.
-
 
         b1 = @make_story_btn_press.call('2', @s902, :scratchstory)
         b2 = @make_story_btn_press.call('3', @s902, :scratchstory)
@@ -565,8 +569,10 @@ describe 'TheBot', integration:true do
         # # we now expect [1] to get 902, [2,4] to get 903, [5] to get 901, [6] 902, [7] to get 901
         expect(@s900).not_to receive(:run_sequence)       
         allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(2).times
-        allow(@s902).to      receive(:run_sequence).with(anything(), :init).exactly(2).times
-        allow(@s903).to      receive(:run_sequence).with(anything(), :init).exactly(3).times
+        # allow(@s902).to      receive(:run_sequence).with(anything(), :init).exactly(2).times
+        allow(@s902).to      receive(:run_sequence).with(anything(), :storysequence).once
+        allow(@s903).to      receive(:run_sequence).with(anything(), :storysequence).exactly(3).times
+        # allow(@s903).to      receive(:run_sequence).with(anything(), :init).exactly(3).times
         expect(@s904).not_to receive(:run_sequence)
         Sidekiq::Testing.fake! do
           StartDayWorker.drain

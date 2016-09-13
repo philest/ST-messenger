@@ -150,7 +150,7 @@ module Birdv
       #   return true # or whatever
       # end
 
-      def send_sms( phone, text, next_sequence_name=nil )
+      def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
         puts "in send_sms_helper, next_sequence is #{next_sequence_name}"
         puts "in send_sms_helper, script_name is #{script_name}"
 
@@ -165,11 +165,12 @@ module Birdv
             recipient: phone,
             text: text, 
             script: @script_name,
-            next_sequence: next_sequence_name
+            next_sequence: next_sequence_name,
+            last_sequence: last_sequence_name
         })
       end
 
-      def send_mms( phone, img_url, next_sequence_name=nil )
+      def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
         img_url = translate_sms(phone, img_url)
 
         HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
@@ -177,7 +178,8 @@ module Birdv
             recipient: phone,
             img_url: img_url,
             script: @script_name,
-            next_sequence: next_sequence_name
+            next_sequence: next_sequence_name,
+            last_sequence: last_sequence_name
         })
       end
 

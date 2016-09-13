@@ -116,7 +116,7 @@ en:
       has_teacher: "Hi, this is __TEACHER__. I'll be texting you free books for __CHILD__ with StoryTime!\n\n"
       has_school: "Hi, this is __SCHOOL__. We'll be texting you free books for __CHILD__ with StoryTime!\n\n" 
       has_none: "Hi, this is StoryTime. We'll be texting you free books!\n\n"
-      sms_call_to_action: "To get stories by text message, just reply with SMS"
+      sms_call_to_action: "To get stories by text message, just reply with TEXT"
       fb_call_to_action: "You can get longer stories with Facebook. Tap here and enter 'go':\njoinstorytime.com/go :)"
 
 

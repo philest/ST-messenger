@@ -1,6 +1,5 @@
 Birdv::DSL::ScriptClient.new_script 'day903' do
-	
-	day 903
+
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -28,6 +27,9 @@ Birdv::DSL::ScriptClient.new_script 'day903' do
 		
 		# send tap_here button
 		send recipient, button({name:'tap_here'})
+	end
+	sequence 'storysequence' do |recipient|
+		run_sequence recipient, 'birdstory'
 	end
 
 	sequence 'birdstory' do |recipient|

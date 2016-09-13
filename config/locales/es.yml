@@ -106,5 +106,5 @@ es:
       has_teacher: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\n"
       has_school: "Hola, es __SCHOOL__. Vamos enviarle mensajes de texto a usted con StoryTime!\n\n" 
       has_none: "Hola, es StoryTime. Vamos enviarle mensajes de texto con libros de cuento gratis!\n\n"
-      sms_call_to_action: "Para recibir cuentos por mensaje de texto, responder con SMS"
+      sms_call_to_action: "Para recibir cuentos por mensaje de texto, responder con TEXT"
       fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"

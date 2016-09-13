@@ -20,7 +20,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		txt = 'scripts.teacher_intro'
 		send recipient, text({text:txt})
 		delay recipient, 'storysequence', 3.5.seconds
-
 	end
 
 	sequence 'storysequence' do |recipient|

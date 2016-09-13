@@ -87,6 +87,11 @@ Bot.on :message do |message|
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
       case message.text
+      when "ass"
+        day2 = Birdv::DSL::ScriptClient.scripts['fb']['day3']
+        puts "my fucking ass = #{day2.inspect}"
+        day2.run_sequence(sender_id, :storysequence) 
+
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s.downcase
         if fb_scripts[script_name] != nil
