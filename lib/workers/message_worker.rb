@@ -9,6 +9,9 @@ class MessageWorker
 
   def perform(recipient, script_name, sequence, platform='fb')
 
+
+    # raise StandardError, "i mean, maybe?"
+
       # load script
       s = Birdv::DSL::ScriptClient.scripts[platform][script_name]
 

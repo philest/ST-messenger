@@ -1,6 +1,16 @@
 require 'sidekiq'
 require 'active_support/time'
+require 'rack'
 
+require 'airbrake'
+require 'airbrake/sidekiq/error_handler'
+
+# Airbrake.configure do |config|
+#     config.project_id = ENV['AIRBRAKE_PROJECT_ID']
+#     config.project_key = ENV['AIRBRAKE_API_KEY']
+#     # config.ignore_environments = %w(development test)
+#     config.environment = ENV['RACK_ENV'] || "development"
+# end
 
 redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/12'
 # hopefull this will work out
@@ -12,6 +22,7 @@ end
 Sidekiq.configure_server do |config|
     config.redis = { url: redis_url, size: 8 }
     config.average_scheduled_poll_interval = 4
+    config.error_handlers << Proc.new { |ex,ctx_hash| Airbrake.notify(ex, ctx_hash) }
 end
 
 # load all of the scripts!
