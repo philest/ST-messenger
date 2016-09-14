@@ -4,8 +4,8 @@ require 'httparty'
 # load environment vars, db, workers, and STScripts
 # load STScripts
 # load workers
-require_relative '../config/environment'
-require_relative '../config/initializers/redis'
+# require_relative '../config/environment'
+# require_relative '../config/initializers/redis'
 
 require_relative 'workers'
 

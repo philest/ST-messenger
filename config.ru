@@ -1,8 +1,6 @@
 $stdout.sync = true
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-
-
 require 'bundler'
 require 'sidekiq'
 require 'sidekiq-unique-jobs'
@@ -16,7 +14,12 @@ require 'airbrake'
 # require 'airbrake/sidekiq'
 require 'airbrake/sidekiq/error_handler'
 
-configure :production do
+require_relative 'config/environment'
+get_db_connection()
+
+require_relative 'config/initializers/redis'
+
+# configure :production do
 	require 'newrelic_rpm'
 
 	Airbrake.configure do |config|
@@ -25,7 +28,7 @@ configure :production do
 	  config.environment = ENV['RACK_ENV'] || "development"
 	end
 	use Airbrake::Rack::Middleware
-end
+# end
 
 
 if RUBY_PLATFORM == 'jruby'

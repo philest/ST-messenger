@@ -1,5 +1,6 @@
 require_relative '../helpers/fb'
 
+
 class MessageWorker 
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers

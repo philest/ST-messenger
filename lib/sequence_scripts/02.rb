@@ -45,6 +45,14 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 	sequence 'yourwelcome' do |recipient|
 		send recipient, text({text:'scripts.buttons.welcome'}) 
 	end
+
+
+	# optional sequence to include a day1 button! 
+	sequence 'storybutton' do |recipient|
+		# send tap_here button
+		send recipient, button({name:'tap_here'}) 
+	end
+
 end 
 
 

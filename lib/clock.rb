@@ -8,27 +8,28 @@ require 'httparty'
 # we have to open this connection to load the models, which is a very unfortunate thing that 
 # must be done by us :(
 #
-ENV["RACK_ENV"] ||= "development"
-puts "loading #{ENV['RACK_ENV']} db for clock..."
-pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
+# ENV["RACK_ENV"] ||= "development"
+# puts "loading #{ENV['RACK_ENV']} db for clock..."
+# pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 
-case ENV["RACK_ENV"]
-when "development", "test"
-  require 'dotenv'
-  Dotenv.load
-  db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
-  DB        = Sequel.connect(db_url)
-when "production"
-  db_url    = "#{pg_driver}#{ENV['PG_URL']}"
-  DB        = Sequel.connect(db_url, :max_connections => (1))
-end
+# case ENV["RACK_ENV"]
+# when "development", "test"
+#   require 'dotenv'
+#   Dotenv.load
+#   db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
+#   DB        = Sequel.connect(db_url)
+# when "production"
+#   db_url    = "#{pg_driver}#{ENV['PG_URL']}"
+#   DB        = Sequel.connect(db_url, :max_connections => (1))
+# end
 
-DB.timezone = :utc
+# DB.timezone = :utc
 
-models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
-Dir[models_dir].each {|file| require_relative file }
+# models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
+# Dir[models_dir].each {|file| require_relative file }
 
-
+require_relative '../config/environment'
+get_db_connection( max_connections = 1 )
 # load our workers!
 require_relative 'workers'
 
