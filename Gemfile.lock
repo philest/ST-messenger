@@ -7,8 +7,8 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     addressable (2.4.0)
-    airbrake (5.4.5)
-      airbrake-ruby (~> 1.4)
+    airbrake (5.5.0)
+      airbrake-ruby (~> 1.5)
     airbrake-ruby (1.5.0)
     builder (3.2.2)
     capybara (2.8.1)
@@ -22,7 +22,6 @@ GEM
       activesupport
       tzinfo
     coderay (1.1.1)
-    concurrent-ruby (1.0.2)
     concurrent-ruby (1.0.2-java)
     connection_pool (2.2.0)
     crack (0.4.3)
@@ -51,11 +50,9 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-    json (1.8.3)
+    jdbc-postgres (9.4.1206)
     json (1.8.3-java)
     jwt (1.5.4)
-    launchy (2.4.3)
-      addressable (~> 2.3)
     launchy (2.4.3-java)
       addressable (~> 2.3)
       spoon (~> 0.0.1)
@@ -65,23 +62,13 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
-    mini_portile2 (2.1.0)
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     newrelic_rpm (3.16.2.321)
-    nokogiri (1.6.8)
-      mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     nokogiri (1.6.8-java)
-    pg (0.17.1)
-    pkg-config (1.1.7)
     pony (1.11)
       mail (>= 2.0)
-    pry (0.10.4)
-      coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
     pry (0.10.4-java)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -89,7 +76,6 @@ GEM
       spoon (~> 0.0)
     pry-nav (0.2.4)
       pry (>= 0.9.10, < 0.11.0)
-    puma (3.4.0)
     puma (3.4.0-java)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -133,7 +119,6 @@ GEM
     spoon (0.0.6)
       ffi
     thor (0.19.1)
-    thread_safe (0.3.5)
     thread_safe (0.3.5-java)
     tilt (2.0.5)
     timecop (0.8.1)
@@ -152,7 +137,6 @@ GEM
 
 PLATFORMS
   java
-  ruby
 
 DEPENDENCIES
   airbrake
@@ -167,9 +151,9 @@ DEPENDENCIES
   fuubar
   httparty (~> 0.13.7)
   i18n (~> 0.7.0)
+  jdbc-postgres (~> 9.4, >= 9.4.1206)
   json
   newrelic_rpm
-  pg (= 0.17.1)
   pony
   pry
   pry-nav

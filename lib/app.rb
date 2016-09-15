@@ -18,10 +18,14 @@ require 'httparty'
 require_relative 'helpers/contact_helpers' 
 require_relative 'helpers/reply_helpers'
 require_relative 'bot/sms_dsl'
+require_relative '../config/initializers/airbrake'
+
 
 class SMS < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
+
+  use Airbrake::Rack::Middleware
 
   enable :sessions
 

@@ -9,6 +9,8 @@ get_db_connection( max_connections = 1 )
 # load our workers!
 require_relative 'workers'
 
+require_relative '../config/initializers/airbrake'
+
 module Clockwork
     #
     # send out stories every sched_pd seconds

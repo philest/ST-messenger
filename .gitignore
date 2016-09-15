@@ -10,3 +10,4 @@ logs
 log/
 log/*
 Rakefile
+log/newrelic_agent.log
