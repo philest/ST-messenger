@@ -210,6 +210,28 @@ class SMS < Sinatra::Base
     end
   end
 
+  get '/startdayworker' do
+    if params[:recipient] and params[:platform]
+      case params[:platform]
+      when 'fb'
+        StartDayWorker.perform_async(params[:recipient], 'fb')
+      when 'sms'
+        StartDayWorker.perform_async(params[:recipient], 'sms')
+      end
+    else
+      User.each do |u|
+        case u.platform
+        when 'fb'
+          StartDayWorker.perform_async(u.fb_id, 'fb')
+        when 'sms'
+          StartDayWorker.perform_async(u.phone, 'sms')
+        end
+      end
+    end
+  end
+
+
+
   get '/run_sequence' do
     script = params['script']
     sequence = params['sequence']
