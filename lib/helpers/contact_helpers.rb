@@ -30,10 +30,11 @@ module ContactHelpers
 
 
 	def notify_admins(subject, body)
+    text_body = "Subject: #{subject}\nBody: #{body}"
 
     email_admins(subject, body)
-    sms('+15612125831', subject) # phil
-    sms('+18186897323', subject) # david
+    sms('+15612125831', text_body) # phil
+    sms('+18186897323', text_body) # david
 
 	end
   

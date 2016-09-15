@@ -7,6 +7,7 @@ require 'database_cleaner'
 
 # loads database as 'db'
 require_relative '../config/environment'
+get_db_connection()
 
 require 'factory_girl'
 

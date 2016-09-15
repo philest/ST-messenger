@@ -8,7 +8,7 @@
 require 'sinatra/base'
 require 'sidekiq'
 require 'sidekiq/web'
-require_relative '../config/environment'
+# require_relative '../config/environment'
 require 'pony'
 require 'dotenv'
 Dotenv.load if ENV['RACK_ENV'] != 'production'

@@ -1,6 +1,10 @@
 Birdv::DSL::ScriptClient.new_script 'day1' do
 
-	# day 1
+	# NOTE:
+	# EVERY STORY MUST HAVE:
+	# 1) storybutton
+	# 2) storysequence
+
 
 	#
 	# register some buttons for reuse!
@@ -36,8 +40,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	end
 
 	# optional sequence to include a day1 button! 
-	sequence 'firsttap' do |recipient|
-		# no longer a text before.
+	sequence 'storybutton' do |recipient|
 		# send tap_here button
 		send recipient, button({name:'tap_here'}) 
 	end
