@@ -21,6 +21,7 @@ end
 require_relative 'helpers/fb'
 include Facebook::Messenger::Helpers
 
+
 # demo sequence!
 DEMO    = /demo/i
 INTRO   = /intro/i
@@ -66,7 +67,6 @@ MMS_RQST = /sms\d+ \d+/i
 # i.e. when user sends the bot a message.
 #
 Bot.on :message do |message|
-
   #any image attachment
   attachments = message.attachments
   
