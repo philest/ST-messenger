@@ -16,7 +16,7 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		name: 		'tap_here',
 		title: 		'scripts.buttons.title',
 		image_url:  'scripts.buttons.story_img_url', 
-		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:greeting))]
+		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
 	sequence 'greeting' do |recipient|
