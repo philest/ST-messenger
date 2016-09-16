@@ -98,6 +98,8 @@ class StartDayWorker
           script.run_sequence(recipient, :storybutton)
         else # we have send a reminder, so either unsubscribe or do nothing
           puts "we've sent a reminder before, so check if we need to unsubscribe..."
+          # this should not be nil because we just used last_script_sent_time with remind?(u),
+          # which only returns true if the field is not nil
           last_script_sent_time = u.state_table.last_script_sent_time
           # our last reminder was sent more recently than the last story that was sent
           unsubscribe = last_reminded_time > last_script_sent_time
@@ -116,6 +118,7 @@ class StartDayWorker
 
       elsif remind and u.platform == 'sms'
         # do something completely fucking different
+        puts "we're in remind for sms! how did we even get here?? user: #{recipient}"
 
       elsif not read_yesterday_story
         puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone." 
@@ -130,6 +133,7 @@ class StartDayWorker
       #TODO: email?
       puts 'could not find scripts :('
       puts "likely, user #{recipient} has finished their curriculum"
+      puts "#{recipient} is at story_number = #{day_number}"
 
       # if the person was on sms, go back 1 story because they shouldn't have updated their story_number
       if u.platform == 'sms'
