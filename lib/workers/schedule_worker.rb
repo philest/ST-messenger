@@ -60,7 +60,7 @@ class StartDayWorker
 
     if not u.state_table.subscribed?
       unless u.platform == 'sms' and u.state_table.story_number == 0 then
-        puts "WE'RE FUCKING UNSUBSCRIBED DAWG"
+        puts "WE'RE FUCKING UNSUBSCRIBED DAWG - #{recipient}"
         return
         # otherwise, we haven't even sent out our first story to this poor sms user
         # and we ought to, for them, y'know?
@@ -68,41 +68,18 @@ class StartDayWorker
     end
 
     read_yesterday_story = read_yesterday_story?(u)
+    remind = remind?(u)
+
+    # ok, now finally updating day... be careful here, because we change some state_table values
+    # like last_story_read and story_number
     day_number =  update_day(u, platform)
 
 		# double quotation
 		script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
 
 	  if !script.nil?
-      puts "the script is not nil, everyone!"
-      # do I need to do reminders over here? yes! 
 
-      # ok, if it's been at least four days since we received our last story and we still
-      # haven't read it, we get a reminder. great.
-      #   so the last_reminded_time becomes now, while the last_script_send_time remains at least 
-      #   4 days ago. great.
-      # 
-      # if it's been at least 10 days since we received our last story, unsubscribe
-      # 
-      # 
-      # so....... let's say it's 6 days since we received our last story and we still haven't read it. 
-      # 2 days ago, we got our first reminder. meaning that
-      #   on day1, we read our first story
-      #   on day4, we got our first reminder
-      # it's now day6 and we've already been sent a reminder. we don't want to send any more reminders 
-      # after that. 
-      # last_script_sent_time < last_reminded_time, but now - last_script_send_time < 10 days, 
-      # so we shouldn't send anything to the user.
-      # if we were on day10, we would definitely send the unsubscribe message. 
-      # 
-      # 
-      # on a normal day, if it's time to remind the user (and this is our first reminder)
-      # also, let's assume that we're on day 60 and we've reminded the guy before
-      #   last_script_sent_time > last_reminded_time
-      # so we won't inadvertently send an unsubscribe message
-      # 
-
-      if remind?(u) and u.platform == 'fb'
+      if remind and u.platform == 'fb'
 
         reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
 
@@ -110,18 +87,17 @@ class StartDayWorker
         num_reminders = u.state_table.num_reminders
 
         puts "state_table = #{u.state_table.inspect}"
-        puts "I AM A PARIAH"
 
         # we've never sent a reminder before, so send one now
         if last_reminded_time.nil? || num_reminders == 0
-          puts "WE'RE IN THAT FIRST THING!!!!!"
+          puts "sending a reminder to #{recipient}"
           # send a regular reminder
           u.state_table.update(last_reminded_time: Time.now.utc, num_reminders: 1)
           reminder.run_sequence(recipient, :remind)
           # send the button again, but don't update last_script_sent_time
           script.run_sequence(recipient, :storybutton)
         else # we have send a reminder, so either unsubscribe or do nothing
-          puts "WE MIGHT UNSUBSCRIBE NOW!!!!!!!!!"
+          puts "we've sent a reminder before, so check if we need to unsubscribe..."
           last_script_sent_time = u.state_table.last_script_sent_time
           # our last reminder was sent more recently than the last story that was sent
           unsubscribe = last_reminded_time > last_script_sent_time
@@ -135,23 +111,19 @@ class StartDayWorker
             u.state_table.update(subscribed?: false)
             reminder.run_sequence(recipient, :unsubscribe)
           end
-          
           # otherwise, do nothing
-
         end
 
-      elsif remind?(u) and u.platform == 'sms'
+      elsif remind and u.platform == 'sms'
         # do something completely fucking different
 
       elsif not read_yesterday_story
-        puts "this motherfucker hasn't read his last story. let's just leave him alone." 
+        puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone." 
 
       else # send a story button, the usual way, yippee!!!!!!!!!
-
-        puts "I DON'T NEED TO REMIND ANYONE OF ANYTHING!!!!!!!!!!!!!"
+        puts "proceeding to send #{recipient} a story..."
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
         script.run_sequence(recipient, :init) 
-
       end
 
     else

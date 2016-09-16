@@ -2,16 +2,24 @@ require 'httparty'
 
 
 # 10209967651611613
-localhost = "http://localhost:5000/run_sequence"
-birdv     = "http://birdv.herokuapp.com/run_sequence"
+localhost = "http://localhost:5000/"
+birdv     = "http://birdv.herokuapp.com/"
+
+# puts HTTParty.get(
+#   birdv + "run_sequence",
+#   query: {
+#     script: "day2",
+#     sequence: "firstmessage",
+#     platform: "sms",
+#     recipient: '8186897323'
+#   }
+# )
 
 puts HTTParty.get(
-  birdv,
+  birdv + "startdayworker",
   query: {
-    script: "day2",
-    sequence: "firstmessage",
-    platform: "sms",
-    recipient: '8186897323'
+    platform: 'fb',
+    recipient: '1263584883672279'
   }
 )
  

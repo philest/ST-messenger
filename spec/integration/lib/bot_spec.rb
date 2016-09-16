@@ -570,8 +570,8 @@ describe 'TheBot', integration:true do
         expect(@s900).not_to receive(:run_sequence)       
         allow(@s901).to      receive(:run_sequence).with(anything(), :init).exactly(2).times
         # allow(@s902).to      receive(:run_sequence).with(anything(), :init).exactly(2).times
-        allow(@s902).to      receive(:run_sequence).with(anything(), :storybutton).once
-        allow(@s903).to      receive(:run_sequence).with(anything(), :storybutton).exactly(3).times
+        allow(@s902).to      receive(:run_sequence).with(anything(), :init).once
+        allow(@s903).to      receive(:run_sequence).with(anything(), :init).exactly(3).times
         # allow(@s903).to      receive(:run_sequence).with(anything(), :init).exactly(3).times
         expect(@s904).not_to receive(:run_sequence)
         Sidekiq::Testing.fake! do
