@@ -35,6 +35,8 @@ class SMS < Sinatra::Base
   end
  
   post '/sms' do
+    content_type 'text/xml'
+
     # begin
     # check if user is enrolled in the system
     if params[:From].nil?
@@ -60,7 +62,7 @@ class SMS < Sinatra::Base
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
         sms(phone, reply)
-      else
+      else  
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send = #{reply}"
         sms(phone, reply)
@@ -73,6 +75,9 @@ class SMS < Sinatra::Base
         notify_admins "A user (phone #{phone}) texted StoryTime", \
              "Message: #{params[:Body]}<br/>Time: #{Time.now}"
       end
+
+      # a necessary tag... must always respond with TwiML
+      "<Response/>"
           
     else # this is a new user, enroll them in the system 
 
@@ -135,6 +140,10 @@ class SMS < Sinatra::Base
         email_admins "A new user with phone #{phone} has enrolled by texting in", \
                "Phone: #{phone}<br/>Message:#{params[:Body]}"
       end
+
+      # a necessary tag... must always respond with TwiML
+      "<Response/>"
+
     end
   end
 
