@@ -43,7 +43,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
     txt = "*Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
     send recipient, text({text:txt})
     send recipient, button({name:'tap_here_bird'})
-    unsubscribe recipient
+    unsubscribe_demo recipient
   end
 
   sequence 'birdstorysequence' do |recipient|
@@ -71,7 +71,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   sequence 'enddemo' do |recipient|
     txt = "*Thanks for trying out StoryTime!"
     send recipient, text({text:txt})
-    resubscribe recipient
+    resubscribe_demo recipient
   end
 
   # for more stories
