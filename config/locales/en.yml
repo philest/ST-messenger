@@ -100,6 +100,15 @@ en:
       clouds:
         - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg
+      hero:
+        - https://s3.amazonaws.com/st-messenger/day1/hero/hero1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/hero/hero2.jpg
+      croc:
+        - https://s3.amazonaws.com/st-messenger/day1/chomp/chomp1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/chomp/chomp2.jpg
+      bread:
+        - https://s3.amazonaws.com/st-messenger/day1/bread/bread1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/bread/bread2.jpg
 
   call_to_action:
     intro: Hi, it's __SCHOOL__ again! We hope you liked these little books.
@@ -118,7 +127,7 @@ en:
       has_teacher: "Hi, this is __TEACHER__. I'll be texting you free books for __CHILD__ with StoryTime!\n\n"
       has_school: "Hi, this is __SCHOOL__. We'll be texting you free books for __CHILD__ with StoryTime!\n\n" 
       has_none: "Hi, this is StoryTime. We'll be texting you free books!\n\n"
-      sms_call_to_action: "To get stories by text message, just reply with TEXT"
-      fb_call_to_action: "You can get longer stories with Facebook. Tap here and enter 'go':\njoinstorytime.com/go :)"
+      sms_call_to_action: "If you don't have Facebook, just reply with TEXT"
+      fb_call_to_action: "Get longer stories with Facebook. Tap here and enter 'go':\njoinstorytime.com/go :)"
 
 

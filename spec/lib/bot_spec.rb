@@ -181,7 +181,7 @@ def app() Facebook::Messenger::Server end
 	    	end
 
 			it "replies correctly" do 
-				expect(@reply).to eq "Hi __PARENT__! I'm away now but I'll see your message soon :)"
+				expect(@reply).to eq ""
 			end 
 
 			context "when the last message was an unknown message" do

@@ -89,8 +89,17 @@ es:
         - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg
       clouds:
-        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/clouds/clouds2.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/clouds/clouds1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/clouds/clouds2.jpg
+      hero:
+        - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero2.jpg
+      croc:
+        - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp2.jpg
+      bread:
+        - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread2.jpg
   call_to_action:
     intro: Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros.
     fb: "Para recibir más cuentos, toque aquí y escribir ‘ir’\n\njoinstorytime.com/go"

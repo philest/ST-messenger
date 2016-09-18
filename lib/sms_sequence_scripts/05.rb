@@ -14,7 +14,7 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
 
   sequence 'image1' do |phone_no|
     # send out coon story
-    img = 'mms.stories.chomp[0]'
+    img = 'mms.stories.bread[0]'
     puts "sending first image..."
     send_mms phone_no, img, 'image1', 'image2'
 
@@ -25,7 +25,7 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
   sequence 'image2' do |phone_no|
     # one more button
     puts "sending second image..."
-    img = 'mms.stories.chomp[1]'
+    img = 'mms.stories.bread[1]'
     send_mms phone_no, img, 'image2', 'goodbye'
 
     # delay phone_no, 'goodbye', MMS_WAIT

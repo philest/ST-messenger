@@ -84,13 +84,13 @@ describe 'sms' do
       end
       
       it 'sends the has_teacher.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_teacher", 'firstmessage', 'smsCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_teacher", 'firstmessage', 'fbCallToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_teacher.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
 
         @day1.run_sequence(@user.phone, 'smsCallToAction')
       end
@@ -107,13 +107,13 @@ describe 'sms' do
       end
       
       it 'sends the has_school.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_school", 'firstmessage', 'smsCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_school", 'firstmessage', 'fbCallToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_school.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
 
         @day1.run_sequence(@user.phone, 'smsCallToAction')
       end
@@ -127,13 +127,13 @@ describe 'sms' do
       end
       
       it 'sends the default text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_none", 'firstmessage', 'smsCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_none", 'firstmessage', 'fbCallToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
       it 'sends the has_none.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
 
         @day1.run_sequence(@user.phone, 'smsCallToAction')
       end
