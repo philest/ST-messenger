@@ -48,7 +48,10 @@ module MessageReplyHelpers
     when OK_MSG
       our_reply = ":)"    
     else #default msg 
-      our_reply = I18n.t 'user_response.default'
+      our_reply = ''
+      if body.include? "?"
+        our_reply = I18n.t 'user_response.default'
+      end
     end
     # puts "our_reply = #{our_reply}"
     return our_reply 

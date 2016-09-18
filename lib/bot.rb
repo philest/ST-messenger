@@ -139,7 +139,7 @@ Bot.on :message do |message|
           REDIS.set(redis_limit_key, "true")
           REDIS.expire(redis_limit_key, 60)
         end
-        fb_send_txt(message.sender, reply) unless reply.nil?
+        fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? 
       end # case message.text
   end # db_user.nil?
 
