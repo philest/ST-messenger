@@ -151,9 +151,16 @@ module Birdv
       # end
 
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
-        puts "in send_sms_helper, next_sequence is #{next_sequence_name}"
-        puts "in send_sms_helper, script_name is #{script_name}"
+        user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id) 
+        # if next_sequence == nil, then they've probably already seen a sequence like nil
+        we_have_a_history = !user_buttons.where(platform:'sms',
+                                               script_name:@script_name, 
+                                               sequence_name:next_sequence_name).first.nil?
 
+        if we_have_a_history
+          puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"
+          return
+        end
         text = translate_sms(phone, text)
         if text == false
           puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
@@ -171,7 +178,22 @@ module Birdv
       end
 
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
+        user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id) 
+        # if next_sequence == nil, then they've probably already seen a sequence like nil
+        we_have_a_history = !user_buttons.where(platform:'sms',
+                                               script_name:@script_name, 
+                                               sequence_name:next_sequence_name).first.nil?
+
+        if we_have_a_history
+          puts "send_mms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"
+          return
+        end
+
         img_url = translate_sms(phone, img_url)
+        if img_url == false
+          puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
+          return
+        end
 
         HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
           body: {

@@ -290,6 +290,8 @@ class SMS < Sinatra::Base
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
       user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id)
+      
+      # if next_sequence == nil, then they've probably already seen a sequence like nil
       we_have_a_history = !user_buttons.where(platform:'sms',
                                              script_name:script, 
                                              sequence_name:next_sequence).first.nil?
