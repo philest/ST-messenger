@@ -22,9 +22,7 @@ require_relative 'helpers/fb'
 include Facebook::Messenger::Helpers
 
 
-# demo sequence!
-DEMO    = /demo/i
-INTRO   = /intro/i
+
 # reach us on QuialTime! :)
 #
 # aubrey 10209571935726081
@@ -33,7 +31,7 @@ INTRO   = /intro/i
 
 STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
-JOIN    = /join/i
+
 
 # TODO: make this FB fb_scripts? 
 # fb_scripts  = Birdv::DSL::ScriptClient.fb_scripts
@@ -61,10 +59,13 @@ def prev_unknown?(user)
   return prev_was_unknown
 end
 
+# demo sequence!
+INTRO         = /intro/i
 MMS_RQST      = /sms\d+ \d+/i
 DEMO          = /\A\s*demo\s*\z/i
 END_DEMO      = /\A\s*end\s*demo\s*\z/i
 MORE_STORIES  = /\A\s*more\s*\z/i 
+JOIN          = /join/i
 
 #
 # i.e. when user sends the bot a message.
