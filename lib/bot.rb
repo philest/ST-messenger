@@ -61,7 +61,10 @@ def prev_unknown?(user)
   return prev_was_unknown
 end
 
-MMS_RQST = /sms\d+ \d+/i
+MMS_RQST      = /sms\d+ \d+/i
+DEMO          = /\A\s*demo\s*\z/i
+END_DEMO      = /\A\s*end\s*demo\s*\z/i
+MORE_STORIES  = /\A\s*more\s*\z/i 
 
 #
 # i.e. when user sends the bot a message.
@@ -87,11 +90,19 @@ Bot.on :message do |message|
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
       case message.text
-      when "ass"
-        day2 = Birdv::DSL::ScriptClient.scripts['fb']['day3']
-        puts "my fucking ass = #{day2.inspect}"
-        day2.run_sequence(sender_id, :storysequence) 
-
+      when DEMO
+        MessageWorker.perform_async(sender_id, 'demo', :birdgreeting, 'fb')
+        REDIS.set(db_user.fb_id + "_demo_storyindex", 0)
+      when END_DEMO
+        MessageWorker.perform_async(sender_id, 'demo', :enddemo, 'fb')
+        REDIS.set(db_user.fb_id + "_demo_storyindex", 0)
+      when MORE_STORIES
+        story_index = REDIS.get(db_user.fb_id + "_demo_storyindex").to_i % 3 # modulo that shit
+        puts "story_index = #{story_index}"
+        extra_stories = ['seed', 'chores', 'ants']
+        next_story = extra_stories[story_index] + 'greeting'
+        MessageWorker.perform_async(sender_id, 'demo', next_story, 'fb')
+        REDIS.set(db_user.fb_id + "_demo_storyindex", story_index + 1)
       when DAY_RQST
         script_name = message.text.match(DAY_RQST).to_s.downcase
         if fb_scripts[script_name] != nil

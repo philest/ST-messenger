@@ -198,10 +198,22 @@ module Birdv
 
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
 
+
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
             storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
+
+            # linear search through the stories!
+            if args[:story]
+              puts "we have a story!!!!!! #{args[:story]}"
+              for story in curriculum
+                puts "story = #{story}"
+                if story[1] == args[:story] # we found it
+                  lib, title, num_pages = story
+                end 
+              end
+            end
 
             send_story({
               recipient:  recipient,
@@ -273,6 +285,16 @@ module Birdv
               if str.nil? or str.empty? then 
                 return str   
               end
+
+              # when we just want the string as it is....
+              if str[0] == "*"
+                # if str.include? "||"
+                #   if locale == 'en' 
+                #   end
+                # end
+                return str[1..-1]
+              end
+
               puts "str = #{str}"
 
               re_index = /\[(\d+)\]/i
@@ -367,7 +389,6 @@ module Birdv
                   curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
                   title = curriculum[@script_day - 1][1] # title is at index 1 for curriculum rows
                   elements[i][:image_url] = translate.call(elements[i][:image_url], {story_name: title})
-
                   # elements[i][:subtitle] = name_codes translate.call(elements[i][:subtitle]), recipient
                   if elements[i][:buttons]
                     buttons = elements[i][:buttons]

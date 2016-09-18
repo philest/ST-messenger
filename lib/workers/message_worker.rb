@@ -69,7 +69,8 @@ class MessageWorker
         if   numbers_check_out                 \
           || last_sequence_seen == 'intro'      \
           || last_sequence_seen == 'teachersend' \
-          || protected_ids.include?(recipient)
+          || protected_ids.include?(recipient)    \
+          || script_name == 'demo'
           # TODO: or query?
 
           # TODO: run this in a worker

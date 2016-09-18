@@ -8,6 +8,8 @@ en:
     - Thursday
     - Friday
     - Saturday
+  demo_fb:
+    intro: "Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
   demo:
     intro: "Hi, this is StoryTime! Here's the first two pages of one of our favorites."
     thanks: "Thanks for trying StoryTime :)"

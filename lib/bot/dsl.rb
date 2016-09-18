@@ -161,6 +161,16 @@ module Birdv
         # end
       end
 
+      def unsubscribe(recipient)
+        puts "IN UNSUBSCRIBE BITCHES"
+        u = User.where(fb_id: recipient).first
+        if u.nil? then
+          u = User.where(phone: recipient).first
+          if u.nil? then return end
+        end
+        u.state_table.update(subscribed?: false)
+      end
+
 
       def resubscribe(recipient)
         puts "IN RESUBSCRIBE BITCHES"
