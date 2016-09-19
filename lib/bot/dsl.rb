@@ -162,7 +162,7 @@ module Birdv
       end
 
       def unsubscribe_demo(recipient)
-        puts "IN UNSUBSCRIBE BITCHES"
+        puts "IN UNSUBSCRIBE_DEMO BITCHES"
         u = User.where(fb_id: recipient).first
         if u.nil? then
           u = User.where(phone: recipient).first

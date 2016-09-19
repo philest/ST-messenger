@@ -6,35 +6,35 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   # 2) storysequence
   button_story({
     name:     'tap_here_bird',
-    title:    "*Let's read tonight's story",
-    image_url:  "*https://s3.amazonaws.com/st-messenger/day1/bird/bird-button.jpg", 
+    title:    "*Just tap below to start!",
+    image_url:  'scripts.buttons.tap_here', 
     buttons:  [postback_button('*Tap here!', script_payload(:birdstorysequence))]
   })
 
   button_story({
     name:     'tap_here_whale',
-    title:    "*Let's read tonight's story",
+    title:    "*Just tap below to start!",
     image_url:  "*https://s3.amazonaws.com/st-messenger/day1/whale/whale-button.jpg", 
     buttons:  [postback_button('*Tap here!', script_payload(:whalestorysequence))]
   })
 
   button_story({
     name:     'tap_here_seed',
-    title:    "*Let's read tonight's story",
+    title:    "*Just tap below to start!",
     image_url:  "*https://s3.amazonaws.com/st-messenger/day1/seed/seed-button.jpg", 
     buttons:  [postback_button('*Tap here!', script_payload(:seedstorysequence))]
   })
 
   button_story({
     name:     'tap_here_chores',
-    title:    "*Let's read tonight's story",
+    title:    "*Just tap below to start!",
     image_url:  "*https://s3.amazonaws.com/st-messenger/day1/chores/chores-button.jpg", 
     buttons:  [postback_button('*Tap here!', script_payload(:choresstorysequence))]
   })
 
   button_story({
     name:     'tap_here_ants',
-    title:    "*Let's read tonight's story",
+    title:    "*Just tap below to start!",
     image_url:  "*https://s3.amazonaws.com/st-messenger/day1/ants/ants-button.jpg", 
     buttons:  [postback_button('*Tap here!', script_payload(:antsstorysequence))]
   })

@@ -75,12 +75,12 @@ en:
           - "Another story will come next __DAY__. Enjoy! :)"
           - "Another story will come next __DAY__. Great job! :)"
       title:
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Your next story's coming soon!"
-        - "Your next story's coming soon!"
-        - "Your next story's coming soon!"
-        - "Let's read tonight's story."
+        - "Just tap below to start!"
+        - "Just tap below to start!"
+        - "Just tap below to start!"
+        - "Just tap below to start!"
+        - "Just tap below to start!"
+        - "Just tap below to start!"
         - "Let's read tonight's story."
         - "Let's read tonight's story."
         - "Let's read tonight's story."
@@ -90,6 +90,7 @@ en:
         - "Let's read tonight's story."
         - "Let's read tonight's story."
       tap: "Tap here!"
+      tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg
       thanks: "Thank you!"
       welcome: "You're welcome :)"
   mms:
