@@ -26,6 +26,7 @@ module Birdv
 
 
       def name_codes(str, phone, day)
+        puts "USING NAME_CODES IN SMS_DSL.RB"
         user = User.where(:phone => phone).first
 
         if user

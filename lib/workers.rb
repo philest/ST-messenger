@@ -1,9 +1,11 @@
 require 'sidekiq'
 require 'active_support/time'
 require 'rack'
+require 'httparty'
 
 require_relative '../config/environment'
 require_relative '../config/initializers/redis'
+
 
 redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/12'
 # hopefull this will work out

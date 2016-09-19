@@ -898,6 +898,11 @@ describe 'Birdv::DSL::StoryTimeScript' do
       end
 
       it 'updates last sequence seen, nil->init->scratchstory', scratchstory:true do
+        stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Just tap below to start!\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/coon/coon-button.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
+         
         pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
         expect(pgs).to eq(2)  # only two pages of coon story
         expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)

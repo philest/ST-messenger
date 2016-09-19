@@ -109,6 +109,7 @@ es:
     test_texts: "hey this is window text, which can be much longer than button text"
 
   enrollment:
+    sms_optin: "¡Estupendo! Nosotros le envía los cuentos :)"
     img:
       has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
       default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg

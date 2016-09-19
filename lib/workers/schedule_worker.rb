@@ -1,5 +1,9 @@
+require_relative '../helpers/fb'
+
 class StartDayWorker
   include Sidekiq::Worker
+  include Facebook::Messenger::Helpers
+
   sidekiq_options :retry => 3
 
   def read_yesterday_story?(user)
@@ -147,6 +151,7 @@ end
 
 class ScheduleWorker
   include Sidekiq::Worker
+  
   sidekiq_options :retry => false
 
   attr_accessor :schedules

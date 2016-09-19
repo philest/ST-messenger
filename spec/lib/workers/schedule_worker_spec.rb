@@ -49,6 +49,14 @@ describe ScheduleWorker do
     Timecop.return
   end
 
+  context "completely new users", new:true do
+    it "creates a new user when someone presses 'get started'" do
+      
+
+    end
+
+  end
+
   context "unsubscribed users", unsubscribed:true do
 
     it "doesn't send anything to peeps who are unsubscribed" do

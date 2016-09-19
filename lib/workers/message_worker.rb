@@ -61,9 +61,7 @@ class MessageWorker
                              # user story# \leq current request AND not seen the sequence?
         numbers_check_out  = u.state_table.story_number <= s.script_day    && !sequence_seen  
 
-
         Sidekiq.logger.warn numbers_check_out ? "#{recipient} not yet seen #{sequence}" : "#{recipient} already saw #{sequence}"
-
         
         # ...but if they didn't already press the button, send sequence
         if   numbers_check_out                 \
@@ -79,7 +77,7 @@ class MessageWorker
           s.run_sequence(recipient, sequence.to_sym)
 
         else # numbers don't check out for some reason...
-          puts "we're not running the sequence, everybody. sorry to those who drove here."
+          puts "we're not running the sequence #{script_name} #{sequence}, everybody. sorry to those who drove here."
         end
           
       # TODO: do we want an ELSE behavior?

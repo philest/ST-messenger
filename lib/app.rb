@@ -54,19 +54,21 @@ class SMS < Sinatra::Base
 
       puts "session = #{session.inspect}"
       
+      reply = ''
       if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
         # do nothing, don't send message
+        reply = ''
         puts "should not send a message reply until session expires.........."
       elsif (msg == (I18n.t 'user_response.default')) && session['end_conversation'] != true
         session['end_conversation'] = true
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
-        sms(phone, reply)
       else  
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send = #{reply}"
-        sms(phone, reply)
       end
+      
+      sms(phone, reply) unless reply.nil? or reply.empty?
 
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone 
@@ -100,7 +102,7 @@ class SMS < Sinatra::Base
       # 3. separated by pipe
       #  
       School.each do |school|
-        code = school.code
+        code = school.code.downcase
         code_regex = Regexp.new(code, "i")
         body_text = params[:Body].delete(' ')
         match_data = code_regex.match body_text
@@ -111,11 +113,13 @@ class SMS < Sinatra::Base
           # codes should be split like this: "read1|leer1"
           en, sp = code.split('|')
           # check which language they're going for
-          if match_data == en
+          if match_data == en.downcase
             I18n.locale = 'en'
-          elsif match_data == sp
+          elsif match_data == sp.downcase
             I18n.locale = 'es'
             new_user.update(locale: 'es')
+          else 
+            puts "#{code} did not match with #{school.name} regex!"
           end
 
           puts "school info: #{school.signature}, #{school}"
@@ -290,7 +294,7 @@ class SMS < Sinatra::Base
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
       user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id)
-      
+
       # if next_sequence == nil, then they've probably already seen a sequence like nil
       we_have_a_history = !user_buttons.where(platform:'sms',
                                              script_name:script, 
