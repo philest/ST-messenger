@@ -51,7 +51,17 @@ describe ScheduleWorker do
 
   context "completely new users", new:true do
     it "creates a new user when someone presses 'get started'" do
-      
+      start_day_worker = StartDayWorker.new
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original, *args|
+        puts "running sequence with #{args}"
+      end
+
+      Sidekiq::Testing.inline! do
+        start_day_worker.perform("new user", 'fb')
+      end
+
+      puts User.where(fb_id: "new user").first.inspect
+      expect(User.where(fb_id: "new user").first).to_not be_nil
 
     end
 
