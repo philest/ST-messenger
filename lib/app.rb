@@ -19,6 +19,7 @@ require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
+require_relative '../config/initializers/redis'
 
 
 class SMS < Sinatra::Base
@@ -69,6 +70,8 @@ class SMS < Sinatra::Base
       end
       
       sms(phone, reply) unless reply.nil? or reply.empty?
+
+      REDIS.set('last_textin', phone) # remember the last person who texted in
 
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone 
@@ -218,11 +221,62 @@ class SMS < Sinatra::Base
     # if they do, send the rest of the text to them
     # 
     body = params[:Body]
-    from = params[:From]
 
+    regex = / \s* reply \s* (\d+) \s* $/ix
 
+    if regex.match body
+      phone = $1.to_s
+      # process format
+      phone.gsub!(/[-()\s]/, '')
+      puts "phone is now #{phone}"
+      # check database
+      user = User.where(phone: phone).first
+      if user
+        # get the message to send
+        message = body.lines[1..-1].join
+        sms(phone, message, ENV['ST_USER_REPLIES_NO'])
 
-  end
+        phil, david = ["5612125831", "8186897323"]
+        from = params[:From][2..-1]
+        case from
+        when phil
+          sms(david, "Phil just replied to this message from #{phone}. He wrote: #{message}")
+        when david
+          sms(phil, "David just replied to this message from #{phone}. He wrote: #{message}")
+        end
+
+      else
+        puts "no user was found that matches #{phone}"
+        404
+      end # if user
+    # if no match, send to the last person who texted in
+    elsif (phone = REDIS.get('last_textin'))
+      REDIS.del('last_textin')
+      user = User.where(phone: phone).first
+      if user
+        message = body
+        sms(phone, message, ENV['ST_USER_REPLIES_NO'])
+
+        phil, david = ["5612125831", "8186897323"]
+        from = params[:From][2..-1]
+        case from
+        when phil
+          sms(david, "Phil just replied to this message from #{phone}. He wrote: #{message}")
+        when david
+          sms(phil, "David just replied to this message from #{phone}. He wrote: #{message}")
+        end
+
+      else
+        print "no user was found that matches #{phone}... "
+        puts "odd, because this is the same phone that once texted in"
+        404
+      end # if user
+      
+    else # if no REDIS 'last_textin' key exists
+      puts "no one to text back to...."
+      404
+    end # if regex.match body
+  end # post '/reply'
 
   get '/test' do
     day = params['day']
