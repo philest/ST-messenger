@@ -79,7 +79,7 @@ class SMS < Sinatra::Base
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone
 
-      # if !is_us 
+      if !is_us 
         notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
 
         unless reply.nil? or reply.empty?
@@ -87,7 +87,7 @@ class SMS < Sinatra::Base
           notify_admins "#{phone} texted StoryTime", "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
         end
 
-      # end
+      end
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"

@@ -30,15 +30,15 @@ describe SMS do
       @sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>"Please, you have to help me, I've been trapped in the Phantom Zone for centuries, there's not much tiiiiiiiiiiiiiiiiiiiiiiiiii.......", "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+18186897323", "ApiVersion"=>"2010-04-01"}
 
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%21%20I%27m%20away%20now%2C%20but%20I%27ll%20see%20your%20message%20soon%21%20If%20you%20need%20help%20just%20enter%20%27learn%27",
+         with(:body => "recipient=8186897323&text=Hi%21%20I%27m%20away%20now%2C%20but%20I%27ll%20see%20your%20message%20soon%21%20If%20you%20need%20help%20just%20enter%20%27learn%27&sender=%2B12032023505",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
       stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831",
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831&sender=%2B12032023505",
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
        stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831").
+         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831&sender=%2B12032023505").
          to_return(:status => 200, :body => "", :headers => {})
 
       stub_request(:post, "http://localhost:4567/txt").
@@ -48,6 +48,12 @@ describe SMS do
       stub_request(:post, "http://localhost:4567/txt").
          with(:body => "recipient=%2B18186897323&text=A%20user%20%28phone%208186897323%29%20texted%20StoryTime").
          to_return(:status => 200, :body => "", :headers => {})
+
+
+      stub_request(:post, "http://localhost:4567/txt").
+      with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly%20stories.%0A%0A%20-%20To%20stop%2C%20reply%20%27stop%27%0A%20-%20For%20help%2C%20contact%20561-212-5831&sender=%2B12032023505").
+      to_return(:status => 200, :body => "", :headers => {})
+
 
 
     end
@@ -110,7 +116,7 @@ describe SMS do
 
       Sidekiq::Testing::fake! do
         expect {
-          get '/sms', @sms_params
+          post '/sms', @sms_params
         }.to change{User.count}.by(0)
       end
     end

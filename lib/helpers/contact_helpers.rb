@@ -1,4 +1,5 @@
 require_relative '../../config/pony'
+require 'httparty'
 
 module ContactHelpers
 

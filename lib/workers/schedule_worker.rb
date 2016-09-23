@@ -366,6 +366,19 @@ class ScheduleWorker
     user_story_num  = user.state_table.story_number
     user_sched      = get_schedule(user_story_num)
     valid_for_user  = user_sched.include?(user_day) || acceptable_days.include?(user_day) || user_story_num == 0
+    # # this deals with the edge case of being on story 1:
+    if (user_story_num == 1)
+      lstrt = user.state_table.last_story_read_time
+      # TODO: double-check this logic...
+      if !lstrt.nil?
+        last_story_read_time = get_local_time(lstrt, user.tz_offset)
+      
+        days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
+        if days_elapsed < 7
+          valid_for_user = false
+        end
+      end
+    end
 
     # remove the friend thing...
     # friend_days = []

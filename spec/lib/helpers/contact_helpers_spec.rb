@@ -38,11 +38,28 @@ describe ContactHelpers do
               :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
 
+
+         stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=%2B18186897323&text=Here%27s%20the%20subject%3A%0AHere%27s%20the%20body&sender=%2B12032750946").
+         to_return(:status => 200, :body => "", :headers => {})
+
+
+         stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=%2B15612125831&text=Here%27s%20the%20subject%3A%0AHere%27s%20the%20body&sender=%2B12032750946",
+              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+         stub_request(:post, "http://localhost:4567/txt").
+         with(:body => "recipient=%2B15612125831&text=Here%27s%20the%20subject%3A%0AHere%27s%20the%20body&sender=%2B12032750946").
+         to_return(:status => 200, :body => "", :headers => {})
+
+
+
 		end		     
 
 
 		it "should email the admins" do
-    		expect(Pony).to(receive(:mail).with( {:to=>"phil.esterman@yale.edu", :cc=>"david.mcpeek@yale.edu", :from=>"david.mcpeek@yale.edu", :subject=>"Here's the subject", :body=>"Here's the body", :headers=>{ 'Content-Type' => 'text/html' }}))
+    		expect(Pony).to(receive(:mail).with({:to=>"phil.esterman@yale.edu", :cc=>"aawahl@gmail.com", :from=>"davidmcpeek1@gmail.com", :headers=>{"Content-Type"=>"text/html"}, :subject=>"Here's the subject", :body=>"Here's the body"}))
     		notify_admins("Here's the subject", "Here's the body")	      # 	}
 		end
 	end
