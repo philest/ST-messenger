@@ -84,7 +84,8 @@ class SMS < Sinatra::Base
 
         unless reply.nil? or reply.empty?
           reply_blurb = reply[0..60]
-          notify_admins "#{phone} texted StoryTime", "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
+          notify_admins "#{phone} texted StoryTime", \ 
+              "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
         end
 
       # end
@@ -151,10 +152,10 @@ class SMS < Sinatra::Base
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone 
 
-      if !is_us 
-        email_admins "A new user with phone #{phone} has enrolled by texting in", \
-               "Phone: #{phone}<br/>Message:#{params[:Body]}"
-      end
+      # if !is_us 
+        notify_admins "A new user #{phone} has enrolled by texting in", \
+               "Code: \"#{params[:Body]}\""
+      # end
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"
@@ -247,10 +248,10 @@ class SMS < Sinatra::Base
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
         end
       else
         puts "no user was found that matches #{phone}"
@@ -267,10 +268,10 @@ class SMS < Sinatra::Base
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
         end
       else
         print "no user was found that matches #{phone}... "

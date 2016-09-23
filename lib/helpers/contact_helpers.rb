@@ -22,7 +22,7 @@ module ContactHelpers
   end
 
   def email_admins(subject, body)
-    Pony.mail(:to => 'phil.esterman@yale.edu',
+    Pony.mail(:to => 'phil.esterman@yale.edu,davidmcpeek1@gmail.com',
               :cc => 'aawahl@gmail.com',
               :from => 'davidmcpeek1@gmail.com',
               :headers => { 'Content-Type' => 'text/html' },
@@ -31,8 +31,8 @@ module ContactHelpers
   end
 
 	def notify_admins(subject, body)
-    text_body   = subject + ":\n" + body
     email_admins(subject, body)
+    text_body   = subject + ":\n" + body
     if text_body.length < 360
       sms('+18186897323', text_body, ENV['ST_USER_REPLIES_NO']) # david
       sms('+15612125831', text_body, ENV['ST_USER_REPLIES_NO']) # phil
