@@ -74,8 +74,7 @@ class SMS < Sinatra::Base
       is_us = our_phones.include? phone 
 
       if !is_us 
-        notify_admins "A user (phone #{phone}) texted StoryTime", \
-             "Message: #{params[:Body]}<br/>Time: #{Time.now}"
+        notify_admins "#{phone} texted StoryTime", params[:Body]
       end
 
       # a necessary tag... must always respond with TwiML
@@ -208,11 +207,22 @@ class SMS < Sinatra::Base
     end
 
     # success even if twilio stuff not work 'cos
-    # twilio happens in a seperate process :)
+    # twilio happens in a separate process :)
     status 201
   end
 
 
+  post '/reply' do
+    # get the first string in the message
+    # check to see if user exists with that number
+    # if they do, send the rest of the text to them
+    # 
+    body = params[:Body]
+    from = params[:From]
+
+
+
+  end
 
   get '/test' do
     day = params['day']

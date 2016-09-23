@@ -184,7 +184,7 @@ module Birdv
         end
       end
 
-
+      
        # TODO: should I delete args? not used
       def story(args={})
         if !args.empty?
