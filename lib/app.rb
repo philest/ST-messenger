@@ -19,6 +19,7 @@ require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
+require_relative '../config/initializers/redis'
 
 
 class SMS < Sinatra::Base
@@ -68,15 +69,25 @@ class SMS < Sinatra::Base
         puts "reply to send = #{reply}"
       end
       
-      sms(phone, reply) unless reply.nil? or reply.empty?
+      
+      unless reply.nil? or reply.empty?
+        sms(phone, reply)
+      else # there was no reply, so we want to personally respond to this. 
+        REDIS.set('last_textin', phone) # remember the last person who texted in
+      end
 
       our_phones = ["5612125831", "8186897323", "3013328953"]
-      is_us = our_phones.include? phone 
+      is_us = our_phones.include? phone
 
-      if !is_us 
-        notify_admins "A user (phone #{phone}) texted StoryTime", \
-             "Message: #{params[:Body]}<br/>Time: #{Time.now}"
-      end
+      # if !is_us 
+        notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
+
+        unless reply.nil? or reply.empty?
+          reply_blurb = reply[0..60]
+          notify_admins "#{phone} texted StoryTime", "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
+        end
+
+      # end
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"
@@ -187,7 +198,7 @@ class SMS < Sinatra::Base
         # I sure hope the phone number made it in!
         parent = User.where(phone: phone_num).first
 
-        # create new parent if did'nt already exists
+        # create new parent if didn't already exists
         if parent.nil? then 
           parent = User.create(:phone => phone_num, platform: 'sms')
           parent.state_table.update(subscribed?: false)
@@ -208,11 +219,69 @@ class SMS < Sinatra::Base
     end
 
     # success even if twilio stuff not work 'cos
-    # twilio happens in a seperate process :)
+    # twilio happens in a separate process :)
     status 201
   end
 
 
+  post '/reply' do
+    # get the first string in the message
+    # check to see if user exists with that number
+    # if they do, send the rest of the text to them
+    # 
+    body = params[:Body]
+    regex = / \s* reply \s* (\d+) \s* $/ix
+    if regex.match body
+      phone = $1.to_s
+      # process format
+      phone.gsub!(/[-()\s]/, '')
+      puts "phone is #{phone}"
+      # check database
+      user = User.where(phone: phone).first
+      if user
+        # get the message to sending
+        message = body.lines[1..-1].join
+        sms(phone, message, ENV['ST_MAIN_NO'])
+        phil, david = ["5612125831", "8186897323"]
+        from = params[:From][2..-1]
+        case from
+        when phil
+          puts "send message to david"
+          sms(david, "Phil just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+        when david
+          puts "send message to phil"
+          sms(phil, "José David just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+        end
+      else
+        puts "no user was found that matches #{phone}"
+        404
+      end # if user
+    elsif (phone = REDIS.get('last_textin')) # if no match, send to the last person who texted in
+      REDIS.del('last_textin')
+      user = User.where(phone: phone).first
+      if user
+        message = body
+        sms(phone, message, ENV['ST_MAIN_NO'])
+        phil, david = ["5612125831", "8186897323"]
+        from = params[:From][2..-1]
+        case from
+        when phil
+          puts "send message to david"
+          sms(david, "Phil just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+        when david
+          puts "send message to phil"
+          sms(phil, "José David just replied to #{phone}. He wrote: #{message}", ENV['ST_USER_REPLIES_NO'])
+        end
+      else
+        print "no user was found that matches #{phone}... "
+        puts "odd, because this is the same phone that once texted in"
+        404
+      end # if user
+    else # if no REDIS 'last_textin' key exists
+      puts "no one to text back to...."
+      sms(params[:From], "Message didn't send, someone may have already replied.", ENV['ST_USER_REPLIES_NO'])
+    end # if regex.match body
+  end # post '/reply'
 
   get '/test' do
     day = params['day']

@@ -129,13 +129,10 @@ Bot.on :message do |message|
         limited = REDIS.get(redis_limit_key)
 
         if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
-
           reply = I18n.t 'user_response.end_conversation'
-            
           if limited == "true"
             reply = ""
           end
-
           # They've gotten as many replies as possible, so limit them for 60s
           REDIS.set(redis_limit_key, "true")
           REDIS.expire(redis_limit_key, 60)

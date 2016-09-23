@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# This script just pushes the current branch to its remote counterpart on github. 
+# It by no means deploys the code. Shocking? You'll live. 
 
 [ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
 read -p "commit message: " commit_message
