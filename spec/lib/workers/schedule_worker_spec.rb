@@ -378,128 +378,128 @@ describe ScheduleWorker do
 
 				# TODO: write a test that ensure the get_schedule thing behaves proper
 
-				it 'sends next story on [4] of next week if day1 on 2' do
-					start_time = Time.new(2016, 7, 26, 23, 0, 0, 0)
-					Timecop.freeze(start_time)
-					# last story read on Tuesday!
-					@users.each do |u|
-						u.state_table.update( last_story_read_time: start_time )
-					end	
+				# it 'sends next story on [4] of next week if day1 on 2' do
+				# 	start_time = Time.new(2016, 7, 26, 23, 0, 0, 0)
+				# 	Timecop.freeze(start_time)
+				# 	# last story read on Tuesday!
+				# 	@users.each do |u|
+				# 		u.state_table.update( last_story_read_time: start_time )
+				# 	end	
 
-					expect{
-						Sidekiq::Testing.fake! {
-							# run that same day to ensure not send stuff						
-							@sw_curric.perform(@interval)
-							(3..10).each do |day|
-								start_time += 1.day
-								Timecop.freeze(start_time)
-								@sw_curric.perform(@interval)
-							end
-						}
-					}.not_to change{StartDayWorker.jobs.size}
+				# 	expect{
+				# 		Sidekiq::Testing.fake! {
+				# 			# run that same day to ensure not send stuff						
+				# 			@sw_curric.perform(@interval)
+				# 			(3..10).each do |day|
+				# 				start_time += 1.day
+				# 				Timecop.freeze(start_time)
+				# 				@sw_curric.perform(@interval)
+				# 			end
+				# 		}
+				# 	}.not_to change{StartDayWorker.jobs.size}
 
-					# now we finally reach that [4]
-					start_time += 1.day
-					Timecop.freeze(start_time)		
+				# 	# now we finally reach that [4]
+				# 	start_time += 1.day
+				# 	Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-					@sw_curric.perform(@interval)		
-				end
+				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+				# 	@sw_curric.perform(@interval)		
+				# end
 				
-				it 'sends next story on [4] of next week if day1 on 3' do
-					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
-					Timecop.freeze(start_time)
-					# last story read on Wednesday!
-					@users.each do |u|
-						u.state_table.update( last_story_read_time: start_time )
-					end	
+				# it 'sends next story on [4] of next week if day1 on 3' do
+				# 	start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+				# 	Timecop.freeze(start_time)
+				# 	# last story read on Wednesday!
+				# 	@users.each do |u|
+				# 		u.state_table.update( last_story_read_time: start_time )
+				# 	end	
 
-					# cycle through the days
-					expect{
-						Sidekiq::Testing.fake! {
-							# run that same day to ensure not send stuff				
-							@sw_curric.perform(@interval)			
-							(4..10).each do |day|
-								start_time += 1.day
-								Timecop.freeze(start_time)
-								@sw_curric.perform(@interval)
-							end
-						}
-					}.not_to change{StartDayWorker.jobs.size}
+				# 	# cycle through the days
+				# 	expect{
+				# 		Sidekiq::Testing.fake! {
+				# 			# run that same day to ensure not send stuff				
+				# 			@sw_curric.perform(@interval)			
+				# 			(4..10).each do |day|
+				# 				start_time += 1.day
+				# 				Timecop.freeze(start_time)
+				# 				@sw_curric.perform(@interval)
+				# 			end
+				# 		}
+				# 	}.not_to change{StartDayWorker.jobs.size}
 
-					# now we finally reach that [4]
-					start_time += 1.day
-					Timecop.freeze(start_time)		
+				# 	# now we finally reach that [4]
+				# 	start_time += 1.day
+				# 	Timecop.freeze(start_time)		
 
-					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-					@sw_curric.perform(@interval)	
-				end
-
-
-
-
-				it 'sends story in same upcoming week if day1 not [2,3]' do
-					start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
-					monday 		 = Time.new(2016, 7, 25, 23, 0, 0, 0)
-					Timecop.freeze(start_time)
-					# day1 read on Monday!
-					@users.each do |u|
-						u.state_table.update( last_story_read_time: start_time )
-					end	
-
-					# cycle through the days
-					expect{
-						Sidekiq::Testing.fake! {
-							# run that same day to ensure not send stuff				
-							@sw_curric.perform(@interval)			
-							(2..11).each do |day|
-								start_time += 1.day
-								Timecop.freeze(start_time)
-								@sw_curric.perform(@interval)
-							end
-						}
-					}.not_to change{StartDayWorker.jobs.size}
-
-					# now we finally reach that [4]
-					start_time += 1.day
-					Timecop.freeze(start_time)		
-
-					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-					@sw_curric.perform(@interval)					
-				end
+				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+				# 	@sw_curric.perform(@interval)	
+				# end
 
 
 
 
-				it 'sends story in 7 days if day1 on a 4', poop:true do
-					start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
-					Timecop.freeze(start_time)
+				# it 'sends story in same upcoming week if day1 not [2,3]' do
+				# 	start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
+				# 	monday 		 = Time.new(2016, 7, 25, 23, 0, 0, 0)
+				# 	Timecop.freeze(start_time)
+				# 	# day1 read on Monday!
+				# 	@users.each do |u|
+				# 		u.state_table.update( last_story_read_time: start_time )
+				# 	end	
 
-					# last story read on Wednesday!
-					@users.each do |u|
-						u.state_table.update( last_story_read_time: start_time )
-					end	
+				# 	# cycle through the days
+				# 	expect{
+				# 		Sidekiq::Testing.fake! {
+				# 			# run that same day to ensure not send stuff				
+				# 			@sw_curric.perform(@interval)			
+				# 			(2..11).each do |day|
+				# 				start_time += 1.day
+				# 				Timecop.freeze(start_time)
+				# 				@sw_curric.perform(@interval)
+				# 			end
+				# 		}
+				# 	}.not_to change{StartDayWorker.jobs.size}
 
-					# cycle through the days
-					expect{
-						Sidekiq::Testing.fake! {
-						# run that same day to ensure not send stuff				
-							@sw_curric.perform(@interval)			
-							(4..10).each do |day|
-								start_time += 1.day
-								Timecop.freeze(start_time)
-								@sw_curric.perform(@interval)
-							end
-						}
-					}.not_to change{StartDayWorker.jobs.size}
+				# 	# now we finally reach that [4]
+				# 	start_time += 1.day
+				# 	Timecop.freeze(start_time)		
 
-					# now we finally reach that [4]
-					start_time += 1.day
-					Timecop.freeze(start_time)		
+				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+				# 	@sw_curric.perform(@interval)					
+				# end
 
-					expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-					@sw_curric.perform(@interval)	
-				end
+
+
+
+			# 	it 'sends story in 7 days if day1 on a 4', poop:true do
+			# 		start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
+			# 		Timecop.freeze(start_time)
+
+			# 		# last story read on Wednesday!
+			# 		@users.each do |u|
+			# 			u.state_table.update( last_story_read_time: start_time )
+			# 		end	
+
+			# 		# cycle through the days
+			# 		expect{
+			# 			Sidekiq::Testing.fake! {
+			# 			# run that same day to ensure not send stuff				
+			# 				@sw_curric.perform(@interval)			
+			# 				(4..10).each do |day|
+			# 					start_time += 1.day
+			# 					Timecop.freeze(start_time)
+			# 					@sw_curric.perform(@interval)
+			# 				end
+			# 			}
+			# 		}.not_to change{StartDayWorker.jobs.size}
+
+			# 		# now we finally reach that [4]
+			# 		start_time += 1.day
+			# 		Timecop.freeze(start_time)		
+
+			# 		expect(StartDayWorker).to receive(:perform_async).exactly(3).times
+			# 		@sw_curric.perform(@interval)	
+			# 	end
 			end  # END describe 'day 1 behaviour', day1:true do
 
 			# note that these guys are all on day2

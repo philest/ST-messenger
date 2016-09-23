@@ -84,7 +84,7 @@ class SMS < Sinatra::Base
 
         unless reply.nil? or reply.empty?
           reply_blurb = reply[0..60]
-          notify_admins "#{phone} texted StoryTime", \ 
+          notify_admins "#{phone} texted StoryTime", \
               "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
         end
 
