@@ -1,4 +1,4 @@
-Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
+Birdv::DSL::ScriptClient.new_script 'day4', 'sms' do
 
   # day 3
 

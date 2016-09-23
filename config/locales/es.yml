@@ -95,7 +95,7 @@ es:
       hero:
         - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero2.jpg
-      croc:
+      chomp:
         - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp2.jpg
       bread:

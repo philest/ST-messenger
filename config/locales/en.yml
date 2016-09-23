@@ -104,13 +104,12 @@ en:
       hero:
         - https://s3.amazonaws.com/st-messenger/day1/hero/hero1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/hero/hero2.jpg
-      croc:
+      chomp:
         - https://s3.amazonaws.com/st-messenger/day1/chomp/chomp1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/chomp/chomp2.jpg
       bread:
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread2.jpg
-
   call_to_action:
     intro: Hi, it's __SCHOOL__ again! We hope you liked these little books.
     fb: "To get more stories through Facebook, tap here and enter 'go':\n\njoinstorytime.com/go"
