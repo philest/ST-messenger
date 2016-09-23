@@ -34,10 +34,6 @@ describe 'sms' do
     before(:each) do
       
 
-
-
-
-
     end
 
     before(:each) do
@@ -95,123 +91,32 @@ describe 'sms' do
 
     before(:each) do
 
-      stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction&last_sequence=firstmessage",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
+      allow_any_instance_of(SMS).to  receive(:sms).and_wrap_original do |original_method, *args|
+        puts "stubbing SMS with #{args}"
+      end
 
+      allow_any_instance_of(SMS).to  receive(:mms).and_wrap_original do |original_method, *args|
+        puts "stubbing MMS with #{args}"
+      end
 
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29&sender=%2B12032023505",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0AMsg%3A%20%22TEXT%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=8186897323%20texted%20StoryTime%3A%0AMsg%3A%20%22TEXT%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-          stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-        with(:body => "recipient=8186897323&text=Hi%2C%20this%20is%20StoryTime.%20We%27ll%20be%20texting%20you%20free%20books%21%0A%0A&script=day1&next_sequence=smsCallToAction&last_sequence=firstmessage").
-        to_return(:status => 200, :body => "", :headers => {})
-
-        stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=8186897323&text=Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29&sender=%2B12032023505").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-        with(:body => "recipient=%2B15612125831&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946",
-             :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-        to_return(:status => 200, :body => "", :headers => {})
-
-
-        stub_request(:post, "http://localhost:4567/txt").
-        with(:body => "recipient=%2B15612125831&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29%22&sender=%2B12032750946",
-             :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-        to_return(:status => 200, :body => "", :headers => {})
-
-        stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=A%20new%20user%205555555555%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-          stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=A%20new%20user%205555555555%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946",
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=A%20new%20user%205555555555%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=A%20new%20user%205555555555%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0AMsg%3A%20%22TEXT%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=8186897323%20texted%20StoryTime%3A%0AMsg%3A%20%22TEXT%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-     
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Great%21%20We%27ll%20start%20sending%20you%20stories%20%3A%29%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-     
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B15612125831&text=A%20new%20user%208186897323%20has%20enrolled%20by%20texting%20in%3A%0ACode%3A%20%22Please%2C%20you%20have%20to%20help%20me%2C%20I%27ve%20been%20trapped%20in%20the%20Phantom%20Zone%20for%20centuries%2C%20there%27s%20not%20much%20tiiiiiiiiiiiiiiiiiiiiiiiiii.......%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly...%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-         stub_request(:post, "http://localhost:4567/txt").
-         with(:body => "recipient=%2B18186897323&text=8186897323%20texted%20StoryTime%3A%0Awe%20responded%20with%20%22Hi%2C%20this%20is%20StoryTime%21%20We%20help%20your%20teacher%20send%20free%20nightly...%22&sender=%2B12032750946").
-         to_return(:status => 200, :body => "", :headers => {})
-
-
-
-
-     
-
+      allow(@day1).to receive(:send_sms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_sms() with #{args}"
+      end
+      allow(@day1).to receive(:send_mms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_mms() with #{args}"
+      end
+      allow(@day2).to receive(:send_sms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_sms() with #{args}"
+      end
+      allow(@day2).to receive(:send_mms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_mms() with #{args}"
+      end
+      allow(@day3).to receive(:send_sms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_sms() with #{args}"
+      end
+      allow(@day3).to receive(:send_mms).and_wrap_original do |original_method, *args|
+        puts "stubbing send_mms() with #{args}"
+      end
 
     end
 
