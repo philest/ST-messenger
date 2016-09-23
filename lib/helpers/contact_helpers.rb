@@ -30,7 +30,7 @@ module ContactHelpers
   end
 
 	def notify_admins(subject, body)
-    text_body   = "#{subject}\nMsg: \"#{body}\""
+    text_body   = subject + ":\n" + body
     email_admins(subject, body)
     if text_body.length < 360
       sms('+18186897323', text_body, ENV['ST_USER_REPLIES_NO']) # david
