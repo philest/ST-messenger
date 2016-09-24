@@ -30,7 +30,8 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
 
   sequence 'unsubscribe' do |recipient|
 
-    send recipient, button({name:'resubscribe'})
+    txt = 'scripts.buttons.unsubscribe_window_text'
+    send recipient, text({text:txt})
 
   end
 

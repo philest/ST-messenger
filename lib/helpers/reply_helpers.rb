@@ -25,8 +25,17 @@ module MessageReplyHelpers
 
     case body
     when RESUBSCRIBE_MSG
-      user.state_table.update(subscribed?: true)
-      our_reply = I18n.t 'scripts.resubscribe'
+      if user.state_table.subscribed? == false
+        user.state_table.update(subscribed?: true,
+                             num_reminders: 0,
+                             last_story_read?: true,
+                             last_script_sent_time: nil,
+                             last_reminded_time: nil
+                            )
+        our_reply = I18n.t 'scripts.resubscribe'
+      else
+        our_reply = ''
+      end
     when ENROLL_MSG
       user.state_table.update(subscribed?: true)
       our_reply = I18n.t 'enrollment.sms_optin'

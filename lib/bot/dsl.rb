@@ -197,7 +197,7 @@ module Birdv
         u.state_table.update(subscribed?: true,
                              num_reminders: 0,
                              last_story_read?: true,
-                             story_number: (current_story_no - 1),
+                             # story_number: (current_story_no - 1),
                              last_script_sent_time: nil,
                              last_reminded_time: nil
                             )

@@ -53,7 +53,7 @@ es:
     remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aqui tenga!
     resubscribe: "¡Órale! Seguirás recibiendo cuentos :)"
     buttons:
-      unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos?
+      unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
       resubscribe: Sí!
       story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/es/%{story_name}/%{story_name}-button.jpg'
       window_text:

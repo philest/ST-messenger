@@ -283,7 +283,7 @@ describe "Reminders" do
     @on_time.reload()
     @on_time.state_table.reload()
     expect(@on_time.state_table.subscribed?).to eq true
-    expect(@on_time.state_table.story_number).to eq (previous_story_number - 1)
+    expect(@on_time.state_table.story_number).to eq (previous_story_number)
     expect(@on_time.state_table.last_story_read?).to eq true
     expect(@on_time.state_table.last_script_sent_time).to be_nil
     expect(@on_time.state_table.last_reminded_time).to be_nil
@@ -469,7 +469,7 @@ describe "Reminders" do
       @on_time.reload()
       @on_time.state_table.reload()
       expect(@on_time.state_table.subscribed?).to eq true
-      expect(@on_time.state_table.story_number).to eq (previous_story_number - 1)
+      expect(@on_time.state_table.story_number).to eq (previous_story_number)
       expect(@on_time.state_table.last_story_read?).to eq true
       expect(@on_time.state_table.last_script_sent_time).to be_nil
       expect(@on_time.state_table.last_reminded_time).to be_nil

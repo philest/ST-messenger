@@ -60,7 +60,7 @@ en:
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     resubscribe: Great! You'll keep getting stories :)
     buttons:
-      unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep receiving them?  
+      unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO  
       resubscribe: Yes!
       story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
       window_text:
