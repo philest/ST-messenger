@@ -13,21 +13,21 @@ en:
   demo:
     intro: "Hi, this is StoryTime! Here's the first two pages of one of our favorites."
     thanks: "Thanks for trying StoryTime :)"
-    response: "Hi! We're away now, but we'll see your message soon. To learn more about StoryTime, call 561-212-5831."
+    response: "Hi! We're away now, but we'll see your message soon. To learn more about StoryTime, call 561-212-5831"
   defaults:
     teacher: "your teacher"
     child: "your child"
   user_response:
-    help:   "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
-    stop:   "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+    help:   "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply STOP\n - For help, contact 561-212-5831"
+    stop:   "Okay, you'll stop getting messages! If you want free books again just type GO"
     thanks: "You're welcome :)"
-    robot:  "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+    robot:  "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just reply HELP"
     learn: "StoryTime sends free stories by text and Facebook.\n\nFor help: 561-212-5831\nTo stop, text STOP"
     teacher_reply:
       session: "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
-      no_session: "Hi! I'm away now, but I'll see your message soon! If you need help just enter 'learn'"
+      no_session: "Hi! I'm away now, but I'll see your message soon! If you need help just reply LEARN"
     default: "Hi __PARENT__! I'm away now but I'll see your message soon :)"
-    end_conversation: "I'll see your message by tonight! If you need more help just enter 'help'"
+    end_conversation: "I'll see your message by tonight! If you need more help just reply LEARN"
   scripts:
     teacher_intro:
       - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
@@ -112,7 +112,7 @@ en:
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread2.jpg
   call_to_action:
     intro: Hi, it's __SCHOOL__ again! We hope you liked these little books.
-    fb: "To get more stories through Facebook, tap here and enter 'go':\n\njoinstorytime.com/go"
+    fb: "To get more stories through Facebook, tap here and type GO:\n\njoinstorytime.com/go"
 
     # (where we keep the adjusted 'espanish' urls)
   testing: 
@@ -128,6 +128,6 @@ en:
       has_school: "Hi, this is __SCHOOL__. We'll be texting you free books for __CHILD__ with StoryTime!\n\n" 
       has_none: "Hi, this is StoryTime. We'll be texting you free books!\n\n"
       sms_call_to_action: "If you don't have Facebook, just reply with TEXT"
-      fb_call_to_action: "Get longer stories with Facebook. Tap here and enter 'go':\njoinstorytime.com/go :)"
+      fb_call_to_action: "Get longer stories with Facebook. Tap here and type GO:\njoinstorytime.com/go :)"
 
 

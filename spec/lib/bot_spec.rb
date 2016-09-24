@@ -134,7 +134,7 @@ def app() Facebook::Messenger::Server end
 			end
 
 			it "replies with confirmation" do 
-				expect(@reply).to eq "Okay, you'll stop getting messages! If you want free books again just enter 'go.'"
+				expect(@reply).to eq "Okay, you'll stop getting messages! If you want free books again just type GO"
 			end 
 		end
 
@@ -145,7 +145,7 @@ def app() Facebook::Messenger::Server end
 	    	end
 
 			it "replies correctly" do 
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply STOP\n - For help, contact 561-212-5831"
 			end 
 
 		end 
@@ -155,19 +155,19 @@ def app() Facebook::Messenger::Server end
 			it "replies correctly to 'who is this'" do 
 				@user = create(:user)
 				@reply = get_reply("who is this", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply STOP\n - For help, contact 561-212-5831"
 			end 
 
 			it "replies correctly to 'who's this'" do 
 				@user = create(:user)
 				@reply = get_reply("who's this", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply STOP\n - For help, contact 561-212-5831"
 			end
 
 			it "replies correctly to 'who are you" do 
 				@user = create(:user)
 				@reply = get_reply("who are you", @user)
-				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply 'stop'\n - For help, contact 561-212-5831"
+				expect(@reply).to eq "Hi, this is StoryTime! We help your teacher send free nightly stories.\n\n - To stop, reply STOP\n - For help, contact 561-212-5831"
 			end 
 
 
@@ -194,7 +194,7 @@ def app() Facebook::Messenger::Server end
 
 
        stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help just enter 'help'\"}}",
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"I'll see your message by tonight! If you need more help just reply HELP\"}}",
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
@@ -251,26 +251,26 @@ def app() Facebook::Messenger::Server end
 			it "replies correctly when asked if robot" do 
 				@user = create(:user, first_name: "Ramon")
 				@reply = get_reply("Are you a robot?", @user)
-				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just reply HELP"
 			end 
 
 			it "replies correctly when asked if automated" do 
 				@user = create(:user, first_name: "Ramon")
 				@reply = get_reply("Is this automated?", @user)
-				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just reply HELP"
 			end 
 
 			it "replies correctly when asked if person" do 
 				@user = create(:user, first_name: "Ramon")
 				@reply = get_reply("Are you a person?", @user)
-				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just reply HELP"
 			end 
 
 
 			it "replies correctly when asked if human" do 
 				@user = create(:user, first_name: "Ramon")
 				@reply = get_reply("Are you a human?", @user)
-				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just enter 'help.'"
+				expect(@reply).to eq "Hi __PARENT__! StoryTime is an automated program that helps your teacher. If you need help just reply HELP"
 			end 
 
 

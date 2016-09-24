@@ -13,16 +13,16 @@ es:
     child: "su niño"
   demo: "¡Hola! Estamos lejos ahora, pero vamos a ver su mensaje pronto. Para obtener más información acerca de StoryTime, llame al 561-212-5831."
   user_response:
-    help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con 'ALTO'\n - Para ayuda, póngase en contacto: 561-212-5831"
+    help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con ALTO\n - Para ayuda, póngase en contacto: 561-212-5831"
     stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
     thanks: "De nada :)"
-    learn: "StoryTime envía cuento gratis a través de mensaje texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara dejar de recibir mensajes, responde con ALTO"
+    learn: "StoryTime envía cuentos gratis a través de mensaje texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara dejar de recibir mensajes, responde con ALTO"
     teacher_reply:
-      session: "Veré su mensaje esta noche! Si necesita más ayuda, llame al StoryTime: 561-212-5831"
-      no_session: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto! Si necesita ayuda, introduce 'learn'"
-    robot:  "¡Hola __PARENT__! StoryTime es un programa automatizado que ayuda a su maestro. Si necesita ayuda, escribe 'ayuda'."
+      session: "Veré su mensaje esta noche! Si necesita más ayuda, llame a StoryTime: 561-212-5831"
+      no_session: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto! Si necesita ayuda, escribe AYUDA"
+    robot:  "¡Hola __PARENT__! StoryTime es un programa que su maestro usa para mandarle cuentos gratis. Si necesita ayuda, escribe AYUDA."
     default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto :)."
-    end_conversation: "Voy a ver su mensaje en la noche! Si necesita ayuda, escribe 'ayuda'"
+    end_conversation: "Voy a ver su mensaje en la noche! Si necesita ayuda, escribe AYUDA"
   scripts:
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
@@ -50,12 +50,12 @@ es:
       - "Hola! Aquí viene otro cuento de StoryTime :)"
       - "Hola! Aquí viene otro cuento de StoryTime :)"
       - "Hola! Aquí viene otro cuento de StoryTime :)"
-    remind: Hola __PARENT__, vi se ha perdido su última historia y yo sólo desea compartir de nuevo. ¡Aqui tienes!
-    resubscribe: Gran! Vas a seguir recibiendo historias :)
+    remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aqui tenga!
+    resubscribe: "¡Órale! Seguirás recibiendo cuentos :)"
     buttons:
-      unsubscribe_window_text: Hola __PARENT__, vi que no haya leído sus historias desde hace tiempo... le gustaría seguir recibiendo ellos?
+      unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos?
       resubscribe: Sí!
-      story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
+      story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/es/%{story_name}/%{story_name}-button.jpg'
       window_text:
         this_week:
           - "Le enviaré un cuento nuevo este __DAY__ :)"
@@ -103,19 +103,19 @@ es:
         - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread2.jpg
   call_to_action:
     intro: Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros.
-    fb: "Para recibir más cuentos, toque aquí y escribir ‘ir’\n\njoinstorytime.com/go"
+    fb: "Para recibir más cuentos, sigue el enlace y entre GO\n\njoinstorytime.com/go"
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"
 
   enrollment:
-    sms_optin: "¡Estupendo! Nosotros le envía los cuentos :)"
+    sms_optin: "¡Estupendo! Ahora recibirás los cuentos :)"
     img:
       has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
       default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
     body: 
-      has_teacher: "Hola, es __TEACHER__. Le enviaré mensajes de texto a __CHILD__ con StoryTime!\n\n"
-      has_school: "Hola, es __SCHOOL__. Vamos enviarle mensajes de texto a usted con StoryTime!\n\n" 
-      has_none: "Hola, es StoryTime. Vamos enviarle mensajes de texto con libros de cuento gratis!\n\n"
-      sms_call_to_action: "Para recibir cuentos por mensaje de texto, responder con TEXT"
-      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace para entrar:\njoinstorytime.com/go"
+      has_teacher: "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
+      has_school: "Hola, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!\n\n" 
+      has_none: "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
+      sms_call_to_action: "Para recibir cuentos por mensaje texto, responde con TEXT"
+      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace y entre GO:\njoinstorytime.com/go"
