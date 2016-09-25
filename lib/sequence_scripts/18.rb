@@ -1,15 +1,15 @@
-Birdv::DSL::ScriptClient.new_script 'day7' do
+Birdv::DSL::ScriptClient.new_script 'day18' do
 
 	# day 6
 	#
 	# register some buttons for reuse!
 	# ================================
-	# NOTE: always call story_button, template_generic, 
+	# NOTE: always call story_button, template_generic,
 	# and button_normal OUTSIDE of sequence blocks
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		'scripts.buttons.title[1]',
+		title: 		'scripts.buttons.title[0]',
 		image_url:  'scripts.buttons.story_img_url', 
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
@@ -43,7 +43,7 @@ Birdv::DSL::ScriptClient.new_script 'day7' do
 	sequence 'thanks' do |recipient|
 		# one more button
 		# send recipient, button({name:'thanks'})
-		txt = 'scripts.buttons.window_text[2]'
+		txt = 'scripts.buttons.window_text[0]'
 		send recipient, text({text:txt})
 	end
 

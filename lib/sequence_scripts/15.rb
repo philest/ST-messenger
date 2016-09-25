@@ -1,4 +1,4 @@
-Birdv::DSL::ScriptClient.new_script 'day7' do
+Birdv::DSL::ScriptClient.new_script 'day15' do
 
 	# day 6
 	#
@@ -9,7 +9,7 @@ Birdv::DSL::ScriptClient.new_script 'day7' do
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		'scripts.buttons.title[1]',
+		title: 		'scripts.buttons.title[0]',
 		image_url:  'scripts.buttons.story_img_url', 
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
@@ -21,7 +21,7 @@ Birdv::DSL::ScriptClient.new_script 'day7' do
 	# })
 
 	sequence 'greeting' do |recipient|
-		txt = 'scripts.teacher_intro[3]'
+		txt = 'scripts.teacher_intro[2]'
 		send recipient, text({text: txt})
 		delay recipient, 'storybutton', 3.seconds
 	end
@@ -43,7 +43,7 @@ Birdv::DSL::ScriptClient.new_script 'day7' do
 	sequence 'thanks' do |recipient|
 		# one more button
 		# send recipient, button({name:'thanks'})
-		txt = 'scripts.buttons.window_text[2]'
+		txt = 'scripts.buttons.window_text[1]'
 		send recipient, text({text:txt})
 	end
 

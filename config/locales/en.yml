@@ -31,32 +31,16 @@ en:
   scripts:
     teacher_intro:
       - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
-      - "Hi __PARENT__, it's __TEACHER__. Here's another story to get __CHILD__ ready for kindergarten."
-      - "Hi __PARENT__, here's another story :)"
+      - "Hi __PARENT__, it's __TEACHER__. Here's another story for __CHILD__."
       - "Hi __PARENT__, here's another story :)"
       - "Hi __PARENT__, here's another story!"
-      - "Hi __PARENT__, here's another story :)"    
-      - "Hi __PARENT__, here's another story!"    
-      - "Hi __PARENT__, here's another story :)"    
-      - "Hi __PARENT__, here's another story!"      
-      - "Hi __PARENT__, here's another story!"      
-      - "Hi __PARENT__, here's another story!"    
-      - "Hi __PARENT__, here's another story!"      
-      - "Hi __PARENT__, here's another story!"
+      - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+      - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
     teacher_intro_sms: # we're rolling with __SCHOOL__ because people always text in thru a school
       - "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
-      - "Hi! It's __SCHOOL__. Here's another story to get __CHILD__ ready for kindergarten."
-      - "Hi, here's another story from StoryTime! :)"
+      - "Hi! It's __SCHOOL__. Here's another story for __CHILD__."
       - "Hi, here's another story from StoryTime! :)"
       - "Hi, here's another story from StoryTime!"
-      - "Hi, here's another story from StoryTime!"    
-      - "Hi, here's another story from StoryTime!"    
-      - "Hi, here's another story from StoryTime!"    
-      - "Hi, here's another story from StoryTime!"      
-      - "Hi, here's another story from StoryTime!"      
-      - "Hi, here's another story from StoryTime!"    
-      - "Hi, here's another story from StoryTime!"      
-      - "Hi, here's another story from StoryTime!"    
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     resubscribe: Great! You'll keep getting stories :)
     buttons:
@@ -76,19 +60,8 @@ en:
           - "Another story will come next __DAY__. Great job! :)"
       title:
         - "Just tap below to start!"
-        - "Just tap below to start!"
-        - "Just tap below to start!"
-        - "Just tap below to start!"
-        - "Just tap below to start!"
-        - "Just tap below to start!"
         - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
-        - "Let's read tonight's story."
+
       tap: "Tap here!"
       tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg
       thanks: "Thank you!"

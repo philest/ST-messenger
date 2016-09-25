@@ -26,30 +26,17 @@ es:
   scripts:
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para preparar __CHILD__ para el kinder."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para __CHILD__."
+      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento! :)"
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"      
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-      - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+      - "¡Hola __PARENT__! Esperamos que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
+      - "¡Hola __PARENT__! Este cuento es uno de nuestros favoritos. "
     teacher_intro_sms:
       - "Hola, es __SCHOOL__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      - "Hola, es __SCHOOL__. Aquí viene otro cuento para preparar __CHILD__ para el kinder."
+      - "Hola, es __SCHOOL__. Aquí viene otro cuento para __CHILD__."
       - "Hola! Aquí viene otro cuento de StoryTime :)"
       - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
-      - "Hola! Aquí viene otro cuento de StoryTime :)"
+
     remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aqui tenga!
     resubscribe: "¡Órale! Seguirás recibiendo cuentos :)"
     buttons:
@@ -69,16 +56,6 @@ es:
           - "Le enviaré otro cuento el próximo __DAY__ :)"
       title:
         - "Vamos a leer el cuento nuevo."
-        - "Vamos a leer el cuento nuevo."
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
-        - "¡Su cuento nuevo ya viene!"
         - "¡Su cuento nuevo ya viene!"
       tap: "¡Pulse aquí!"
       tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg

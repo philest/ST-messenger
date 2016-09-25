@@ -119,7 +119,7 @@ Bot.on :message do |message|
         if script
           MessageWorker.perform_async(phone, "day#{code}", :init, platform='sms')
         else
-          fb_send_txt(message.sender, "Sorry, that script is not yet available.")
+          fb_send_txt(message.sender, "Sorry, that story is not yet available.")
         end
 
       else # find the appropriate reply

@@ -1,10 +1,9 @@
 Birdv::DSL::ScriptClient.new_script 'day4', 'sms' do
 
-  # day 3
 
   # recipients are phone numbers
   sequence 'firstmessage' do |phone_no|
-    txt = "scripts.teacher_intro_sms"
+    txt = "scripts.teacher_intro_sms[3]"
     puts "sending intro txt..."
     send_sms phone_no, txt, 'firstmessage', 'image1'
 

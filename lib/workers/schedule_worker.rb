@@ -299,9 +299,12 @@ class ScheduleWorker
     today_day = Time.now.utc
   	filtered = User.all.select do |user|
       ut =  user.state_table.last_story_read_time
-      if ut.nil?
+      lsst = user.state_table.last_script_sent_time
+      if ut.nil? or lsst.nil?
         last_story_read_ok = true
-      elsif !(Time.at(ut).to_date === Time.at(today_day).to_date)
+      elsif Time.at(ut).to_date != Time.at(today_day).to_date && 
+            Time.at(lsst).to_date != Time.at(today_day).to_date
+
         # if the last story wasn't sent today (has to be at least since yesterday)
         last_story_read_ok = true 
       else    

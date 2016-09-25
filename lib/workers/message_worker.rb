@@ -64,11 +64,11 @@ class MessageWorker
         Sidekiq.logger.warn numbers_check_out ? "#{recipient} not yet seen #{sequence}" : "#{recipient} already saw #{sequence}"
         
         # ...but if they didn't already press the button, send sequence
-        if   numbers_check_out                 \
-          || last_sequence_seen == 'intro'      \
-          || last_sequence_seen == 'teachersend' \
-          || protected_ids.include?(recipient)    \
-          || script_name == 'demo'
+        # if   numbers_check_out                 \
+        #   || last_sequence_seen == 'intro'      \
+        #   || last_sequence_seen == 'teachersend' \
+        #   || protected_ids.include?(recipient)    \
+        #   || script_name == 'demo'
           # TODO: or query?
 
           # TODO: run this in a worker
@@ -76,9 +76,9 @@ class MessageWorker
           puts "preparing to run sequence..."
           s.run_sequence(recipient, sequence.to_sym)
 
-        else # numbers don't check out for some reason...
-          puts "we're not running the sequence #{script_name} #{sequence}, everybody. sorry to those who drove here."
-        end
+        # else # numbers don't check out for some reason...
+        #   puts "we're not running the sequence #{script_name} #{sequence}, everybody. sorry to those who drove here."
+        # end
           
       # TODO: do we want an ELSE behavior?
       end

@@ -8,13 +8,13 @@ Birdv::DSL::ScriptClient.new_script 'day3' do
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		'scripts.buttons.title',
+		title: 		'scripts.buttons.title[0]',
 		image_url:  'scripts.buttons.story_img_url', 
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
 	sequence 'greeting' do |recipient|
-		txt = 'scripts.teacher_intro'
+		txt = 'scripts.teacher_intro[2]'
 		send recipient, text({text: txt})
 		delay recipient, 'storysequence', 3.5.seconds
 	end
