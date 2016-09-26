@@ -79,16 +79,14 @@ class SMS < Sinatra::Base
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone
 
-      # if !is_us 
+      if !is_us 
         notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
-
         unless reply.nil? or reply.empty?
           reply_blurb = reply[0..60]
           notify_admins "#{phone} texted StoryTime", \
               "we responded with \"#{reply_blurb}#{'...' if reply.length > 60}\""
         end
-
-      # end
+      end
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"
@@ -103,6 +101,11 @@ class SMS < Sinatra::Base
       # story_number needs to start at 0 for texting
       # new_user.state_table.update(story_number: 0)
 
+      # if the first text has "spanish" or "español" in it...
+      spanish_regex = /(spanish)|(espa[ñn]ol)/i
+      if spanish_regex.match params[:Body]
+        new_user.update(locale: 'es')
+      end
       # TODO: error handling, nil-value checking
       # 
       # FORMAT FOR SCHOOL CODES:
@@ -152,10 +155,10 @@ class SMS < Sinatra::Base
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone 
 
-      # if !is_us 
+      if !is_us 
         notify_admins "A new user #{phone} has enrolled by texting in", \
                "Code: \"#{params[:Body]}\""
-      # end
+      end
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"
@@ -296,6 +299,7 @@ class SMS < Sinatra::Base
   get '/startdayworker' do
     if params[:recipient] and params[:platform]
       StartDayWorker.perform_async(params[:recipient], params[:platform])
+      'ass'
     else
       User.each do |u|
         case u.platform
@@ -305,7 +309,12 @@ class SMS < Sinatra::Base
           StartDayWorker.perform_async(u.phone, u.platform)
         end
       end
+      'hole'
     end
+  end
+
+  get '/scheduleworker' do
+    ScheduleWorker.perform_async()
   end
 
 

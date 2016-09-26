@@ -39,6 +39,4 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     send_mms phone_no, img, 'image1'
   end
 
-
-end 
-
+end

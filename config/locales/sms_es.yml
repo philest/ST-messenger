@@ -1,9 +1,9 @@
-en:
+es:
   feature:
     messages:
       opt-in:
-        intro: If your phone doesn't get picture messages, reply SMS to get children's poems instead!
-        confirmation: Great! You'll get children's poems now :) 
+        intro: Si su mobil no puede ver mensajes de foto, responde con SMS para recibir cuentos por mensaje texto
+        confirmation: ¡Estupendo! Ahora recibirás los poemas :) 
     poems:
       hero:
         - "SuperSara puede romper una pared con la sola ayuda de su dedo rosa.\nSuperSam puede correr a China y estar de vuelta antes de la cena."
@@ -29,7 +29,4 @@ en:
         - "Caminan juntas en largas filas,\nCaminan aunque llueva todo el día.\nVan por caminos llenos de barro y suciedad,\nCaminan hasta que encuentran mi hogar."
         - "Un millón de hormigas por la puerta pasan\nPara comer la torta que está en mi casa.\nY antes de que la torta desaparezca\nLas pequeñas hormigas festejan y festejan."
         - "Cuando terminan, se van deprisa\nY dejan el plato limpio, sin una miga."
-
-
-
 
