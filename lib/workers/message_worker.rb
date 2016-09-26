@@ -39,7 +39,7 @@ class MessageWorker
                                  platform: 'fb')
           u.add_button_press_log(b) unless u.nil? 
 
-        when 'sms'
+        when 'sms', 'feature'
           puts "looking for #{recipient} phone in MessageWorker"
           u = User.where(phone:recipient).first
           if u.nil? then 

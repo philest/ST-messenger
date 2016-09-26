@@ -4,8 +4,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	# EVERY STORY MUST HAVE:
 	# 1) storybutton
 	# 2) storysequence
-
-
 	#
 	# register some buttons for reuse!
 	# ================================
@@ -20,7 +18,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 	})
 
 	sequence 'greeting' do |recipient|
-		# greeting with 5 second delay
 		txt = 'scripts.teacher_intro[0]'
 		send recipient, text({text:txt})
 		delay recipient, 'storysequence', 3.5.seconds
@@ -31,7 +28,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		delay recipient, 'thanks', 23.seconds
 	end
 
-	# No button on the first day! 
 	sequence 'thanks' do |recipient|
 		# one more button
 		txt = 'scripts.buttons.window_text[0]'
@@ -41,7 +37,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 
 	# optional sequence to include a day1 button! 
 	sequence 'storybutton' do |recipient|
-		# send tap_here button
 		send recipient, button({name:'tap_here'}) 
 	end
 

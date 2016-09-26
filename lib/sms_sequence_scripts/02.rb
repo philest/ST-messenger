@@ -44,7 +44,16 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		txt = 'scripts.buttons.window_text[0]'
 
 		# the new way to do it:
-		send_sms phone_no, txt, 'goodbye'
+		send_sms phone_no, txt, 'goodbye', 'feature-phones'
+	end
+
+	sequence 'feature-phones' do |phone_no|
+		puts "feature phone message..."
+
+		txt = 'feature.messages.opt-in.intro'
+
+		# the new way to do it:
+		send_sms phone_no, txt, 'feature-phones'
 	end
 end 
 

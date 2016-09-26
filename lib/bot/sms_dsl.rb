@@ -152,9 +152,10 @@ module Birdv
       # end
 
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
-        user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id) 
+        user = User.where(phone: phone).first
+        user_buttons = ButtonPressLog.where(user_id:user.id) 
         # if next_sequence == nil, then they've probably already seen a sequence like nil
-        we_have_a_history = !user_buttons.where(platform:'sms',
+        we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:@script_name, 
                                                sequence_name:next_sequence_name).first.nil?
 
@@ -179,9 +180,10 @@ module Birdv
       end
 
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
-        user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id) 
+        user = User.where(phone: phone).first
+        user_buttons = ButtonPressLog.where(user_id:user.id) 
         # if next_sequence == nil, then they've probably already seen a sequence like nil
-        we_have_a_history = !user_buttons.where(platform:'sms',
+        we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:@script_name, 
                                                sequence_name:next_sequence_name).first.nil?
 

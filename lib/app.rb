@@ -295,19 +295,14 @@ class SMS < Sinatra::Base
 
   get '/startdayworker' do
     if params[:recipient] and params[:platform]
-      case params[:platform]
-      when 'fb'
-        StartDayWorker.perform_async(params[:recipient], 'fb')
-      when 'sms'
-        StartDayWorker.perform_async(params[:recipient], 'sms')
-      end
+      StartDayWorker.perform_async(params[:recipient], params[:platform])
     else
       User.each do |u|
         case u.platform
         when 'fb'
           StartDayWorker.perform_async(u.fb_id, 'fb')
-        when 'sms'
-          StartDayWorker.perform_async(u.phone, 'sms')
+        when 'sms', 'feature'
+          StartDayWorker.perform_async(u.phone, u.platform)
         end
       end
     end
@@ -357,22 +352,22 @@ class SMS < Sinatra::Base
       u = User.where(phone: phone).first
       b = ButtonPressLog.new(script_name:script, 
                              sequence_name:last_sequence, 
-                             platform: 'sms')
+                             platform: u.platform)
       u.add_button_press_log(b) unless u.nil? 
       puts "b.user = #{b.user.inspect}"
     end
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
-      user_buttons = ButtonPressLog.where(user_id:User.where(phone: phone).first.id)
-
+      user = User.where(phone: phone).first
+      user_buttons = ButtonPressLog.where(user_id:user.id)
       # if next_sequence == nil, then they've probably already seen a sequence like nil
-      we_have_a_history = !user_buttons.where(platform:'sms',
+      we_have_a_history = !user_buttons.where(platform:user.platform,
                                              script_name:script, 
                                              sequence_name:next_sequence).first.nil?
       if we_have_a_history
         puts "app.rb - WE'VE ALREADY SEEN #{script.upcase} #{next_sequence.upcase}!!!!"
       else
-        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform='sms') 
+        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform) 
       end
 
     elsif next_sequence.to_s == ''

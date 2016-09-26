@@ -34,21 +34,25 @@ class Test
 	end
 
 
-	      def self.load_curriculum_versions
-        require 'csv'
+	                                                                 def self.load_curriculum_versions
+require 'csv'
+       
+
+
+
         versions = {}
-        Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../curriculum_versions/*").each do |f|
-          CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
-            day_number = File.basename(f, ".csv").to_i
-            versions[day_number] ||= []
-            versions[day_number] << row
-          end
-        end
-        return versions
-      end
+                              Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../curriculum_versions/*").each do |f|
+                                CSV.foreach(f, headers:true, header_converters: :symbol, :converters => :all) do |row|
+                                  day_number = File.basename(f, ".csv").to_i
+                                  versions[day_number] ||= []
+                                  versions[day_number] << row
+                                end
+                              end
+                              return versions
+                            end
 
 
-       @@curriculum_versions = load_curriculum_versions
+                                          @@curriculum_versions = load_curriculum_versions
 
        def self.curriculum_versions() @@curriculum_versions; end
        def curriculum_versions() @@curriculum_versions; end

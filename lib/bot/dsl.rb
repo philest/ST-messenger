@@ -11,7 +11,8 @@ module Birdv
     class ScriptClient
       @@scripts = {
         'fb' => {},
-        'sms' => {}
+        'sms' => {},
+        'feature' => {}
       }
 
       def self.new_script(script_name, platform='fb', &block)
@@ -26,7 +27,8 @@ module Birdv
       def self.clear_scripts
         @@scripts = {
           'fb' => {},
-          'sms' => {}
+          'sms' => {},
+          'feature' => {}
         }
       end 
     end
@@ -42,17 +44,17 @@ module Birdv
       
 
       def initialize(script_name, platform='fb', &block)
-        @fb_objects  = {}
-        @sequences   = {}
-        @script_name = script_name # TODO how do we wanna do this?
-        @platform = platform
-        @num_sequences = 0
-        day          = script_name.scan(/\d+/)[0]
+        @fb_objects     = {}
+        @sequences      = {}
+        @script_name    = script_name # TODO how do we wanna do this?
+        @platform       = platform
+        @num_sequences  = 0
+        day             = script_name.scan(/\d+/)[0]
 
         # modularization...
         if platform == 'fb'
           self.extend(FB)
-        elsif platform == 'sms'
+        elsif platform == 'sms' or platform == 'feature'
           self.extend(SMS)
         end
 
@@ -127,7 +129,7 @@ module Birdv
         case @platform
         when 'fb'
           u = User.where(fb_id:recipient).first
-        when 'sms'
+        when 'sms', 'feature'
           u = User.where(phone:recipient).first
         end
 

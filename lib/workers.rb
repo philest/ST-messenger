@@ -33,6 +33,9 @@ require_relative 'bot/dsl'
 Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sms_sequence_scripts/*")
 			.each {|f| require_relative f }
 
+Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/feature_sequence_scripts/*")
+      .each {|f| require_relative f }
+
 Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sequence_scripts/*")
 			.each {|f| require_relative f }
 
