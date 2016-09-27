@@ -37,7 +37,7 @@ es:
       - "Hola! Aquí viene otro cuento de StoryTime :)"
       - "Hola! Aquí viene otro cuento de StoryTime :)"
 
-    remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aqui tenga!
+    remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
     resubscribe: "¡Órale! Seguirás recibiendo cuentos :)"
     buttons:
       unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
