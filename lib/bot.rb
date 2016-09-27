@@ -137,7 +137,14 @@ Bot.on :message do |message|
           REDIS.set(redis_limit_key, "true")
           REDIS.expire(redis_limit_key, 60)
         end
+
         fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? 
+
+        if reply == (I18n.t 'scripts.resubscribe')
+          user_day = "day#{db_user.state_table.story_number}"
+          MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
+        end
+
       end # case message.text
   end # db_user.nil?
 

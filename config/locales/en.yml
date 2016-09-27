@@ -25,8 +25,8 @@ en:
     learn: "StoryTime sends free stories by text and Facebook.\n\nFor help: 561-212-5831\nTo stop, text STOP"
     teacher_reply:
       session: "I'll see your message by tonight! If you need more help, call StoryTime at 561-212-5831"
-      no_session: "Hi! I'm away now, but I'll see your message soon! If you need help just reply LEARN"
-    default: "Hi __PARENT__! I'm away now but I'll see your message soon :)"
+      no_session: "Hi! I'm away now but I'll see your message soon :)"
+    default: "Hi! I'm away now but I'll see your message soon :)"
     end_conversation: "I'll see your message by tonight! If you need more help just reply LEARN"
   scripts:
     teacher_intro:
@@ -42,7 +42,7 @@ en:
       - "Hi, here's another story from StoryTime! :)"
       - "Hi, here's another story from StoryTime!"
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
-    resubscribe: Great! You'll keep getting stories :)
+    resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
     buttons:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO  
       resubscribe: Yes!

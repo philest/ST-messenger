@@ -65,7 +65,7 @@ GEM
     minitest (5.9.1)
     multi_json (1.12.1)
     multi_xml (0.5.5)
-    newrelic_rpm (3.16.2.321)
+    newrelic_rpm (3.16.3.323)
     nokogiri (1.6.8-java)
     pony (1.11)
       mail (>= 2.0)

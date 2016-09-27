@@ -6,23 +6,23 @@ en:
         confirmation: Great! You'll get children's poems now :) 
     poems:
       hero:
-        - "SuperHero\n\nSuperSara can break a brick wall with her pinky finger.\nSuperSam can run to China and be back before dinner."
-        - "My superpower is telling funny jokes until you fall down.\nI'll make you laugh so much, you'll be rolling on the ground!\n\nThe End"
+        - "SuperHero\n\nSuperSara can break a brick wall with her pinky finger.\nSuperSam can run to China and be back before dinner. (1)"
+        - "My superpower is telling funny jokes until you fall down.\nI'll make you laugh so much, you'll be rolling on the ground!\n\nThe End (2)"
       bird:
-        - "Baby Bird\n\nThe smallest of the baby birds\nWas too afraid to fly.\nHis sisters flew, his brothers too,\nBut baby bird just cried."
-        - "His mother said, \"Oh baby bird!\"\n\"You'll do it if you try!\"\n\"I promise you can do it son,\"\n\"A mother never lies!\""
-        - "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely leapt out from the nest\nAnd flew into the sky.\n\nThe End"
+        - "Baby Bird\n\nThe smallest of the baby birds\nWas too afraid to fly.\nHis sisters flew, his brothers too,\nBut baby bird just cried. (1)"
+        - "His mother said, \"Oh baby bird!\"\n\"You'll do it if you try!\"\n\"I promise you can do it son,\"\n\"A mother never lies!\" (2)"
+        - "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely leapt out from the nest\nAnd flew into the sky. (3)\n\nThe End"
       whale:
-        - "Eli's Fish\n\nEli went to wash the dishes,\nWhen from the sink out swam some fishes!\nOut came a turtle, crab, and whale,\nAnd then a boat with purple sails!"
-        - "The fish wanted him to jump in,\nBut Eli was too scared to swim!\nThen Eli’s Mom showed her son\nHow kitchen swimming can be fun!"
-        - "With help from Mom, Eli felt brave.\nHe dove into a faucet wave!\nThen Eli smiled with clothes all wet,\nAnd swam with Mom and his new pets.\n\nThe End"
+        - "Eli's Fish\n\nEli went to wash the dishes,\nWhen from the sink out swam some fishes!\nOut came a turtle, crab, and whale,\nAnd then a boat with purple sails!(1)"
+        - "The fish wanted him to jump in,\nBut Eli was too scared to swim!\nThen Eli’s Mom showed her son\nHow kitchen swimming can be fun! (2)"
+        - "With help from Mom, Eli felt brave.\nHe dove into a faucet wave!\nThen Eli smiled with clothes all wet,\nAnd swam with Mom and his new pets. (3)\n\nThe End"
       seed:
-        - "My Magic Seed\n\nI found a giant magic seed,\nIts polka dots were pink and green.\nIt said to me, \"Oh pretty please,\"\n\"Will you please plant and water me?\""
-        - "And since the seed was so polite\nI planted him that very night.\nWith dirt I packed him snug and tight,\nIt rained until the morning light."
-        - "When I woke up that magic seed\nHad grown into a big tall tree!\nIts branches had green jelly beans\nAnd bright pink cotton candy leaves!"
-        - "100 hungry birds all flew\nTo eat as much as they could chew.\nI asked the tree, \"May I eat too?\"\nIt said, \"Of course! The rest’s for you!\"\n\nThe End"
+        - "Magic Seed\n\nI found a giant magic seed,\nIts polka dots were pink and green.\nIt said to me, \"Oh pretty please,\"\n\"Will you please plant and water me?\"(1)"
+        - "And since the seed was so polite\nI planted him that very night.\nWith dirt I packed him snug and tight,\nIt rained until the morning light. (2)"
+        - "When I woke up that magic seed\nHad grown into a big tall tree!\nIts branches had green jelly beans\nAnd bright pink cotton candy leaves! (3)"
+        - "100 hungry birds all flew\nTo eat as much as they could chew.\nI asked the tree, \"May I eat too?\"\nIt said, \"Of course! The rest’s for you!\" (4)\n\nThe End"
       chores:
-        - "Chores\n\nI love my chores, it's true, it's true!\nI love the things I get to do!\nI get to help take out the trash\nAnd watch the garbage truck go smash!"
-        - "I get to help out with the sink\nAnd use the soap to clean (not drink!)\nBut my most favorite chore of all\nIs when I help to paint the walls!\n\nThe End"
+        - "Chores\n\nI love my chores, it's true, it's true!\nI love the things I get to do!\nI get to help take out the trash\nAnd watch the garbage truck go smash! (1)"
+        - "I get to help out with the sink\nAnd use the soap to clean (not drink!)\nBut my most favorite chore of all\nIs when I help to paint the walls! (2)\n\nThe End"
       
       

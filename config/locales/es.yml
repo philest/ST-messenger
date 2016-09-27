@@ -21,7 +21,7 @@ es:
       session: "Veré su mensaje esta noche! Si necesita más ayuda, llame a StoryTime: 561-212-5831"
       no_session: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto! Si necesita ayuda, escribe AYUDA"
     robot:  "¡Hola __PARENT__! StoryTime es un programa que su maestro usa para mandarle cuentos gratis. Si necesita ayuda, escribe AYUDA."
-    default: "¡Hola __PARENT__! Estoy lejos ahora, pero veré su mensaje pronto :)."
+    default: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto :)"
     end_conversation: "Voy a ver su mensaje en la noche! Si necesita ayuda, escribe AYUDA"
   scripts:
     teacher_intro:
@@ -38,7 +38,7 @@ es:
       - "Hola! Aquí viene otro cuento de StoryTime :)"
 
     remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
-    resubscribe: "¡Órale! Seguirás recibiendo cuentos :)"
+    resubscribe: "¡Órale! Seguirás recibiendo cuentos.\n\nAquí está el siguiente :)"
     buttons:
       unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
       resubscribe: Sí!
