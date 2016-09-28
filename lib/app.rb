@@ -72,6 +72,9 @@ class SMS < Sinatra::Base
       
       unless reply.nil? or reply.empty?
         sms(phone, reply)
+        if reply == (I18n.t 'enrollment.sms_optin')
+          MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
+        end
       else # there was no reply, so we want to personally respond to this. 
         REDIS.set('last_textin', phone) # remember the last person who texted in
       end

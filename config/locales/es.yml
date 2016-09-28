@@ -58,7 +58,7 @@ es:
         - "Vamos a leer el cuento nuevo."
         - "¡Su cuento nuevo ya viene!"
       tap: "¡Pulse aquí!"
-      tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg
+      tap_here: https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg
       thanks: "¡Gracias!"
       welcome: "De nada :)"
   mms:
@@ -86,7 +86,7 @@ es:
     test_texts: "hey this is window text, which can be much longer than button text"
 
   enrollment:
-    sms_optin: "¡Estupendo! Ahora recibirás los cuentos :)"
+    sms_optin: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
     img:
       has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
       default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
