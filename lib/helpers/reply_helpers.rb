@@ -36,7 +36,8 @@ module MessageReplyHelpers
         ''
       end
     when ENROLL_MSG
-      user.state_table.update(subscribed?: true)
+      # update story number! because you'll have just sent the first story.
+      user.state_table.update(subscribed?: true, story_number: 2)
       I18n.t 'enrollment.sms_optin'
     when FEATURE_PHONES
       user.update(platform: 'feature')
