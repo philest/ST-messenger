@@ -2,8 +2,8 @@ en:
   feature:
     messages:
       opt-in:
-        intro: If your phone doesn't get picture messages, reply SMS to get children's poems instead!
-        confirmation: Great! You'll get children's poems now :) 
+        intro: If these pictures are hard to read, reply SMS for stories without pictures.
+        confirmation: Great! You'll get stories without pictures now :) 
     poems:
       hero:
         - "SuperHero\n\nSuperSara can break a brick wall with her pinky finger.\nSuperSam can run to China and be back before dinner. (1)"

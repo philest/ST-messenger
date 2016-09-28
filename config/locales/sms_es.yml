@@ -2,8 +2,8 @@ es:
   feature:
     messages:
       opt-in:
-        intro: Si su mobil no puede ver mensajes de foto, responde con SMS para recibir cuentos por mensaje texto
-        confirmation: ¡Estupendo! Ahora recibirás los poemas :) 
+        intro: Si su mobil no puede ver mensajes de foto, responde con SMS para recibir cuentos sin fotos
+        confirmation: ¡Estupendo! Ahora recibirás cuentos por mensaje texto (sin fotos) :) 
     poems:
       hero:
         - "Superpoderes\n\nSuperSara puede romper una pared con la sola ayuda de su dedo rosa.\nSuperSam puede correr a China y estar de vuelta antes de la cena. (1)"

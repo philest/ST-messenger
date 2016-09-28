@@ -33,19 +33,19 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 		img = 'mms.stories.hero[1]'
 
 		# the new way to do it:
-		send_mms phone_no, img, 'image2', 'goodbye'
+		send_mms phone_no, img, 'image2', 'feature-phones'
 
 		# delay phone_no, 'goodbye', MMS_WAIT
 	end
 
-	sequence 'goodbye' do |phone_no|
-		puts "saying goodbye..."
+	# sequence 'goodbye' do |phone_no|
+	# 	puts "saying goodbye..."
 
-		txt = 'scripts.buttons.window_text[0]'
+	# 	txt = 'scripts.buttons.window_text[0]'
 
-		# the new way to do it:
-		send_sms phone_no, txt, 'goodbye', 'feature-phones'
-	end
+	# 	# the new way to do it:
+	# 	send_sms phone_no, txt, 'goodbye', 'feature-phones'
+	# end
 
 	sequence 'feature-phones' do |phone_no|
 		puts "feature phone message..."

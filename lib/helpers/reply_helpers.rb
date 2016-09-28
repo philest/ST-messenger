@@ -9,7 +9,7 @@ module MessageReplyHelpers
   LOVE_MSG        = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG    = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG          = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
-  RESUBSCRIBE_MSG = /(\A\s*go\s*\z)|(libros)/i
+  RESUBSCRIBE_MSG = /(\A\s*GO\s*\z)|(libros)/i
   ENROLL_MSG      = /\A\s*TEXT\s*\z/i
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
 
