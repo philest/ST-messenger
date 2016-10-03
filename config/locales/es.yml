@@ -79,8 +79,8 @@ es:
         - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread2.jpg
   call_to_action:
-    intro: Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros.
-    fb: "Para recibir más cuentos, sigue el enlace y pulse EMPEZAR\n\njoinstorytime.com/go"
+    intro: "Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros.\n\nPara recibir más cuentos, sigue el enlace y pulse 'Empezar'\njoinstorytime.com/go"
+    fb: "Para recibir más cuentos, sigue el enlace y pulse 'Empezar'\n\njoinstorytime.com/go"
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"
@@ -94,5 +94,5 @@ es:
       has_teacher: "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
       has_school: "Hola, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!\n\n" 
       has_none: "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
-      sms_call_to_action: "Para recibir cuentos por mensaje texto, responde con TEXT"
-      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger. Visite este enlace y pulse EMPEZAR:\njoinstorytime.com/go"
+      sms_call_to_action: "Si no tenga Facebook Messenger, responde con CUENTO"
+      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger.\n\nVisite este enlace y pulse 'Empezar':\njoinstorytime.com/go"

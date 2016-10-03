@@ -16,26 +16,14 @@ line3 = "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely 
 # puts @message.body
 
 
-"Bueno! Ahora recibirás los cuentos (en español). El primero cuento viene este jueves :)"
-
 
 client.account.messages.create(
-  body: line1,
-  to: "8186897323",
-  from: STORYTIME_TEST_NO
+  body: "If you don't have Facebook Messenger, just reply with TEXT",
+  to: "3479987197",
+  from: STORYTIME_NO
 )
 
-client.account.messages.create(
-  body: line2,
-  to: "8186897323",
-  from: STORYTIME_TEST_NO
-)
 
-client.account.messages.create(
-  body: line3,
-  to: "8186897323",
-  from: STORYTIME_TEST_NO
-)
 
 
 
