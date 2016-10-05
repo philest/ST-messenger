@@ -57,10 +57,11 @@ namespace :db do
     	when "test", "development"
     		db_url = ENV["DATABASE_URL_LOCAL"]
     	when "production" # will always be in production on heroku
-    		db_url = ENV["DATABASE_URL"]
+        pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
+        db_url    = "#{pg_driver}#{ENV['PG_URL']}"
     	end
     	sh "sequel -d '#{db_url}' > './db/schema.rb'"
-    	puts "<= schema located in db/schema.rb"
+    	puts "<= schema located in db/schema.rb for #{ENV['RACK_ENV']}"
     end
 
     desc "Perform migration up/down to VERSION"

@@ -84,8 +84,8 @@ en:
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread2.jpg
   call_to_action:
-    intro: "Hi it's __SCHOOL__ again! We hope you liked these little books.\n\nTo get more stories through Facebook, tap here and press 'Get Started':\njoinstorytime.com/go"
-    fb: "To get more stories through Facebook, tap here and press START:\n\njoinstorytime.com/go"
+    intro: "Hi it's __SCHOOL__ again! We hope you liked these little books."
+    fb: "To get more stories through Facebook, tap here and type 'start':\njoinstorytime.com/go"
 
     # (where we keep the adjusted 'espanish' urls)
   testing: 
@@ -101,6 +101,6 @@ en:
       has_school: "Hi this is __SCHOOL__! We will text you free books with StoryTime!\n\n" 
       has_none: "Hi this is StoryTime! We'll be texting you free books :)\n\n"
       sms_call_to_action: "If you do not have Messenger just text back STORY"
-      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and press 'Get Started'\njoinstorytime.com/go"
+      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
 
 

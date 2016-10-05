@@ -12,6 +12,31 @@ module MessageReplyHelpers
   RESUBSCRIBE_MSG = /(\A\s*GO\s*\z)|(libros)/i
   ENROLL_MSG      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
+  LINK_CODE       = /\A\s*@\S+\s*\z/i
+
+  def link_profiles(fb_user, code)
+    sms_user = User.where(code: code).first
+    # wrangle fb_user's profile information into the same user
+    # updating the phone user though. eventually delete the facebook user so there's only one. 
+    # probably should delete the phone user because we're updating db user, y'know?
+
+    if sms_user
+      fb_user.update(phone: sms_user.phone,
+                     enrolled_on: sms_user.enrolled_on,
+                     teacher_id: sms_user.teacher_id,
+                     school_id: sms_user.school_id)
+
+      
+
+
+
+    end
+
+
+
+  end
+
+
 
   def get_reply(body, user)
     our_reply = ''
@@ -23,6 +48,10 @@ module MessageReplyHelpers
     #   end
     # end
     case body
+    when LINK_CODE
+      # logic for connecting the person to their phone account and school....
+
+
     when RESUBSCRIBE_MSG
       if user.state_table.subscribed? == false
         user.state_table.update(subscribed?: true,
