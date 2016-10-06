@@ -14,25 +14,50 @@ module MessageReplyHelpers
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
   LINK_CODE       = /\A\s*@\S+\s*\z/i
 
-  def link_profiles(fb_user, code)
+  def LinkedIn_profiles(fb_user, code)
+    # bitches!
+    return false if code.nil?
+
     sms_user = User.where(code: code).first
     # wrangle fb_user's profile information into the same user
     # updating the phone user though. eventually delete the facebook user so there's only one. 
     # probably should delete the phone user because we're updating db user, y'know?
 
     if sms_user
-      fb_user.update(phone: sms_user.phone,
-                     enrolled_on: sms_user.enrolled_on,
-                     teacher_id: sms_user.teacher_id,
-                     school_id: sms_user.school_id)
+      # we're NOT switching state_tables because we want fb_user to keep that
+      phone = sms_user.phone
+      sms_user.update(phone: nil) # otherwise we have a key validation exception
+      fb_user.update(phone:           phone,
+                     code:            sms_user.code,
+                     enrolled_on:     sms_user.enrolled_on,
+                     teacher_id:      sms_user.teacher_id,
+                     school_id:       sms_user.school_id,
+                     child_name:      sms_user.child_name,
+                     child_age:       sms_user.child_age)
 
-      
+      school  = sms_user.school
+      teacher = sms_user.teacher
 
+      # connect school
+      if school
+        school.add_user(fb_user)
+        fb_user.school = school
+      end
 
+      # connect teacher
+      if teacher
+        teacher.add_user(fb_user)
+        fb_user.teacher = teacher
+      end
 
+      sms_user.destroy
+
+      # success
+      return true
     end
 
-
+    # no matching code
+    return false
 
   end
 
