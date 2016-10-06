@@ -100,7 +100,7 @@ Bot.on :message do |message|
       when MORE_STORIES
         story_index = REDIS.get(db_user.fb_id + "_demo_storyindex").to_i % 3 # modulo that shit
         puts "story_index = #{story_index}"
-        extra_stories = ['seed', 'chores', 'ants']
+        extra_stories = ['whale', 'chores', 'ants']
         next_story = extra_stories[story_index] + 'greeting'
         MessageWorker.perform_async(sender_id, 'demo', next_story, 'fb')
         REDIS.set(db_user.fb_id + "_demo_storyindex", story_index + 1)

@@ -47,18 +47,18 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   sequence 'birdstorysequence' do |recipient|
-    send recipient, story({story: 'bird'})
-    delay recipient, 'whalegreeting', 12.seconds
+    send recipient, story({story: 'birddemo'})
+    delay recipient, 'seedgreeting', 12.seconds
   end
 
-  sequence 'whalegreeting' do |recipient|
-    txt = "*Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
+  sequence 'seedgreeting' do |recipient|
+    txt = "*Here’s another story!"
     send recipient, text({text:txt})
-    send recipient, button({name:'tap_here_whale'})
+    send recipient, button({name:'tap_here_seed'})
   end
 
-  sequence 'whalestorysequence' do |recipient|
-    send recipient, story({story: 'whale'})
+  sequence 'seedstorysequence' do |recipient|
+    send recipient, story({story: 'seeddemo'})
     delay recipient, 'helpmessage', 12.seconds
   end
 
@@ -75,14 +75,14 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   # for more stories
-  sequence 'seedgreeting' do |recipient|
-    txt = "*Here’s another story!"
+  sequence 'whalegreeting' do |recipient|
+    txt = "*Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
     send recipient, text({text:txt})
-    send recipient, button({name:'tap_here_seed'})
+    send recipient, button({name:'tap_here_whale'})
   end
 
-  sequence 'seedstorysequence' do |recipient|
-    send recipient, story({story: 'seed'})
+  sequence 'whalestorysequence' do |recipient|
+    send recipient, story({story: 'whale'})
   end
 
   sequence 'choresgreeting' do |recipient|
