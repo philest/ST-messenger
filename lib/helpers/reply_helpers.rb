@@ -58,10 +58,7 @@ module MessageReplyHelpers
 
     # no matching code
     return false
-
   end
-
-
 
   def get_reply(body, user)
     our_reply = ''
