@@ -12,7 +12,6 @@ class User < Sequel::Model(:users)
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
-
 	def generate_code 
 		"@" + Array.new(5){[*'a'..'z'].sample}.join
 	end
@@ -40,7 +39,6 @@ class User < Sequel::Model(:users)
 			self.code = generate_code
 		end
 
-
 		# set default curriculum version
 		ENV["CURRICULUM_VERSION"] ||= '0'
 		self.update(curriculum_version: ENV["CURRICULUM_VERSION"].to_i)
@@ -55,9 +53,4 @@ class User < Sequel::Model(:users)
     validates_unique :fb_id, :allow_nil=>true, :message => "#{fb_id} is already taken (users)"
   end
 
-
 end
-
-
-
-

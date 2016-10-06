@@ -48,7 +48,7 @@ class StartDayWorker
     # TODO: do error handling in a smart idempotent way (I mean, MAYBE)
   end
 
-  def perform(recipient, platform='fb')
+  def perform(recipient, platform='fb', sequence=:init)
     case platform
     when 'fb'
       u = User.where(fb_id:recipient).first
@@ -130,7 +130,7 @@ class StartDayWorker
       else # send a story button, the usual way, yippee!!!!!!!!!
         puts "proceeding to send #{recipient} a story..."
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
-        script.run_sequence(recipient, :init) 
+        script.run_sequence(recipient, sequence) 
       end
 
     else

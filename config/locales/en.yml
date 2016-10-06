@@ -29,6 +29,9 @@ en:
     default: "Hi! I'm away now but I'll see your message soon :)"
     end_conversation: "I'll see your message by tonight! If you need more help just reply LEARN"
   scripts:
+    code:
+      enter_code: "Hi! To get started with StoryTime, please reply with your school code (we sent it to you by text)"
+      success: "Great! Here's your first story :)"
     teacher_intro:
       - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
       - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
@@ -101,6 +104,7 @@ en:
       has_school: "Hi this is __SCHOOL__! We will text you free books with StoryTime!\n\n" 
       has_none: "Hi this is StoryTime! We'll be texting you free books :)\n\n"
       sms_call_to_action: "If you do not have Messenger just text back STORY"
-      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
+      # fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
+      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your class code: __CODE__\njoinstorytime.com/go"
 
 

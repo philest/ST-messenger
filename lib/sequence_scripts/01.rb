@@ -17,6 +17,11 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
+	sequence 'code' do |recipient|
+		txt = 'scripts.code.enter_code'
+		send recipient, text({text:txt})
+	end
+
 	sequence 'greeting' do |recipient|
 		txt = 'scripts.teacher_intro[0]'
 		send recipient, text({text:txt})

@@ -24,6 +24,9 @@ es:
     default: "¡Hola! Estoy lejos ahora, pero veré su mensaje pronto :)"
     end_conversation: "Voy a ver su mensaje en la noche! Si necesita ayuda, escribe AYUDA"
   scripts:
+    code:
+      enter_code: "Hola! Para empezar a utilizar de StoryTime, por favor, responda con su código de clase (lo enviamos a usted por el texto)"
+      success: "Gran! Aquí está su primero cuento :)"
     teacher_intro:
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
       - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para __CHILD__."

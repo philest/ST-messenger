@@ -66,6 +66,7 @@ DEMO          = /\A\s*demo\s*\z/i
 END_DEMO      = /\A\s*end\s*demo\s*\z/i
 MORE_STORIES  = /\A\s*more\s*\z/i 
 JOIN          = /join/i
+link_code     = /\A\s*@\S+\s*\z/i
 
 #
 # i.e. when user sends the bot a message.
@@ -86,7 +87,16 @@ Bot.on :message do |message|
 
   if db_user.nil?
       register_user(message.sender)
-      StartDayWorker.perform_async(sender_id, platform='fb')
+      db_user = User.where(:fb_id => sender_id).first 
+      if link_code.match(message.text) && LinkedIn_profiles(db_user, message.text)
+        # I LEFT OFF HERE!
+        # meaning they didn't press the Get Started button because it didn't show up
+        # but they put in their link code...
+        StartDayWorker.perform_async(sender_id, 'fb', :greeting)
+      else
+        StartDayWorker.perform_async(sender_id, platform='fb')
+      end
+
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...

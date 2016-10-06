@@ -15,14 +15,16 @@ describe MessageReplyHelpers do
     it "returns true for matching codes" do 
       fb_user  = User.create(fb_id: '1234')
       code = "#anormalfuckingcode"
-      sms_user = User.create(code: code)
+      sms_user = User.create()
+      sms_user.update(code: code)
       expect(LinkedIn_profiles(fb_user, code)).to eq true
     end
 
     it "deletes sms_user" do 
       fb_user  = User.create(fb_id: '1234')
       code = "#anormalfuckingcode"
-      sms_user = User.create(code: code, platform: 'sms')
+      sms_user = User.create(platform: 'sms')
+      sms_user.update code: code
       LinkedIn_profiles(fb_user, code)
       expect(User.where(code: code, platform: 'sms').first).to be nil
     end
@@ -31,10 +33,10 @@ describe MessageReplyHelpers do
       fb_user = User.create do |u|
         u.phone       = nil
         u.fb_id       = "12345"
-        u.code        = "a fake-ass code"
         u.send_time   = Time.now
         u.enrolled_on = Time.now
       end
+      fb_user.update code: "a fake-ass code"
       
       code = "#anormalfuckingcode"
       sms_user = User.create do |u|
@@ -45,6 +47,8 @@ describe MessageReplyHelpers do
         u.child_name  = "Bucky the Vampire"
         u.child_age   = -1
       end
+
+      sms_user.update code: code
 
       teacher = Teacher.create
       teacher.add_user(sms_user)
