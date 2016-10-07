@@ -152,6 +152,7 @@ class SMS < Sinatra::Base
       #       they must also reset to english and not leak between jobs.
 
       # perform the day1 mms sequence
+
       StartDayWorker.perform_async(phone, platform='sms')
 
 

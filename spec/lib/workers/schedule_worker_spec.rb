@@ -72,7 +72,7 @@ describe ScheduleWorker do
     it "doesn't send anything to peeps who are unsubscribed" do
 
       user = User.create(send_time: Time.now, fb_id: 'ass me')
-      user.state_table.update(subscribed?: false)
+      user.state_table.update(subscribed?: false, story_number: 1)
 
       allow(@s).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
         original_method.call(*args, [Time.now.wday], &block)

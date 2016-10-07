@@ -24,6 +24,7 @@ describe 'sms' do
       @day1 = Birdv::DSL::ScriptClient.scripts['sms']["day1"]
       @day2 = Birdv::DSL::ScriptClient.scripts['sms']["day2"]
       @day3 = Birdv::DSL::ScriptClient.scripts['sms']["day3"]
+      @remind = Birdv::DSL::ScriptClient.scripts['sms']['remind']
 
       @sw = ScheduleWorker.new
 

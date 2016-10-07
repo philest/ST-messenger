@@ -28,7 +28,7 @@ class User < Sequel::Model(:users)
 		self.state_table = st
 		st.user = self
 
-		self.state_table.update(subscribed?: false)
+		self.state_table.update(subscribed?: false) unless ENV['RACK_ENV'] == 'test'
 
 		# new users on sms need to have a story_number of 0
 		# if self.platform == 'sms'

@@ -8,14 +8,15 @@ describe MessageReplyHelpers do
     it "returns false for non-matching codes" do
       fb_user  = User.create(fb_id: '1234')
       code = "#anormalfuckingcode"
-      sms_user = User.create(code: code)
+      sms_user = User.create(platform: 'sms')
+      sms_user.update(code: code)
       expect(LinkedIn_profiles(fb_user, "#notarealcode")).to eq false
     end
 
     it "returns true for matching codes" do 
       fb_user  = User.create(fb_id: '1234')
       code = "#anormalfuckingcode"
-      sms_user = User.create()
+      sms_user = User.create(platform: 'sms')
       sms_user.update(code: code)
       expect(LinkedIn_profiles(fb_user, code)).to eq true
     end
@@ -46,6 +47,7 @@ describe MessageReplyHelpers do
         u.enrolled_on = Time.parse("2016-06-22 23:00:00 UTC")
         u.child_name  = "Bucky the Vampire"
         u.child_age   = -1
+        u.platform    = 'sms'
       end
 
       sms_user.update code: code
