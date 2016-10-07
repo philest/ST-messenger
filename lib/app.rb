@@ -64,11 +64,10 @@ class SMS < Sinatra::Base
         session['end_conversation'] = true
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
-      else  
+      else
         reply = SMSReplies.name_codes(msg, user)
         puts "reply to send = #{reply}"
       end
-      
       
       unless reply.nil? or reply.empty?
         sms(phone, reply)

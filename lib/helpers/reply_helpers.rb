@@ -12,6 +12,8 @@ module MessageReplyHelpers
   RESUBSCRIBE_MSG = /(\A\s*GO\s*\z)|(libros)/i
   ENROLL_MSG      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
+  ENGLISH_PLZ     = /(english)|(ingles)|(inglés)/i
+  SPANISH_PLZ     = /(spanish)|(espanol)|(español)/i
 
   def get_reply(body, user)
     our_reply = ''
@@ -42,6 +44,12 @@ module MessageReplyHelpers
     when FEATURE_PHONES
       user.update(platform: 'feature')
       I18n.t 'feature.messages.opt-in.confirmation'
+    when ENGLISH_PLZ
+      user.update(locale: 'en')
+      "Got it! We'll send you English stories instead."
+    when SPANISH_PLZ
+      user.update(locale: 'es')
+      "Bien! Le enviaremos cuentos en español :)"
     when HELP_RQST
       I18n.t 'user_response.help'
     when STOP_RQST

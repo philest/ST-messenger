@@ -4,7 +4,9 @@ require_relative 'start_day_worker'
 class ScheduleWorker
   include Sidekiq::Worker
   
-  sidekiq_options :retry => false
+  # how many times should this retry??
+  sidekiq_options :retry => 3
+  # sidekiq_options :retry => false
 
   attr_accessor :schedules
 
