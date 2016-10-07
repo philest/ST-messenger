@@ -63,7 +63,8 @@ class StartDayWorker
     end
 
     if not u.state_table.subscribed?
-      unless (u.platform == 'sms' or u.platform == 'feature') and u.state_table.story_number == 0 then
+      # unless (u.platform == 'sms' or u.platform == 'feature') and u.state_table.story_number == 0 then
+      unless u.state_table.story_number == 0 then
         puts "WE'RE FUCKING UNSUBSCRIBED DAWG - #{recipient}"
         return
         # otherwise, we haven't even sent out our first story to this poor sms user
@@ -128,7 +129,7 @@ class StartDayWorker
         puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone." 
 
       else # send a story button, the usual way, yippee!!!!!!!!!
-        puts "proceeding to send #{recipient} a story..."
+        puts "proceeding to send #{recipient} a story... BITCHES"
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
         script.run_sequence(recipient, sequence) 
       end

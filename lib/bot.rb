@@ -93,6 +93,7 @@ Bot.on :message do |message|
         # I LEFT OFF HERE!
         # meaning they didn't press the Get Started button because it didn't show up
         # but they put in their link code...
+        puts "STARTDAYWORKER AFTER DB_USER.NIL?????!!!!"
         StartDayWorker.perform_async(sender_id, 'fb', :greeting)
       else
         StartDayWorker.perform_async(sender_id, platform='fb')
@@ -134,6 +135,7 @@ Bot.on :message do |message|
         end
 
       else # find the appropriate reply
+
         reply = get_reply(message.text, db_user)
         
         redis_limit_key = db_user.fb_id + "_limit?"
@@ -172,7 +174,8 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    StartDayWorker.perform_async(sender_id, platform='fb')
+    # StartDayWorker.perform_async(sender_id, platform='fb')
+    MessageWorker.perform_async(sender_id, 'day1', :code, 'fb')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

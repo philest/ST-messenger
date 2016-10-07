@@ -17,11 +17,6 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
 
-	sequence 'code' do |recipient|
-		txt = 'scripts.code.enter_code'
-		send recipient, text({text:txt})
-	end
-
 	sequence 'greeting' do |recipient|
 		txt = 'scripts.teacher_intro[0]'
 		send recipient, text({text:txt})
@@ -37,7 +32,14 @@ Birdv::DSL::ScriptClient.new_script 'day1' do
 		# one more button
 		txt = 'scripts.buttons.window_text[0]'
 		send recipient, text({text:txt})	
+	end
 
+	sequence 'code' do |recipient|
+		url = 'https://s3.amazonaws.com/st-messenger/day1/twilio-mms-child.jpg'
+		send recipient, picture({url: url})
+	
+		txt = 'scripts.code.enter_code'
+		send recipient, text({text:txt})
 	end
 
 	# optional sequence to include a day1 button! 

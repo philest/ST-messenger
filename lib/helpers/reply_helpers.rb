@@ -17,14 +17,17 @@ module MessageReplyHelpers
   def LinkedIn_profiles(fb_user, code)
     # bitches!
     return false if code.nil?
-
     code.downcase!
-    sms_user = User.where(code: code).first
+
+    sms_user = User.where(code: code, platform: 'sms').first
+    if sms_user.nil?
+      sms_user = User.where(code: code, platform: 'feature').first
+    end
     # wrangle fb_user's profile information into the same user
     # updating the phone user though. eventually delete the facebook user so there's only one. 
     # probably should delete the phone user because we're updating db user, y'know?
 
-    if sms_user
+    if sms_user && sms_user.id != fb_user.id
       # we're NOT switching state_tables because we want fb_user to keep that
       phone = sms_user.phone
       sms_user.update(phone: nil) # otherwise we have a key validation exception
@@ -37,6 +40,8 @@ module MessageReplyHelpers
                      school_id:       sms_user.school_id,
                      child_name:      sms_user.child_name,
                      child_age:       sms_user.child_age)
+
+      fb_user.state_table.update(subscribed?: true)
 
       school  = sms_user.school
       teacher = sms_user.teacher
@@ -56,6 +61,7 @@ module MessageReplyHelpers
       # destroy later because of shit
       # DestroyerWorker.perform_in(5.minutes, sms_user.id)
 
+      puts "destroying user..."
       sms_user.destroy
 
       # success
@@ -78,8 +84,10 @@ module MessageReplyHelpers
     case body
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
-      if LinkedIn_profiles(user, body) && user.state_table.story_number > 0
-        MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
+      if LinkedIn_profiles(user, body) && user.state_table.story_number == 0
+        puts "FROM GET_REPLY!!!"
+        StartDayWorker.perform_async(user.fb_id, platform='fb')
+        # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
       end
       ''
     when RESUBSCRIBE_MSG

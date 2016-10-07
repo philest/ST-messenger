@@ -136,8 +136,6 @@ module Birdv
         end
       end
 
-
-
       def text(args = {})
         assert_keys([:text], args)     
         return {message: {text:args[:text]}}
