@@ -89,6 +89,7 @@ Bot.on :message do |message|
       register_user(message.sender)
       db_user = User.where(:fb_id => sender_id).first 
       if link_code.match(message.text) && LinkedIn_profiles(db_user, message.text)
+        puts "the link code matches!"
         # I LEFT OFF HERE!
         # meaning they didn't press the Get Started button because it didn't show up
         # but they put in their link code...

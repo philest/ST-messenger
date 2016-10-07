@@ -13,7 +13,7 @@ class User < Sequel::Model(:users)
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
 	def generate_code 
-		"@" + Array.new(5){[*'a'..'z'].sample}.join
+		"@" + Array.new(3){[*'0'..'9'].sample}.join
 	end
 
 	# ensure that user is added EnrollmentQueue upon creation
@@ -27,6 +27,8 @@ class User < Sequel::Model(:users)
 		st = StateTable.create(user_id: self.id)
 		self.state_table = st
 		st.user = self
+
+		self.state_table.update(subscribed?: false)
 
 		# new users on sms need to have a story_number of 0
 		# if self.platform == 'sms'

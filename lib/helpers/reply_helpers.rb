@@ -53,7 +53,10 @@ module MessageReplyHelpers
         fb_user.teacher = teacher
       end
 
-      # sms_user.destroy
+      # destroy later because of shit
+      # DestroyerWorker.perform_in(5.minutes, sms_user.id)
+
+      sms_user.destroy
 
       # success
       return true
@@ -75,7 +78,7 @@ module MessageReplyHelpers
     case body
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
-      if LinkedIn_profiles(user, body)
+      if LinkedIn_profiles(user, body) && user.state_table.story_number > 0
         MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
       end
       ''

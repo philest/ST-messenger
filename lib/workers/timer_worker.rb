@@ -25,6 +25,11 @@ class TimerWorker
       when 'sent'
         puts "This motherfucker is still at 'sent'! WTF?? We're just gonna send the next one... fuck."
         user = User.where(phone: phone).first
+        
+        if user.nil?
+          return 400
+        end
+
         user_buttons = ButtonPressLog.where(user_id:user.id)
         we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:script_name, 
