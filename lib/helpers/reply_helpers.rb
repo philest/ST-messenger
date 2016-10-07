@@ -90,6 +90,9 @@ module MessageReplyHelpers
         # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
       end
       ''
+
+      # hi simon! 
+
     when RESUBSCRIBE_MSG
       if user.state_table.subscribed? == false
         user.state_table.update(subscribed?: true,
