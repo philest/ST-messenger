@@ -23,31 +23,33 @@ ruby '2.3.1'
 
 # end
 
-gem 'pg',   '0.17.1'
+gem 'pg'
 
 
 gem 'airbrake'
 
 # bot stuff
-gem 'puma', 	'~>3.4.0'
+# gem 'puma', 	'~>3.4.0'
+gem 'puma'
 gem 'facebook-messenger'
 gem 'sinatra'
 
-gem 'i18n', '~> 0.7.0'
+# gem 'i18n', '~> 0.7.0'
+gem 'i18n'
 
 # birdv stuff
-gem 'httparty', '~>0.13.7'
-gem 'rake', 	'11.1.2'
-gem 'sequel', 	'~>4.35.0'
+gem 'httparty'
+gem 'rake'
+gem 'sequel'
 gem 'json'
-gem 'redis', 	'3.3.0'
-gem 'sidekiq', 	'~>4.1.2'
+gem 'redis'
+gem 'sidekiq'
 gem 'sidekiq-unique-jobs'
-gem 'clockwork','~>2.0.0'
+gem 'clockwork'
 gem 'pony'
 gem 'twilio-ruby'
 
-gem 'dotenv', '~> 2.1', '>= 2.1.1'
+gem 'dotenv'
 
 group :production do
 	gem 'newrelic_rpm'
@@ -68,7 +70,7 @@ group :test do
 	gem 'factory_girl'
 	gem "fakeredis", :require => "fakeredis/rspec"
 	gem 'database_cleaner'
-	gem 'rspec-mocks', '~> 3.4', '>= 3.4.1'
+	gem 'rspec-mocks'
 	gem 'timecop'
 =begin
 	gem 'capybara'
