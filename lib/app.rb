@@ -151,6 +151,7 @@ class SMS < Sinatra::Base
       #       they must also reset to english and not leak between jobs.
 
       # perform the day1 mms sequence
+
       StartDayWorker.perform_async(phone, platform='sms')
 
 
@@ -361,6 +362,11 @@ class SMS < Sinatra::Base
     # or maybe the clock worker happens here...
     if status == 'delivered' then # we've completed a sequence, so record its history
       u = User.where(phone: phone).first
+
+      if u.nil? 
+        return 400
+      end
+
       b = ButtonPressLog.new(script_name:script, 
                              sequence_name:last_sequence, 
                              platform: u.platform)
@@ -370,6 +376,11 @@ class SMS < Sinatra::Base
 
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
       user = User.where(phone: phone).first
+
+      if user.nil?
+        return 400
+      end
+
       user_buttons = ButtonPressLog.where(user_id:user.id)
       # if next_sequence == nil, then they've probably already seen a sequence like nil
       we_have_a_history = !user_buttons.where(platform:user.platform,
@@ -384,60 +395,13 @@ class SMS < Sinatra::Base
     elsif next_sequence.to_s == ''
       puts "no more sequences, we're all done with this script :)"
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
-      # TimerWorker.perform_async(messageSid, phone, script_name=script, next_sequence=last_sequence)
       # should TimerWorker perform the next_sequence, or the last_sequence? Oh God!!!!!
       TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
-      # maybe we just 
-      # just send the message
-      # this requires that we include the last_time_received as a url query param
-      # so when do we do that? let's find out, shall we?
-      # 
-      # problem: we don't want the message that is still waiting to be delivered 
-      # to fucking be delivered. then we'd get two of the same fucking texts. 
-      # I need to figure out a way to cancel SMS in transit. 
 
-      # The sequence of events
-      # 1: 
-      #   We send sms1. st-enroll schedules send_sms with script and next_sequence arguments.
-      #   send_sms creates a Twilio message with a callback URL to birdv
-      # 2: 
-      #   birdv receives a POST to its callback url with parameters.
-      #   status = 'sent'
-      # 3:
-      #   birdv waits. and waits. and waits. 
-      # 4:
-      #   someone decides that enough is enough and to send sms2. fair is fair.
     elsif status == 'failed'
       # do something else
       puts "message failed to send."
     end
-
-    # # have some params like:
-    # #   params[:sequence_name]
-    # #   params[:script_name]
-    # #   params[:recipient] 
-
-    # # use MessageSID from the callback to lookup the phone number that the message was sent to.
-    # # i.e. 8186897323
-    # # then lookup that phone number from the database to check what the last_sequence_seen was
-    # # for that user
-    # #   meaning that somewhere, maybe in the dsl or scripts, we have to update a user's last_sequence_seen column
-    # #
-    # # 
-    # # we need some way of telling the next sequence from last_sequence_seen, but the point is, from the last sequence
-    # # that a user saw which we can record on the birdv side, we can figure out what next to send them. 
-
-    # messageSID = params[:MessageSid]
-
-    # # do GET to twilio api to get the fucking message. Then lookup the phone number. This may have to
-    # # be done on the st-enroll side because it's using the Twilio api, fuck it. 
-    # # If it's done on the twilio side, just have that POST to fucking birdv with the phone number and status info
-    # phone = params[:phone]
-
-    # user = User.where(phone: phone)
-
-    # next_sequence = user.state_table.next_sequence
-    # # somehow get the user's script_day, should be easy 
 
   end
 

@@ -124,7 +124,7 @@ module Birdv
 
       # how do we abstract this?
       def run_sequence(recipient, sqnce_name)
-        ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])          
+        ret =  instance_exec(recipient, &@sequences[sqnce_name.to_sym][0])
 
         case @platform
         when 'fb'
@@ -146,8 +146,6 @@ module Birdv
         puts e.backtrace.join("\n") 
         notify_admins("StoryTime Script error: #{sqnce_name} of #{@script_name} failed!", e.backtrace.join("\n"))
       end
-
-
 
       def delay_inline(time_delay, &block)
         GenericMethodWorker.perform_in(time_delay, &block)

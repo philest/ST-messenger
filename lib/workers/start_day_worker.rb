@@ -9,15 +9,37 @@ class StartDayWorker
   def read_yesterday_story?(user)
     # TODO: add a time-based condition?
     return true if user.state_table.story_number == 0
-    return true if user.platform == 'sms' or user.platform == 'feature'
+
+    if (user.platform == 'sms' or user.platform == 'feature') and user.state_table.subscribed?
+      return true
+    end
+
     return user.state_table.last_story_read?
+  end
+
+  def enroll_sms?(user)
+    if (user.platform == 'sms' or user.platform == 'feature') and 
+        user.state_table.subscribed? == false and
+        user.state_table.story_number == 1 and
+        user.fb_id.nil?
+      # then I suppose we must not have enrolled in facebook yet...
+      time_elapsed = Time.now - user.enrolled_on
+      return (time_elapsed >= 8.days)
+    end
+
+    return false
+
   end
 
   def remind?(user)
     if read_yesterday_story?(user)
       false
-    elsif user.platform == 'sms' or user.platform == 'feature'
-      false # we don't want reminders for sms, dawg.........
+    elsif (user.platform == 'sms' or user.platform == 'feature') and user.state_table.subscribed? == false
+      time_elapsed = Time.now - user.enrolled_on
+      if time_elapsed < 8.days
+        return true
+      end
+      return false
     else # fb user did NOT read yesterday's story
        # check to see if it's been over four days away...
         last_script_sent_time = user.state_table.last_script_sent_time
@@ -41,14 +63,16 @@ class StartDayWorker
       end
     else # platform == 'mms' or 'sms'
       # Update. Since there are no buttons, we just assume peeps have read their story. 
-      user.state_table.update(story_number: n)
+      if user.state_table.subscribed? or user.state_table.story_number == 0
+        user.state_table.update(story_number: n)
+      end
     end
 
     return user.state_table.story_number
     # TODO: do error handling in a smart idempotent way (I mean, MAYBE)
   end
 
-  def perform(recipient, platform='fb')
+  def perform(recipient, platform='fb', sequence=:init)
     case platform
     when 'fb'
       u = User.where(fb_id:recipient).first
@@ -62,8 +86,13 @@ class StartDayWorker
       u = User.where(fb_id:recipient).first
     end
 
+    # problem - unsubscribed sms users don't get to the next part. 
+    # so let's add a conditional. 
+    # have to make sure the rest handles it properly....
     if not u.state_table.subscribed?
-      unless (u.platform == 'sms' or u.platform == 'feature') and u.state_table.story_number == 0 then
+      # unless (u.platform == 'sms' or u.platform == 'feature') and u.state_table.story_number == 0 then
+      story_number = u.state_table.story_number
+      unless (story_number == 0) or (story_number == 1 and ['sms', 'feature'].include?(u.platform)) then
         puts "WE'RE FUCKING UNSUBSCRIBED DAWG - #{recipient}"
         return
         # otherwise, we haven't even sent out our first story to this poor sms user
@@ -123,14 +152,28 @@ class StartDayWorker
       elsif remind and (u.platform == 'sms' or u.platform == 'feature')
         # do something completely fucking different
         puts "we're in remind for sms! how did we even get here?? user: #{recipient}"
+        # oh, nice! I set myself up for success ;) 
+        reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
+        reminder.run_sequence(recipient, :remind)
+
+      elsif enroll_sms?(u) and (u.platform == 'sms' or u.platform == 'feature')
+        # just fukin' enroll 'em!
+        puts "We're just subscribing #{recipient} to SMS because they haven't replied at all to our messages! Gosh darn it!"
+        u.state_table.update(subscribed?: true)
+        puts "so, we proceed to send #{recipient} a story... FUCKERS"
+        u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
+        day_number = update_day(u, u.platform)
+        # should be day2
+        script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
+        script.run_sequence(recipient, sequence) 
 
       elsif not read_yesterday_story
         puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone." 
 
       else # send a story button, the usual way, yippee!!!!!!!!!
-        puts "proceeding to send #{recipient} a story..."
+        puts "proceeding to send #{recipient} a story... oh look, a cloud!"
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
-        script.run_sequence(recipient, :init) 
+        script.run_sequence(recipient, sequence) 
       end
 
     else

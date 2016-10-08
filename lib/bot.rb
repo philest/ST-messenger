@@ -66,6 +66,9 @@ DEMO          = /\A\s*demo\s*\z/i
 END_DEMO      = /\A\s*end\s*demo\s*\z/i
 MORE_STORIES  = /\A\s*more\s*\z/i 
 JOIN          = /join/i
+# link_code     = /\A\s*@\S+\s*\z/i
+link_code     = /\A\s*\d{3}\s*\z/i
+
 
 #
 # i.e. when user sends the bot a message.
@@ -86,7 +89,18 @@ Bot.on :message do |message|
 
   if db_user.nil?
       register_user(message.sender)
-      StartDayWorker.perform_async(sender_id, platform='fb')
+      db_user = User.where(:fb_id => sender_id).first 
+      if link_code.match(message.text) && LinkedIn_profiles(db_user, message.text)
+        puts "the link code matches!"
+        # I LEFT OFF HERE!
+        # meaning they didn't press the Get Started button because it didn't show up
+        # but they put in their link code...
+        puts "STARTDAYWORKER AFTER DB_USER.NIL?????!!!!"
+        StartDayWorker.perform_async(sender_id, 'fb', :greeting)
+      else
+        StartDayWorker.perform_async(sender_id, platform='fb')
+      end
+
   elsif is_image?(attachments) # user has been enrolled already + sent an image
       fb_send_txt(message.sender, ":)")
   else # user has been enrolled already...
@@ -123,6 +137,7 @@ Bot.on :message do |message|
         end
 
       else # find the appropriate reply
+
         reply = get_reply(message.text, db_user)
         
         redis_limit_key = db_user.fb_id + "_limit?"
@@ -161,7 +176,8 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
-    StartDayWorker.perform_async(sender_id, platform='fb')
+    # StartDayWorker.perform_async(sender_id, platform='fb')
+    MessageWorker.perform_async(sender_id, 'day1', :code, 'fb')
   else 
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')

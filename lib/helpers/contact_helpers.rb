@@ -36,6 +36,9 @@ module ContactHelpers
     if text_body.length < 360
       sms('+18186897323', text_body, ENV['ST_USER_REPLIES_NO']) # david
       sms('+15612125831', text_body, ENV['ST_USER_REPLIES_NO']) # phil
+    else
+      sms('+18186897323', subject, ENV['ST_USER_REPLIES_NO']) # david
+      sms('+15612125831', subject, ENV['ST_USER_REPLIES_NO']) # phil
     end
 	end
   

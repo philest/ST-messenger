@@ -12,6 +12,10 @@ class User < Sequel::Model(:users)
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
+	def generate_code 
+		Array.new(3){[*'0'..'9'].sample}.join
+	end
+
 	# ensure that user is added EnrollmentQueue upon creation
 	def after_create
 		super
@@ -24,10 +28,18 @@ class User < Sequel::Model(:users)
 		self.state_table = st
 		st.user = self
 
+		self.state_table.update(subscribed?: false) unless ENV['RACK_ENV'] == 'test'
+
 		# new users on sms need to have a story_number of 0
 		# if self.platform == 'sms'
-		self.state_table.update(story_number: 0)
+		# self.state_table.update(story_number: 0)
 		# end
+
+		# do code shit
+		self.code = generate_code
+		unless self.valid?
+			self.code = generate_code
+		end
 
 		# set default curriculum version
 		ENV["CURRICULUM_VERSION"] ||= '0'
@@ -37,9 +49,10 @@ class User < Sequel::Model(:users)
 	end
 
 	def validate
-    	super
-    	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (users)"
-    	validates_unique :fb_id, :allow_nil=>true, :message => "fb_id #{fb_id} is already taken (users)"
-  	end
+    super
+    validates_unique :code, :allow_nil=>true, :message => "#{code} is already taken (users)"
+    validates_unique :phone, :allow_nil=>true, :message => "#{phone} is already taken (users)"
+    validates_unique :fb_id, :allow_nil=>true, :message => "#{fb_id} is already taken (users)"
+  end
 
 end

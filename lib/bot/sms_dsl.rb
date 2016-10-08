@@ -52,16 +52,19 @@ module Birdv
             weekday = I18n.t('week')[day]
             str = str.gsub(/__DAY__/, weekday)
           end
-
-          str = str.gsub(/__TEACHER__/, teacher)
-          str = str.gsub(/__PARENT__/, parent)
-          str = str.gsub(/__SCHOOL__/, school)
-          str = str.gsub(/__CHILD__/, child)
+          
+          str.gsub!(/__CODE__/, user.code)
+          str.gsub!(/__TEACHER__/, teacher)
+          str.gsub!(/__PARENT__/, parent)
+          str.gsub!(/__SCHOOL__/, school)
+          str.gsub!(/__CHILD__/, child)
           return str
         else # just return what we started with. It's 
-          str = str.gsub(/__TEACHER__/, 'StoryTime')
-          str = str.gsub(/__PARENT__/, '')
-          str = str.gsub(/__CHILD__/, 'your child')
+          str.gsub!(/__CODE__/, '@go')
+          str.gsub!(/__TEACHER__/, 'StoryTime')
+          str.gsub!(/__PARENT__/, '')
+          str.gsub!(/__SCHOOL__/, 'StoryTime')
+          str.gsub!(/__CHILD__/, 'your child')
           return str
         end
       end
@@ -153,6 +156,9 @@ module Birdv
 
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first
+        if user.nil?
+          return
+        end
         user_buttons = ButtonPressLog.where(user_id:user.id) 
         # if next_sequence == nil, then they've probably already seen a sequence like nil
         we_have_a_history = !user_buttons.where(platform:user.platform,
@@ -181,6 +187,9 @@ module Birdv
 
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first
+        if user.nil?
+          return
+        end
         user_buttons = ButtonPressLog.where(user_id:user.id) 
         # if next_sequence == nil, then they've probably already seen a sequence like nil
         we_have_a_history = !user_buttons.where(platform:user.platform,

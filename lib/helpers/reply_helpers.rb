@@ -15,6 +15,68 @@ module MessageReplyHelpers
   ENGLISH_PLZ     = /(english)|(ingles)|(inglés)/i
   SPANISH_PLZ     = /(spanish)|(espanol)|(español)/i
 
+  # LINK_CODE       = /\A\s*@\S+\s*\z/i
+  LINK_CODE     = /\A\s*\d{3}\s*\z/i
+
+  def LinkedIn_profiles(fb_user, code)
+    # bitches!
+    return false if code.nil?
+    code = code.to_s.downcase
+
+    sms_user = User.where(code: code, platform: 'sms').first
+    if sms_user.nil?
+      sms_user = User.where(code: code, platform: 'feature').first
+    end
+    # wrangle fb_user's profile information into the same user
+    # updating the phone user though. eventually delete the facebook user so there's only one. 
+    # probably should delete the phone user because we're updating db user, y'know?
+
+    if sms_user && sms_user.id != fb_user.id
+      # we're NOT switching state_tables because we want fb_user to keep that
+      phone = sms_user.phone
+      sms_user.update(phone: nil) # otherwise we have a key validation exception
+      code = sms_user.code
+      sms_user.update(code: nil) 
+      fb_user.update(phone:           phone,
+                     code:            code,
+                     enrolled_on:     sms_user.enrolled_on,
+                     teacher_id:      sms_user.teacher_id,
+                     school_id:       sms_user.school_id,
+                     child_name:      sms_user.child_name,
+                     child_age:       sms_user.child_age)
+
+      fb_user.state_table.update(subscribed?: true)
+
+      school  = sms_user.school
+      teacher = sms_user.teacher
+
+      # connect school
+      if school
+        school.add_user(fb_user)
+        fb_user.school = school
+      end
+
+      # connect teacher
+      if teacher
+        teacher.add_user(fb_user)
+        fb_user.teacher = teacher
+      end
+
+      # destroy later because of shit
+      # DestroyerWorker.perform_in(5.minutes, sms_user.id)
+
+      puts "destroying user..."
+      sms_user.destroy
+
+      # success
+      return true
+    end
+
+    # no matching code
+    return false
+  end
+
+
   def get_reply(body, user)
     our_reply = ''
     I18n.locale = user.locale
@@ -25,6 +87,17 @@ module MessageReplyHelpers
     #   end
     # end
     case body
+    when LINK_CODE
+      # logic for connecting the person to their phone account and school....
+      if LinkedIn_profiles(user, body) && user.state_table.story_number == 0
+        puts "FROM GET_REPLY!!!"
+        StartDayWorker.perform_async(user.fb_id, platform='fb')
+        # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
+      end
+      ''
+
+      # hi simon! 
+
     when RESUBSCRIBE_MSG
       if user.state_table.subscribed? == false
         user.state_table.update(subscribed?: true,
@@ -39,6 +112,7 @@ module MessageReplyHelpers
       end
     when ENROLL_MSG
       # update story number! because you'll have just sent the first story.
+      user.update(platform: 'sms')
       user.state_table.update(subscribed?: true, story_number: 2)
       I18n.t 'enrollment.sms_optin'
     when FEATURE_PHONES

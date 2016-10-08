@@ -84,7 +84,7 @@ class ScheduleWorker
       return 
     end
 
-    # split them up into chunks of size = 3
+    # split them up into chunks of size = 3 (or 1?)
     # each of those are a second or two apart
     #   but each chunk is thirty seconds apart from the neighboring chunks
     group_size = 1.0
@@ -103,13 +103,8 @@ class ScheduleWorker
     individual_time = total_time - group_time
 
     # for each chunk, run StartDayWorker a few seconds apart. 
-    # group_delay = 30.seconds
-    # individual_delay = 5.seconds
-
     group_delay = group_time / num_groups
     individual_delay = individual_time.to_f / sms.size # where sms.size is the number of individuals
-          puts "group_delay = #{group_delay}"
-    puts "individual_delay = #{individual_delay}"
 
     group_index = 0
     individual_index = 0
@@ -121,10 +116,6 @@ class ScheduleWorker
         individual_index = 0 # reset
       end
 
-      puts "individual_index = #{individual_index}"
-      puts "group_index = #{group_index}"
-
-
       delay = (group_delay * group_index) + (individual_delay * individual_index)
       puts "delay = #{delay.inspect}"
       user = sms[i]
@@ -133,17 +124,6 @@ class ScheduleWorker
       individual_index += 1
 
     end
-
-		# filter_users(Time.now, range).each do |user|
-  #     case user.platform
-  #     when 'fb'
-  #       puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
-  #       StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
-  #     when 'sms'
-  #       puts "phone = #{user.phone}, story_number = #{user.state_table.story_number}"
-  #       StartDayWorker.perform_async(user.phone, platform='sms') if user.phone
-  #     end
-		# end
 
   end
 

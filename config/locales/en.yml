@@ -29,6 +29,9 @@ en:
     default: "Hi! I'm away now but I'll see your message soon :)"
     end_conversation: "I'll see your message by tonight! If you need more help just reply LEARN"
   scripts:
+    code:
+      enter_code: "Hi, this is StoryTime!\n\nTo get started, just reply with your school code (we sent it to you by text)"
+      success: "Great! Here's your first story :)"
     teacher_intro:
       - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
       - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
@@ -38,10 +41,13 @@ en:
       - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
     teacher_intro_sms: # we're rolling with __SCHOOL__ because people always text in thru a school
       - "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
-      - "Hi! It's __SCHOOL__. Here's another story."
+      - "Hi! It's __SCHOOL__. Here's another story from StoryTime!"
       - "Hi, here's another story from StoryTime! :)"
       - "Hi, here's another story from StoryTime!"
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
+    remind_sms:
+      - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
+      - "If you do not have Messenger just text back STORY"
     resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
     buttons:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO  
@@ -84,8 +90,8 @@ en:
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/bread/bread2.jpg
   call_to_action:
-    intro: "Hi it's __SCHOOL__ again! We hope you liked these little books.\n\nTo get more stories through Facebook, tap here and press 'Get Started':\njoinstorytime.com/go"
-    fb: "To get more stories through Facebook, tap here and press START:\n\njoinstorytime.com/go"
+    intro: "Hi it's __SCHOOL__ again! We hope you liked these little books."
+    fb: "To get more stories through Facebook, tap here and type 'start':\njoinstorytime.com/go"
 
     # (where we keep the adjusted 'espanish' urls)
   testing: 
@@ -101,6 +107,7 @@ en:
       has_school: "Hi this is __SCHOOL__! We will text you free books with StoryTime!\n\n" 
       has_none: "Hi this is StoryTime! We'll be texting you free books :)\n\n"
       sms_call_to_action: "If you do not have Messenger just text back STORY"
-      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and press 'Get Started'\njoinstorytime.com/go"
+      # fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
+      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your class code: __CODE__\njoinstorytime.com/go"
 
 
