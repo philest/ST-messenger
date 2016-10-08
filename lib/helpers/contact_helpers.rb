@@ -1,25 +1,8 @@
 require_relative '../../config/pony'
 require 'httparty'
+require_relative 'twilio_helpers'
 
 module ContactHelpers
-
-  def sms( phone_no, text, sender=ENV['ST_MAIN_NO'] )
-    HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
-      body: {
-        recipient: phone_no,
-        text: text,
-        sender: sender
-    })
-  end
-
-  def mms( phone_no, img_url, sender=ENV['ST_MAIN_NO'] )
-    HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
-      body: {
-        recipient: phone_no,
-        img_url: img_url,
-        sender: sender
-    })
-  end
 
   def email_admins(subject, body)
     Pony.mail(:to => 'phil.esterman@yale.edu,davidmcpeek1@gmail.com',
@@ -33,12 +16,13 @@ module ContactHelpers
 	def notify_admins(subject, body)
     email_admins(subject, body)
     text_body   = subject + ":\n" + body
+    david, phil = '+18186897323', '+15612125831'
     if text_body.length < 360
-      sms('+18186897323', text_body, ENV['ST_USER_REPLIES_NO']) # david
-      sms('+15612125831', text_body, ENV['ST_USER_REPLIES_NO']) # phil
+      TextingWorker.perform_async(text_body, david, ENV['ST_USER_REPLIES_NO'])
+      TextingWorker.perform_async(text_body, phil, ENV['ST_USER_REPLIES_NO'])
     else
-      sms('+18186897323', subject, ENV['ST_USER_REPLIES_NO']) # david
-      sms('+15612125831', subject, ENV['ST_USER_REPLIES_NO']) # phil
+      TextingWorker.perform_async(subject, david, ENV['ST_USER_REPLIES_NO'])
+      TextingWorker.perform_async(subject, phil, ENV['ST_USER_REPLIES_NO'])
     end
 	end
   

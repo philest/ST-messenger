@@ -50,7 +50,7 @@ class SMS < Sinatra::Base
 
     TextingWorker.perform_async(text, 
                                 recipient, 
-                                sender_no, SMS, 
+                                sender_no, SMS,
                                 'script' => script, 
                                 'sequence' => sequence, 
                                 'last_sequence'=> last_sequence) 
@@ -132,7 +132,8 @@ class SMS < Sinatra::Base
       end
       
       unless reply.nil? or reply.empty?
-        sms(phone, reply)
+        TextingWorker.perform_async(reply, phone)
+
         if reply == (I18n.t 'enrollment.sms_optin')
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
@@ -310,16 +311,19 @@ class SMS < Sinatra::Base
       if user
         # get the message to sending
         message = body.lines[1..-1].join
-        sms(phone, message, ENV['ST_MAIN_NO'])
+        TextingWorker.perform_async(message, phone, ENV['ST_MAIN_NO'])
+
         phil, david = ["5612125831", "8186897323"]
         from = params[:From][2..-1]
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          phil_reply = "Phil just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(phil_reply, david, ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          david_reply = "José David just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(david_reply, phil, ENV['ST_USER_REPLIES_NO'])
         end
       else
         puts "no user was found that matches #{phone}"
@@ -330,16 +334,18 @@ class SMS < Sinatra::Base
       user = User.where(phone: phone).first
       if user
         message = body
-        sms(phone, message, ENV['ST_MAIN_NO'])
+        TextingWorker.perform_async(message, phone, ENV['ST_MAIN_NO'])
         phil, david = ["5612125831", "8186897323"]
         from = params[:From][2..-1]
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          phil_reply = "Phil just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(phil_reply, david, ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          david_reply = "José David just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(david_reply, phil, ENV['ST_USER_REPLIES_NO'])
         end
       else
         print "no user was found that matches #{phone}... "
@@ -348,7 +354,8 @@ class SMS < Sinatra::Base
       end # if user
     else # if no REDIS 'last_textin' key exists
       puts "no one to text back to...."
-      sms(params[:From], "Message didn't send, someone may have already replied.", ENV['ST_USER_REPLIES_NO'])
+      no_send_reply = "Message didn't send, someone may have already replied."
+      TextingWorker.perform_async(no_send_reply, params[:From], ENV['ST_USER_REPLIES_NO'])
     end # if regex.match body
   end # post '/reply'
 

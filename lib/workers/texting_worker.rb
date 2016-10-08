@@ -1,4 +1,5 @@
 require_relative '../helpers/twilio_helpers'
+require_relative '../helpers/contact_helpers'
 
 class TextingWorker 
   include Sidekiq::Worker
@@ -15,11 +16,11 @@ class TextingWorker
     10 * (count + 1) # (i.e. 10, 20, 30, 40)
   end
 
-  def perform (msg, to_phone, from_phone, type, next_sequence={}) 
+  def perform (msg, to_phone, from_phone=ENV['ST_MAIN_NO'], type=SMS, next_sequence={}) 
     if type == MMS 
       # send MMS to user
       begin
-        send_mms(msg, to_phone, from_phone, next_sequence)
+        mms(msg, to_phone, from_phone, next_sequence)
         
       rescue Twilio::REST::RequestError => e
         puts "we've encountered a Twilio error."
@@ -29,7 +30,7 @@ class TextingWorker
       end
     else # SMS 
       begin
-        send_sms(msg, to_phone, from_phone, next_sequence)
+        sms(msg, to_phone, from_phone, next_sequence)
         
       rescue Twilio::REST::RequestError => e
         puts "we've encountered a Twilio error."

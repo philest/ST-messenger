@@ -27,7 +27,7 @@ module TwilioTextingHelpers
   MMS_SLEEP = 20
 
   # Wrappers for Twilio calls.
-  def send_sms(body, to_phone, from_phone, sequence_params={})
+  def sms(body, to_phone, from_phone, sequence_params={})
     client = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
 
     script        = sequence_params['script']
@@ -60,7 +60,7 @@ module TwilioTextingHelpers
     # TODO: collect error_code and status information and react accordingly.
   end
 
-  def send_mms(media_url, to_phone, from_phone, sequence_params={})
+  def mms(media_url, to_phone, from_phone, sequence_params={})
     client = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
 
     script        = sequence_params['script']
@@ -143,9 +143,9 @@ module TwilioTextingHelpers
   end
 
   def text_admins(body)
-    send_sms(body, "+15612125831", USER_REPLIES_NO)
-    send_sms(body, "+18186897323", USER_REPLIES_NO)
-    send_sms(body, "+13013328953", USER_REPLIES_NO)
+    sms(body, "+15612125831", USER_REPLIES_NO)
+    sms(body, "+18186897323", USER_REPLIES_NO)
+    sms(body, "+13013328953", USER_REPLIES_NO)
   end
 
   # Does the carrier need 160-char segments? 
