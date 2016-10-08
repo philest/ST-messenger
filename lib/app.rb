@@ -8,6 +8,7 @@
 require 'sinatra/base'
 require 'sidekiq'
 require 'sidekiq/web'
+require 'twilio-ruby'
 # require_relative '../config/environment'
 require 'pony'
 require 'dotenv'
@@ -17,6 +18,7 @@ require_relative 'workers'
 require 'httparty'
 require_relative 'helpers/contact_helpers' 
 require_relative 'helpers/reply_helpers'
+require_relative 'helpers/twilio_helpers'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
@@ -25,6 +27,7 @@ require_relative '../config/initializers/redis'
 class SMS < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
+  include TwilioTextingHelpers
 
   use Airbrake::Rack::Middleware
 
@@ -34,6 +37,65 @@ class SMS < Sinatra::Base
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
+
+  # TODO: change this url to /sms.....
+  post '/txt' do
+    # TODO: check that these values are valid/exist 
+    text          = params[:text]
+    recipient     = params[:recipient]
+    script        = params[:script]
+    sequence      = params[:next_sequence]
+    last_sequence = params[:last_sequence]
+    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
+
+    TextingWorker.perform_async(text, 
+                                recipient, 
+                                sender_no, SMS, 
+                                'script' => script, 
+                                'sequence' => sequence, 
+                                'last_sequence'=> last_sequence) 
+
+    # TODO: Return the status of the Twilio client response to Birdv
+
+    status 200
+
+  end
+
+  post '/mms' do
+    img_url       = params[:img_url]
+    recipient     = params[:recipient]
+    script        = params[:script]
+    sequence      = params[:next_sequence]
+    last_sequence = params[:last_sequence]
+    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
+
+    TextingWorker.perform_async(img_url, 
+                                recipient, 
+                                sender_no, MMS, 
+                                'script' => script, 
+                                'sequence' => sequence, 
+                                'last_sequence'=> last_sequence) 
+
+    # TODO: Return the status of the Twilio client response to Birdv
+
+    status 200
+  end
+
+
+  get '/delivery_status' do
+    begin 
+      messageSid    = params['messageSid']
+      client        = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
+      message       = client.account.messages.get( messageSid )
+      status        = message.status
+      return status
+    rescue => e
+      p "MessageSID: #{messageSid} - " + e.message
+      email_admins("st-enroll: something went wrong with MessageSID: #{messageSid}", e.message)
+    end
+  end
+
+
  
   post '/sms' do
     content_type 'text/xml'
@@ -424,8 +486,6 @@ class SMS < Sinatra::Base
     end
     twiml.text
   end
-
-
 
 
 end # class SMS < Sinatra::Base
