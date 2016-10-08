@@ -1,11 +1,11 @@
 Birdv::DSL::ScriptClient.new_script 'remind', 'feature' do
-  sequence 'remind' do |recipient|
+  sequence 'remind' do |phone_no|
     # greeting with 5 second delay
     txt = 'scripts.remind_sms[0]'
     send_sms phone_no, txt, 'remind', 'remind2'
   end
 
-  sequence 'remind2' do |recipient|
+  sequence 'remind2' do |phone_no|
     txt = 'scripts.remind_sms[1]' 
     send_sms phone_no, txt, 'remind2'
   end

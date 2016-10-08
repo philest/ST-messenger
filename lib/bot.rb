@@ -66,7 +66,9 @@ DEMO          = /\A\s*demo\s*\z/i
 END_DEMO      = /\A\s*end\s*demo\s*\z/i
 MORE_STORIES  = /\A\s*more\s*\z/i 
 JOIN          = /join/i
-link_code     = /\A\s*@\S+\s*\z/i
+# link_code     = /\A\s*@\S+\s*\z/i
+link_code     = /\A\s*\d{3}\s*\z/i
+
 
 #
 # i.e. when user sends the bot a message.

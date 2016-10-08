@@ -12,12 +12,13 @@ module MessageReplyHelpers
   RESUBSCRIBE_MSG = /(\A\s*GO\s*\z)|(libros)/i
   ENROLL_MSG      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
-  LINK_CODE       = /\A\s*@\S+\s*\z/i
+  # LINK_CODE       = /\A\s*@\S+\s*\z/i
+  LINK_CODE     = /\A\s*\d{3}\s*\z/i
 
   def LinkedIn_profiles(fb_user, code)
     # bitches!
     return false if code.nil?
-    code.downcase!
+    code = code.to_s.downcase
 
     sms_user = User.where(code: code, platform: 'sms').first
     if sms_user.nil?
@@ -107,6 +108,7 @@ module MessageReplyHelpers
       end
     when ENROLL_MSG
       # update story number! because you'll have just sent the first story.
+      user.update(platform: 'sms')
       user.state_table.update(subscribed?: true, story_number: 2)
       I18n.t 'enrollment.sms_optin'
     when FEATURE_PHONES

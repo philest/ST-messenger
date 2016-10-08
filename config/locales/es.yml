@@ -41,6 +41,9 @@ es:
       - "Hola! Aquí viene otro cuento de StoryTime :)"
 
     remind: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
+    remind_sms:
+      - "Hola! Es StoryTime. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+      - "Si no tenga Facebook Messenger, responde con CUENTO"
     resubscribe: "¡Órale! Seguirás recibiendo cuentos.\n\nAquí está el siguiente :)"
     buttons:
       unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
@@ -98,4 +101,4 @@ es:
       has_school: "Hola, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!\n\n" 
       has_none: "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
       sms_call_to_action: "Si no tenga Facebook Messenger, responde con CUENTO"
-      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger.\n\nVisite este enlace y escribe 'Empezar':\njoinstorytime.com/go"
+      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger.\n\nVisite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"

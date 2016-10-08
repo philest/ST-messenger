@@ -98,8 +98,6 @@ class StartDayWorker
         # otherwise, we haven't even sent out our first story to this poor sms user
         # and we ought to, for them, y'know?
       end
-
-
     end
 
     read_yesterday_story = read_yesterday_story?(u)

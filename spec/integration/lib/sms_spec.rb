@@ -78,6 +78,7 @@ describe 'sms' do
       @day1 = Birdv::DSL::ScriptClient.scripts['sms']["day1"]
       @day2 = Birdv::DSL::ScriptClient.scripts['sms']["day2"]
       @day3 = Birdv::DSL::ScriptClient.scripts['sms']["day3"]
+      @remind = Birdv::DSL::ScriptClient.scripts['sms']["remind"]
 
       @sw = ScheduleWorker.new
 
@@ -122,6 +123,8 @@ describe 'sms' do
     end
 
     before(:each) do
+      Timecop.freeze(Time.new(2016, 6, 26, 23, 0, 0, 0))
+
       Sidekiq::Testing::inline! do
         post '/sms', @sms_params
         post '/', @enroll_params
@@ -149,9 +152,7 @@ describe 'sms' do
       Sidekiq::Testing.inline! do
         post '/sms', sms_params
       end
-
     end
-
 
     it 'adds a user to the db, but unsubscribed' do
 
@@ -206,6 +207,54 @@ describe 'sms' do
     end
 
 
+    it 'sends a reminder text to peeps who have not texted in anything' do
+      # @u1 is david, he's our guy
+      expect(@u1.enrolled_on).to eq Time.new(2016, 6, 26, 23, 0, 0, 0)
+      Timecop.freeze(Time.new(2016, 6, 29, 23, 0, 0, 0))
+
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, (0..7).to_a, &block)
+      end
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      expect(@remind).to receive(:run_sequence).with('8186897323', :remind)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform
+      end
+
+    end
+
+    it "automatically enrolls peeps into SMS if they haven't responded after 8 days" do
+      Timecop.freeze(Time.new(2016, 7, 4, 23, 0, 0, 0))
+
+      @u1.reload
+      expect(@u1.state_table.subscribed?).to be false
+
+      allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, (0..7).to_a, &block)
+      end
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "running sequence with args #{args}"
+      end
+
+      expect(@day2).to receive(:run_sequence).with('8186897323', :init)
+
+      Sidekiq::Testing.inline! do
+        @sw.perform
+      end
+
+      @u1.reload
+      expect(@u1.state_table.subscribed?).to be true
+      expect(@u1.state_table.story_number).to eq 2
+    end
+
+
+
     it 'does the first night of the program correctly for @u1 (on story 2) and @u2 (on story 1)' do
       Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0)) # Monday
       allow(@sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
@@ -236,11 +285,8 @@ describe 'sms' do
         @sw.perform
       end
 
-
-
       expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 1
       expect(User.where(phone: '8186897323').first.state_table.story_number).to eq 2
-
 
       # Tuesday, we're not sending any over!
       Timecop.freeze(Time.now + 1.days)

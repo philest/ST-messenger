@@ -41,7 +41,7 @@ en:
       - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
     teacher_intro_sms: # we're rolling with __SCHOOL__ because people always text in thru a school
       - "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
-      - "Hi! It's __SCHOOL__. Here's another story."
+      - "Hi! It's __SCHOOL__. Here's another story from StoryTime!"
       - "Hi, here's another story from StoryTime! :)"
       - "Hi, here's another story from StoryTime!"
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
