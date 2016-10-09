@@ -26,7 +26,7 @@ use Airbrake::Rack::Middleware
 
 run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,
-  '/' => SMS,
+  '/' => TextApi,
   '/sidekiq' => Sidekiq::Web
 })
 

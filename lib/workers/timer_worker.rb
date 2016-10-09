@@ -3,6 +3,19 @@ require 'httparty'
 class TimerWorker
   include Sidekiq::Worker
 
+  def delivery_status(messageSid)
+    begin 
+      client        = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
+      message       = client.account.messages.get( messageSid )
+      status        = message.status
+      return status
+    rescue => e
+      p "MessageSID: #{messageSid} - " + e.message
+      email_admins("st-enroll: something went wrong with MessageSID: #{messageSid}", e.message)
+    end
+  end
+
+
   def perform(messageSid, phone, script_name, next_sequence)
     puts "******************************************"
     puts "WE'RE IN THE TIMERWORKER BITCHES!!!!!\n\n"
@@ -10,7 +23,8 @@ class TimerWorker
     puts "next_sequence = #{next_sequence}"
     puts "******************************************"
 
-    res = HTTParty.get("#{ENV['ST_ENROLL_WEBHOOK']}/delivery_status?messageSid=#{messageSid}")
+    # res = HTTParty.get("#{ENV['ST_ENROLL_WEBHOOK']}/delivery_status?messageSid=#{messageSid}")
+    res = delivery_status(messageSid)
     
     if res.code == 200
       status = res.response.body

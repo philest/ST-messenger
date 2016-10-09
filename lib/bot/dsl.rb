@@ -3,6 +3,7 @@ require_relative '../helpers/contact_helpers'
 require_relative '../workers/message_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
+require_relative '../helpers/twilio_helpers'
 require_relative 'fb_dsl.rb'
 require_relative 'sms_dsl.rb'
 
@@ -55,7 +56,7 @@ module Birdv
         if platform == 'fb'
           self.extend(FB)
         elsif platform == 'sms' or platform == 'feature'
-          self.extend(SMS)
+          self.extend(Texting)
         end
 
         # TODO: something about this

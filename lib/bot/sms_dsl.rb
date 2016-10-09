@@ -2,7 +2,7 @@ module Birdv
 
   module DSL
 
-    module SMS
+    module Texting
 
       def get_curriculum_version(recipient)
         user = User.where(phone: recipient).first
@@ -146,13 +146,6 @@ module Birdv
         return false
       end # translate_mms
 
-      # perhaps add a sequence_name, script_name here and include those params in the post for the callback
-
-      # def next_sequence( phone, sequence_name )
-      #   user = User.where( phone: phone ).first
-      #   user.state_table.update( next_sequence: sequence_name )
-      #   return true # or whatever
-      # end
 
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first
@@ -174,15 +167,13 @@ module Birdv
           puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
           return
         end
-        # TODO: change this url to /sms.....
-        HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
-          body: {
-            recipient: phone,
-            text: text, 
-            script: @script_name,
-            next_sequence: next_sequence_name,
-            last_sequence: last_sequence_name
-        })
+
+        TextingWorker.perform_async(text, phone, ENV['ST_MAIN_NO'], 'SMS',
+                                'script' => @script_name, 
+                                'sequence' => next_sequence_name, 
+                                'last_sequence'=> last_sequence_name) 
+
+
       end
 
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
@@ -207,45 +198,13 @@ module Birdv
           return
         end
 
-        HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
-          body: {
-            recipient: phone,
-            img_url: img_url,
-            script: @script_name,
-            next_sequence: next_sequence_name,
-            last_sequence: last_sequence_name
-        })
+        TextingWorker.perform_async(img_url, phone, ENV['ST_MAIN_NO'], 'MMS',
+                                'script' => @script_name, 
+                                'sequence' => next_sequence_name, 
+                                'last_sequence'=> last_sequence_name) 
+
       end
 
-      # need to have a smarter way to update last_story_read
-      # what if we went back to the send_story function which handled everything? 
-      # for now, just update it somewhere
-
-
-      # def send_helper(phone, to_send, script_day, type)
-      #   # create a story() function for mms, which incorporates delays.
-      #   case type
-      #   when 'sms'
-
-      #     text = translate_sms( phone, to_send )
-      #     if text == false
-      #       puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
-      #       return
-      #     end
-      #     HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/txt", 
-      #       body: {
-      #         recipient: phone,
-      #         text: text
-      #     })
-
-      #   when 'mms'
-      #     HTTParty.post("#{ENV['ST_ENROLL_WEBHOOK']}/mms", 
-      #       body: {
-      #         recipient: phone,
-      #         img_url: to_send
-      #     })
-      #   end
-      # end # send_helper
 
 
     end # module MMS

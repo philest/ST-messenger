@@ -24,7 +24,7 @@ require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 
 
-class SMS < Sinatra::Base
+class TextApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
   include TwilioTextingHelpers
@@ -81,7 +81,6 @@ class SMS < Sinatra::Base
     status 200
   end
 
-
   get '/delivery_status' do
     begin 
       messageSid    = params['messageSid']
@@ -95,11 +94,8 @@ class SMS < Sinatra::Base
     end
   end
 
-
- 
   post '/sms' do
     content_type 'text/xml'
-
     # begin
     # check if user is enrolled in the system
     if params[:From].nil?
