@@ -23,6 +23,7 @@ module ContactHelpers
     else
       TextingWorker.perform_async(subject, david, ENV['ST_USER_REPLIES_NO'])
       TextingWorker.perform_async(subject, phil, ENV['ST_USER_REPLIES_NO'])
+
     end
 	end
   

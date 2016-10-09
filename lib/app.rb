@@ -144,6 +144,7 @@ class SMS < Sinatra::Base
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone
 
+
       if !is_us 
         notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
         unless reply.nil? or reply.empty?

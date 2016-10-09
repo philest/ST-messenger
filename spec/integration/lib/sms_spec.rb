@@ -97,8 +97,24 @@ describe 'sms' do
         puts "stubbing SMS with #{args}"
       end
 
+      allow_any_instance_of(TextingWorker).to receive(:perform).and_wrap_original do |original_method, *args|
+        puts "stubbing TimerWorker with #{args}"
+      end
+
+      allow_any_instance_of(MessageWorker).to receive(:perform).and_wrap_original do |original_method, *args|
+        puts "stubbing TimerWorker with #{args}"
+      end
+
       allow_any_instance_of(SMS).to  receive(:mms).and_wrap_original do |original_method, *args|
         puts "stubbing MMS with #{args}"
+      end
+
+      allow_any_instance_of(SMS).to  receive(:mms).and_wrap_original do |original_method, *args|
+        puts "stubbing MMS with #{args}"
+      end
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args|
+        puts "running sequence with #{args}"
       end
 
       allow(@day1).to receive(:send_sms).and_wrap_original do |original_method, *args|
@@ -119,6 +135,10 @@ describe 'sms' do
       allow(@day3).to receive(:send_mms).and_wrap_original do |original_method, *args|
         puts "stubbing send_mms() with #{args}"
       end
+
+
+
+
 
     end
 

@@ -49,7 +49,7 @@ module TwilioTextingHelpers
        res = client.account.messages.create(
         :body => body,
         :to => to_phone,     
-        :from => from_phone,
+        :from => from_phone
       )
 
     end
