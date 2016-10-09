@@ -8,6 +8,7 @@
 require 'sinatra/base'
 require 'sidekiq'
 require 'sidekiq/web'
+require 'twilio-ruby'
 # require_relative '../config/environment'
 require 'pony'
 require 'dotenv'
@@ -17,14 +18,16 @@ require_relative 'workers'
 require 'httparty'
 require_relative 'helpers/contact_helpers' 
 require_relative 'helpers/reply_helpers'
+require_relative 'helpers/twilio_helpers'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 
 
-class SMS < Sinatra::Base
+class TextApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
+  include TwilioTextingHelpers
 
   use Airbrake::Rack::Middleware
 
@@ -34,10 +37,65 @@ class SMS < Sinatra::Base
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
- 
+
+  # TODO: change this url to /sms.....
+  post '/txt' do
+    # TODO: check that these values are valid/exist 
+    text          = params[:text]
+    recipient     = params[:recipient]
+    script        = params[:script]
+    sequence      = params[:next_sequence]
+    last_sequence = params[:last_sequence]
+    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
+
+    TextingWorker.perform_async(text, 
+                                recipient, 
+                                sender_no, SMS,
+                                'script' => script, 
+                                'sequence' => sequence, 
+                                'last_sequence'=> last_sequence) 
+
+    # TODO: Return the status of the Twilio client response to Birdv
+
+    status 200
+
+  end
+
+  post '/mms' do
+    img_url       = params[:img_url]
+    recipient     = params[:recipient]
+    script        = params[:script]
+    sequence      = params[:next_sequence]
+    last_sequence = params[:last_sequence]
+    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
+
+    TextingWorker.perform_async(img_url, 
+                                recipient, 
+                                sender_no, MMS, 
+                                'script' => script, 
+                                'sequence' => sequence, 
+                                'last_sequence'=> last_sequence) 
+
+    # TODO: Return the status of the Twilio client response to Birdv
+
+    status 200
+  end
+
+  get '/delivery_status' do
+    begin 
+      messageSid    = params['messageSid']
+      client        = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
+      message       = client.account.messages.get( messageSid )
+      status        = message.status
+      return status
+    rescue => e
+      p "MessageSID: #{messageSid} - " + e.message
+      email_admins("st-enroll: something went wrong with MessageSID: #{messageSid}", e.message)
+    end
+  end
+
   post '/sms' do
     content_type 'text/xml'
-
     # begin
     # check if user is enrolled in the system
     if params[:From].nil?
@@ -70,7 +128,8 @@ class SMS < Sinatra::Base
       end
       
       unless reply.nil? or reply.empty?
-        sms(phone, reply)
+        TextingWorker.perform_async(reply, phone)
+
         if reply == (I18n.t 'enrollment.sms_optin')
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
@@ -80,6 +139,7 @@ class SMS < Sinatra::Base
 
       our_phones = ["5612125831", "8186897323", "3013328953"]
       is_us = our_phones.include? phone
+
 
       if !is_us 
         notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
@@ -248,16 +308,19 @@ class SMS < Sinatra::Base
       if user
         # get the message to sending
         message = body.lines[1..-1].join
-        sms(phone, message, ENV['ST_MAIN_NO'])
+        TextingWorker.perform_async(message, phone, ENV['ST_MAIN_NO'])
+
         phil, david = ["5612125831", "8186897323"]
         from = params[:From][2..-1]
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          phil_reply = "Phil just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(phil_reply, david, ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          david_reply = "José David just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(david_reply, phil, ENV['ST_USER_REPLIES_NO'])
         end
       else
         puts "no user was found that matches #{phone}"
@@ -268,16 +331,18 @@ class SMS < Sinatra::Base
       user = User.where(phone: phone).first
       if user
         message = body
-        sms(phone, message, ENV['ST_MAIN_NO'])
+        TextingWorker.perform_async(message, phone, ENV['ST_MAIN_NO'])
         phil, david = ["5612125831", "8186897323"]
         from = params[:From][2..-1]
         case from
         when phil
           puts "send message to david"
-          sms(david, "Phil just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          phil_reply = "Phil just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(phil_reply, david, ENV['ST_USER_REPLIES_NO'])
         when david
           puts "send message to phil"
-          sms(phil, "José David just replied to #{phone}. He wrote: \"#{message}\"", ENV['ST_USER_REPLIES_NO'])
+          david_reply = "José David just replied to #{phone}. He wrote: \"#{message}\""
+          TextingWorker.perform_async(david_reply, phil, ENV['ST_USER_REPLIES_NO'])
         end
       else
         print "no user was found that matches #{phone}... "
@@ -286,7 +351,8 @@ class SMS < Sinatra::Base
       end # if user
     else # if no REDIS 'last_textin' key exists
       puts "no one to text back to...."
-      sms(params[:From], "Message didn't send, someone may have already replied.", ENV['ST_USER_REPLIES_NO'])
+      no_send_reply = "Message didn't send, someone may have already replied."
+      TextingWorker.perform_async(no_send_reply, params[:From], ENV['ST_USER_REPLIES_NO'])
     end # if regex.match body
   end # post '/reply'
 
@@ -424,8 +490,6 @@ class SMS < Sinatra::Base
     end
     twiml.text
   end
-
-
 
 
 end # class SMS < Sinatra::Base
