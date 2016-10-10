@@ -33,8 +33,8 @@ en:
       enter_code: "Hi, this is StoryTime!\n\nTo get started, just reply with your school code (we sent it to you by text)"
       success: "Great! Here's your first story :)"
     teacher_intro:
-      - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
-      - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
+      - "Hi __PARENT__, this is __SCHOOL__. We'll be sending you free books for you and your child :)"
+      - "Hi __PARENT__, it's __SCHOOL__. Here's another story!"
       - "Hi __PARENT__, here's another story :)"
       - "Hi __PARENT__, here's another story!"
       - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
@@ -46,7 +46,7 @@ en:
       - "Hi, here's another story from StoryTime!"
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     remind_sms:
-      - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
+      - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
       - "If you do not have Messenger just text back STORY"
     resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
     buttons:

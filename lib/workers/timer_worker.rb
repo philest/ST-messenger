@@ -54,7 +54,6 @@ class TimerWorker
 
     end
 
-
   end
 
 end

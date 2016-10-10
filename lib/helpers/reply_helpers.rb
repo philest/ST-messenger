@@ -18,6 +18,7 @@ module MessageReplyHelpers
   # LINK_CODE       = /\A\s*@\S+\s*\z/i
   LINK_CODE     = /\A\s*\d{3}\s*\z/i
 
+
   def LinkedIn_profiles(fb_user, code)
     # bitches!
     return false if code.nil?
@@ -80,12 +81,19 @@ module MessageReplyHelpers
   def get_reply(body, user)
     our_reply = ''
     I18n.locale = user.locale
-    # puts "body.match ENROLL_MSG = #{body.match ENROLL_MSG}"
-    # if user.state_table.subscribed? == false
-    #   unless body.match RESUBSCRIBE_MSG or body.match ENROLL_MSG
-    #     return
-    #   end
-    # end
+    
+    if user.state_table.subscribed? == false
+      unless body.match RESUBSCRIBE_MSG or 
+             body.match ENROLL_MSG or 
+             body.match LINK_CODE or 
+             body.match FEATURE_PHONES
+        puts "we are unsubscribed, so we're not gonna send a reply"
+        return
+      end
+
+    end
+
+
     case body
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
@@ -95,9 +103,6 @@ module MessageReplyHelpers
         # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
       end
       ''
-
-      # hi simon! 
-
     when RESUBSCRIBE_MSG
       if user.state_table.subscribed? == false
         user.state_table.update(subscribed?: true,

@@ -47,7 +47,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   sequence 'birdstorysequence' do |recipient|
-    send recipient, story({story: 'birddemo'})
+    send recipient, story({story: 'demobird'})
     delay recipient, 'seedgreeting', 12.seconds
   end
 
@@ -58,7 +58,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   sequence 'seedstorysequence' do |recipient|
-    send recipient, story({story: 'seeddemo'})
+    send recipient, story({story: 'demoseed'})
     delay recipient, 'outromessage', 10.seconds
   end
 
