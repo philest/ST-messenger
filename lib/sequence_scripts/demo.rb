@@ -39,8 +39,20 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
     buttons:  [postback_button('*Tap here!', script_payload(:antsstorysequence))]
   })
 
+
+  sequence 'seedgreeting' do |recipient|
+    txt = "*Hi Ms. Jones,\nJasmine and the class watered our garden today! Here’s tonight's story about growing a magic tree.\n-Ms. Wilson"
+    send recipient, text({text:txt})
+    send recipient, button({name:'tap_here_seed'})
+  end
+
+  sequence 'seedstorysequence' do |recipient|
+    send recipient, story({story: 'demoseed'})
+    delay recipient, 'birdgreeting', 10.seconds
+  end
+
   sequence 'birdgreeting' do |recipient|
-    txt = "*Hi Ms. Jones, today in class we talked about birds, so I wanted to share this story with you and Jasmine tonight!\n-Ms. Wilson"
+    txt = "*Hi Ms. Jones,\nToday in class we talked about birds, so I wanted to share this story with you and Jasmine tonight!\n-Ms. Wilson"
     send recipient, text({text:txt})
     send recipient, button({name:'tap_here_bird'})
     unsubscribe_demo recipient
@@ -48,18 +60,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
 
   sequence 'birdstorysequence' do |recipient|
     send recipient, story({story: 'demoBird'})
-    delay recipient, 'seedgreeting', 12.seconds
-  end
-
-  sequence 'seedgreeting' do |recipient|
-    txt = "*Jasmine and the class watered our garden today! Here’s tonight's story about growing a magic tree.\n-Ms. Wilson"
-    send recipient, text({text:txt})
-    send recipient, button({name:'tap_here_seed'})
-  end
-
-  sequence 'seedstorysequence' do |recipient|
-    send recipient, story({story: 'demoseed'})
-    delay recipient, 'outromessage', 10.seconds
+    delay recipient, 'outromessage', 12.seconds
   end
 
   sequence 'outromessage' do |recipient|

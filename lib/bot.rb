@@ -106,7 +106,7 @@ Bot.on :message do |message|
   else # user has been enrolled already...
       case message.text
       when DEMO
-        MessageWorker.perform_async(sender_id, 'demo', :birdgreeting, 'fb')
+        MessageWorker.perform_async(sender_id, 'demo', :seedgreeting, 'fb')
         REDIS.set(db_user.fb_id + "_demo_storyindex", 0)
       when END_DEMO
         MessageWorker.perform_async(sender_id, 'demo', :enddemo, 'fb')
