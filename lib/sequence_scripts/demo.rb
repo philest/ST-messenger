@@ -40,7 +40,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   })
 
   sequence 'birdgreeting' do |recipient|
-    txt = "*Today in class Jasmine told us all about her baby bird, so I wanted to share this story tonight :) -Ms. Wilson"
+    txt = "*Hi Ms. Jones, today in class we talked about birds, so I wanted to share this story with you and Jasmine tonight!\n-Ms. Wilson"
     send recipient, text({text:txt})
     send recipient, button({name:'tap_here_bird'})
     unsubscribe_demo recipient
@@ -52,7 +52,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   sequence 'seedgreeting' do |recipient|
-    txt = "*Jasmine and the class watered our garden today! Here’s tonight's story about growing a magic tree. -Ms. Wilson"
+    txt = "*Jasmine and the class watered our garden today! Here’s tonight's story about growing a magic tree.\n-Ms. Wilson"
     send recipient, text({text:txt})
     send recipient, button({name:'tap_here_seed'})
   end
@@ -63,7 +63,7 @@ Birdv::DSL::ScriptClient.new_script 'demo', 'fb' do
   end
 
   sequence 'outromessage' do |recipient|
-    txt = "*Jasmine has been getting a lot stronger at sounding out letters. This reading is really helping. Thank you mom :)"
+    txt = "*Jasmine has been getting a lot stronger at sounding out letters. This reading is really helping. Thank you mom!\n-Ms. Wilson"
     send recipient, text({text: txt})
   end
 
