@@ -8,7 +8,7 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
     end
-    
+
     create_table(:schema_info) do
       Integer :version, :default=>0, :null=>false
     end
@@ -30,10 +30,11 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
       foreign_key :district_id, :districts, :key=>[:id]
-      String :code, :default=>"read\\d+", :text=>true
+      String :code, :default=>"read|leer", :text=>true
       String :timezone, :default=>"Eastern Time (US & Canada)", :text=>true
       String :signature, :text=>true
       Float :tz_offset
+      Integer :total_users
     end
     
     create_table(:school_sessions) do
@@ -58,7 +59,9 @@ Sequel.migration do
       foreign_key :school_id, :schools, :key=>[:id]
       String :prefix, :text=>true
       String :signature, :text=>true
+      String :code, :text=>true
       
+      index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true
       index [:fb_id], :name=>:teachers_fb_id_key, :unique=>true
       index [:phone], :name=>:teachers_phone_key, :unique=>true
@@ -105,7 +108,7 @@ Sequel.migration do
       Integer :user_id
       String :last_sequence_seen, :text=>true
       DateTime :updated_at
-      Integer :story_number, :default=>1
+      Integer :story_number, :default=>0
     end
     
     create_table(:users, :ignore_index_errors=>true) do
@@ -133,7 +136,9 @@ Sequel.migration do
       foreign_key :school_id, :schools, :key=>[:id]
       String :platform, :default=>"fb", :text=>true
       Float :tz_offset
+      String :code, :text=>true
       
+      index [:code], :name=>:users_code_key, :unique=>true
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end

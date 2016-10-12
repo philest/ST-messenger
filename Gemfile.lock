@@ -45,6 +45,10 @@ GEM
     fuubar (2.2.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
+    gruff (0.7.0)
+      rmagick (~> 2.13, >= 2.13.4)
+    gruff (0.7.0-java)
+      rmagick4j (~> 0.3, >= 0.3.9)
     hashdiff (0.3.0)
     htmlentities (4.3.4)
     httparty (0.13.7)
@@ -96,6 +100,8 @@ GEM
       rack (>= 1.0)
     rake (11.1.2)
     redis (3.3.0)
+    rmagick (2.16.0)
+    rmagick4j (0.4.0-java)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -163,6 +169,7 @@ DEPENDENCIES
   factory_girl
   fakeredis
   fuubar
+  gruff
   httparty
   i18n
   json

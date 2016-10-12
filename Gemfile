@@ -23,6 +23,8 @@ ruby '2.3.1'
 
 # end
 
+gem 'gruff'
+
 gem 'pg'
 
 
