@@ -3,44 +3,48 @@ require 'gruff'
 require 'fileutils'
 
 
+class Stats
+  attr_accessor :name, :users, :start_date, :dir, :time_interval
+
+  def initialize(name, user_query, start_date, dir="", time_interval=1.day)
+    @name = name
+    @users = user_query
+    @start_date = start_date
+    @dir = dir
+    @time_interval = time_interval
+  end
+
+  def draw_graph(graph, url)
 
 
-class SchoolStats
-  attr_accessor :school, :users
+  end
 
-  def initialize(name)
-    @school = School.where(name: name).first
-    @users = User.where(school_id: @school.id)
-  end 
-
-
-  def growth(opt="all")
-    start = school.created_at
+  def growth
     today = Time.now + 1.week
-
     g = Gruff::Line.new
-    g.title = "Enrollment over time: #{school.name}"
+    g.title = "Enrollment over time: #{name}"
     g.labels = {}
     enrollment_growth = []
 
-
     percent = Gruff::Line.new
-    percent.title = 'Growth over time (%)'
+    percent.title = "\% growth over time: #{name}"
     percent_growth = []
 
     r = Gruff::Line.new
-    r.title = "Growth rate (users/week)"
+    r.title = "Growth rate (users/week): #{name}"
     growth_rate = []
 
     date_index = 0
 
     # the first day any user enrolled in this school
-    date = users.where{enrolled_on >= start}.min(:enrolled_on)
-
-    time_interval = 1.day
+    puts "start_date = #{@start_date}"
+    puts "users.count = #{users.count}"
+    puts "query = #{@users.where{enrolled_on >= @start_date}.count}"
+    date = users.where{enrolled_on >= @start_date}.min(:enrolled_on)
+    puts "date = #{date}"
 
     # seed with the users who enrolled in the first time_interval
-    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + time_interval))}.count
+    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + @time_interval))}.count
 
     # begin after those initial users have already gone
     date += time_interval
@@ -64,42 +68,133 @@ class SchoolStats
     end
 
     percent.labels = r.labels = g.labels 
-    percent.data "#{school.name} growth", percent_growth
+    percent.data "#{name} percentage growth", percent_growth
 
-    r.data "#{school.name} growth rate", growth_rate
+    r.data "#{name} growth rate", growth_rate
 
-    g.data "#{school.name} users", enrollment_growth
+    g.data "#{name} users", enrollment_growth
 
-
-    dirname = "graphs/schools/#{school.name}/"
+    dirname = "graphs/#{dir}"
     unless File.directory?(dirname)
       FileUtils.mkdir_p(dirname)
     end
 
-    base_url = "graphs/schools/#{school.name}/"
+    base_url = "graphs/#{dir}/"
 
-    case opt
-    when 'percent'
-      percent.write("#{base_url}growth.png")
-
-    when 'absolute', 'abs'
-      g.write("#{base_url}enrollment.png")
-
-    when 'rate'
-      r.write("#{base_url}growth_rate.png")
-    else
-      percent.write("#{base_url}growth.png")
-      g.write("#{base_url}enrollment.png")
-      r.write("#{base_url}growth_rate.png")
-
-    end
-    
+    percent.write("#{base_url}growth.png")
+    g.write("#{base_url}enrollment.png")
+    r.write("#{base_url}growth_rate.png")
 
   end
+
+end
+
+class SchoolStats < Stats
+  # attr_accessor :name, :users, :start_date, :dir, :time_interval
+  def initialize(school_name)
+    school = School.where(name: school_name).first
+    users = User.where(school_id: school.id)
+    start_date = school.created_at
+    # maybe do something to calculate a better time interval?
+    super(school_name, users, start_date, dir="schools2/#{school_name}", time_interval=1.day)
+  end
+
 end
 
 ywca = SchoolStats.new("New Haven Free Public Library")
 ywca.growth
+
+
+# class SchoolStats
+#   attr_accessor :school, :users
+
+#   def initialize(name)
+#     @school = School.where(name: name).first
+#     @users = User.where(school_id: @school.id)
+#   end 
+
+#   def growth(opt="all")
+#     start = school.created_at
+#     today = Time.now + 1.week
+
+#     g = Gruff::Line.new
+#     g.title = "Enrollment over time: #{school.name}"
+#     g.labels = {}
+#     enrollment_growth = []
+
+#     percent = Gruff::Line.new
+#     percent.title = 'Growth over time (%)'
+#     percent_growth = []
+
+#     r = Gruff::Line.new
+#     r.title = "Growth rate (users/week)"
+#     growth_rate = []
+
+#     date_index = 0
+
+#     # the first day any user enrolled in this school
+#     date = users.where{enrolled_on >= start}.min(:enrolled_on)
+
+#     time_interval = 1.day
+
+#     # seed with the users who enrolled in the first time_interval
+#     prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + time_interval))}.count
+
+#     # begin after those initial users have already gone
+#     date += time_interval
+
+#     puts "prev_week = #{prev_week}"
+#     # prev_week = 1
+#     while date < today
+#       formatted_date = "#{date.month}/#{date.day}"
+#       g.labels[date_index]  = formatted_date
+
+#        # enrollment for everyone
+#       enrollment = users.where{enrolled_on <= date}.count
+#       enrollment_growth << enrollment
+#       percent_growth << ((enrollment - prev_week) / prev_week.to_f ) * 100
+
+#       growth_rate << (enrollment - prev_week)
+
+#       date_index += 1
+#       date += 1.week
+#       prev_week = enrollment
+#     end
+
+#     percent.labels = r.labels = g.labels 
+#     percent.data "#{school.name} growth", percent_growth
+
+#     r.data "#{school.name} growth rate", growth_rate
+
+#     g.data "#{school.name} users", enrollment_growth
+
+#     dirname = "graphs/schools/#{school.name}/"
+#     unless File.directory?(dirname)
+#       FileUtils.mkdir_p(dirname)
+#     end
+
+#     base_url = "graphs/schools/#{school.name}/"
+
+#     case opt
+#     when 'percent'
+#       percent.write("#{base_url}growth.png")
+
+#     when 'absolute', 'abs'
+#       g.write("#{base_url}enrollment.png")
+
+#     when 'rate'
+#       r.write("#{base_url}growth_rate.png")
+#     else
+#       percent.write("#{base_url}growth.png")
+#       g.write("#{base_url}enrollment.png")
+#       r.write("#{base_url}growth_rate.png")
+
+#     end
+    
+#   end
+# end
+
+
 
 
 class AllUsers
@@ -131,11 +226,14 @@ class AllUsers
     g.title = 'Enrollment over time'
     g.labels = {}
     enrollment_growth = []
-    schools = {}
 
     percent = Gruff::Line.new
     percent.title = 'Growth over time (%)'
     percent_growth = []
+
+    r = Gruff::Line.new
+    r.title = "Growth rate (users/week)"
+    growth_rate = []
 
     date_index = 0
 
@@ -154,45 +252,25 @@ class AllUsers
       # enrollment for everyone
       enrollment = users.where{enrolled_on <= date}.count
       enrollment_growth << enrollment
-      percent_growth << (enrollment - prev_week) / prev_week.to_f
+      percent_growth << ((enrollment - prev_week) / prev_week.to_f) * 100
 
-      School.each do |s|
-        school_enrollment = users.where{enrolled_on < date}.where(school_id: s.id).count
-        schools[s.name] ||= {enrollment: [], prev_week: 0, percent_growth: []}
-        schools[s.name][:enrollment] << school_enrollment
-        school_prev_week = schools[s.name][:prev_week]
-        if school_prev_week == 0 and school_enrollment == 0
-          schools[s.name][:percent_growth] << 0.0
-        elsif school_prev_week == 0 and school_enrollment > 0
-          schools[s.name][:percent_growth] << 0.2
-          # schools[s.name][]
-        else
-          schools[s.name][:percent_growth] << (school_enrollment - school_prev_week) / school_prev_week.to_f
-        end
+      growth_rate << (enrollment - prev_week)
 
-        schools[s.name][:prev_week] = school_enrollment
-      end
       date_index += 1
       date += 1.week
       prev_week = enrollment
     end
 
-    schools.each do |name, school_users|
-      puts "#{school_users}"
-      g.data name.to_s, school_users[:enrollment]
-      # school_users[:percent_growth].map! {|x| x.nan? ? 0.0 : x*100 }
-      # percent.data name.to_s, school_users[:percent_growth]
-    end
+    percent.labels = r.labels = g.labels 
 
     g.data :Users, enrollment_growth
-    g.write('graphs/enrollment.png')
-
-    percent_growth.map! {|x| x.nan? ? 0.0 : x*100 }
-
-    percent.labels = g.labels
     percent.data :Users, percent_growth
+    r.data "User Growth Rate", growth_rate
 
+    g.write('graphs/enrollment.png')
     percent.write('graphs/growth.png')
+    r.write("graphs/growth_rate.png")
+      
 
     # take weekly intervals... find out the number of users that enrolled_at before that week's end
   end
@@ -290,8 +368,8 @@ class AllUsers
 
 end
 
-user_base = AllUsers.new
-user_base.growth
+# user_base = AllUsers.new
+# user_base.growth
 
 
 
