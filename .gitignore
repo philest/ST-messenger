@@ -11,3 +11,6 @@ log/
 log/*
 Rakefile
 log/newrelic_agent.log
+*.png
+graphs/*
+graphs/*.png
