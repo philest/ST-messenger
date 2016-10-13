@@ -17,6 +17,26 @@ class Stats
   def draw_graph(graph, url)
   end
 
+  # 11. of all people who drop out, what is the average week (plot week-by-week) that they do
+  def dropouts
+    fb_users = users.where(platform: 'fb')
+    dropouts = fb_users.filter(state_table: StateTable.where(subscribed?: false)
+                                                      .where{story_number > 1})
+
+    # ok, so we're going to have to extrapolate dropout week from story_number
+    # or maybe we can take it from updated_at... if that's the last thing they did
+    #   was get the unsubscribe message....
+    #   
+    # maybe we can just skip the first three weeks because they're all getting stories automatically...
+    # 
+    # 
+
+
+
+
+
+  end
+
   def growth
     today = Time.now + 1.week
     g = Gruff::Line.new
@@ -106,111 +126,7 @@ class UserStats < Stats
     dir = "users"
     super(name, users, start_date, dir, time_interval=1.week)
   end
-end
 
-users = UserStats.new
-users.growth
-
-
-# class SchoolStats
-#   attr_accessor :school, :users
-
-#   def initialize(name)
-#     @school = School.where(name: name).first
-#     @users = User.where(school_id: @school.id)
-#   end 
-
-#   def growth(opt="all")
-#     start = school.created_at
-#     today = Time.now + 1.week
-
-#     g = Gruff::Line.new
-#     g.title = "Enrollment over time: #{school.name}"
-#     g.labels = {}
-#     enrollment_growth = []
-
-#     percent = Gruff::Line.new
-#     percent.title = 'Growth over time (%)'
-#     percent_growth = []
-
-#     r = Gruff::Line.new
-#     r.title = "Growth rate (users/week)"
-#     growth_rate = []
-
-#     date_index = 0
-
-#     # the first day any user enrolled in this school
-#     date = users.where{enrolled_on >= start}.min(:enrolled_on)
-
-#     time_interval = 1.day
-
-#     # seed with the users who enrolled in the first time_interval
-#     prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + time_interval))}.count
-
-#     # begin after those initial users have already gone
-#     date += time_interval
-
-#     puts "prev_week = #{prev_week}"
-#     # prev_week = 1
-#     while date < today
-#       formatted_date = "#{date.month}/#{date.day}"
-#       g.labels[date_index]  = formatted_date
-
-#        # enrollment for everyone
-#       enrollment = users.where{enrolled_on <= date}.count
-#       enrollment_growth << enrollment
-#       percent_growth << ((enrollment - prev_week) / prev_week.to_f ) * 100
-
-#       growth_rate << (enrollment - prev_week)
-
-#       date_index += 1
-#       date += 1.week
-#       prev_week = enrollment
-#     end
-
-#     percent.labels = r.labels = g.labels 
-#     percent.data "#{school.name} growth", percent_growth
-
-#     r.data "#{school.name} growth rate", growth_rate
-
-#     g.data "#{school.name} users", enrollment_growth
-
-#     dirname = "graphs/schools/#{school.name}/"
-#     unless File.directory?(dirname)
-#       FileUtils.mkdir_p(dirname)
-#     end
-
-#     base_url = "graphs/schools/#{school.name}/"
-
-#     case opt
-#     when 'percent'
-#       percent.write("#{base_url}growth.png")
-
-#     when 'absolute', 'abs'
-#       g.write("#{base_url}enrollment.png")
-
-#     when 'rate'
-#       r.write("#{base_url}growth_rate.png")
-#     else
-#       percent.write("#{base_url}growth.png")
-#       g.write("#{base_url}enrollment.png")
-#       r.write("#{base_url}growth_rate.png")
-
-#     end
-    
-#   end
-# end
-
-
-
-
-class AllUsers
-
-  def total
-    t = 0
-    School.each {|s| t += s.users.count}
-    return t
-  end
 
   def schools
     g = Gruff::Pie.new
@@ -218,73 +134,16 @@ class AllUsers
 
     School.each do |school|
       count       = school.users.count
-      percentage  = (count / total.to_f) * 100.0
+      percentage  = (count / users.count.to_f) * 100.0
       g.data(school.name.to_sym, [count])
       puts "#{school.name}: #{count} total users - #{percentage}\% of total"
     end
     g.write('graphs/schools.png')
   end
 
-  def growth
-    start   = School.min(:created_at)
-    today   = Time.now + 1.week
-    users = User.exclude(school_id: nil)
-    g = Gruff::Line.new
-    g.title = 'Enrollment over time'
-    g.labels = {}
-    enrollment_growth = []
-
-    percent = Gruff::Line.new
-    percent.title = 'Growth over time (%)'
-    percent_growth = []
-
-    r = Gruff::Line.new
-    r.title = "Growth rate (users/week)"
-    growth_rate = []
-
-    date_index = 0
-
-    date = users.where{enrolled_on >= start}.min(:enrolled_on)
-    time_interval = 1.week
-    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + time_interval))}.count
-
-    date += time_interval
-
-    # prev_week = 6 # gotta start somewhere
-    while date < today
-      formatted_date = "#{date.month}/#{date.day}"
-      g.labels[date_index]  = formatted_date
-      # or should we only be taking from schools? 
-
-      # enrollment for everyone
-      enrollment = users.where{enrolled_on <= date}.count
-      enrollment_growth << enrollment
-      percent_growth << ((enrollment - prev_week) / prev_week.to_f) * 100
-
-      growth_rate << (enrollment - prev_week)
-
-      date_index += 1
-      date += 1.week
-      prev_week = enrollment
-    end
-
-    percent.labels = r.labels = g.labels 
-
-    g.data :Users, enrollment_growth
-    percent.data :Users, percent_growth
-    r.data "User Growth Rate", growth_rate
-
-    g.write('graphs/enrollment.png')
-    percent.write('graphs/growth.png')
-    r.write("graphs/growth_rate.png")
-      
-
-    # take weekly intervals... find out the number of users that enrolled_at before that week's end
-  end
-
   def locale
-    num_english = User.where(locale: 'en').count
-    num_spanish = User.where(locale: 'es').count
+    num_english = users.where(locale: 'en').count
+    num_spanish = users.where(locale: 'es').count
     puts "English: #{num_english} - Spanish: #{num_spanish}"
 
     g = Gruff::Pie.new
@@ -293,6 +152,37 @@ class AllUsers
     g.data(:Spanish, num_spanish)
     g.write('graphs/language.png')
   end
+
+  def platform
+    num_fb      = users.where(platform: 'fb').count
+    num_sms     = users.where(platform: 'sms').count
+    num_feature = users.where(platform: 'feature').count
+    g = Gruff::Pie.new
+    g.title = "Platform share"
+    g.data(:Facebook, num_fb)
+    g.data(:SMS, num_sms)
+    g.data(:Feature, num_feature)
+    g.write('graphs/platform.png')
+  end
+
+  def summary
+    puts "********************************************************************"
+    puts "All Users:"
+    schools
+    locale
+    platform
+    growth
+    reading
+    puts "********************************************************************"
+  end
+
+end
+
+# users = UserStats.new
+
+
+
+class AllUsers
 
   def reading
     g = Gruff::Bar.new
@@ -349,30 +239,6 @@ class AllUsers
     g.write('graphs/stories_read.png')
 
   end
-
-  def platform
-    num_fb      = User.where(platform: 'fb').count
-    num_sms     = User.where(platform: 'sms').count
-    num_feature = User.where(platform: 'feature').count
-    g = Gruff::Pie.new
-    g.title = "Platform share"
-    g.data(:Facebook, num_fb)
-    g.data(:SMS, num_sms)
-    g.data(:Feature, num_feature)
-    g.write('graphs/platform.png')
-  end
-
-  def summary
-    puts "********************************************************************"
-    puts "All Users:"
-    schools
-    locale
-    platform
-    growth
-    reading
-    puts "********************************************************************"
-  end
-
 end
 
 # user_base = AllUsers.new

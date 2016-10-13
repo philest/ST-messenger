@@ -88,7 +88,7 @@ module MessageReplyHelpers
              body.match LINK_CODE or 
              body.match FEATURE_PHONES
         puts "we are unsubscribed, so we're not gonna send a reply"
-        return
+        return ''
       end
 
     end
@@ -158,6 +158,7 @@ module MessageReplyHelpers
   module SMSReplies
 
       def self.name_codes(str, user)
+        return if str.nil?
         parent  = user.first_name.nil? ? "" : user.first_name
         I18n.locale = user.locale
         child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]

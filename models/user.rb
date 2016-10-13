@@ -16,6 +16,7 @@ class User < Sequel::Model(:users)
 		Array.new(3){[*'0'..'9'].sample}.join
 	end
 
+
 	# ensure that user is added EnrollmentQueue upon creation
 	def after_create
 		super
