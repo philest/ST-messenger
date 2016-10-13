@@ -51,6 +51,7 @@ def prev_unknown?(user)
   # Look up if bot's last reply was to UNKOWN message
   redis_msg_key = user.fb_id + "_last_message_text"
   users_last_msg = REDIS.get(redis_msg_key)
+  puts "users_last_msg = #{users_last_msg}"
   bot_last_reply = get_reply(users_last_msg, user)
   prev_was_unknown  = (bot_last_reply == (I18n.t 'user_response.default')) 
 

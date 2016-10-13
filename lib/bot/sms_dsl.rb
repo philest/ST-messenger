@@ -53,14 +53,19 @@ module Birdv
             str = str.gsub(/__DAY__/, weekday)
           end
           
-          str.gsub!(/__CODE__/, user.code)
+          code = user.code
+          if code.nil?
+            code = "READ"
+          end
+
+          str.gsub!(/__CODE__/, code)
           str.gsub!(/__TEACHER__/, teacher)
           str.gsub!(/__PARENT__/, parent)
           str.gsub!(/__SCHOOL__/, school)
           str.gsub!(/__CHILD__/, child)
           return str
         else # just return what we started with. It's 
-          str.gsub!(/__CODE__/, '@go')
+          str.gsub!(/__CODE__/, 'go')
           str.gsub!(/__TEACHER__/, 'StoryTime')
           str.gsub!(/__PARENT__/, '')
           str.gsub!(/__SCHOOL__/, 'StoryTime')

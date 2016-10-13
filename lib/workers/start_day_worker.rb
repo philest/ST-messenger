@@ -165,6 +165,7 @@ class StartDayWorker
         day_number = update_day(u, u.platform)
         # should be day2
         script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
+        puts script.inspect
         script.run_sequence(recipient, sequence) 
 
       elsif not read_yesterday_story

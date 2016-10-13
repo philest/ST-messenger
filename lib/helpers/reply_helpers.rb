@@ -79,6 +79,10 @@ module MessageReplyHelpers
 
 
   def get_reply(body, user)
+    if body.nil? or body.empty?
+      return ''
+    end
+    
     our_reply = ''
     I18n.locale = user.locale
     

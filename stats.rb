@@ -2,7 +2,6 @@ require_relative('bin/production.rb')
 require 'gruff'
 require 'fileutils'
 
-
 class Stats
   attr_accessor :name, :users, :start_date, :dir, :time_interval
 
@@ -14,14 +13,119 @@ class Stats
     @time_interval = time_interval
   end
 
+
+  def labels(start, end_date, interval)
+    date = start
+    axis = {}
+    index = 0
+    while date < end_date
+      formatted_date = "#{date.month}/#{date.day}"
+      axis[index] = formatted_date
+      date += interval
+      index += 1
+    end
+
+    return axis
+  end
+
+  # refactor so that methods just return arrays and we do the graphing elsewhere
+
   def draw_graph(graph, url)
   end
 
-  # 11. of all people who drop out, what is the average week (plot week-by-week) that they do
-  def dropouts
-    fb_users = users.where(platform: 'fb')
+  def dropout_rates(interval=1.week, our_users=users)
+    fb_users ||= our_users.where(platform: 'fb')
     dropouts = fb_users.filter(state_table: StateTable.where(subscribed?: false)
                                                       .where{story_number > 1})
+    # we're going every month
+    today = Time.now + 1.week
+    date = dropouts.min(:enrolled_on)
+    # the graph
+    g = Gruff::Line.new
+    g.title = "Dropouts"
+    g.labels = labels(date, today, interval)
+    num_dropouts = []
+    the_dropouts = []
+    while date < today
+      dropouts_this_week = dropouts.where(state_table: StateTable.where{updated_at >= date}
+                                                                  .where{updated_at < date + interval}).all
+      num_dropouts << dropouts_this_week.size
+      the_dropouts << dropouts_this_week
+      date += interval
+    end
+    g.data "Number of Dropouts", num_dropouts
+    g.write('graphs/number_of_dropouts.png')
+
+    return the_dropouts
+  end
+
+  # 11. of all people who drop out, what is the average week (plot week-by-week) that they do
+  def dropouts(interval=1.month, our_users=users)
+    fb_users ||= our_users.where(platform: 'fb')
+    dropouts = fb_users.filter(state_table: StateTable.where(subscribed?: false)
+                                                      .where{story_number > 1})
+    # puts "dropouts = #{dropouts.all.inspect}"
+
+    # we're going every month
+    today = Time.now + 1.week
+
+    date_index = 0
+    date = dropouts.min(:enrolled_on)
+    interval = 2.weeks
+
+    g = Gruff::Bar.new
+    g.title = "Average monthly dropouts"
+    g.labels = labels(date, today, interval)
+    average_dropout_week = []
+    average_story_number = []
+
+    while date < today
+      # using updated_at here... need to make sure that the state_table
+      # stops updating when the user is unsubscribed. hmm.........
+      # can we do this with a validation? or just sniffing the code?
+      dropouts_this_month = dropouts.where(state_table: StateTable.where{updated_at >= date}
+                                                                  .where{updated_at < date + interval})
+      # find the average number of weeks they were on the program
+      # and story_number
+
+      dropout_weeks = []
+      story_nos     = []
+
+      dropouts_this_month.each do |u|
+        st = u.state_table
+        dropout_weeks << (st.updated_at - u.enrolled_on)/1.week
+        story_nos << st.story_number
+      end
+
+      # clever ways to do averages with inject: 
+
+      avg_dw = (dropout_weeks.inject(:+).to_f / dropout_weeks.size)
+      avg_sn = (story_nos.inject(:+).to_f / story_nos.size)
+
+      average_dropout_week << ((dropout_weeks.size > 0) ? avg_dw : 0)
+      average_story_number << ((story_nos.size > 0) ? avg_sn : 0)
+
+      date += interval
+
+    end
+
+    date_index = 0
+    date = dropouts.min(:enrolled_on)
+    interval = 1.week
+
+    # while date < today
+
+
+
+    #   date_index += 1
+    #   date += interval
+    # end
+
+
+    g.data "Average Dropout Week", average_dropout_week
+    g.data "Average Dropout Story", average_story_number
+
+    g.write("graphs/average_dropouts2.png")
 
     # ok, so we're going to have to extrapolate dropout week from story_number
     # or maybe we can take it from updated_at... if that's the last thing they did
@@ -31,17 +135,13 @@ class Stats
     # 
     # 
 
-
-
-
-
   end
 
   def growth
     today = Time.now + 1.week
     g = Gruff::Line.new
     g.title = "Enrollment over time"
-    g.labels = {}
+
     enrollment_growth = []
 
     percent = Gruff::Line.new
@@ -51,8 +151,6 @@ class Stats
     r = Gruff::Line.new
     r.title = "Growth rate (users/week)"
     growth_rate = []
-
-    date_index = 0
 
     start = start_date
     date = users.where{enrolled_on >= start}.min(:enrolled_on)
@@ -66,22 +164,18 @@ class Stats
 
     # prev_week = 1
     while date < today
-      formatted_date = "#{date.month}/#{date.day}"
-      g.labels[date_index]  = formatted_date
-
-       # enrollment for everyone
+      # enrollment for everyone
       enrollment = users.where{enrolled_on <= date}.count
       enrollment_growth << enrollment
       percent_growth << ((enrollment - prev_week) / prev_week.to_f ) * 100
 
       growth_rate << (enrollment - prev_week)
 
-      date_index += 1
       date += 1.week
       prev_week = enrollment
     end
 
-    percent.labels = r.labels = g.labels 
+    percent.labels = r.labels = g.labels = labels(start_date, today, interval)
     percent.data "#{name} percentage growth", percent_growth
 
     r.data "#{name} growth rate", growth_rate
@@ -127,6 +221,14 @@ class UserStats < Stats
     super(name, users, start_date, dir, time_interval=1.week)
   end
 
+  def dropout_rates(interval=1.week)
+    super(interval, User)
+  end
+
+
+  def dropouts(interval=1.month)
+    super(interval, User)
+  end
 
   def schools
     g = Gruff::Pie.new

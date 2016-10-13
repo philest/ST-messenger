@@ -1,69 +1,24 @@
-module Test
-  module FB  
-    def print_thing
-      puts "FB script"
-    end
-  end
+require_relative 'stats'
 
-  module SMS
-    def print_thing
-      puts "SMS script"
-    end
-  end
-
-end
+puts UserStats.new.dropout_rates
 
 
-module Fuck
-
-  def ass_me
-    puts @my_ass.to_s + "whatever, i don't care"
-  end
-
-end
-
-class FuckingShit
-  extend Fuck
-  @my_ass = "is really huuuuuuuuge!"
-
-end
-
-FuckingShit.ass_me
-
-module Test
-
-  class StoryTimeScript
-    def initialize(platform)
-      if platform == 'fb'
-        self.extend(FB)
-      else
-        self.extend(SMS)
-      end
-    end
-
-    def perform(&block)
-      yield
-
-      if block
-        puts block
-        ret = instance_exec(&block)
-
-        # yield
-      else
-        puts "ass"
-      end
-    end
+# X = User.map do |u|
+#   st = u.state_table
+#   st.updated_at - u.enrolled_on
+# end
 
 
-  end
+# class Test
+#   def hi(x)
+#     puts x
+#   end
+# end
 
-end
+# class Fun < Test
+#   def hi(x, y)
+#     super(x)
+#   end
+# end
 
-s = Test::StoryTimeScript.new('sms')
-
-s.perform do 
-  puts "I'm performing something, yes I am!"
-end
-
-
-s.print_thing
+# Fun.new.hi("there", "bitch")
