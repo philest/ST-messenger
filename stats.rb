@@ -15,41 +15,35 @@ class Stats
   end
 
   def draw_graph(graph, url)
-
-
   end
 
   def growth
     today = Time.now + 1.week
     g = Gruff::Line.new
-    g.title = "Enrollment over time: #{name}"
+    g.title = "Enrollment over time"
     g.labels = {}
     enrollment_growth = []
 
     percent = Gruff::Line.new
-    percent.title = "\% growth over time: #{name}"
+    percent.title = "\% growth over time"
     percent_growth = []
 
     r = Gruff::Line.new
-    r.title = "Growth rate (users/week): #{name}"
+    r.title = "Growth rate (users/week)"
     growth_rate = []
 
     date_index = 0
 
-    # the first day any user enrolled in this school
-    puts "start_date = #{@start_date}"
-    puts "users.count = #{users.count}"
-    puts "query = #{@users.where{enrolled_on >= @start_date}.count}"
-    date = users.where{enrolled_on >= @start_date}.min(:enrolled_on)
-    puts "date = #{date}"
+    start = start_date
+    date = users.where{enrolled_on >= start}.min(:enrolled_on)
 
     # seed with the users who enrolled in the first time_interval
-    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + @time_interval))}.count
+    interval = time_interval
+    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + interval))}.count
 
     # begin after those initial users have already gone
     date += time_interval
 
-    puts "prev_week = #{prev_week}"
     # prev_week = 1
     while date < today
       formatted_date = "#{date.month}/#{date.day}"
@@ -79,11 +73,11 @@ class Stats
       FileUtils.mkdir_p(dirname)
     end
 
-    base_url = "graphs/#{dir}/"
+    base_url = "graphs/#{dir}"
 
-    percent.write("#{base_url}growth.png")
-    g.write("#{base_url}enrollment.png")
-    r.write("#{base_url}growth_rate.png")
+    percent.write("#{base_url}/growth.png")
+    g.write("#{base_url}/enrollment.png")
+    r.write("#{base_url}/growth_rate.png")
 
   end
 
@@ -96,13 +90,26 @@ class SchoolStats < Stats
     users = User.where(school_id: school.id)
     start_date = school.created_at
     # maybe do something to calculate a better time interval?
-    super(school_name, users, start_date, dir="schools2/#{school_name}", time_interval=1.day)
+    super(school_name, users, start_date, dir="schools/#{school_name}", time_interval=1.day)
   end
 
 end
 
-ywca = SchoolStats.new("New Haven Free Public Library")
-ywca.growth
+# ywca = SchoolStats.new("New Haven Free Public Library")
+# ywca.growth
+
+class UserStats < Stats
+  def initialize()
+    name = "All"
+    users = User.exclude(school_id: nil)
+    start_date = School.min(:created_at)
+    dir = "users"
+    super(name, users, start_date, dir, time_interval=1.week)
+  end
+end
+
+users = UserStats.new
+users.growth
 
 
 # class SchoolStats
