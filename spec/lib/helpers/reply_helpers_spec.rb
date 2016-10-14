@@ -4,6 +4,45 @@ include MessageReplyHelpers
 
 describe MessageReplyHelpers do
 
+  context 'get_reply' do
+
+    it "sends a reply to someone who is unsubscribed but is SMS and at story = 1" do
+      user = User.create(platform: 'sms')
+      user.state_table.update(story_number: 1, subscribed?: false)
+      msg = "english please?"
+      reply = get_reply(msg, user)
+      expect(reply).to eq("Got it! We'll send you English stories instead.")
+    end
+
+    it "sends a reply to someone who is new on FB" do
+      user = User.create(platform: 'fb')
+      user.state_table.update(story_number: 0, subscribed?: false)
+      msg = "english please?"
+      reply = get_reply(msg, user)
+      expect(reply).to eq("Got it! We'll send you English stories instead.")
+      user.state_table.update(story_number: 1)
+      msg = "yes please stop?"
+      reply = get_reply(msg, user)
+      expect(reply).to eq("")
+
+    end
+
+    it "doesn't send a reply to someone who is unsubscribed and sends a random thing" do
+      user = User.create(platform: 'fb')
+      user.state_table.update(story_number: 2, subscribed?: false)
+      msg = "thanks :)"
+      reply = get_reply(msg, user)
+      expect(reply).to eq("")
+
+      user = User.create(platform: 'sms')
+      user.state_table.update(story_number: 2, subscribed?: false)
+      msg = "thanks :)"
+      reply = get_reply(msg, user)
+      expect(reply).to eq("")
+    end
+
+  end
+
   context "LinkedIn_profiles" do
     it "returns false for non-matching codes" do
       fb_user  = User.create(fb_id: '1234')

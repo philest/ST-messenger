@@ -87,10 +87,18 @@ module MessageReplyHelpers
     I18n.locale = user.locale
     
     if user.state_table.subscribed? == false
-      unless body.match RESUBSCRIBE_MSG or 
+      
+      is_sms = (user.platform == 'sms' or user.platform == 'feature')
+      story_no = user.state_table.story_number
+
+      unless (is_sms && story_no == 1) or
+             story_no == 0 or
+             body.match RESUBSCRIBE_MSG or 
              body.match ENROLL_MSG or 
              body.match LINK_CODE or 
-             body.match FEATURE_PHONES
+             body.match FEATURE_PHONES or
+             body.match ENGLISH_PLZ or
+             body.match SPANISH_PLZ
         puts "we are unsubscribed, so we're not gonna send a reply"
         return ''
       end

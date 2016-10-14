@@ -64,7 +64,6 @@ class Stats
     fb_users ||= our_users.where(platform: 'fb')
     dropouts = fb_users.filter(state_table: StateTable.where(subscribed?: false)
                                                       .where{story_number > 1})
-    # puts "dropouts = #{dropouts.all.inspect}"
 
     # we're going every month
     today = Time.now + 1.week
@@ -79,17 +78,13 @@ class Stats
     average_dropout_week = []
     average_story_number = []
 
-    while date < today
-      # using updated_at here... need to make sure that the state_table
-      # stops updating when the user is unsubscribed. hmm.........
-      # can we do this with a validation? or just sniffing the code?
-      dropouts_this_month = dropouts.where(state_table: StateTable.where{updated_at >= date}
-                                                                  .where{updated_at < date + interval})
-      # find the average number of weeks they were on the program
-      # and story_number
+    all_dropouts = dropout_rates(interval, our_users)
 
+    all_dropouts.each do |dropouts_this_month|
       dropout_weeks = []
       story_nos     = []
+
+      # FINISH THIS IMPLEMENTATION OF DROPOUTS USING DROPOUT_RATES
 
       dropouts_this_month.each do |u|
         st = u.state_table
@@ -97,28 +92,44 @@ class Stats
         story_nos << st.story_number
       end
 
-      # clever ways to do averages with inject: 
-
       avg_dw = (dropout_weeks.inject(:+).to_f / dropout_weeks.size)
       avg_sn = (story_nos.inject(:+).to_f / story_nos.size)
 
       average_dropout_week << ((dropout_weeks.size > 0) ? avg_dw : 0)
       average_story_number << ((story_nos.size > 0) ? avg_sn : 0)
 
-      date += interval
-
     end
 
-    date_index = 0
-    date = dropouts.min(:enrolled_on)
-    interval = 1.week
+
 
     # while date < today
+    #   # using updated_at here... need to make sure that the state_table
+    #   # stops updating when the user is unsubscribed. hmm.........
+    #   # can we do this with a validation? or just sniffing the code?
+    #   dropouts_this_month = dropouts.where(state_table: StateTable.where{updated_at >= date}
+    #                                                               .where{updated_at < date + interval})
+    #   # find the average number of weeks they were on the program
+    #   # and story_number
 
+    #   dropout_weeks = []
+    #   story_nos     = []
 
+    #   dropouts_this_month.each do |u|
+    #     st = u.state_table
+    #     dropout_weeks << (st.updated_at - u.enrolled_on)/1.week
+    #     story_nos << st.story_number
+    #   end
 
-    #   date_index += 1
+    #   # clever ways to do averages with inject: 
+
+    #   avg_dw = (dropout_weeks.inject(:+).to_f / dropout_weeks.size)
+    #   avg_sn = (story_nos.inject(:+).to_f / story_nos.size)
+
+    #   average_dropout_week << ((dropout_weeks.size > 0) ? avg_dw : 0)
+    #   average_story_number << ((story_nos.size > 0) ? avg_sn : 0)
+
     #   date += interval
+
     # end
 
 

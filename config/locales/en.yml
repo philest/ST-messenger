@@ -108,6 +108,6 @@ en:
       has_none: "Hi this is StoryTime! We'll be texting you free books :)\n\n"
       sms_call_to_action: "If you do not have Messenger just text back STORY"
       # fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
-      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your class code: __CODE__\njoinstorytime.com/go"
+      fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your school code: __CODE__\njoinstorytime.com/go"
 
 
