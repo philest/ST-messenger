@@ -1,6 +1,18 @@
 require_relative 'stats'
 
-puts UserStats.new.dropout_rates
+# puts UserStats.new.dropouts
+
+ywca = SchoolStats.new("YWCA")
+
+# ywca.growth
+# ywca.dropouts
+puts ywca.growth
+
+
+
+
+
+
 
 
 # X = User.map do |u|
