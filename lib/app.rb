@@ -354,6 +354,9 @@ class TextApi < Sinatra::Base
       no_send_reply = "Message didn't send, someone may have already replied."
       TextingWorker.perform_async(no_send_reply, params[:From], ENV['ST_USER_REPLIES_NO'])
     end # if regex.match body
+
+    # a necessary tag... must always respond with TwiML
+    "<Response/>"
   end # post '/reply'
 
   get '/test' do

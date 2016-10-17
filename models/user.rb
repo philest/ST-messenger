@@ -13,7 +13,7 @@ class User < Sequel::Model(:users)
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
 	def generate_code 
-		Array.new(3){[*'0'..'9'].sample}.join
+		Array.new(2){[*'0'..'9'].sample}.join
 	end
 
 

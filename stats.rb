@@ -31,28 +31,144 @@ class Stats
     return axis
   end
 
-  # refactor so that methods just return arrays and we do the graphing elsewhere
+
+
+  def get_conversation(phone)
+    client = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
+    messages = client.account.messages.list({to: phone})
+    received = client.account.messages.list({from: phone})
+    msgs_sent = []
+    msgs_received = []
+
+    while messages.size > 0
+      msgs_sent += messages
+      messages = messages.next_page
+    end
+
+    while received.size > 0
+      msgs_received += received
+      received = received.next_page
+    end
+
+    conversation = msgs_sent + msgs_received
+    conversation.sort_by! {|c| DateTime.parse(c.date_updated) }
+
+    return {
+      sent: msgs_sent,
+      received: msgs_received,
+      convo: conversation
+    }
+  end
 
   def text_replies
     phone_numbers = users.map(:phone)
 
     client = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
 
-    messages = client.account.messages.list
-    messages.each do |msg|
-      puts msg.body
+    user_convos = {}
+
+    phone_numbers.each do |phone|
+      user_convos[phone] = get_conversation(phone)
+      puts phone
     end
 
+    return user_convos
   end
 
 
   def draw_graph(graph, url)
     dirname = "graphs/#{dir}"
+    dirname = "/Users/jdmcpeek/Dropbox/StoryTime Materials/Data/#{dir}"
     unless File.directory?(dirname)
       FileUtils.mkdir_p(dirname)
     end
-    base_url = "graphs/#{dir}"
-    graph.write("graphs/#{dir}/#{url}")
+    # base_url = "graphs/#{dir}"
+
+    graph.theme = {
+      :colors => [
+        '#EFAA43',  # orange
+        '#8A6EAF',  # purple
+        '#FDD84E',  # yellow
+        '#D1695E',  # red
+        '#72AE6E',  # green
+        '#6886B4',  # blue
+        'white'
+      ],
+      :marker_color => 'orange',
+      :font_color => 'black',
+      :background_colors => %w(white white)
+    }
+
+    graph.font = File.expand_path("/Users/jdmcpeek/Library/Fonts/AvenirLTStd-Medium.otf")
+
+    graph.write("#{dirname}/#{url}")
+  end
+
+
+  def persistence(interval=1.week, our_users=users)
+    g = Gruff::Bar.new
+    g.title = "Persistence"
+
+    our_users = our_users.where(platform: 'fb').where{enrolled_on > Time.now - 5.weeks}
+
+    max_time = our_users.min(:enrolled_on)
+    puts "max_time = #{max_time}"
+    num_weeks = ((Time.now - max_time) / 1.week).floor
+
+
+    g.labels = 1.upto(num_weeks).inject({}) do |result, element|
+      result[element] = "w#{element}"
+      result
+    end
+
+
+    puts "num_weeks = #{num_weeks}"
+    data = 1.upto(num_weeks).map do |week_n|
+      puts "week_n = #{week_n}"
+      # the people who've been around for at least n weeks
+      enrolled_users = our_users.all.select do |u|
+        Time.now - u.enrolled_on >= week_n.weeks
+      end
+
+      # of those, the people who unsubscribed during that time ()
+      unsubscribed = enrolled_users.select do |u| 
+        dropoff = u.state_table.subscribed? == false
+        dropoff &&= (u.state_table.updated_at - u.enrolled_on) <= week_n.weeks
+        # dropoff &&= (u.state_table.updated_at - u.enrolled_on) >= (week_n - 1).weeks
+        dropoff
+      end
+
+      unsubscribed.each do |u|
+        how_many = (u.state_table.updated_at - u.enrolled_on) / 1.week
+        enr = (Time.now - u.enrolled_on) / 1.week
+        puts "#{u.first_name} #{u.last_name} unsubscribed after #{how_many} weeks, enrolled for #{enr} weeks"
+      end
+
+      puts "enrolled_users = #{enrolled_users.size}, dropoffs = #{unsubscribed.size}\n\n"
+
+      (enrolled_users.size - unsubscribed.size.to_f) / enrolled_users.size.to_f
+
+      # what do we need to know?
+      # for each week that people are on the program,
+      # take a week. week x.
+      # get everyone in the system who has been around for that much time. that's enrolled_users
+      # of those, some have been around for longer than week_n. so we have to be sure that we're
+      #   getting their state at that particular week. how do we do that?
+      #   check to see whoever's unsubscribed. that's the upper bound.
+      #   then check the timestamp for when the state_table was last updated.
+      #   if it was updated before that week in their enrollment history, then they were
+      #     unenrolled on that week. (on the week)
+      #   if it was updated after, then they weren't.
+      # get the number of people who are not unsubscribed by then
+    end
+    puts data
+
+    g.data "percent of parents who read with StoryTime 3 times/week", data
+
+    g.minimum_value = 0
+
+    draw_graph(g, 'persistence.png')
+
   end
 
   def dropout_rates(interval=1.week, our_users=users)
@@ -78,6 +194,7 @@ class Stats
     g.data "Number of Dropouts", num_dropouts
     # g.write('graphs/number_of_dropouts.png')
 
+    draw_graph(g, "number_of_dropouts.png")
     return the_dropouts
   end
 
@@ -97,9 +214,6 @@ class Stats
 
     date_index = 0
     date = dropouts.min(:enrolled_on)
-
-
-
     interval = 2.weeks
 
     g = Gruff::Bar.new
@@ -173,6 +287,9 @@ class Stats
 
 
   def enrollment
+    g = Gruff::Line.new
+    g.title = "Parents enrolled on StoryTime"
+
     today = Time.now + 1.week
     enrollment_growth = []
     start = start_date
@@ -185,15 +302,16 @@ class Stats
       enrollment_growth << enrollment
       date += 1.week
     end
+    g.labels = labels(start, today, 1.week)
+    g.data "#{name} parents", enrollment_growth
+    draw_graph(g, "enrollment.png")
     return enrollment_growth
   end
-
 
   def growth
     today = Time.now + 1.week
 
-    g = Gruff::Line.new
-    g.title = "Parents enrolled on StoryTime"
+    enrollment_growth = []
 
     percent = Gruff::Line.new
     percent.title = "\% growth over time"
@@ -205,64 +323,37 @@ class Stats
 
     start = start_date
     date = users.where{enrolled_on >= start}.min(:enrolled_on)
-    e_start = date
-
-    enrollment_growth = enrollment()
-    if enrollment_growth.size < 2
-      puts "NOT ENOUGH TIME TO MEASURE GROWTH"
-      return
-    end
+    start = date
 
     # seed with the users who enrolled in the first time_interval
     interval = time_interval
-    prev_week = enrollment_growth[1]
-
-    # this is to get the starting date for our other graphs
-    while (users.where{(enrolled_on >= date) && (enrolled_on < (date + interval))}.count) != prev_week
-      date += 1.day
-    end
-    start = date
-    puts "date = #{date}"
-
-    enrollment_growth[1..-1].each do |enr|
-      percent_growth << ((enr - prev_week) / prev_week.to_f ) * 100
-      growth_rate << (enr - prev_week)
-      date += 1.week
-      prev_week = enr
-    end
-
-    puts enrollment_growth.to_s
-    puts percent_growth.to_s
-    puts growth_rate.to_s
-
+    prev_week = users.where{(enrolled_on >= date) && (enrolled_on < (date + interval))}.count
 
     # begin after those initial users have already gone
-    # date += time_interval
+    date += time_interval
 
-    # # prev_week = 1
-    # while date < today
-    #   puts "new date = #{date}"
-    #   # enrollment for everyone
-    #   enrollment = users.where{enrolled_on <= date}.count
-    #   enrollment_growth << enrollment
-    #   percent_growth << ((enrollment - prev_week) / prev_week.to_f ) * 100
+    # prev_week = 1
+    while date < today
+      puts "new date = #{date}"
+      # enrollment for everyone
+      enrollment = users.where{enrolled_on <= date}.count
+      enrollment_growth << enrollment
+      percent_growth << ((enrollment - prev_week) / prev_week.to_f ) * 100
 
-    #   growth_rate << (enrollment - prev_week)
+      growth_rate << (enrollment - prev_week)
 
-    #   date += 1.week
-    #   prev_week = enrollment
-    # end
-    g.labels = labels(e_start, today, 1.week)
+      date += 1.week
+      prev_week = enrollment
+    end
+
     percent.labels = r.labels = labels(start, today, 1.week)
     percent.data "#{name} percentage growth", percent_growth
 
     r.data "#{name} growth rate", growth_rate
 
-    g.data "#{name} parents", enrollment_growth
-
-    draw_graph(g, "enrollment3.png")
-    draw_graph(percent, "growth3.png")
-    draw_graph(r, "growth_rate3.png")
+  
+    draw_graph(percent, "growth.png")
+    draw_graph(r, "growth_rate.png")
 
   end
 
@@ -275,7 +366,7 @@ class SchoolStats < Stats
     users = User.where(school_id: school.id)
     start_date = school.created_at
     # maybe do something to calculate a better time interval?
-    super(school_name, users, start_date, dir="schools/#{school_name}", time_interval=1.day)
+    super(school_name, users, start_date, dir="#{school_name}", time_interval=1.day)
   end
 end
 
@@ -310,6 +401,8 @@ class UserStats < Stats
       g.data(school.name.to_sym, [count])
       puts "#{school.name}: #{count} total users - #{percentage}\% of total"
     end
+    # draw_graph('')
+
     g.write('graphs/schools.png')
   end
 

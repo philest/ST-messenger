@@ -16,7 +16,7 @@ module MessageReplyHelpers
   SPANISH_PLZ     = /(spanish)|(espanol)|(español)/i
 
   # LINK_CODE       = /\A\s*@\S+\s*\z/i
-  LINK_CODE     = /\A\s*\d{3}\s*\z/i
+  LINK_CODE     = /\A\s*\d{2,3}\s*\z/i
 
 
   def LinkedIn_profiles(fb_user, code)
@@ -39,7 +39,7 @@ module MessageReplyHelpers
       code = sms_user.code
       sms_user.update(code: nil) 
       fb_user.update(phone:           phone,
-                     code:            code,
+                     code:            nil, # nullify the code
                      enrolled_on:     sms_user.enrolled_on,
                      teacher_id:      sms_user.teacher_id,
                      school_id:       sms_user.school_id,
