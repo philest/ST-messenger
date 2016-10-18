@@ -140,8 +140,12 @@ class TextApi < Sinatra::Base
         if (reply == "Got it! We'll send you English stories instead.") or
            (reply == "Bien! Le enviaremos cuentos en español :)")
 
-          call_to_action = SMSReplies.name_codes(I18n.t('enrollment.body.call_to_action'), user)
-          TextingWorker.perform_in(5.seconds, call_to_action, phone)
+           # only do this for the first text... 
+           # otherwise, just change their locale and keep according to the SCRIPT!!!
+           if user.state_table.story_number == 1
+              call_to_action = SMSReplies.name_codes(I18n.t('enrollment.body.call_to_action'), user)
+              TextingWorker.perform_in(5.seconds, call_to_action, phone)
+            end
         end
         #
         # end conditional reply logic below
