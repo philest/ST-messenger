@@ -137,13 +137,11 @@ class TextApi < Sinatra::Base
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
         # handle english/spanish conversation
-        if reply == "Got it! We'll send you English stories instead."
-          user.button_press_logs.each { |b| b.destroy }
-          MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
-        end
-        if reply == "Bien! Le enviaremos cuentos en español :)"
-          user.button_press_logs.each { |b| b.destroy }
-          MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
+        if (reply == "Got it! We'll send you English stories instead.") or
+           (reply == "Bien! Le enviaremos cuentos en español :)")
+           
+          call_to_action = I18n.t 'enrollment.body.call_to_action'
+          TextingWorker.perform_in(5.seconds, call_to_action, phone)
         end
         #
         # end conditional reply logic below
