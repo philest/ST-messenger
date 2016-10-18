@@ -130,9 +130,23 @@ class TextApi < Sinatra::Base
       unless reply.nil? or reply.empty?
         TextingWorker.perform_async(reply, phone)
 
+        #
+        # conditional reply logic below
+        #
         if reply == (I18n.t 'enrollment.sms_optin')
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
+        # handle english/spanish conversation
+        if reply == "Got it! We'll send you English stories instead."
+          MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
+        end
+        if reply == "Bien! Le enviaremos cuentos en español :)"
+          MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
+        end
+        #
+        # end conditional reply logic below
+        #
+
       else # there was no reply, so we want to personally respond to this. 
         REDIS.set('last_textin', phone) # remember the last person who texted in
       end

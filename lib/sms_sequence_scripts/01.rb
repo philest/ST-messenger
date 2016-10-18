@@ -24,6 +24,8 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
   # recipients are phone numbers
   sequence 'smsCallToAction' do |phone_no|
     text = 'enrollment.body.sms_call_to_action'
+    # handling the YWCA problem
+    user = User.where(phone: phone_no).first
     send_sms phone_no, text, current='smsCallToAction', next_sequence='image1'
   end
 
@@ -34,9 +36,18 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
     else
       img = 'enrollment.img.default'
     end
-    puts "sending first image..."
 
-    send_mms phone_no, img, 'image1'
+    if !user.school.nil? and user.school.name == 'YWCA' and user.locale == 'es'
+      send_mms phone_no, img, 'image1', 'english'
+    else
+      send_mms phone_no, img, 'image1'
+    end
+
+  end
+
+  sequence 'english' do |phone_no|
+    txt = "*For English, just text 'English'"
+    send_sms phone_no, txt, 'english'
   end
 
 end

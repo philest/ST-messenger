@@ -6,12 +6,12 @@ localhost = "http://localhost:5000/"
 birdv     = "http://birdv.herokuapp.com/"
 
 puts HTTParty.get(
-  localhost + "run_sequence",
+  birdv + "run_sequence",
   query: {
-    script: "day4",
-    sequence: "storysequence",
-    platform: "fb",
-    # recipient: '1264968273534707'
+    script: "day1",
+    sequence: "firstmessage",
+    platform: "sms",
+    # recipient: '8608976597'
   }
 )
 

@@ -102,7 +102,7 @@ describe MessageReplyHelpers do
       fb_user.reload
 
       expect(fb_user.phone).to eq "8186897323"
-      expect(fb_user.code).to eq code
+      # expect(fb_user.code).to eq code
       # expect(fb_user.send_time).to eq Time.parse("2016-06-22 23:00:00 UTC")
       expect(fb_user.enrolled_on).to eq Time.parse("2016-06-22 23:00:00 UTC")
       expect(fb_user.child_name).to eq "Bucky the Vampire"

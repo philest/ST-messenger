@@ -82,6 +82,10 @@ module Birdv
           return text   
         end
 
+        if text[0] == "*"
+          return text[1..-1]
+        end
+
         next_day = nil # by default
 
         # Translate the weekday here. do it, why don't you?
