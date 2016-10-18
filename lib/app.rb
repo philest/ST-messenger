@@ -139,8 +139,8 @@ class TextApi < Sinatra::Base
         # handle english/spanish conversation
         if (reply == "Got it! We'll send you English stories instead.") or
            (reply == "Bien! Le enviaremos cuentos en español :)")
-           
-          call_to_action = I18n.t 'enrollment.body.call_to_action'
+
+          call_to_action = SMSReplies.name_codes(I18n.t 'enrollment.body.call_to_action', user)
           TextingWorker.perform_in(5.seconds, call_to_action, phone)
         end
         #
