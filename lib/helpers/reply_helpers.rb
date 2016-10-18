@@ -189,6 +189,12 @@ module MessageReplyHelpers
           school = "StoryTime"
         end
 
+        code = user.code
+        if code.nil?
+          code = "READ"
+        end
+
+        str = str.gsub(/__CODE__/, code)
         str = str.gsub(/__TEACHER__/, teacher)
         str = str.gsub(/__PARENT__/, parent)
         str = str.gsub(/__SCHOOL__/, school)
