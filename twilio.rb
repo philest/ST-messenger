@@ -18,8 +18,8 @@ line3 = "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely 
 
 
 client.account.messages.create(
-  body: "If you do not have Messenger just text back STORY",
-  to: "",
+  body: "Si tiene Facebook Messenger visite este enlace y escribe su código de clase: 69\njoinstorytime.com/go\n\nSi no tenga Facebook Messenger responde con CUENTO",
+  to: "8186897323",
   from: STORYTIME_NO
 )
 

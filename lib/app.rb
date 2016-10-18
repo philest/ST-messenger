@@ -138,9 +138,11 @@ class TextApi < Sinatra::Base
         end
         # handle english/spanish conversation
         if reply == "Got it! We'll send you English stories instead."
+          user.button_press_logs.each { |b| b.destroy }
           MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
         end
         if reply == "Bien! Le enviaremos cuentos en español :)"
+          user.button_press_logs.each { |b| b.destroy }
           MessageWorker.perform_in(4.seconds, phone, 'day1', 'fbCallToAction', 'sms')
         end
         #

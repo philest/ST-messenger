@@ -102,3 +102,4 @@ es:
       has_none: "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
       sms_call_to_action: "Si no tenga Facebook Messenger, responde con CUENTO"
       fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger.\n\nVisite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+      call_to_action: "Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go\n\nSi no tenga Facebook Messenger responde con CUENTO"

@@ -84,7 +84,7 @@ describe 'sms' do
       end
       
       it 'sends the has_teacher.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_teacher", 'firstmessage', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_teacher", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
@@ -107,7 +107,7 @@ describe 'sms' do
       end
       
       it 'sends the has_school.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_school", 'firstmessage', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_school", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
@@ -127,7 +127,7 @@ describe 'sms' do
       end
       
       it 'sends the default text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_none", 'firstmessage', 'fbCallToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_none", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end

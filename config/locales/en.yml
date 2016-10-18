@@ -46,7 +46,7 @@ en:
       - "Hi, here's another story from StoryTime!"
     remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
     remind_sms:
-      - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
+      - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
       - "If you do not have Messenger just text back STORY"
     resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
     buttons:
@@ -109,5 +109,4 @@ en:
       sms_call_to_action: "If you do not have Messenger just text back STORY"
       # fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type 'start'\njoinstorytime.com/go"
       fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your school code: __CODE__\njoinstorytime.com/go"
-
-
+      call_to_action: "Get longer books with Facebook Messenger. Tap here and type your school code: __CODE__\njoinstorytime.com/go.\n\nIf you do not have Messenger just text back STORY"
