@@ -159,10 +159,13 @@ module Birdv
           return trans_stub
         end
 
-        # check to see what the user has in store
-        user = User.where(phone: recipient).first
-        if user.nil?
-          user = User.where(fb_id: recipient).first
+        if recipient.is_a? User
+          user = recipient
+        else
+          user = User.where(phone: recipient).first
+          if user.nil? # try facebook
+            user = User.where(fb_id: recipient).first
+          end
         end
 
         if user
@@ -171,9 +174,9 @@ module Birdv
           has_both    = has_teacher and has_school
           has_none    = not (has_teacher or has_school)
 
-          replace = 'teacher' if has_teacher
           replace = 'school'  if has_school
-          replace = 'both'    if has_both
+          replace = 'teacher' if has_teacher
+          # replace = 'both'    if has_both
           replace = 'none'    if has_none
 
           new_stub = str.gsub(/__poc__/, replace)

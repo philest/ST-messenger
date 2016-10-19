@@ -1,4 +1,16 @@
 en:
+  replies:
+    english_plz:
+      teacher: "Got it! I'll send you English stories instead."
+      school: "Got it! We'll send you English stories instead."
+      none: "Got it! We'll send you English stories instead."
+    spanish_plz:
+      teacher: "Bien! Le enviaré cuentos en español :)"
+      school: "Bien! Le enviaremos cuentos en español :)"
+      none: "Bien! Le enviaremos cuentos en español :)"
+
+
+
   scripts:
     intro:
       teacher:
@@ -15,13 +27,6 @@ en:
         - "Hi __PARENT__, here's another story!"
         - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
         - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
-      both:
-        - "Hi __PARENT__, this is __TEACHER__ from __SCHOOL__. I'll be sending you free books for you and your child with StoryTime :)"
-        - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
-        - "Hi __PARENT__, here's another story :)"
-        - "Hi __PARENT__, here's another story!"
-        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
-        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
       none:
         - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
         - "Hi __PARENT__, it's StoryTime. Here's another story!"
@@ -29,11 +34,34 @@ en:
         - "Hi __PARENT__, here's another story!"
         - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
         - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+    img:
+      teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+      school: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+      none: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+
+    sms_optin:
+      teacher: "Great! I'll start sending you stories.\n\nHere's the first one:"
+      school: "Great! We'll start sending you stories.\n\nHere's the first one:"
+      none: "Great! We'll start sending you stories.\n\nHere's the first one:"
+    enrollment:
+      call_to_action: "Get longer books with Facebook Messenger. Tap here and type your school code: __CODE__\njoinstorytime.com/go.\n\nIf you do not have Messenger just text back STORY"
+
+    enrollment:
+      sms_optin: "Great! We'll start sending you stories.\n\nHere's the first one:"
+      img:
+        has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+        default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child.jpg
+      body:
+        has_teacher: "Hi this is __TEACHER__! I will text you free books with StoryTime!\n\n"
+        has_school: "Hi this is __SCHOOL__! We will text you free books with StoryTime!\n\n" 
+        has_none: "Hi this is StoryTime! We'll be texting you free books :)\n\n"
+        sms_call_to_action: "If you do not have Messenger just text back STORY"
+        fb_call_to_action: "Get longer books with Facebook Messenger.\n\nTap here and type your school code: __CODE__\njoinstorytime.com/go"
+        call_to_action: "Get longer books with Facebook Messenger. Tap here and type your school code: __CODE__\njoinstorytime.com/go.\n\nIf you do not have Messenger just text back STORY"
 
     remind:
       teacher: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
       school: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
-      both: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
       none: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
 
     remind_sms:
@@ -42,9 +70,6 @@ en:
         - "If you do not have Messenger just text back STORY"
       school:
         - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back STORY"
-      both:
-        - "Hi! It's __TEACHER__ from __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
         - "If you do not have Messenger just text back STORY"
       none: 
         - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"

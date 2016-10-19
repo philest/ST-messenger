@@ -131,16 +131,19 @@ module MessageReplyHelpers
       # update story number! because you'll have just sent the first story.
       user.update(platform: 'sms')
       user.state_table.update(subscribed?: true, story_number: 2)
-      I18n.t 'enrollment.sms_optin'
+      trans_code = teacher_school_messaging('enrollment.sms_optin.__poc__', user)
+      I18n.t trans_code
     when FEATURE_PHONES
       user.update(platform: 'feature')
       I18n.t 'feature.messages.opt-in.confirmation'
     when ENGLISH_PLZ
       user.update(locale: 'en')
-      "Got it! We'll send you English stories instead."
+      trans_code = teacher_school_messaging('replies.english_plz.__poc__', user)
+      I18n.t trans_code
     when SPANISH_PLZ
       user.update(locale: 'es')
-      "Bien! Le enviaremos cuentos en español :)"
+      trans_code = teacher_school_messaging('replies.spanish_plz.__poc__', user)
+      I18n.t trans_code
     when HELP_RQST
       I18n.t 'user_response.help'
     when STOP_RQST
@@ -159,11 +162,12 @@ module MessageReplyHelpers
     when OK_MSG
       ":)"    
     else #default msg 
-      if body.include? "?"
-        I18n.t 'user_response.default'
-      else
-        ''
-      end
+      ''
+      # if body.include? "?"
+      #   I18n.t 'user_response.default'
+      # else
+      #   ''
+      # end
     end
   end
 

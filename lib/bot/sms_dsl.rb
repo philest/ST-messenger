@@ -36,6 +36,8 @@ module Birdv
           return text[1..-1]
         end
 
+        text = teacher_school_messaging(text, usr)
+
         next_day = nil # by default
 
         # Translate the weekday here. do it, why don't you?
