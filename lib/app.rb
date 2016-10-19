@@ -19,6 +19,8 @@ require 'httparty'
 require_relative 'helpers/contact_helpers' 
 require_relative 'helpers/reply_helpers'
 require_relative 'helpers/twilio_helpers'
+require_relative 'helpers/name_codes'
+require_relative 'bot/dsl'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
@@ -28,10 +30,12 @@ class TextApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
   include TwilioTextingHelpers
+  include NameCodes
 
   use Airbrake::Rack::Middleware
 
   enable :sessions
+
 
   get '/' do
     params[:kingdom] ||= "Angels"
@@ -107,6 +111,8 @@ class TextApi < Sinatra::Base
     user = User.where(phone: phone.to_s).first
     puts "user = #{user}, phone = #{phone}"
 
+
+
     if user # is enrolled in the system already
 
       msg = get_reply(params[:Body], user)
@@ -120,10 +126,10 @@ class TextApi < Sinatra::Base
         puts "should not send a message reply until session expires.........."
       elsif (msg == (I18n.t 'user_response.default')) && session['end_conversation'] != true
         session['end_conversation'] = true
-        reply = SMSReplies.name_codes(msg, user)
+        reply = name_codes(msg, user)
         puts "reply to send (end_conversation is now true) = #{reply}"
       else
-        reply = SMSReplies.name_codes(msg, user)
+        reply = name_codes(msg, user)
         puts "reply to send = #{reply}"
       end
       
@@ -143,7 +149,7 @@ class TextApi < Sinatra::Base
            # only do this for the first text... 
            # otherwise, just change their locale and keep according to the SCRIPT!!!
            if user.state_table.story_number == 1
-              call_to_action = SMSReplies.name_codes(I18n.t('enrollment.body.call_to_action'), user)
+              call_to_action = name_codes(I18n.t('enrollment.body.call_to_action'), user)
               TextingWorker.perform_in(5.seconds, call_to_action, phone)
             end
         end

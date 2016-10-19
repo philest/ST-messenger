@@ -1,5 +1,6 @@
 require_relative '../helpers/fb'
 require_relative '../helpers/contact_helpers'
+require_relative '../helpers/name_codes'
 require_relative '../workers/message_worker'
 # the translation files
 require_relative '../../config/initializers/locale' 
@@ -40,6 +41,7 @@ module Birdv
   module DSL
     class StoryTimeScript
       include ContactHelpers
+      include NameCodes
 
       attr_reader :script_name, :script_day, :num_sequences, :sequences, :platform
       

@@ -167,43 +167,5 @@ module MessageReplyHelpers
     end
   end
 
-  module SMSReplies
-
-      def self.name_codes(str, user)
-        return if str.nil?
-        parent  = user.first_name.nil? ? "" : user.first_name
-        I18n.locale = user.locale
-        child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
-        
-        if !user.teacher.nil?
-          sig = user.teacher.signature
-          teacher = sig.nil?           ? "StoryTime" : sig
-        else
-          teacher = "StoryTime"
-        end
-
-        if user.school
-          sig = user.school.signature
-          school = sig.nil?   ? "StoryTime" : sig
-        else
-          school = "StoryTime"
-        end
-
-        code = user.code
-        if code.nil?
-          code = "READ"
-        end
-
-        str = str.gsub(/__CODE__/, code)
-        str = str.gsub(/__TEACHER__/, teacher)
-        str = str.gsub(/__PARENT__/, parent)
-        str = str.gsub(/__SCHOOL__/, school)
-        str = str.gsub(/__CHILD__/, child)
-        return str
-      end
-
-  end
-
-
 
 end
