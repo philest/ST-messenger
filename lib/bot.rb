@@ -99,7 +99,9 @@ Bot.on :message do |message|
         puts "STARTDAYWORKER AFTER DB_USER.NIL?????!!!!"
         StartDayWorker.perform_async(sender_id, 'fb', :greeting)
       else
-        StartDayWorker.perform_async(sender_id, platform='fb')
+        # first, check to see if this corresponds to the code they were sent by text... and then schools and teachers
+        MessageWorker.perform_async(sender_id, 'day1', :code, 'fb')
+        # StartDayWorker.perform_async(sender_id, platform='fb')
       end
 
   elsif is_image?(attachments) # user has been enrolled already + sent an image

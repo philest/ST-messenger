@@ -6,7 +6,7 @@ module MessageReplyHelpers
   HELP_RQST       = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien)|(quién)|(learn)/i
   STOP_RQST       = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)|(alto)/i
   THANK_MSG       = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
-  HAHA_MSG        = /(haha)+|(jaja)+/i 
+  HAHA_MSG        = /((ha){2,})|((ja){2,})/i 
   ROBOT_MSG       = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
   LOVE_MSG        = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG    = /(:\))|(:D)|(;\))|(:p)/
@@ -125,7 +125,7 @@ module MessageReplyHelpers
                              last_script_sent_time: nil,
                              last_reminded_time: nil
                             )
-        I18n.t 'scripts.resubscribe'
+        I18n.t 'scripts.subscription.resubscribe'
       else
         ''
       end

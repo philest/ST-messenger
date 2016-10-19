@@ -461,6 +461,10 @@ describe 'TheBot', integration:true do
 
       # this is basically a compressed version of the last one. I was having stubbing issues.
       it 'does this correctly', correct:true do
+        stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"1\"},\"message\":{\"text\":\"Hi Davidfake, we saw you missed your last story and just want to share it again. Here you go!\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
         # 4 ppl read yesterday (story 900)
         4.times do |i| 
           User.where(fb_id:(i+1).to_s).first.state_table.update(last_story_read?: true)

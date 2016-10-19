@@ -87,6 +87,10 @@ describe 'sms' do
                          :teacher_signature => "McEsterWahl", :teacher_email => "david.mcpeek@yale.edu"
       }
 
+      @school = School.create(name: "TurkeyFuck Academy", signature: "the TurkeyFuck Academy", code: "turkey|fuck")
+      @teacher = Teacher.create(name: "Ms. TurkeyFuck", signature: "Ms. TurkeyFuck", code: "turkeyteacher|teacherfuck")
+      @school.add_teacher(@teacher)
+
     end
 
     before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
@@ -170,6 +174,37 @@ describe 'sms' do
         post '/sms', sms_params
       end
     end
+
+    it 'adds user to a school' do
+      text_body = "turkey"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.school.name).to eq "TurkeyFuck Academy"
+      expect(user.teacher).to be_nil
+
+    end
+
+    it "adds user to a teacher's classroom" do
+      text_body = "turkeyteacher"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.school.name).to eq "TurkeyFuck Academy"
+      expect(user.teacher.name).to eq "Ms. TurkeyFuck"
+
+
+    end
+
+
 
     it 'adds a user to the db, but unsubscribed' do
 

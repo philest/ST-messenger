@@ -11,7 +11,6 @@ es:
   defaults:
     teacher: "su maestro"
     child: "su niño"
-  demo: "¡Hola! Estamos lejos ahora, pero vamos a ver su mensaje pronto. Para obtener más información acerca de StoryTime, llame al 561-212-5831."
   user_response:
     help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con ALTO\n - Para ayuda, póngase en contacto: 561-212-5831"
     stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
@@ -36,7 +35,6 @@ es:
       tap_here: https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg
       thanks: "¡Gracias!"
       welcome: "De nada :)"
-
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"

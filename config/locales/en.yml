@@ -8,12 +8,6 @@ en:
     - Thursday
     - Friday
     - Saturday
-  demo_fb:
-    intro: "Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
-  demo:
-    intro: "Hi, this is StoryTime! Here's the first two pages of one of our favorites."
-    thanks: "Thanks for trying StoryTime :)"
-    response: "Hi! We're away now, but we'll see your message soon. To learn more about StoryTime, call 561-212-5831"
   defaults:
     teacher: "your teacher"
     child: "your child"
@@ -41,7 +35,6 @@ en:
       tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg
       thanks: "Thank you!"
       welcome: "You're welcome :)"
-    # (where we keep the adjusted 'espanish' urls)
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"

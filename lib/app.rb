@@ -345,6 +345,10 @@ class TextApi < Sinatra::Base
         # add parent to teacher!
         teacher.add_user(parent)
         puts "added #{parent.child_name if not params["name_#{idx}"].nil?}, phone => #{parent.phone}"
+
+        if !teacher.school.nil? # if this teacher belongs to a school
+          teacher.school.add_user(parent)
+        end
       
       rescue Sequel::Error => e
         puts e.message
