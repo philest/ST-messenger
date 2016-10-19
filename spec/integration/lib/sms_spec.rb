@@ -87,9 +87,7 @@ describe 'sms' do
                          :teacher_signature => "McEsterWahl", :teacher_email => "david.mcpeek@yale.edu"
       }
 
-      @school = School.create(name: "TurkeyFuck Academy", signature: "the TurkeyFuck Academy", code: "turkey|fuck")
-      @teacher = Teacher.create(name: "Ms. TurkeyFuck", signature: "Ms. TurkeyFuck", code: "turkeyteacher|teacherfuck")
-      @school.add_teacher(@teacher)
+
 
     end
 
@@ -159,6 +157,13 @@ describe 'sms' do
       # @time_range = 10.minutes
     end
 
+    before(:each) do
+      @school = School.create(name: "TurkeyFuck Academy", signature: "the TurkeyFuck Academy", code: "turkey|fuck")
+      @teacher = Teacher.create(name: "Ms. TurkeyFuck", signature: "Ms. TurkeyFuck", code: "turkeyteacher|teacherfuck")
+      @school.add_teacher(@teacher)
+
+    end
+
     after(:each) { Timecop.return }
 
     it 'added the users to the db correctly' do
@@ -186,8 +191,73 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.school.name).to eq "TurkeyFuck Academy"
       expect(user.teacher).to be_nil
+      
 
     end
+
+    it "handles weird regexes", regex: true do
+      text_body = "ywca"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+      School.create(name: "YWCA", signature: "the YWCA", code: "ywca|yw")
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.school.name).to eq "YWCA"
+      expect(user.locale).to eq 'en'
+      
+
+    end
+
+    it "handles weird regexes II", regex: true do
+      text_body = "ywca"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+      School.create(name: "YWCA", signature: "the YWCA", code: "yw|ywca")
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.school.name).to eq "YWCA"
+      expect(user.locale).to eq 'es'
+      
+
+    end
+
+    it "handles weird regexes III", regex: true do
+      text_body = "teache r"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+      Teacher.create(name: "TeacherMan", signature: "the TeacherMan", code: "teacher|teach")
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.teacher.name).to eq "TeacherMan"
+      expect(user.locale).to eq 'en'
+      
+    end
+
+    it "handles weird regexes IV", regex: true do
+      text_body = "TEACHER  "
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+      Teacher.create(name: "TeacherMan", signature: "the TeacherMan", code: "teach|teacher")
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      user = User.where(phone: "5555555555").first
+      expect(user.teacher.name).to eq "TeacherMan"
+      expect(user.locale).to eq 'es'
+      
+
+    end
+
 
     it "adds user to a teacher's classroom" do
       text_body = "turkeyteacher"
@@ -201,10 +271,7 @@ describe 'sms' do
       expect(user.school.name).to eq "TurkeyFuck Academy"
       expect(user.teacher.name).to eq "Ms. TurkeyFuck"
 
-
     end
-
-
 
     it 'adds a user to the db, but unsubscribed' do
 

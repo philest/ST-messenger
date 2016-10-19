@@ -133,7 +133,7 @@ module MessageReplyHelpers
       # update story number! because you'll have just sent the first story.
       user.update(platform: 'sms')
       user.state_table.update(subscribed?: true, story_number: 2)
-      trans_code = teacher_school_messaging('enrollment.sms_optin.__poc__', user)
+      trans_code = teacher_school_messaging('scripts.enrollment.sms_optin.__poc__', user)
       I18n.t trans_code
     when FEATURE_PHONES
       user.update(platform: 'feature')

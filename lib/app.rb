@@ -139,9 +139,9 @@ class TextApi < Sinatra::Base
         #
         # conditional reply logic below
         #
-        if reply == (I18n.t 'enrollment.sms_optin.teacher') or
-           reply == (I18n.t 'enrollment.sms_optin.school') or
-           reply == (I18n.t 'enrollment.sms_optin.none')
+        if reply == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
+           reply == (I18n.t 'scripts.enrollment.sms_optin.school') or
+           reply == (I18n.t 'scripts.enrollment.sms_optin.none')
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
         # handle english/spanish conversation
@@ -210,30 +210,22 @@ class TextApi < Sinatra::Base
           next
         end
         code.downcase!
-        code_regex = Regexp.new(code, "i")
-        body_text = params[:Body].delete(' ')
-        match_data = code_regex.match body_text
-        puts "match data = #{match_data.inspect}"
+        body_text = params[:Body].delete(' ').downcase
 
-        if match_data then # we've matched this school
-          match_data = match_data.to_s.downcase
-          # codes should be split like this: "read1|leer1"
+        if code.include? body_text
           en, sp = code.split('|')
-          # check which language they're going for
-          if match_data == en.downcase
+          if body_text == en
             I18n.locale = 'en'
-          elsif match_data == sp.downcase
+            puts "school info: #{school.signature}, #{school.inspect}"
+            school.add_user(new_user)
+          elsif body_text == sp
             I18n.locale = 'es'
             new_user.update(locale: 'es')
+            puts "school info: #{school.signature}, #{school.inspect}"
+            school.add_user(new_user)
           else 
             puts "#{code} did not match with #{school.name} regex!"
           end
-
-          puts "school info: #{school.signature}, #{school.inspect}"
-
-          school.add_user(new_user)
-          puts "school's users = #{school.users.to_s}"
-          puts "user's school = #{new_user.school.inspect}"
         end
       end
 
@@ -245,36 +237,31 @@ class TextApi < Sinatra::Base
           next
         end
         code.downcase!
-        code_regex = Regexp.new(code, "i")
-        body_text = params[:Body].delete(' ')
-        match_data = code_regex.match body_text
-        puts "match data = #{match_data.inspect}"
-        if match_data then # we've matched this school
-          match_data = match_data.to_s.downcase
-          # codes should be split like this: "read1|leer1"
+        body_text = params[:Body].delete(' ').downcase
+
+        if code.include? body_text
           en, sp = code.split('|')
-          # check which language they're going for
-          if match_data == en.downcase
+          if body_text == en
             I18n.locale = 'en'
-          elsif match_data == sp.downcase
+            puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
+            teacher.add_user(new_user)
+            if !teacher.school.nil? # if this teacher belongs to a school
+              teacher.school.add_user(new_user)
+            end
+
+          elsif body_text == sp
             I18n.locale = 'es'
             new_user.update(locale: 'es')
+            puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
+            teacher.add_user(new_user)
+            if !teacher.school.nil? # if this teacher belongs to a school
+              teacher.school.add_user(new_user)
+            end
+
           else 
             puts "#{code} did not match with #{teacher.name} regex!"
           end
-
-          puts "school info: #{teacher.signature}, #{teacher.inspect}"
-
-          teacher.add_user(new_user)
-          puts "school's users = #{teacher.users.to_s}"
-          puts "user's school = #{new_user.school.inspect}"
-
-          if !teacher.school.nil? # if this teacher belongs to a school
-            teacher.school.add_user(new_user)
-          end
-
-        end # if match_data
-
+        end # if code.include? body_text
       end # Teacher.each do |teacher|
 
       # perform the day1 mms sequence
