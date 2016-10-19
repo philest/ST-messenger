@@ -1,4 +1,6 @@
+require_relative 'name_codes'
 module MessageReplyHelpers
+  include NameCodes
   # TODO: add Spanish words here
   DAY_RQST        = /day\d+/i
   HELP_RQST       = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien)|(quién)|(learn)/i

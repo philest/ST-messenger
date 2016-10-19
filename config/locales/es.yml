@@ -27,23 +27,8 @@ es:
     code:
       enter_code: "Hola! Para empezar a utilizar de StoryTime, por favor, responda con su código de clase (lo enviamos a usted por el texto)"
       success: "Gran! Aquí está su primero cuento :)"
-    
-    resubscribe: "¡Órale! Seguirás recibiendo cuentos.\n\nAquí está el siguiente :)"
     buttons:
-      unsubscribe_window_text: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
-      resubscribe: Sí!
       story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/es/%{story_name}/%{story_name}-button.jpg'
-      window_text:
-        this_week:
-          - "Le enviaré un cuento nuevo este __DAY__ :)"
-          - "Le enviaré un cuento nuevo este __DAY__. ¡Están leyendo muy bien! :)"
-          - "Le enviaré otro cuento este __DAY__ . ¡Van muy bien! :)"
-          - "Le enviaré otro cuento este __DAY__ :)"
-        next_week:
-          - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
-          - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Están leyendo muy bien! :)"
-          - "Le enviaré otro cuento el próximo __DAY__ . ¡Van muy bien! :)"
-          - "Le enviaré otro cuento el próximo __DAY__ :)"
       title:
         - "Vamos a leer el cuento nuevo."
         - "¡Su cuento nuevo ya viene!"
@@ -51,39 +36,7 @@ es:
       tap_here: https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg
       thanks: "¡Gracias!"
       welcome: "De nada :)"
-  mms:
-    stories:
-      floating_shoe:
-        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/floating_shoe/floating_shoe2.jpg
-      clouds:
-        - https://s3.amazonaws.com/st-messenger/day1/es/clouds/clouds1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/es/clouds/clouds2.jpg
-      hero:
-        - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/es/hero/hero2.jpg
-      chomp:
-        - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/es/chomp/chomp2.jpg
-      bread:
-        - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread1.jpg
-        - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread2.jpg
-  call_to_action:
-    intro: "Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros."
-    fb: "Para recibir más cuentos, sigue el enlace y escribe 'Empezar'\njoinstorytime.com/go"
+
   testing: 
     name_codes: "__PARENT__||__CHILD__||__TEACHER__"
     test_texts: "hey this is window text, which can be much longer than button text"
-
-  enrollment:
-    sms_optin: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
-    img:
-      has_teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
-      default: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
-    body: 
-      has_teacher: "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
-      has_school: "Hola, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!\n\n" 
-      has_none: "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
-      sms_call_to_action: "Si no tenga Facebook Messenger, responde con CUENTO"
-      fb_call_to_action: "Puede empezar ahora si tiene Facebook Messenger.\n\nVisite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
-      call_to_action: "Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go\n\nSi no tenga Facebook Messenger responde con CUENTO"

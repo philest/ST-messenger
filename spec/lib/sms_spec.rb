@@ -84,16 +84,12 @@ describe 'sms' do
       end
       
       it 'sends the has_teacher.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_teacher", 'firstmessage', 'callToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "scripts.intro.__poc__[0]", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
-      it 'sends the has_teacher.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
 
-        @day1.run_sequence(@user.phone, 'smsCallToAction')
-      end
 
     end 
 
@@ -107,16 +103,12 @@ describe 'sms' do
       end
       
       it 'sends the has_school.first text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_school", 'firstmessage', 'callToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "scripts.intro.__poc__[0]", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
-      it 'sends the has_school.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
-
-        @day1.run_sequence(@user.phone, 'smsCallToAction')
-      end
+  
 
     end 
 
@@ -127,16 +119,11 @@ describe 'sms' do
       end
       
       it 'sends the default text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.has_none", 'firstmessage', 'callToAction')
+        expect(@day1).to receive(:send_sms).with(@user.phone, "scripts.intro.__poc__[0]", 'firstmessage', 'callToAction')
         
         @day1.run_sequence(@user.phone, 'firstmessage')
       end
 
-      it 'sends the has_none.second text to the user' do
-        expect(@day1).to receive(:send_sms).with(@user.phone, "enrollment.body.sms_call_to_action", 'smsCallToAction', 'image1')
-
-        @day1.run_sequence(@user.phone, 'smsCallToAction')
-      end
 
     end 
 

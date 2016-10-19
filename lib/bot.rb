@@ -141,18 +141,18 @@ Bot.on :message do |message|
 
         reply = get_reply(message.text, db_user)
         
-        redis_limit_key = db_user.fb_id + "_limit?"
-        limited = REDIS.get(redis_limit_key)
+        # redis_limit_key = db_user.fb_id + "_limit?"
+        # limited = REDIS.get(redis_limit_key)
 
-        if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
-          reply = I18n.t 'user_response.end_conversation'
-          if limited == "true"
-            reply = ""
-          end
-          # They've gotten as many replies as possible, so limit them for 60s
-          REDIS.set(redis_limit_key, "true")
-          REDIS.expire(redis_limit_key, 60)
-        end
+        # if (reply == (I18n.t 'user_response.default')) && prev_unknown?(db_user)
+        #   reply = I18n.t 'user_response.end_conversation'
+        #   if limited == "true"
+        #     reply = ""
+        #   end
+        #   # They've gotten as many replies as possible, so limit them for 60s
+        #   REDIS.set(redis_limit_key, "true")
+        #   REDIS.expire(redis_limit_key, 60)
+        # end
 
         fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? 
 

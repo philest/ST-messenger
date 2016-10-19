@@ -2,7 +2,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'feature' do
 
 	# recipients are phone numbers
 	sequence 'firstmessage' do |phone_no|
-		txt = "scripts.teacher_intro_sms[1]"
+		txt = 'scripts.first_book.__poc__'
 		send_sms phone_no, txt, 'firstmessage', 'verse1'
 	end
 
@@ -17,7 +17,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'feature' do
 	end
 
 	sequence 'goodbye' do |phone_no|
-		txt = 'scripts.buttons.window_text[0]'
+		txt = 'scripts.outro.__poc__[0]'
 		send_sms phone_no, txt, 'goodbye'
 	end
 

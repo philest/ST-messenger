@@ -290,7 +290,8 @@ module Birdv
                 # 
                 # Translate the weekday here. do it, why don't you?
                 # if it matches a day of the week thing
-                window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
+                window_text_regex = /scripts.outro.__poc__(\[\d+\])/i
+                # window_text_regex = /scripts.outro.(\[\d+\])/i
                 if window_text_regex.match(m[:text])
                   # get the code thing to transfer over
                   bracket_index = $1.to_s
@@ -323,8 +324,10 @@ module Birdv
                   
                 end # window_text_regex.match
 
+                puts "trans_code before = #{trans_code}"
                 # for intros and teacher/school messaging
                 trans_code = teacher_school_messaging(trans_code, recipient)
+                puts "trans_code after = #{trans_code}"
 
                 m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
                 puts m[:text]

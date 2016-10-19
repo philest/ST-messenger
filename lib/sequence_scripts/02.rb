@@ -27,7 +27,7 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 	# end
 
 	sequence 'greeting' do |recipient|
-		txt = 'scripts.teacher_intro[1]'
+		txt = 'scripts.intro.__poc__[1]'
 		send recipient, text({text: txt})
 		delay recipient, 'storysequence', 3.5.seconds
 	end
@@ -38,7 +38,7 @@ Birdv::DSL::ScriptClient.new_script 'day2' do
 	end
 
 	sequence 'thanks' do |recipient|
-		txt = 'scripts.buttons.window_text[1]'
+		txt = 'scripts.outro.__poc__[1]'
 		send recipient, text({text:txt})	
 	end
 

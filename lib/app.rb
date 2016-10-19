@@ -139,7 +139,9 @@ class TextApi < Sinatra::Base
         #
         # conditional reply logic below
         #
-        if reply == (I18n.t 'enrollment.sms_optin')
+        if reply == (I18n.t 'enrollment.sms_optin.teacher') or
+           reply == (I18n.t 'enrollment.sms_optin.school') or
+           reply == (I18n.t 'enrollment.sms_optin.none')
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
         # handle english/spanish conversation
@@ -149,7 +151,7 @@ class TextApi < Sinatra::Base
            # only do this for the first text... 
            # otherwise, just change their locale and keep according to the SCRIPT!!!
            if user.state_table.story_number == 1
-              call_to_action = name_codes(I18n.t('enrollment.body.call_to_action'), user)
+              call_to_action = name_codes(I18n.t('enrollment.call_to_action'), user)
               TextingWorker.perform_in(5.seconds, call_to_action, phone)
             end
         end
@@ -203,7 +205,11 @@ class TextApi < Sinatra::Base
       # 3. separated by pipe
       #  
       School.each do |school|
-        code = school.code.downcase
+        code = school.code
+        if code.nil?
+          next
+        end
+        code.downcase!
         code_regex = Regexp.new(code, "i")
         body_text = params[:Body].delete(' ')
         match_data = code_regex.match body_text
@@ -234,7 +240,11 @@ class TextApi < Sinatra::Base
       # DO THE SAME FOR TEACHERS HERE?
       # not only connect them with a teacher, but connect them to that teacher's school
       Teacher.each do |teacher|
-        code = teacher.code.downcase
+        code = teacher.code
+        if code.nil?
+          next
+        end
+        code.downcase!
         code_regex = Regexp.new(code, "i")
         body_text = params[:Body].delete(' ')
         match_data = code_regex.match body_text
