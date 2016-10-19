@@ -223,7 +223,7 @@ class TextApi < Sinatra::Base
             puts "#{code} did not match with #{school.name} regex!"
           end
 
-          puts "school info: #{school.signature}, #{school}"
+          puts "school info: #{school.signature}, #{school.inspect}"
 
           school.add_user(new_user)
           puts "school's users = #{school.users.to_s}"
@@ -231,21 +231,54 @@ class TextApi < Sinatra::Base
         end
       end
 
-      # TODO: make sure locale settings are consistent.
-      #       they must also reset to english and not leak between jobs.
+      # DO THE SAME FOR TEACHERS HERE?
+      # not only connect them with a teacher, but connect them to that teacher's school
+      Teacher.each do |teacher|
+        code = teacher.code.downcase
+        code_regex = Regexp.new(code, "i")
+        body_text = params[:Body].delete(' ')
+        match_data = code_regex.match body_text
+        puts "match data = #{match_data.inspect}"
+        if match_data then # we've matched this school
+          match_data = match_data.to_s.downcase
+          # codes should be split like this: "read1|leer1"
+          en, sp = code.split('|')
+          # check which language they're going for
+          if match_data == en.downcase
+            I18n.locale = 'en'
+          elsif match_data == sp.downcase
+            I18n.locale = 'es'
+            new_user.update(locale: 'es')
+          else 
+            puts "#{code} did not match with #{teacher.name} regex!"
+          end
+
+          puts "school info: #{teacher.signature}, #{teacher.inspect}"
+
+          teacher.add_user(new_user)
+          puts "school's users = #{teacher.users.to_s}"
+          puts "user's school = #{new_user.school.inspect}"
+
+          if !teacher.school.nil? # if this teacher belongs to a school
+            teacher.school.add_user(new_user)
+          end
+
+        end # if match_data
+
+      end # Teacher.each do |teacher|
 
       # perform the day1 mms sequence
-
       StartDayWorker.perform_async(phone, platform='sms')
 
+      # let us know
+        our_phones = ["5612125831", "8186897323", "3013328953"]
+        is_us = our_phones.include? phone 
 
-      our_phones = ["5612125831", "8186897323", "3013328953"]
-      is_us = our_phones.include? phone 
-
-      if !is_us 
-        notify_admins "A new user #{phone} has enrolled by texting in", \
-               "Code: \"#{params[:Body]}\""
-      end
+        if !is_us 
+          notify_admins "A new user #{phone} has enrolled by texting in", \
+                 "Code: \"#{params[:Body]}\""
+        end
+      # end let us know
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"

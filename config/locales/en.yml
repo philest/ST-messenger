@@ -32,22 +32,6 @@ en:
     code:
       enter_code: "Hi, this is StoryTime!\n\nTo get started, just reply with your school code (we sent it to you by text)"
       success: "Great! Here's your first story :)"
-    teacher_intro:
-      - "Hi __PARENT__, this is __SCHOOL__. We'll be sending you free books for you and your child :)"
-      - "Hi __PARENT__, it's __SCHOOL__. Here's another story!"
-      - "Hi __PARENT__, here's another story :)"
-      - "Hi __PARENT__, here's another story!"
-      - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
-      - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
-    teacher_intro_sms: # we're rolling with __SCHOOL__ because people always text in thru a school
-      - "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
-      - "Hi! It's __SCHOOL__. Here's another story from StoryTime!"
-      - "Hi, here's another story from StoryTime! :)"
-      - "Hi, here's another story from StoryTime!"
-    remind: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
-    remind_sms:
-      - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
-      - "If you do not have Messenger just text back STORY"
     resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
     buttons:
       unsubscribe_window_text: Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO  

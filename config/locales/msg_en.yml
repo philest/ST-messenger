@@ -1,0 +1,64 @@
+en:
+  scripts:
+    intro:
+      teacher:
+        - "Hi __PARENT__, this is __TEACHER__. I'll be sending you free books for you and your child with StoryTime :)"
+        - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
+        - "Hi __PARENT__, here's another story :)"
+        - "Hi __PARENT__, here's another story!"
+        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+      school:
+        - "Hi __PARENT__, this is __SCHOOL__. We'll be sending you free books for you and your child with StoryTime :)"
+        - "Hi __PARENT__, it's __SCHOOL__. Here's another story!"
+        - "Hi __PARENT__, here's another story :)"
+        - "Hi __PARENT__, here's another story!"
+        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+      both:
+        - "Hi __PARENT__, this is __TEACHER__ from __SCHOOL__. I'll be sending you free books for you and your child with StoryTime :)"
+        - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
+        - "Hi __PARENT__, here's another story :)"
+        - "Hi __PARENT__, here's another story!"
+        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+      none:
+        - "Hi __PARENT__, this is StoryTime. We'll be sending you free books for you and your child :)"
+        - "Hi __PARENT__, it's StoryTime. Here's another story!"
+        - "Hi __PARENT__, here's another story :)"
+        - "Hi __PARENT__, here's another story!"
+        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+
+    remind:
+      teacher: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
+      school: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
+      both: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
+      none: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
+
+    remind_sms:
+      teacher:
+        - "Hi! It's __TEACHER__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back STORY"
+      school:
+        - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back STORY"
+      both:
+        - "Hi! It's __TEACHER__ from __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back STORY"
+      none: 
+        - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back STORY"
+
+    teacher_intro:
+      - "Hi __PARENT__, this is __SCHOOL__. We'll be sending you free books for you and your child :)"
+      - "Hi __PARENT__, it's __SCHOOL__. Here's another story!"
+      - "Hi __PARENT__, here's another story :)"
+      - "Hi __PARENT__, here's another story!"
+      - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+      - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+    teacher_intro_sms: # we're rolling with __SCHOOL__ because people always text in thru a school
+      - "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
+      - "Hi! It's __SCHOOL__. Here's another story from StoryTime!"
+      - "Hi, here's another story from StoryTime! :)"
+      - "Hi, here's another story from StoryTime!"

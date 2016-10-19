@@ -11,10 +11,10 @@ class Teacher < Sequel::Model(:teachers)
 
 
 	def validate
-    	super
-    	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (teachers)"
-    	validates_unique :email, :allow_nil=>true, :message => "email #{email} is already taken (teachers)"
-    	validates_unique :fb_id, :allow_nil=>true, :message => "fb_id #{fb_id} is already taken (teachers)"
-  	end
+    super
+  	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (teachers)"
+  	validates_unique :email, :allow_nil=>true, :message => "email #{email} is already taken (teachers)"
+  	validates_unique :fb_id, :allow_nil=>true, :message => "fb_id #{fb_id} is already taken (teachers)"
+  end
 
 end

@@ -154,6 +154,37 @@ module Birdv
         GenericMethodWorker.perform_in(time_delay, &block)
       end
 
+      def teacher_school_messaging(trans_stub, recipient) # for translation stub? first thing i thought of
+        if (/__poc__/).match(trans_stub).nil? # if no match, just return the original stub
+          return trans_stub
+        end
+
+        # check to see what the user has in store
+        user = User.where(phone: recipient).first
+        if user.nil?
+          user = User.where(fb_id: recipient).first
+        end
+
+        if user
+          has_teacher = not user.teacher.nil?
+          has_school  = not user.school.nil?
+          has_both    = has_teacher and has_school
+          has_none    = not (has_teacher or has_school)
+
+          replace = 'teacher' if has_teacher
+          replace = 'school'  if has_school
+          replace = 'both'    if has_both
+          replace = 'none'    if has_none
+
+          new_stub = str.gsub(/__poc__/, replace)
+          return new_stub
+        else
+          return trans_stub
+        end
+
+
+      end
+
 
       def delay(*args, time_delay, &block)
         # if block_given?
@@ -209,6 +240,8 @@ module Birdv
     end
   end
 end
+
+
 
 
 # valid generic template format

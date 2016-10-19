@@ -97,7 +97,7 @@ module Birdv
     
 
       def text(args = {})
-        assert_keys([:text], args)     
+        assert_keys([:text], args)   
         return {message: {text:args[:text]}}
       end
 
@@ -276,7 +276,7 @@ module Birdv
 
               trans = I18n.t(str, interpolation)
               return trans.is_a?(Array) ? trans[@script_day - 1] : trans
-          end
+          end # translate
 
 
           m = fb_object[:message]
@@ -322,6 +322,9 @@ module Birdv
                   trans_code = just_the_text + week + bracket_index
                   
                 end # window_text_regex.match
+
+                # for intros and teacher/school messaging
+                trans_code = teacher_school_messaging(trans_code, recipient)
 
                 m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
                 puts m[:text]
