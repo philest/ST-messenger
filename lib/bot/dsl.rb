@@ -148,6 +148,7 @@ module Birdv
         puts e.message  
         puts e.backtrace.join("\n") 
         notify_admins("StoryTime Script error: #{sqnce_name} of #{@script_name} failed!", e.backtrace.join("\n"))
+        raise e if ENV['RACK_ENV'] == 'test'
       end
 
       def delay_inline(time_delay, &block)
@@ -165,7 +166,6 @@ module Birdv
       end
 
       def unsubscribe_demo(recipient)
-        puts "IN UNSUBSCRIBE_DEMO BITCHES"
         u = User.where(fb_id: recipient).first
         if u.nil? then
           u = User.where(phone: recipient).first
@@ -175,7 +175,6 @@ module Birdv
       end
 
       def resubscribe_demo(recipient)
-        puts "IN RESUBSCRIBE_DEMO BITCHES"
         u = User.where(fb_id: recipient).first
         if u.nil? then
           u = User.where(phone: recipient).first
@@ -186,7 +185,6 @@ module Birdv
 
 
       def resubscribe(recipient)
-        puts "IN RESUBSCRIBE BITCHES"
         u = User.where(fb_id: recipient).first
         if u.nil? then
           u = User.where(phone: recipient).first

@@ -128,7 +128,7 @@ module Birdv
         locale_url_seg = (locale == 'es') ? 'es/' : ''
         num_pages.times do |i|
           url = "#{base}#{library}/#{locale_url_seg}#{title}/#{title}#{i+1}.jpg"
-          puts "sending #{url}!"
+          puts "sending #{url}"
           fb_send_json_to_user(recipient, picture(url:url))
         end
       end
@@ -148,9 +148,6 @@ module Birdv
       
        # TODO: should I delete args? not used
       def story(args={})
-        if !args.empty?
-          puts "(DSL.send.story) WARNING: you don't need to set any args when sending a story. It doesn't do anything!"
-        end
         
         return lambda do |recipient|
           begin
@@ -257,22 +254,20 @@ module Birdv
                 return str[1..-1]
               end
 
-              puts "str = #{str}"
-
               re_index = /\[(\d+)\]/i
               match = re_index.match(str)
               if match
                 index = $1
                 code_regex = /.*[^\[\d+\]]/i
                 translation_code = code_regex.match(str)
-                puts "translation_code = #{translation_code}"
+                # puts "translation_code = #{translation_code}"
                 translation_array = I18n.t(translation_code.to_s.downcase, interpolation)
-                puts "translation_array = #{translation_array}"
+                # puts "translation_array = #{translation_array}"
                 if translation_array.is_a? Array
-                  puts "translation array element = #{translation_array[index.to_i]}"
+                  # puts "translation array element = #{translation_array[index.to_i]}"
                   return translation_array[index.to_i]
                 else
-                  raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
+                  raise "#{str} - array indexing with translation failed, check your translation logic bitxh"
                 end
               
               end
@@ -332,13 +327,13 @@ module Birdv
                   
                 end # window_text_regex.match
 
-                puts "trans_code before = #{trans_code}"
+                # puts "trans_code before = #{trans_code}"
                 # for intros and teacher/school messaging
                 trans_code = teacher_school_messaging(trans_code, recipient)
-                puts "trans_code after = #{trans_code}"
+                # puts "trans_code after = #{trans_code}"
 
                 m[:text] = name_codes( translate.call(trans_code), recipient, next_day)
-                puts m[:text]
+                # puts m[:text]
               end
 
               if is_txt_button?(m) # a button with text on it

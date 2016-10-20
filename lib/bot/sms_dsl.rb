@@ -146,8 +146,6 @@ module Birdv
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 
-
-
       end
 
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )

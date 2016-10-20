@@ -37,7 +37,6 @@ module NameCodes
   end
 
   def name_codes(str, recipient, day=nil)
-      puts "USING NAME_CODES IN DSL.RB"
       if recipient.is_a? User
         user = recipient
       else
@@ -46,8 +45,6 @@ module NameCodes
           user = User.where(fb_id: recipient).first
         end
       end
-
-      puts "name codes str = #{str.inspect}"
 
       if user
         parent  = user.first_name.nil? ? "" : user.first_name
