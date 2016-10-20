@@ -133,7 +133,7 @@ class TextApi < Sinatra::Base
         puts "reply to send = #{reply}"
       end
       
-      unless reply.nil? or reply.empty?
+      unless reply.nil? or reply.empty? or reply.downcase.include? 'translation missing'
         TextingWorker.perform_async(reply, phone)
 
         #
@@ -151,16 +151,20 @@ class TextApi < Sinatra::Base
            # only do this for the first text... 
            # otherwise, just change their locale and keep according to the SCRIPT!!!
            if user.state_table.story_number == 1
-              call_to_action = name_codes(I18n.t('enrollment.call_to_action'), user)
+              call_to_action = name_codes(I18n.t('scripts.enrollment.call_to_action'), user)
               TextingWorker.perform_in(5.seconds, call_to_action, phone)
             end
         end
         #
         # end conditional reply logic below
         #
-
       else # there was no reply, so we want to personally respond to this. 
         REDIS.set('last_textin', phone) # remember the last person who texted in
+
+        if reply.include? 'translation missing'
+          notify_admins(reply, '')
+        end
+
       end
 
       our_phones = ["5612125831", "8186897323", "3013328953"]

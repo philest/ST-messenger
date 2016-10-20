@@ -174,6 +174,7 @@ class StartDayWorker
       else # send a story button, the usual way, yippee!!!!!!!!!
         puts "proceeding to send #{recipient} a story... oh look, a cloud!"
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
+        puts "#{u.inspect}, #{u.teacher.inspect}, #{u.school.inspect}"
         script.run_sequence(recipient, sequence) 
       end
 

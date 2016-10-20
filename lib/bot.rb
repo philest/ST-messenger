@@ -1,6 +1,7 @@
 require 'facebook/messenger'
 require 'httparty'
 
+
 # load environment vars, db, workers, and STScripts
 # load STScripts
 # load workers
@@ -20,6 +21,9 @@ end
 # custom fb helpers that we wrote
 require_relative 'helpers/fb'
 include Facebook::Messenger::Helpers
+
+require_relative 'helpers/contact_helpers'
+include ContactHelpers
 
 
 
@@ -142,6 +146,10 @@ Bot.on :message do |message|
       else # find the appropriate reply
 
         reply = get_reply(message.text, db_user)
+
+        if reply.include? 'translation missing'
+            notify_admins(reply, '')
+        end
         
         # redis_limit_key = db_user.fb_id + "_limit?"
         # limited = REDIS.get(redis_limit_key)
@@ -156,7 +164,7 @@ Bot.on :message do |message|
         #   REDIS.expire(redis_limit_key, 60)
         # end
 
-        fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? 
+        fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? or reply.include? 'translation missing'
 
         if reply == (I18n.t 'scripts.resubscribe')
           user_day = "day#{db_user.state_table.story_number}"

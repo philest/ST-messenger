@@ -1,7 +1,10 @@
+require_relative '../helpers/contact_helpers'
+
 module Birdv
   module DSL
     module FB
       include Facebook::Messenger::Helpers 
+      include ContactHelpers
       STORY_BASE_URL = 'http://d2p8iyobf0557z.cloudfront.net/'
 
       def url_button(title, url)
@@ -275,6 +278,11 @@ module Birdv
               end
 
               trans = I18n.t(str, interpolation)
+
+              if trans.include? 'translation missing'
+                notify_admins(trans, '')
+              end
+
               return trans.is_a?(Array) ? trans[@script_day - 1] : trans
           end # translate
 

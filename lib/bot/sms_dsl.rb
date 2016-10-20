@@ -1,8 +1,9 @@
+require_relative '../helpers/contact_helpers'
+
 module Birdv
-
   module DSL
-
     module Texting
+      include ContactHelpers
 
       def get_curriculum_version(recipient)
         user = User.where(phone: recipient).first
@@ -88,10 +89,16 @@ module Birdv
             puts translation
             return translation
           else
+            notify_admins('problems translating', translation_array)
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end
         end
         trans = I18n.t text
+
+        if trans.include? 'translation missing'
+          notify_admins(trans, '')
+        end
+
         puts "trans = #{trans}"
         if trans.is_a? Array
           return name_codes trans[@script_day - 1], phone, next_day
@@ -170,7 +177,5 @@ module Birdv
 
 
     end # module MMS
-
   end # module DSL
-
 end # module Birdv
