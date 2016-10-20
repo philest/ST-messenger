@@ -6,7 +6,7 @@ describe MessageReplyHelpers do
 
   context 'proper translations' do
 
-    it 'translates replies correctly'
+    it 'translates replies correctly' do
       user = User.create(platform: 'sms', story_number: 2)
       user.state_table.update(subscribed?: true)
 
@@ -22,6 +22,7 @@ describe MessageReplyHelpers do
       expect(get_reply('sms', user)).not_to include "translation missing"
       expect(get_reply('english', user)).not_to include "translation missing"
       expect(get_reply('spanish', user)).not_to include "translation missing"
+    end
   end
 
   context 'get_reply' do

@@ -781,9 +781,9 @@ describe 'Birdv::DSL::StoryTimeScript' do
       }.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from(nil).to 'seq1'
 
       # should raise error because fallatious
-      expect{
-        script_obj.run_sequence(@aubrey, :pee)
-      }.not_to raise_error(NoMethodError)
+      # expect{
+      #   script_obj.run_sequence(@aubrey, :pee)
+      # }.not_to raise_error(NoMethodError)
 
       # should not have changed last_sequence_seen
       expect(User.where(fb_id:@aubrey).first.state_table.last_sequence_seen).to eq('seq1')

@@ -10,6 +10,13 @@ require 'workers'
 
 
 describe "the scripts" do
+
+  context "scripts" do
+    before(:each) do
+
+    end
+  end
+
   context "translation" do
     before(:each) do 
       @user = User.create(fb_id: "my_id", first_name: "David", platform: 'fb')
@@ -22,21 +29,15 @@ describe "the scripts" do
           usr = User.where(fb_id: fb_id).first
           if !to_send.is_a? Proc
             fb_object = Marshal.load(Marshal.dump(to_send)) 
-
             begin 
               script.process_txt(fb_object, usr)
-
               if fb_object.to_s.include? 'translation missing'
                 raise "A TRANSLATION IS MISSING! #{fb_object}"
               end
-
             rescue => e
               raise e
             end
-
-
           end
-
         end
 
         allow(script).to receive(:delay).and_wrap_original do |original_method, *args, &block|
