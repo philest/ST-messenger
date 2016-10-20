@@ -18,7 +18,7 @@ Birdv::DSL::ScriptClient.new_script 'remind' do
 
   sequence 'unsubscribe' do |recipient|
 
-    txt = 'scripts.subscription.unsubscribe'
+    txt = 'scripts.subscription.unsubscribe.__poc__'
     send recipient, text({text:txt})
 
   end

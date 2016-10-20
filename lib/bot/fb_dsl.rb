@@ -386,7 +386,7 @@ module Birdv
         # if lambda, run it! e.g. send(story(args)) 
           if is_story?(to_send)
             to_send.call(fb_id)
-
+            
           # else, we're dealing with a hash! e.g send(text("stuff"))
           elsif to_send.is_a? Hash
             # gotta get the job done gotta start a new nation gotta meet my son

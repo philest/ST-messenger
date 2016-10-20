@@ -115,6 +115,11 @@ module Birdv
         return false
       end # translate_mms
 
+      # just for testing purposes....
+      def send
+        puts "a fake implementation of `send`"
+      end
+
 
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first

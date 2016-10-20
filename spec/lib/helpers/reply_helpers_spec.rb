@@ -4,6 +4,26 @@ include MessageReplyHelpers
 
 describe MessageReplyHelpers do
 
+  context 'proper translations' do
+
+    it 'translates replies correctly'
+      user = User.create(platform: 'sms', story_number: 2)
+      user.state_table.update(subscribed?: true)
+
+      expect(get_reply('STORY', user)).not_to include "translation missing"
+      expect(get_reply('help', user)).not_to include "translation missing"
+      expect(get_reply('please stop', user)).not_to include "translation missing"
+      expect(get_reply('thanks', user)).not_to include "translation missing"
+      expect(get_reply('haha funny', user)).not_to include "translation missing"
+      expect(get_reply('robot', user)).not_to include "translation missing"
+      expect(get_reply('love', user)).not_to include "translation missing"
+      expect(get_reply('okay', user)).not_to include "translation missing"
+      expect(get_reply('go', user)).not_to include "translation missing"
+      expect(get_reply('sms', user)).not_to include "translation missing"
+      expect(get_reply('english', user)).not_to include "translation missing"
+      expect(get_reply('spanish', user)).not_to include "translation missing"
+  end
+
   context 'get_reply' do
 
     it "sends a reply to someone who is unsubscribed but is SMS and at story = 1" do

@@ -1,7 +1,10 @@
 en:
   mms:
     call_to_action:
-      intro: "Hi it's __SCHOOL__ again! We hope you liked these little books."
+      intro:
+        teacher: "Hi it's __TEACHER__ again! I hope you liked these little books."
+        school: "Hi it's __SCHOOL__ again! We hope you liked these little books."
+        none: "Hi it's StoryTime again! We hope you liked these little books."
       fb: "To get more stories through Facebook, tap the link and type your school code: __CODE__\njoinstorytime.com/go"
     stories:
       floating_shoe:

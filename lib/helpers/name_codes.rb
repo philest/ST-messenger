@@ -47,6 +47,8 @@ module NameCodes
         end
       end
 
+      puts "name codes str = #{str.inspect}"
+
       if user
         parent  = user.first_name.nil? ? "" : user.first_name
         I18n.locale = user.locale
