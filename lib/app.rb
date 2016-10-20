@@ -493,24 +493,24 @@ class TextApi < Sinatra::Base
   end
 
 
-    # send the demo
+  # send the demo
   post '/demo' do
-    phone = params[:phone]
+    phone = params[:From][2..-1]
     puts "sending demo to #{phone}"
-    MessageWorker.perform_async(phone, script_name='demo', sequence='firstmessage', platform='demo')
+    if params[:Body].delete(' ').downcase == 'demo'
+      User.create(phone: phone, platform: 'demo')
+      MessageWorker.perform_async(phone, script_name='demo', sequence='firstmessage', platform='sms')
+    end
+
+    enroll_msg      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
+    if enroll_msg.match(params[:Body])
+      User.create(phone: phone, platform: 'demo')
+      MessageWorker.perform_async(phone, 'demo', 'firststorydemo', 'sms')
+    end
+
+    "<Response/>"
   end 
 
-  post '/demo/sms' do
-    # msg = "Hi! We're away now, but we'll see your messsage soon. "+
-    # "To learn more about StoryTime, call 561-212-5831."
-    msg = I18n.t 'demo.response'
-
-    twiml = Twilio::TwiML::Response.new do |r|
-      # r.Message "StoryTime: Hi, we'll send your text to #{user.teacher.signature}. They'll see it next time they are on their computer."
-      r.Message msg
-    end
-    twiml.text
-  end
 
 
 end # class SMS < Sinatra::Base

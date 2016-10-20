@@ -177,7 +177,13 @@ module Birdv
           return
         end
 
-        TextingWorker.perform_async(text, phone, ENV['ST_MAIN_NO'], 'SMS',
+        if user.platform == 'demo'
+          from_no = ENV['ST_DEMO_NO']
+        else
+          from_no = ENV['ST_MAIN_NO']
+        end
+
+        TextingWorker.perform_async(text, phone, from_no, 'SMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 
@@ -207,7 +213,13 @@ module Birdv
           return
         end
 
-        TextingWorker.perform_async(img_url, phone, ENV['ST_MAIN_NO'], 'MMS',
+        if user.platform == 'demo'
+          from_no = ENV['ST_DEMO_NO']
+        else
+          from_no = ENV['ST_MAIN_NO']
+        end
+
+        TextingWorker.perform_async(img_url, phone, from_no, 'MMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 

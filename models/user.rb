@@ -56,4 +56,5 @@ class User < Sequel::Model(:users)
     validates_unique :fb_id, :allow_nil=>true, :message => "#{fb_id} is already taken (users)"
   end
 
+
 end

@@ -11,7 +11,9 @@ en:
   demo_fb:
     intro: "Here’s tonight’s Storytime story for Jasmine!\n-Ms. Wilson"
   demo:
-    intro: "Hi, this is StoryTime! Here's the first two pages of one of our favorites."
+    intro: "Hi this is StoryTime! We'll be texting you free books :)"
+    call_to_action: "Get longer books with Facebook Messenger. Tap here and type your school code: DEMO\njoinstorytime.com/go.\n\nIf you do not have Messenger just text back STORY"
+    sms_msg: "Great! We'll start sending you stories by text. Here's the first one:"
     thanks: "Thanks for trying StoryTime :)"
     response: "Hi! We're away now, but we'll see your message soon. To learn more about StoryTime, call 561-212-5831"
   defaults:

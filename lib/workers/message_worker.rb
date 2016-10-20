@@ -39,16 +39,13 @@ class MessageWorker
                                  platform: 'fb')
           u.add_button_press_log(b) unless u.nil? 
 
-        when 'sms', 'feature'
+        when 'sms', 'feature', 'demo'
           puts "looking for #{recipient} phone in MessageWorker"
           u = User.where(phone:recipient).first
-          if u.nil? then 
+          if u.nil? then
             puts "user with phone #{recipient} doesn't exist bro"
-            return 
+            return
           end
-
-        when 'demo'
-          puts "running demo in MessageWorker..."
         end
 
         protected_ids = %w(1084495154927802 1042751019139427 8186897323 1625783961083197 10209967651611613 10209571935726081)
