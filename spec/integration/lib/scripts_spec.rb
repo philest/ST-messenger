@@ -145,6 +145,13 @@ describe "the scripts" do
           expect{script.run_sequence('my_phone', name.to_sym)}.not_to raise_error
         end
       end
+      @sms_user.update(locale: 'es')
+      @sms_scripts.each do |name, script|
+        script.sequences.each do |name, sequence|
+          expect{script.run_sequence('my_phone', name.to_sym)}.not_to raise_error
+        end
+      end
+
     end
 
     it "all feature script send_sms/mms calls request existing pre-translation strings" do
@@ -155,6 +162,14 @@ describe "the scripts" do
           expect{script.run_sequence('my_feature_phone', name.to_sym)}.not_to raise_error
         end
       end
+
+      @feature_user.update(locale: 'es')
+      @feature_scripts.each do |name, script|
+        script.sequences.each do |name, sequence|
+          expect{script.run_sequence('my_feature_phone', name.to_sym)}.not_to raise_error
+        end
+      end
+
     end
     # iterate through all the scripts
     # run process_txt on each and see if there are any fuckups
