@@ -36,54 +36,51 @@ class TextApi < Sinatra::Base
 
   enable :sessions
 
-
   get '/' do
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
 
-  # TODO: change this url to /sms.....
-  post '/txt' do
-    # TODO: check that these values are valid/exist 
-    text          = params[:text]
-    recipient     = params[:recipient]
-    script        = params[:script]
-    sequence      = params[:next_sequence]
-    last_sequence = params[:last_sequence]
-    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
 
-    TextingWorker.perform_async(text, 
-                                recipient, 
-                                sender_no, SMS,
-                                'script' => script, 
-                                'sequence' => sequence, 
-                                'last_sequence'=> last_sequence) 
+  post '/signup' do
+    # create teacher here
+    email       = params[:email]
+    signature   = params[:signature]
+    password    = params[:password]
 
-    # TODO: Return the status of the Twilio client response to Birdv
+    if !email or !signature or !password
+      return "invalid data. need email, signature, and password"
+    end
 
-    status 200
+    password_regexp = Regexp.new("#{password}\\|.+", 'i')
 
+    # note: when we give out passwords, we just do the english version of a school
+    school = School.where(Sequel.like(:code, password_regexp)).first
+    if school.nil?
+      return "incorrect password"
+    end
+
+    # maybe have some way to increment teacher codes for schools? 
+    teacher = Teacher.create(email: email, signature: signature)
+
+    if teacher.nil?
+      return "didn't create this teacher, email already in use"
+    end
+
+    # this will automatically create a teacher code
+    school.signup_teacher(teacher)
+
+    HTTParty.post(
+      "#{ENV['STORYTIME_URL']}/signin"
+      # include teacher data in the body
+      # we don't need very much in each teacher session
+      body: {
+        teacher: teacher.to_json,
+        school: school.to_json
+      }
+    )
   end
 
-  post '/mms' do
-    img_url       = params[:img_url]
-    recipient     = params[:recipient]
-    script        = params[:script]
-    sequence      = params[:next_sequence]
-    last_sequence = params[:last_sequence]
-    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
-
-    TextingWorker.perform_async(img_url, 
-                                recipient, 
-                                sender_no, MMS, 
-                                'script' => script, 
-                                'sequence' => sequence, 
-                                'last_sequence'=> last_sequence) 
-
-    # TODO: Return the status of the Twilio client response to Birdv
-
-    status 200
-  end
 
   get '/delivery_status' do
     begin 

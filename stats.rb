@@ -53,6 +53,18 @@ class Stats
     conversation = msgs_sent + msgs_received
     conversation.sort_by! {|c| DateTime.parse(c.date_updated) }
 
+    # do something with media....
+    # msgs_sent.each do |m|
+    #   begin
+    #     m.media.list.each do |img| 
+    #       puts img.content_type
+    #     end
+    #   rescue => e
+    #     puts e
+    #     next
+    #   end
+    # end
+
     return {
       sent: msgs_sent,
       received: msgs_received,

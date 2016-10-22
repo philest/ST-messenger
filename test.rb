@@ -1,11 +1,16 @@
 require_relative 'stats'
-
+require 'httparty'
 # puts UserStats.new.dropouts
 
-users = UserStats.new
+# users = SchoolStats.new("New Haven Free Public Library")
+# users.get_conversation("2034352867")
 
-users.persistence(1.week, User)
 
+HTTParty.post("http://localhost:5000/signup",
+  body: {
+    
+  }
+)
 
 
 # ywca = SchoolStats.new("New Haven Free Public Library")

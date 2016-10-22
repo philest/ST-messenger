@@ -2,6 +2,7 @@ class Teacher < Sequel::Model(:teachers)
 	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
+  plugin :json_serializer
 
 	many_to_one :school
 	one_to_many :classrooms
