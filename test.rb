@@ -6,12 +6,24 @@ require 'httparty'
 # users.get_conversation("2034352867")
 
 
-HTTParty.post("http://localhost:5000/signup",
+# HTTParty.post("http://localhost:5000/signup",
+#   body: {
+#     email: 'david.mcpeek@yale.edu',
+#     password: 'ywca',
+#     signature: 'Mr. McPeek'
+#   }
+# )
+
+
+HTTParty.post(
+  "http://localhost:4567/signin",
+  # include teacher data in the body
+  # we don't need very much in each teacher session
   body: {
-    
+    teacher: Teacher.first.to_json,
+    school: Teacher.first.to_json
   }
 )
-
 
 # ywca = SchoolStats.new("New Haven Free Public Library")
 

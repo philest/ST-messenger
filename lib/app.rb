@@ -48,12 +48,14 @@ class TextApi < Sinatra::Base
     signature   = params[:signature]
     password    = params[:password]
 
+    puts params
+
     if !email or !signature or !password
       return "invalid data. need email, signature, and password"
     end
 
     password_regexp = Regexp.new("#{password}\\|.+", 'i')
-
+    
     # note: when we give out passwords, we just do the english version of a school
     school = School.where(Sequel.like(:code, password_regexp)).first
     if school.nil?
@@ -71,7 +73,7 @@ class TextApi < Sinatra::Base
     school.signup_teacher(teacher)
 
     HTTParty.post(
-      "#{ENV['STORYTIME_URL']}/signin"
+      "#{ENV['STORYTIME_URL']}/signin",
       # include teacher data in the body
       # we don't need very much in each teacher session
       body: {
