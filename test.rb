@@ -1,12 +1,18 @@
 require_relative 'stats'
 require 'httparty'
+require_relative 'lib/helpers/generate_phone_image'
 # puts UserStats.new.dropouts
 
 # users = SchoolStats.new("New Haven Free Public Library")
 # users.get_conversation("2034352867")
 
 
-# HTTParty.post("http://localhost:5000/signup",
+School.each do |s|
+  PhoneImage.create_image(s.code.split('|').first.upcase)
+end
+
+
+# puts HTTParty.post("http://localhost:5000/signup",
 #   body: {
 #     email: 'david.mcpeek@yale.edu',
 #     password: 'ywca',
@@ -15,15 +21,16 @@ require 'httparty'
 # )
 
 
-HTTParty.post(
-  "http://localhost:4567/signin",
-  # include teacher data in the body
-  # we don't need very much in each teacher session
-  body: {
-    teacher: Teacher.first.to_json,
-    school: Teacher.first.to_json
-  }
-)
+# HTTParty.post(
+#   "http://localhost:4567/signin",
+#   # include teacher data in the body
+#   # we don't need very much in each teacher session
+#   body: {
+#     teacher: Teacher.first.to_json,
+#     school: School.first.to_json,
+#     secret: 'our little secret'
+#   }
+# )
 
 # ywca = SchoolStats.new("New Haven Free Public Library")
 

@@ -20,6 +20,7 @@ require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'helpers/twilio_helpers'
 require_relative 'helpers/name_codes'
+require_relative 'helpers/generate_phone_image'
 require_relative 'bot/dsl'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
@@ -34,7 +35,10 @@ class TextApi < Sinatra::Base
 
   use Airbrake::Rack::Middleware
 
+  set :session_secret, "328479283uf923fu8932fu923uf9832f23f232"
   enable :sessions
+
+  set :root, File.join(File.dirname(__FILE__), '../')
 
   get '/' do
     params[:kingdom] ||= "Angels"
@@ -48,7 +52,7 @@ class TextApi < Sinatra::Base
     signature   = params[:signature]
     password    = params[:password]
 
-    puts params
+    puts "params = #{params}"
 
     if !email or !signature or !password
       return "invalid data. need email, signature, and password"
@@ -63,26 +67,29 @@ class TextApi < Sinatra::Base
     end
 
     # maybe have some way to increment teacher codes for schools? 
-    teacher = Teacher.create(email: email, signature: signature)
 
+    teacher = Teacher.where(email: email).first
     if teacher.nil?
-      return "didn't create this teacher, email already in use"
+      teacher = Teacher.create(email: email, signature: signature)
     end
 
     # this will automatically create a teacher code
     school.signup_teacher(teacher)
 
-    HTTParty.post(
-      "#{ENV['STORYTIME_URL']}/signin",
-      # include teacher data in the body
-      # we don't need very much in each teacher session
-      body: {
-        teacher: teacher.to_json,
-        school: school.to_json
-      }
-    )
+    teacher.reload
+    image = PhoneImage.create_image(teacher.code.split('|').first.upcase)
+
+    return {
+      teacher: teacher,
+      school: school,
+      secret: 'our little secret'
+    }.to_json
   end
 
+  get '/enroll-forms/:code' do
+    send_file File.join(settings.public_folder, 
+                            "enroll-phone/#{params[:code]}-enroll.png")
+  end
 
   get '/delivery_status' do
     begin 

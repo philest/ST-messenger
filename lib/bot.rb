@@ -187,13 +187,15 @@ Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
   when INTRO
+    puts "received payload #{postback.payload}"
     # StartDayWorker.perform_async(sender_id, platform='fb')
     MessageWorker.perform_async(sender_id, 'day1', :code, 'fb')
   else 
+    puts "received payload #{postback.payload}"
     # log the user's button press and execute sequence
     script_name, sequence = postback.payload.split('_')
-    puts script_name
-    puts sequence
+    # puts script_name
+    # puts sequence
     MessageWorker.perform_async(sender_id, script_name, sequence, platform='fb')
   end
 end
