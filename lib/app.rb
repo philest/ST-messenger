@@ -70,8 +70,9 @@ class TextApi < Sinatra::Base
 
     teacher = Teacher.where(email: email).first
     if teacher.nil?
-      teacher = Teacher.create(email: email, signature: signature)
+      teacher = Teacher.create(email: email)
     end
+    teacher.update(signature: signature)
 
     # this will automatically create a teacher code
     school.signup_teacher(teacher)

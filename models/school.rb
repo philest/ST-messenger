@@ -12,10 +12,15 @@ class School < Sequel::Model(:schools)
 	add_association_dependencies teachers: :nullify, users: :nullify
 
   def signup_teacher(teacher)
-    self.teacher_index += 1
-    code = self.code.split('|').map{|c| "#{c}#{self.teacher_index}" }.join('|')
-    teacher.update(code: code)
-    self.add_teacher(teacher)
+    if self.teachers.select {|t| t.id == teacher.id }.size == 0
+      teacher_i = self.teacher_index + 1
+      self.update(teacher_index: teacher_i)
+      code = self.code.split('|').map{|c| "#{c}#{self.teacher_index}" }.join('|')
+      teacher.update(code: code)
+      self.add_teacher(teacher)
+    else
+      puts "Teacher #{teacher.signature} is already associated with #{self.signature}"
+    end
   end
 
 end
