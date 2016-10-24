@@ -95,8 +95,6 @@ class TextApi < Sinatra::Base
   end
 
   get '/enroll-flyers/:code' do
-    puts "creating flyer for #{params[:code]}"
-
     params[:ext] ||= 'png'
     send_file File.join(settings.public_folder, 
                             "enroll-flyer/#{params[:code]}-flyer.#{params[:ext]}")
