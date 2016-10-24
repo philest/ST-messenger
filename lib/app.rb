@@ -55,7 +55,7 @@ class TextApi < Sinatra::Base
     puts "params = #{params}"
 
     if !email or !signature or !password
-      return "invalid data. need email, signature, and password"
+      return 500
     end
 
     password_regexp = Regexp.new("#{password}\\|.+", 'i')
@@ -63,7 +63,7 @@ class TextApi < Sinatra::Base
     # note: when we give out passwords, we just do the english version of a school
     school = School.where(Sequel.like(:code, password_regexp)).first
     if school.nil?
-      return "incorrect password"
+      return 501
     end
 
     # maybe have some way to increment teacher codes for schools? 
@@ -77,7 +77,10 @@ class TextApi < Sinatra::Base
     school.signup_teacher(teacher)
 
     teacher.reload
-    image = PhoneImage.create_image(teacher.code.split('|').first.upcase)
+    PhoneImage.create_image(teacher.code.split('|').first.upcase)
+    FlyerImage.create_image(teacher.code.split('|').first.upcase)
+
+    status 200
 
     return {
       teacher: teacher,
@@ -89,6 +92,14 @@ class TextApi < Sinatra::Base
   get '/enroll-forms/:code' do
     send_file File.join(settings.public_folder, 
                             "enroll-phone/#{params[:code]}-enroll.png")
+  end
+
+  get '/enroll-flyers/:code' do
+    puts "creating flyer for #{params[:code]}"
+
+    params[:ext] ||= 'png'
+    send_file File.join(settings.public_folder, 
+                            "enroll-flyer/#{params[:code]}-flyer.#{params[:ext]}")
   end
 
   get '/delivery_status' do
