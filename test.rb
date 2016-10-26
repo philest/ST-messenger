@@ -6,8 +6,10 @@ require_relative 'lib/helpers/generate_phone_image'
 # users = SchoolStats.new("New Haven Free Public Library")
 # users.get_conversation("2034352867")
 
-FlyerImage.create_image(School.where(name: "YWCA").first.code.split('|').first.upcase)
-
+1.upto(10).each do |n|
+  FlyerImage.create_image("RMP#{n}")
+end
+# FlyerImage.create_image("RMP1")
 
 # School.each do |s|
 #   PhoneImage.create_image(s.code.split('|').first.upcase)

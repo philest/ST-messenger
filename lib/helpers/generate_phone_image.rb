@@ -25,11 +25,24 @@ class FlyerImage
     # 185, 462
     y_start, y_end = 382, 369
 
-    [[383, "To get stories by"], [427, "text, text #{img_txt} to"], [472, "(203)-202-3505"]].each do |y|
-        text.annotate(canvas, 0, 0, 185, y[0] + 35, y[1])
-    end
+    text.annotate(canvas, 0, 0, 185, 420, "To get stories by")
+
+
+    dimensions = text.get_type_metrics("text, text ")
+    text.annotate(canvas, 0, 0, 185, 462, "text, text ")
+    text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
+    img_txt_d = text.get_type_metrics("#{img_txt}")
+    text.annotate(canvas, 0, 0, 185 + dimensions.width, 462, "#{img_txt}")
+    # text.annote
+    text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
+    text.annotate(canvas, 0, 0, 185, 507, "to (203)-202-3505")
+
+    # [[383, "To get stories by"], [427, "text, text #{img_txt} to"], [472, "(203)-202-3505"]].each do |y|
+    #     text.annotate(canvas, 0, 0, 185, y[0] + 35, y[1])
+    # end
 
     # 597 x 553
+    text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
     text.annotate(canvas, 0, 0, 605, 580, img_txt)
 
     img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer/#{img_txt}-flyer.png")
@@ -41,14 +54,14 @@ class FlyerImage
             puts "difference is #{diff.inspect}"
 
             if diff == 0
-                puts "we don't need to rewrite #{img_txt}-flyer.png"
+                puts "we don't need to rewrite #{img_txt}-flyer.png + .pdf"
                 return
             else
-                puts "creating new image #{img_txt}-flyer.png"
+                puts "creating new image #{img_txt}-flyer.png + .pdf"
             end
         end
     rescue => e
-        puts "creating new image #{img_txt}-flyer.png"
+        puts "creating new image #{img_txt}-flyer.png + .pdf"
     end
 
     # begin
@@ -94,7 +107,7 @@ class PhoneImage
     canvas.new_image(width, height, Magick::TextureFill.new(phone))
 
     text = Magick::Draw.new
-    text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
+    text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
     text.pointsize = 45
     # text.gravity = Magick::CenterGravity
 
