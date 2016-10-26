@@ -20,6 +20,7 @@ require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'helpers/twilio_helpers'
 require_relative 'helpers/name_codes'
+require_relative 'helpers/generate_phone_image'
 require_relative 'bot/dsl'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
@@ -34,55 +35,70 @@ class TextApi < Sinatra::Base
 
   use Airbrake::Rack::Middleware
 
+  set :session_secret, "328479283uf923fu8932fu923uf9832f23f232"
   enable :sessions
 
+  set :root, File.join(File.dirname(__FILE__), '../')
 
   get '/' do
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
 
-  # TODO: change this url to /sms.....
-  post '/txt' do
-    # TODO: check that these values are valid/exist 
-    text          = params[:text]
-    recipient     = params[:recipient]
-    script        = params[:script]
-    sequence      = params[:next_sequence]
-    last_sequence = params[:last_sequence]
-    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
 
-    TextingWorker.perform_async(text, 
-                                recipient, 
-                                sender_no, SMS,
-                                'script' => script, 
-                                'sequence' => sequence, 
-                                'last_sequence'=> last_sequence) 
+  post '/signup' do
+    # create teacher here
+    email       = params[:email]
+    signature   = params[:signature]
+    password    = params[:password]
 
-    # TODO: Return the status of the Twilio client response to Birdv
+    puts "params = #{params}"
+
+    if !email or !signature or !password
+      return 500
+    end
+
+    password_regexp = Regexp.new("#{password}\\|.+", 'i')
+    
+    # note: when we give out passwords, we just do the english version of a school
+    school = School.where(Sequel.like(:code, password_regexp)).first
+    if school.nil?
+      return 501
+    end
+
+    # maybe have some way to increment teacher codes for schools? 
+
+    teacher = Teacher.where(email: email).first
+    if teacher.nil?
+      teacher = Teacher.create(email: email)
+    end
+    teacher.update(signature: signature)
+
+    # this will automatically create a teacher code
+    school.signup_teacher(teacher)
+
+    teacher.reload
+    PhoneImage.create_image(teacher.code.split('|').first.upcase)
+    FlyerImage.create_image(teacher.code.split('|').first.upcase)
 
     status 200
 
+    return {
+      teacher: teacher,
+      school: school,
+      secret: 'our little secret'
+    }.to_json
   end
 
-  post '/mms' do
-    img_url       = params[:img_url]
-    recipient     = params[:recipient]
-    script        = params[:script]
-    sequence      = params[:next_sequence]
-    last_sequence = params[:last_sequence]
-    sender_no     = params[:sender].nil? ? STORYTIME_NO : params[:sender]
+  get '/enroll-forms/:code' do
+    send_file File.join(settings.public_folder, 
+                            "enroll-phone/#{params[:code]}-enroll.png")
+  end
 
-    TextingWorker.perform_async(img_url, 
-                                recipient, 
-                                sender_no, MMS, 
-                                'script' => script, 
-                                'sequence' => sequence, 
-                                'last_sequence'=> last_sequence) 
-
-    # TODO: Return the status of the Twilio client response to Birdv
-
-    status 200
+  get '/enroll-flyers/:code' do
+    params[:ext] ||= 'png'
+    send_file File.join(settings.public_folder, 
+                            "enroll-flyer/#{params[:code]}-flyer.#{params[:ext]}")
   end
 
   get '/delivery_status' do

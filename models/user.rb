@@ -2,6 +2,7 @@ class User < Sequel::Model(:users)
 	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
+	plugin :json_serializer
 	
 	many_to_one :classroom
 	many_to_one :teacher
@@ -12,8 +13,14 @@ class User < Sequel::Model(:users)
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
+
+
+	# @@code_index = 0
+
 	def generate_code 
 		Array.new(2){[*'0'..'9'].sample}.join
+		# @@code_index = (@@code_index + 1) % 100
+		# sprintf '%02d', @@code_index
 	end
 
 
