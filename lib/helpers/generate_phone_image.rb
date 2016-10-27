@@ -82,15 +82,15 @@ class FlyerImage
     # rescue => e
     #     puts "creating new image #{img_txt}-flyer.pdf"
     # end
-    dirname = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer"
+    dirname = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer")
 
     unless File.directory?(dirname)
       FileUtils.mkdir_p(dirname)
     end
 
     puts "writing images..."
-    canvas.write(File.expand_path("#{dirname}/#{img_txt}-flyer.png"))
-    canvas.write(File.expand_path("#{dirname}/#{img_txt}-flyer.pdf"))
+    canvas.write("#{dirname}/#{img_txt}-flyer.png")
+    canvas.write("#{dirname}/#{img_txt}-flyer.pdf")
 
   end
 
@@ -155,13 +155,13 @@ class PhoneImage
         puts "creating new image #{img_txt}-enroll.png"
     end
 
-    dirname = "#{File.dirname(__FILE__)}/../../public/enroll-phone"
+    dirname = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-phone")
 
     unless File.directory?(dirname)
       FileUtils.mkdir_p(dirname)
     end
 
-    canvas.write(File.expand_path("#{dirname}/#{img_txt}-enroll.png"))
+    canvas.write("#{dirname}/#{img_txt}-enroll.png")
 
   end
 
