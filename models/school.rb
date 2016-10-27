@@ -8,7 +8,6 @@ class School < Sequel::Model(:schools)
 	many_to_one :district
 	one_to_many :school_sessions
 
-
 	add_association_dependencies teachers: :nullify, users: :nullify
 
   def signup_teacher(teacher)
@@ -17,10 +16,10 @@ class School < Sequel::Model(:schools)
       self.update(teacher_index: teacher_i)
       code = self.code.split('|').map{|c| "#{c}#{self.teacher_index}" }.join('|')
       teacher.update(code: code)
+      teacher.update(t_number: teacher_i)
       self.add_teacher(teacher)
     else
       puts "Teacher #{teacher.signature} is already associated with #{self.signature}"
     end
   end
-
 end

@@ -8,7 +8,7 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
     end
-
+    
     create_table(:schema_info) do
       Integer :version, :default=>0, :null=>false
     end
@@ -35,6 +35,7 @@ Sequel.migration do
       String :signature, :text=>true
       Float :tz_offset
       Integer :total_users
+      Integer :teacher_index, :default=>0
     end
     
     create_table(:school_sessions) do
@@ -60,6 +61,7 @@ Sequel.migration do
       String :prefix, :text=>true
       String :signature, :text=>true
       String :code, :text=>true
+      Integer :number, :default=>0
       
       index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true

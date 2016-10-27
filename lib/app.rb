@@ -73,13 +73,15 @@ class TextApi < Sinatra::Base
     end
     teacher.update(signature: signature)
 
+    puts "teacher = #{teacher.inspect}"
+
     # this will automatically create a teacher code
     school.signup_teacher(teacher)
 
     teacher.reload
-    FlyerWorker.perform_async(teacher.code.split('|').first.upcase, teacher.signature, school.signature)
-    # PhoneImage.create_image(teacher.code.split('|').first.upcase)
-    # FlyerImage.create_image(teacher.code.split('|').first.upcase, teacher.signature, school.signature)
+    FlyerWorker.perform_async(teacher.id, school.id)
+    # PhoneImage.create_image(teacher.code.split('|').first)
+    # FlyerImage.create_image(teacher.code.split('|').first, teacher.signature, school.signature)
 
     status 200
 
@@ -220,17 +222,19 @@ class TextApi < Sinatra::Base
       # "english_word|spanish_word"
       # Example: 'read1|leer1'
       # 
-      # 1. All lower-case
-      # 2. English first, then Spanish
-      # 3. separated by pipe
+      # 1. English first, then Spanish
+      # 2. separated by pipe
+      # 3. spaces and dashes allow
       #  
       School.each do |school|
         code = school.code
         if code.nil?
           next
         end
-        code.downcase!
-        body_text = params[:Body].delete(' ').downcase
+        code = code.delete(' ').delete('-').downcase
+        body_text = params[:Body].delete(' ')
+                                 .delete('-')
+                                 .downcase
 
         if code.include? body_text
           en, sp = code.split('|')
@@ -256,8 +260,10 @@ class TextApi < Sinatra::Base
         if code.nil?
           next
         end
-        code.downcase!
-        body_text = params[:Body].delete(' ').downcase
+        code = code.delete(' ').delete('-').downcase
+        body_text = params[:Body].delete(' ')
+                                 .delete('-')
+                                 .downcase
 
         if code.include? body_text
           en, sp = code.split('|')
