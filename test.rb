@@ -1,14 +1,15 @@
 require_relative 'stats'
 require 'httparty'
 require_relative 'lib/helpers/generate_phone_image'
+require_relative 'config/initializers/aws'
 # puts UserStats.new.dropouts
 
 # users = SchoolStats.new("New Haven Free Public Library")
 # users.get_conversation("2034352867")
 
-1.upto(10).each do |n|
-  FlyerImage.create_image("RMP#{n}")
-end
+
+FlyerImage.create_image("cowtongue")
+
 # FlyerImage.create_image("RMP1")
 
 # School.each do |s|

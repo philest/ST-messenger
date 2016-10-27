@@ -11,9 +11,7 @@ class FlyerImage
     width = img.columns
     height = img.rows
 
-    flyer = Magick::ImageList.new(path)
-    canvas = Magick::ImageList.new
-    canvas.new_image(width, height, Magick::TextureFill.new(flyer))
+    canvas = Magick::Image.from_blob(IO.read(path))[0]
 
     text = Magick::Draw.new
     # text.font_family = 'helvetica'
@@ -38,59 +36,43 @@ class FlyerImage
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     text.annotate(canvas, 0, 0, 185, 507, "to (203)-202-3505")
 
-    # [[383, "To get stories by"], [427, "text, text #{img_txt} to"], [472, "(203)-202-3505"]].each do |y|
-    #     text.annotate(canvas, 0, 0, 185, y[0] + 35, y[1])
-    # end
 
     # 597 x 553
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
     text.annotate(canvas, 0, 0, 605, 580, img_txt)
 
-    img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer/#{img_txt}-flyer.png")
-    begin
-        old_image = Magick::Image.read(img_path)
-        if old_image.size > 0 # image exists
-            diff = (old_image[0] <=> canvas[0])
-            puts "searching old images..."
-            puts "difference is #{diff.inspect}"
+    # img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer/#{img_txt}-flyer.png")
 
-            if diff == 0
-                puts "we don't need to rewrite #{img_txt}-flyer.png + .pdf"
-                return
-            else
-                puts "creating new image #{img_txt}-flyer.png + .pdf"
-            end
+    flyers = S3.bucket('teacher-materials')
+
+    if flyers.exists?
+        name = "flyers/#{img_txt}-flyer.png"
+        if flyers.object(name).exists?
+            puts "#{name} already exists in the bucket"
+        else
+          obj = flyers.object(name)
+          obj.put(body: canvas.to_blob, acl: "public-read")
+          puts "Uploaded '%s' to S3!" % name
         end
-    rescue => e
-        puts "creating new image #{img_txt}-flyer.png + .pdf"
+
+        pdf = Magick::ImageList.new
+        pdf.from_blob(canvas.to_blob)
+        tmpfile = File.expand_path("#{File.dirname(__FILE__)}/#{img_txt}.pdf")
+        pdf.write(tmpfile)
+        # pdf += canvas
+        name = "flyers/#{img_txt}-flyer.pdf"
+        if flyers.object(name).exists?
+            puts "#{name} already exists in the bucket"
+        else
+          obj = flyers.object(name)
+          # obj.put(body: pdf.to_blob, acl: "public-read")
+          obj.upload_file(tmpfile, acl: "public-read")
+          puts "Uploaded '%s' to S3!" % name
+        end
+
+        FileUtils.rm(tmpfile)
+
     end
-    # begin
-    #     img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer/#{img_txt}-flyer.pdf")
-    #     old_image = Magick::Image.read(img_path)
-    #     if old_image.size > 0 # image exists
-    #         diff = (old_image[0] <=> canvas[0])
-    #         puts "searching old images..."
-    #         puts "difference is #{diff.inspect}"
-
-    #         if diff == 0
-    #             puts "we don't need to rewrite #{img_txt}-flyer.pdf"
-    #             return
-    #         else
-    #             puts "creating new image #{img_txt}-flyer.pdf"
-    #         end
-    #     end
-    # rescue => e
-    #     puts "creating new image #{img_txt}-flyer.pdf"
-    # end
-    dirname = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer")
-
-    unless File.directory?(dirname)
-      FileUtils.mkdir_p(dirname)
-    end
-
-    puts "writing images..."
-    canvas.write("#{dirname}/#{img_txt}-flyer.png")
-    canvas.write("#{dirname}/#{img_txt}-flyer.pdf")
 
   end
 
@@ -106,18 +88,10 @@ class PhoneImage
     width = img.columns
     height = img.rows
 
-    phone = Magick::ImageList.new(path)
-    canvas = Magick::ImageList.new
-    canvas.new_image(width, height, Magick::TextureFill.new(phone))
-
+    canvas = Magick::Image.from_blob(IO.read(path))[0]
     text = Magick::Draw.new
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
     text.pointsize = 45
-    # text.gravity = Magick::CenterGravity
-
-    # gc = Magick::Draw.new
-    # gc.font = ("helvetica")
-    # gc.pointsize = 45
 
     dimensions = text.get_type_metrics(img_txt)
 
@@ -136,32 +110,19 @@ class PhoneImage
       self.fill = 'white'
     }
 
-    img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-phone/#{img_txt}-enroll.png")
-    begin
-        old_image = Magick::Image.read(img_path)
-        if old_image.size > 0 # image exists
-            diff = (old_image[0] <=> canvas[0])
-            puts "searching old images..."
-            puts "difference is #{diff.inspect}"
+    # we do the amazon stuff here
+    flyers = S3.bucket('teacher-materials')
 
-            if diff == 0
-                puts "we don't need to rewrite #{img_txt}-enroll.png"
-                return 
-            else
-                puts "creating new image #{img_txt}-enroll.png"
-            end
+    if flyers.exists?
+        name = "phone-imgs/#{img_txt}-phone.png"
+        if flyers.object(name).exists?
+            puts "#{name} already exists in the bucket"
+        else
+          obj = flyers.object(name)
+          obj.put(body: canvas.to_blob, acl: "public-read")
+          puts "Uploaded '%s' to S3!" % name
         end
-    rescue => e
-        puts "creating new image #{img_txt}-enroll.png"
     end
-
-    dirname = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-phone")
-
-    unless File.directory?(dirname)
-      FileUtils.mkdir_p(dirname)
-    end
-
-    canvas.write("#{dirname}/#{img_txt}-enroll.png")
 
   end
 

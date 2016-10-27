@@ -44,8 +44,7 @@ class TextApi < Sinatra::Base
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
-
-
+  
   post '/signup' do
     # create teacher here
     email       = params[:email]
@@ -90,16 +89,16 @@ class TextApi < Sinatra::Base
     }.to_json
   end
 
-  get '/enroll-forms/:code' do
-    send_file File.join(settings.public_folder, 
-                            "enroll-phone/#{params[:code]}-enroll.png")
-  end
+  # get '/enroll-forms/:code' do
+  #   send_file File.join(settings.public_folder, 
+  #                           "enroll-phone/#{params[:code]}-enroll.png")
+  # end
 
-  get '/enroll-flyers/:code' do
-    params[:ext] ||= 'png'
-    send_file File.join(settings.public_folder, 
-                            "enroll-flyer/#{params[:code]}-flyer.#{params[:ext]}")
-  end
+  # get '/enroll-flyers/:code' do
+  #   params[:ext] ||= 'png'
+  #   send_file File.join(settings.public_folder, 
+  #                           "enroll-flyer/#{params[:code]}-flyer.#{params[:ext]}")
+  # end
 
   get '/delivery_status' do
     begin 

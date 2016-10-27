@@ -29,6 +29,7 @@ gem 'pg'
 
 
 gem 'airbrake'
+gem 'aws-sdk'
 
 # bot stuff
 # gem 'puma', 	'~>3.4.0'
