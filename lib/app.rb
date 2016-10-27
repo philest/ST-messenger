@@ -77,8 +77,9 @@ class TextApi < Sinatra::Base
     school.signup_teacher(teacher)
 
     teacher.reload
-    PhoneImage.create_image(teacher.code.split('|').first.upcase)
-    FlyerImage.create_image(teacher.code.split('|').first.upcase)
+    FlyerWorker.perform_async(teacher.code.split('|').first.upcase, teacher.signature, school.signature)
+    # PhoneImage.create_image(teacher.code.split('|').first.upcase)
+    # FlyerImage.create_image(teacher.code.split('|').first.upcase, teacher.signature, school.signature)
 
     status 200
 

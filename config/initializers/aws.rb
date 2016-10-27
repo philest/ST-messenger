@@ -10,7 +10,6 @@ Aws.config.update({
   credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
 })
 
-
 S3 = Aws::S3::Resource.new
 
 # TEACHER_MATERIALS = S3.bucket('teacher-flyers')

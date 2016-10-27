@@ -8,7 +8,7 @@ require_relative 'config/initializers/aws'
 # users.get_conversation("2034352867")
 
 
-FlyerImage.create_image("cowtongue")
+FlyerImage.create_image_test("TEST", "Ms. Stobierski", "Rocky Mountain Prep")
 
 # FlyerImage.create_image("RMP1")
 
