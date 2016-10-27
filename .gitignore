@@ -15,3 +15,5 @@ log/newrelic_agent.log
 graphs/*
 graphs/*.png
 *.pdf
+!phone-text-blank.png
+!StoryTime-invite-packet.png
