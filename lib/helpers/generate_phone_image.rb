@@ -221,11 +221,11 @@ class FlyerImage
         pdf = Magick::ImageList.new
         pdf.from_blob(canvas.to_blob)
 
-        tmpfile = File.expand_path("#{File.dirname(__FILE__)}/#{code_en}.pdf")
+        tmpfile = File.expand_path("#{File.dirname(__FILE__)}/StoryTime Invite Flyers for #{teacher}'s Class.pdf")
         pdf.write(tmpfile)
 
         teacher_dir = "#{teacher}-#{teacher_obj.t_number}"
-        name = "#{school}/#{teacher_dir}/flyers/#{code_en}-flyer.pdf"
+        name = "#{school}/#{teacher_dir}/flyers/StoryTime-Invite-Flyer-#{teacher}.pdf"
         if flyers.object(name).exists?
             puts "#{name} already exists in the bucket"
         else
@@ -240,9 +240,9 @@ class FlyerImage
         pdf_es = Magick::ImageList.new
         pdf_es.from_blob(canvas_es.to_blob)
 
-        tmpfile = File.expand_path("#{File.dirname(__FILE__)}/#{code_en}-es.pdf")
+        tmpfile = File.expand_path("#{File.dirname(__FILE__)}/StoryTime Invite Flyers for #{teacher}'s Class (Spanish).pdf")
         pdf_es.write(tmpfile)
-        name = "#{school}/#{teacher_dir}/flyers/#{code_en}-flyer-es.pdf"
+        name = "#{school}/#{teacher_dir}/flyers/StoryTime-Invite-Flyer-#{teacher}-Spanish.pdf"
         if flyers.object(name).exists?
             puts "#{name} already exists in the bucket"
         else
