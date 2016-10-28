@@ -60,12 +60,13 @@ class TextApi < Sinatra::Base
     if !email or !signature or !password
       return 500
     end
-
+    
     password_regexp = Regexp.new("#{password}\\|.+", 'i')
     
     # note: when we give out passwords, we just do the english version of a school
     school = School.where(Sequel.like(:code, password_regexp)).first
     puts "school = #{school.inspect}"
+    puts "this is shit"
     if school.nil?
       return 501
     end

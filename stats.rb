@@ -1,4 +1,4 @@
-require_relative('bin/production.rb')
+# require_relative('bin/production.rb')
 require 'dotenv'
 Dotenv.load
 require 'gruff'

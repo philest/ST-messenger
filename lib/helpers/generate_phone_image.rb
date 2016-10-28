@@ -19,12 +19,12 @@ class PhoneImage
     canvas = Magick::Image.from_blob(IO.read(path))[0]
     text = Magick::Draw.new
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.pointsize = 45 / 2
+    text.pointsize = 45
 
     dimensions = text.get_type_metrics(img_txt)
 
-    x_start, x_end = 106/2, 324/2
-    y_start, y_end = 290/2, 369/2
+    x_start, x_end = 106, 324
+    y_start, y_end = 290, 369
 
     center = {
       x: (x_start + x_end) / 2.0,
@@ -34,7 +34,7 @@ class PhoneImage
     x = center[:x] - (dimensions.width  / 2.0)
     y = center[:y] + ((dimensions.ascent - dimensions.descent) / 2.0) - 10
 
-    text.annotate(canvas, 106/2,290/2.0,x,y, img_txt) {
+    text.annotate(canvas, 106,290,x,y, img_txt) {
       self.fill = 'white'
     }
 

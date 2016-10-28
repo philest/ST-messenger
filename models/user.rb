@@ -37,7 +37,6 @@ class User < Sequel::Model(:users)
 		st.user = self
 
 		self.state_table.update(subscribed?: false) unless ENV['RACK_ENV'] == 'test'
-
 		# new users on sms need to have a story_number of 0
 		# if self.platform == 'sms'
 		# self.state_table.update(story_number: 0)
@@ -45,8 +44,11 @@ class User < Sequel::Model(:users)
 
 		# do code shit
 		self.code = generate_code
-		unless self.valid?
-			self.code = generate_code
+		puts "start code = #{self.code}"
+
+		while !self.valid?
+			self.code = (self.code.to_i + 1).to_s
+			puts "new code = #{self.code}"
 		end
 
 		# set default curriculum version
