@@ -19,12 +19,12 @@ class PhoneImage
     canvas = Magick::Image.from_blob(IO.read(path))[0]
     text = Magick::Draw.new
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.pointsize = 45
+    text.pointsize = 45 / 2
 
     dimensions = text.get_type_metrics(img_txt)
 
-    x_start, x_end = 106, 324
-    y_start, y_end = 290, 369
+    x_start, x_end = 106/2, 324/2
+    y_start, y_end = 290/2, 369/2
 
     center = {
       x: (x_start + x_end) / 2.0,
@@ -34,7 +34,7 @@ class PhoneImage
     x = center[:x] - (dimensions.width  / 2.0)
     y = center[:y] + ((dimensions.ascent - dimensions.descent) / 2.0) - 10
 
-    text.annotate(canvas, 106,290,x,y, img_txt) {
+    text.annotate(canvas, 106/2,290/2.0,x,y, img_txt) {
       self.fill = 'white'
     }
 
@@ -77,54 +77,56 @@ class FlyerImage
     canvas = Magick::Image.from_blob(IO.read(path))[0]
 
     text = Magick::Draw.new
-    # text.font_family = 'helvetica'
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
-    text.pointsize = 62
-    # text.gravity = Magick::CenterGravity
 
-    x_start, x_end = 350, 383
-    # 185, 427
-    # 185, 462
-    y_start, y_end = 1272, 369
+    text.pointsize = 21
+    x_start, x_end = 110
+    y_start, y_end = 425
 
     dimensions = text.get_type_metrics("To start, text ")
     text.annotate(canvas, 0, 0, x_start, y_start, "To start, text ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
     img_txt_d = text.get_type_metrics("#{code_en}")
+    # 406, 511
     text.annotate(canvas, 0, 0, x_start + dimensions.width, y_start, "#{code_en}")
     # text.annote
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     dimensions = text.get_type_metrics("to ")
-    text.annotate(canvas, 0, 0, x_start, y_start + 90, "to ")
+    text.annotate(canvas, 0, 0, x_start, y_start + 28, "to ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas, 0, 0, x_start + dimensions.width, y_start + 90, "(203)-202-3505")
+    text.annotate(canvas, 0, 0, x_start + dimensions.width, y_start + 28, "(203)-202-3505")
 
 
 
     # 597 x 553
     # text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas, 0, 0, 1220, 1596, code_en)
+    text.annotate(canvas, 0, 0, 406, 528, code_en)
 
 
     # then the upper title...
     # 200, 737
     # text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.pointsize = 120
-    text.annotate(canvas, 0, 0, 208, 717, "#{teacher}.")
+    text.pointsize = 38
+    text.annotate(canvas, 0, 0, 70, 235, "#{teacher}.")
 
     # 200, 875
-    text.pointsize = 45
+    text.pointsize = 17
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
-    dimensions = text.get_type_metrics("Get books for ")
-    text.annotate(canvas, 0, 0, 208, 875, "Get books for ")
+    dimensions = text.get_type_metrics("Get books from ")
+    text.annotate(canvas, 0, 0, 70, 282, "Get books from ")
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas, 0, 0, 208 + dimensions.width, 875, "#{school} ")
+    text.annotate(canvas, 0, 0, 70 + dimensions.width, 282, "#{school} ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
-    x_width = dimensions.width + text.get_type_metrics("#{school} ").width
-    text.annotate(canvas, 0, 0, 208 + x_width, 875, "by text message and right on your phone-- not across town.")
+    x_width = text.get_type_metrics("Get books from #{school} ").width
+    if "#{school}".length > 13
+        add_space = 8
+    else
+        add_space = 0
+    end
+    text.annotate(canvas, 0, 0, 70 + x_width + add_space, 282, "by text message right on your phone.")
 
     img_path = File.expand_path("#{File.dirname(__FILE__)}/../../public/enroll-flyer/#{code_en}-flyer.png")
 
@@ -146,57 +148,53 @@ class FlyerImage
     height = img.rows
 
     canvas_es = Magick::Image.from_blob(IO.read(path))[0]
-    # 208, 677
-    # 
+
     text = Magick::Draw.new
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
-    text.pointsize = 62
-
-    x_start, x_end = 350, 383
-    # 185, 427
-    # 185, 462
-    y_start, y_end = 1272, 369
+    text.pointsize = 21
+    x_start = 110
+    y_start = 425
 
     text.annotate(canvas_es, 0, 0, x_start, y_start, "Para recibir cuentos, ")
 
     dimensions = text.get_type_metrics("textéa ")
-    text.annotate(canvas_es, 0, 0, x_start, y_start + 90, "textéa ")
+    text.annotate(canvas_es, 0, 0, x_start, y_start + 28, "textéa ")
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas_es, 0, 0, x_start + dimensions.width, y_start + 90, "#{code_es} ")
+    text.annotate(canvas_es, 0, 0, x_start + dimensions.width, y_start + 28, "#{code_es} ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     x_width = dimensions.width + text.get_type_metrics("#{code_es} ").width
-    text.annotate(canvas_es, 0, 0, x_start + x_width, y_start + 90, "al ")
+    text.annotate(canvas_es, 0, 0, x_start + x_width, y_start + 28, "al ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas_es, 0, 0, x_start, y_start + 180, "(203)-202-3505")
+    text.annotate(canvas_es, 0, 0, x_start, y_start + 56, "(203)-202-3505")
 
-    # 597 x 553
     # text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas_es, 0, 0, 1220, 1596, code_es)
-
+    text.annotate(canvas_es, 0, 0, 406, 528, code_es)
 
     # then the upper title...
-    # 208, 737
     # text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
 
-    text.pointsize = 120
-    text.annotate(canvas_es, 0, 0, 208, 717, "de parte de #{teacher}.")
+    text.pointsize = 38
+    text.annotate(canvas_es, 0, 0, 70, 235, "de parte de #{teacher}.")
 
-    # 208, 875
-    text.pointsize = 45
+    text.pointsize = 17
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     dimensions = text.get_type_metrics("Obtén libros de parte de ")
-    text.annotate(canvas_es, 0, 0, 208, 875, "Obtén libros de parte de ")
+    text.annotate(canvas_es, 0, 0, 70, 282, "Obtén libros de parte de ")
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Black.otf")
-    text.annotate(canvas_es, 0, 0, 208 + dimensions.width, 875, "#{school} ")
+    text.annotate(canvas_es, 0, 0, 70 + dimensions.width, 282, "#{school} ")
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     x_width = dimensions.width + text.get_type_metrics("#{school} ").width
-    text.annotate(canvas_es, 0, 0, 208 + x_width, 875, "por mensaje de text, directamente en tu celular.")
 
-    # pdf.write("hello.pdf")
-    # 350, 1242
+    if "#{school}".length > 13
+        add_space = 8
+    else
+        add_space = 0
+    end
+
+    text.annotate(canvas_es, 0, 0, 70 + x_width + add_space, 282, "por mensaje de text, directamente en tu celular.")
 
     flyers = S3.bucket('teacher-materials')
 
@@ -225,13 +223,14 @@ class FlyerImage
 
         tmpfile = File.expand_path("#{File.dirname(__FILE__)}/#{code_en}.pdf")
         pdf.write(tmpfile)
-        # pdf += canvas
+
+        teacher_dir = "#{teacher}-#{teacher_obj.t_number}"
         name = "#{school}/#{teacher_dir}/flyers/#{code_en}-flyer.pdf"
         if flyers.object(name).exists?
             puts "#{name} already exists in the bucket"
         else
           obj = flyers.object(name)
-          # obj.put(body: pdf.to_blob, acl: "public-read")
+          obj.put(body: pdf.to_blob, acl: "public-read")
           obj.upload_file(tmpfile, acl: "public-read")
           puts "Uploaded '%s' to S3!" % name
         end
@@ -243,13 +242,12 @@ class FlyerImage
 
         tmpfile = File.expand_path("#{File.dirname(__FILE__)}/#{code_en}-es.pdf")
         pdf_es.write(tmpfile)
-        # pdf += canvas
         name = "#{school}/#{teacher_dir}/flyers/#{code_en}-flyer-es.pdf"
         if flyers.object(name).exists?
             puts "#{name} already exists in the bucket"
         else
           obj = flyers.object(name)
-          # obj.put(body: pdf.to_blob, acl: "public-read")
+          obj.put(body: pdf.to_blob, acl: "public-read")
           obj.upload_file(tmpfile, acl: "public-read")
           puts "Uploaded '%s' to S3!" % name
         end
@@ -260,4 +258,3 @@ class FlyerImage
   end
 
 end
-

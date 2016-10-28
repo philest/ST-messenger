@@ -1,14 +1,26 @@
-require_relative 'stats'
+
 require 'httparty'
 require_relative 'lib/helpers/generate_phone_image'
 require_relative 'config/initializers/aws'
+require_relative 'bin/local'
 # puts UserStats.new.dropouts
+# 
+
 
 # users = SchoolStats.new("New Haven Free Public Library")
 # users.get_conversation("2034352867")
+if School.where(name: "TEST").first.nil?
+  School.create(name: "TEST", code: "test|test-es", signature: "Rocky Mountain Prep")
+end
+school = School.where(name: "TEST").first
+school.update(signature: "the New Haven Library", code: "TEST|TEST-es")
 
+teacher = Teacher.where(id: Teacher.max(:id)).first
+teacher.update(code: "TEST8|TEST8-es", signature: "Mr. McPeek")
+# teacher = Teacher.create(signature: "My Asshole")
+school.signup_teacher(teacher)
 
-FlyerImage.create_image_test("TEST", "Ms. Stobierski", "Rocky Mountain Prep")
+FlyerImage.create_image(teacher, school)
 
 # FlyerImage.create_image("RMP1")
 

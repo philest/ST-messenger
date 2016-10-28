@@ -13,9 +13,11 @@ def get_db_connection(max_connections=6)
     puts '!!! loading up local environment vars...'
     Dotenv.load
     db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
+    puts "db_url = #{db_url}"
     db        = Sequel.connect(db_url)
   when "production"
     db_url    = "#{pg_driver}#{ENV['PG_URL']}"
+    puts "db_url = #{db_url}"
     db        = Sequel.connect(db_url, :max_connections => (max_connections))
   end
 

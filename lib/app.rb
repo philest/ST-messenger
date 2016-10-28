@@ -46,12 +46,16 @@ class TextApi < Sinatra::Base
   end
   
   post '/signup' do
+
+    puts "all schools = #{School.count} #{School.all}"
+    puts "RACK_ENV = #{ENV['RACK_ENV']}"
+
     # create teacher here
     email       = params[:email]
     signature   = params[:signature]
     password    = params[:password]
 
-    puts "params = #{params}"
+    puts "birdv params = #{params}"
 
     if !email or !signature or !password
       return 500
@@ -61,12 +65,11 @@ class TextApi < Sinatra::Base
     
     # note: when we give out passwords, we just do the english version of a school
     school = School.where(Sequel.like(:code, password_regexp)).first
+    puts "school = #{school.inspect}"
     if school.nil?
       return 501
     end
-
     # maybe have some way to increment teacher codes for schools? 
-
     teacher = Teacher.where(email: email).first
     if teacher.nil?
       teacher = Teacher.create(email: email)
@@ -74,7 +77,7 @@ class TextApi < Sinatra::Base
     teacher.update(signature: signature)
 
     puts "teacher = #{teacher.inspect}"
-
+    puts "help me"
     # this will automatically create a teacher code
     school.signup_teacher(teacher)
 

@@ -11,6 +11,7 @@ class School < Sequel::Model(:schools)
 	add_association_dependencies teachers: :nullify, users: :nullify
 
   def signup_teacher(teacher)
+    puts "in signup teacher. here they are: #{teacher.inspect}"
     if self.teachers.select {|t| t.id == teacher.id }.size == 0
       teacher_i = self.teacher_index + 1
       self.update(teacher_index: teacher_i)
