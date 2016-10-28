@@ -60,7 +60,7 @@ class TextApi < Sinatra::Base
     if !email or !signature or !password
       return 500
     end
-    
+
     password_regexp = Regexp.new("#{password}\\|.+", 'i')
     
     # note: when we give out passwords, we just do the english version of a school
@@ -74,6 +74,9 @@ class TextApi < Sinatra::Base
     teacher = Teacher.where(email: email).first
     if teacher.nil?
       teacher = Teacher.create(email: email)
+      new_teacher = true
+    else
+      new_teacher = false
     end
     teacher.update(signature: signature)
 
@@ -86,6 +89,15 @@ class TextApi < Sinatra::Base
     FlyerWorker.perform_async(teacher.id, school.id)
     # PhoneImage.create_image(teacher.code.split('|').first)
     # FlyerImage.create_image(teacher.code.split('|').first, teacher.signature, school.signature)
+
+    unless password.downcase == 'test'
+      if new_teacher
+        notify_admins("#{teacher.signature} at #{school.signature} signed up for StoryTime", "Email #{teacher.email}")
+      else
+        notify_admins("#{teacher.signature} at #{school.signature} signed into their account", "")
+      end
+    end
+
 
     status 200
 
