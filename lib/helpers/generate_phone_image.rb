@@ -1,4 +1,4 @@
-require 'RMagick'
+require 'rmagick'
 require 'fileutils'
 require_relative '../../config/initializers/aws'
 
@@ -121,7 +121,7 @@ class FlyerImage
 
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     x_width = text.get_type_metrics("Get books from #{school} ").width
-    if "#{school}".length > 13
+    if "#{school}".length >= 8
         add_space = 8
     else
         add_space = 0
@@ -188,7 +188,7 @@ class FlyerImage
     text.font = File.expand_path("#{File.dirname(__FILE__)}/../../public/fonts/AvenirLTStd-Medium.otf")
     x_width = dimensions.width + text.get_type_metrics("#{school} ").width
 
-    if "#{school}".length > 13
+    if "#{school}".length >= 8
         add_space = 8
     else
         add_space = 0
