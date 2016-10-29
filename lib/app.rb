@@ -489,8 +489,6 @@ class TextApi < Sinatra::Base
     ScheduleWorker.perform_async()
   end
 
-
-
   get '/run_sequence' do
     script = params['script']
     sequence = params['sequence']
