@@ -23,13 +23,13 @@ ruby '2.3.1'
 
 # end
 
-gem 'gruff'
+# gem 'gruff'
 
 gem 'pg'
 
 
 gem 'airbrake'
-gem 'aws-sdk'
+# gem 'aws-sdk'
 
 # bot stuff
 # gem 'puma', 	'~>3.4.0'

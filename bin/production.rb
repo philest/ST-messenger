@@ -5,6 +5,8 @@ Dotenv.load
 require 'active_support/time'
 
 puts "loading production db (storytime)..."
+require 'pg'
+puts "is threadsafe = #{PG::Connection.isthreadsafe}"
 
 pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 

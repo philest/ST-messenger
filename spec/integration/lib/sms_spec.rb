@@ -273,6 +273,47 @@ describe 'sms' do
 
     end
 
+    it "adds user to the correct teacher's classroom and writes the correct name", correct: true do
+      school = School.create(signature: "Rocky Mountain Prep", code: "RMP|RMP-es")
+      20.times do |n|
+        n = n + 1
+        if n.even?
+          teacher = Teacher.create(signature: "Mr. Esterman#{n}")
+        else
+          teacher = Teacher.create(signature: "Mr. McPeek#{n}")
+        end
+
+        if n.even?
+          @school.signup_teacher(teacher)
+        else
+          school.signup_teacher(teacher)
+        end
+      end
+
+      text_body = "RMP3"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      puts "teachers = #{school.teachers}"
+
+      user = User.where(phone: "5555555555").first
+      expect(user.school.signature).to eq "Rocky Mountain Prep"
+      the_teacher = Teacher.where(code: "RMP3|RMP-es3").first
+      expect(user.teacher.signature).to eq the_teacher.signature
+      puts "teacher's sig = #{the_teacher.signature}"
+
+      # then test name_codes
+      trans = @day1.translate_sms('5555555555', 'scripts.intro_sms.__poc__[0]')
+      puts "TRANSLATING TRANSLATING TRANSLATING"
+      puts "trans = #{trans}"
+
+
+
+    end
+
     it 'adds a user to the db, but unsubscribed' do
 
       expect(@u1.state_table.subscribed?).to eq false

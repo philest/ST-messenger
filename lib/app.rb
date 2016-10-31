@@ -20,7 +20,7 @@ require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'helpers/twilio_helpers'
 require_relative 'helpers/name_codes'
-require_relative 'helpers/generate_phone_image'
+# require_relative 'helpers/generate_phone_image'
 require_relative 'bot/dsl'
 require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
@@ -277,9 +277,12 @@ class TextApi < Sinatra::Base
           next
         end
         code = code.delete(' ').delete('-').downcase
+        puts "teacher code = #{code}"
         body_text = params[:Body].delete(' ')
                                  .delete('-')
                                  .downcase
+
+        puts "text-in txt = #{body_text}"
 
         if code.include? body_text
           en, sp = code.split('|')
@@ -303,6 +306,8 @@ class TextApi < Sinatra::Base
           else 
             puts "#{code} did not match with #{teacher.name} regex!"
           end
+        else
+          puts "code #{params[:Body]} doesn't match with #{teacher.signature}'s code #{teacher.code}"
         end # if code.include? body_text
       end # Teacher.each do |teacher|
 

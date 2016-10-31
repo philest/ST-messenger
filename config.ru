@@ -14,6 +14,8 @@ require 'rack'
 require_relative 'config/environment'
 get_db_connection()
 
+Bundler.require(:default)
+
 
 if RUBY_PLATFORM == 'jruby'
 	require 'jdbc/postgres'
@@ -21,7 +23,6 @@ if RUBY_PLATFORM == 'jruby'
 end
 
 require_relative 'config/initializers/locale'
-require_relative 'config/initializers/aws'
 
 use Airbrake::Rack::Middleware
 
