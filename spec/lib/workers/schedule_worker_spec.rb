@@ -283,7 +283,7 @@ describe ScheduleWorker do
       # specify exact arguments and people on this one...
       users = [@on_time, @just_early, @just_late]
       for user in users
-        expect(StartDayWorker).to receive(:perform_async).with(user.fb_id, platform='fb').once
+        expect(StartDayWorker).to receive(:perform_in).with(an_instance_of(ActiveSupport::Duration), user.fb_id, platform='fb').once
       end
 
       Sidekiq::Testing.inline! do

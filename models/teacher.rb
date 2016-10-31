@@ -11,6 +11,11 @@ class Teacher < Sequel::Model(:teachers)
 	add_association_dependencies users: :nullify
 
 
+  def signup_user(user)
+    # write this method
+  end
+
+
 	def validate
     super
   	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (teachers)"

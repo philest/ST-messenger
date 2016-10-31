@@ -57,6 +57,7 @@ module NameCodes
         else
           teacher = "StoryTime"
         end
+        puts "name_codes teacher = #{teacher}"
 
         if user.school
           sig = user.school.signature
@@ -64,6 +65,7 @@ module NameCodes
         else
           school = "StoryTime"
         end
+        puts "name_code school = #{school}"
 
         if !day.nil?
           weekday = I18n.t('week')[day]

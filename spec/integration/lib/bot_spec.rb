@@ -294,7 +294,7 @@ describe 'TheBot', integration:true do
         end
 
 
-        expect(StartDayWorker).to receive(:perform_async).exactly(@num_ontime).times
+        expect(StartDayWorker).to receive(:perform_in).exactly(@num_ontime).times
         expect_any_instance_of(Birdv::DSL::StoryTimeScript).not_to receive(:run_sequence)
 
         Sidekiq::Testing.inline! do
