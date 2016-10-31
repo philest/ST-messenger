@@ -146,7 +146,7 @@ class TextApi < Sinatra::Base
           
     else # this is a new user, enroll them in the system 
 
-      puts "someone texted in, creating user..."
+      puts "Someone texted in, creating user. Msg: #{params[:Body]}"
 
       new_user = User.create(phone: phone, platform: 'sms')
       # user start out as unsubscribed and needs to opt-in to SMS
@@ -182,10 +182,12 @@ class TextApi < Sinatra::Base
         if code.include? body_text
           en, sp = code.split('|')
           if body_text == en
+            puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
             I18n.locale = 'en'
             puts "school info: #{school.signature}, #{school.inspect}"
             school.add_user(new_user)
           elsif body_text == sp
+            puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
             I18n.locale = 'es'
             new_user.update(locale: 'es')
             puts "school info: #{school.signature}, #{school.inspect}"
@@ -193,6 +195,8 @@ class TextApi < Sinatra::Base
           else 
             puts "#{code} did not match with #{school.name} regex!"
           end
+        else
+          puts "code #{params[:Body]} doesn't match with #{school.signature}'s code #{school.code}"
         end
       end
 
@@ -204,24 +208,25 @@ class TextApi < Sinatra::Base
           next
         end
         code = code.delete(' ').delete('-').downcase
-        puts "teacher code = #{code}"
         body_text = params[:Body].delete(' ')
                                  .delete('-')
                                  .downcase
 
-        puts "text-in txt = #{body_text}"
 
         if code.include? body_text
           en, sp = code.split('|')
           if body_text == en
+            puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
+            puts "#{teacher.signature}, #{teacher.inspect}"
             I18n.locale = 'en'
-            puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
             teacher.add_user(new_user)
             if !teacher.school.nil? # if this teacher belongs to a school
               teacher.school.add_user(new_user)
             end
 
           elsif body_text == sp
+            puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
+            puts "#{teacher.signature}, #{teacher.inspect}"
             I18n.locale = 'es'
             new_user.update(locale: 'es')
             puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
