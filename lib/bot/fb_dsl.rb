@@ -395,7 +395,7 @@ module Birdv
               process_txt(fb_object, usr)
             end
 
-            puts "sending to #{fb_id}"
+            puts "sending #{fb_object.inspect} to #{fb_id}"
             puts fb_send_json_to_user(fb_id, fb_object)
           end
       end # send_helper

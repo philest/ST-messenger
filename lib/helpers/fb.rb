@@ -27,8 +27,8 @@ module Facebook
       end
 
       def fb_send_txt(recipient, message)
-
         message = NameCodes.name_codes(message, recipient['id'])
+        puts "sending #{message} to #{recipient}"
 
         deliver(
           recipient: recipient, 

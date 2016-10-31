@@ -39,6 +39,7 @@ module NameCodes
   def name_codes(str, recipient, day=nil)
       if recipient.is_a? User
         user = recipient
+        user.reload
       else
         user = User.where(phone: recipient).first
         if user.nil? # try facebook
@@ -48,6 +49,7 @@ module NameCodes
 
       if user
         parent  = user.first_name.nil? ? "" : user.first_name
+        puts "name_codes parent = #{parent} for #{recipient}"
         I18n.locale = user.locale
         child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
         
@@ -57,7 +59,7 @@ module NameCodes
         else
           teacher = "StoryTime"
         end
-        puts "name_codes teacher = #{teacher}"
+        puts "name_codes teacher = #{teacher} for #{recipient}"
 
         if user.school
           sig = user.school.signature
@@ -65,7 +67,7 @@ module NameCodes
         else
           school = "StoryTime"
         end
-        puts "name_code school = #{school}"
+        puts "name_codes school = #{school} for #{recipient}"
 
         if !day.nil?
           weekday = I18n.t('week')[day]

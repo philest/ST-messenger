@@ -900,6 +900,12 @@ describe 'Birdv::DSL::StoryTimeScript' do
       end
 
       it 'updates last sequence seen, nil->init->scratchstory', scratchstory:true do
+
+
+        allow(@s['day1']).to  receive(:send).and_wrap_original do |original_method, *args, &block|
+          puts "sending message..."
+        end
+
         stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
          with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Just tap below to start!\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/coon/coon-button.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}",
               :headers => {'Content-Type'=>'application/json'}).
