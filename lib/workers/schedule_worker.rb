@@ -75,10 +75,31 @@ class ScheduleWorker
     fb       = filtered.select { |u| u.platform == 'fb' }
     sms      = filtered.select { |u| u.platform == 'sms' or u.platform == 'feature' }
 
-    for user in fb
-      puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
-      StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
+    # for user in fb
+    #   puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
+    #   StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
+    # end
+
+    # first fb
+    if fb.size > 0
+
+      if fb.size < 30
+        total_time = fb.size.minutes
+      else
+        total_time = 30.minutes
+      end 
+
+      ind_delay = total_time / fb.size
+
+      fb.size.times do |i|
+        delay = (ind_delay * i)
+        puts "delay for fb user = #{delay} seconds, #{delay/1.minute} minutes"
+        user = fb[i]
+        StartDayWorker.perform_in(delay.seconds, user.fb_id, platform='fb') if user.fb_id
+      end
+      
     end
+
 
     if sms.size == 0 then 
       return 

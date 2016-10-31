@@ -14,6 +14,8 @@ require 'rack'
 require_relative 'config/environment'
 get_db_connection()
 
+Bundler.require(:default)
+
 
 if RUBY_PLATFORM == 'jruby'
 	require 'jdbc/postgres'

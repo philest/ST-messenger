@@ -5,7 +5,7 @@ require_relative '../../config/initializers/aws'
 # should phoneImages be stored in the teacher folders? seems a bit excessive for our purposes. 
 class PhoneImage
 
-  def self.create_image(teacher_obj, school_obj)
+  def create_image(teacher_obj, school_obj)
     img_txt = teacher_obj.code.split('|').first
     teacher = teacher_obj.signature
     school = school_obj.signature
@@ -58,7 +58,7 @@ end
 
 class FlyerImage
 
-  def self.create_image(teacher_obj, school_obj)
+  def create_image(teacher_obj, school_obj)
     code = teacher_obj.code
     teacher = teacher_obj.signature
     school = school_obj.signature

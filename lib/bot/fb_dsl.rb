@@ -1,4 +1,5 @@
 require_relative '../helpers/contact_helpers'
+require_relative '../workers/schedule_worker'
 
 module Birdv
   module DSL
@@ -304,7 +305,7 @@ module Birdv
                   # so now we want to get this_week or next_week
 
                   # first, grab their current day of the week
-                  require_relative '../workers/schedule_worker'
+                  
                   sw = ScheduleWorker.new
                   schedule = sw.get_schedule(@script_day)
 

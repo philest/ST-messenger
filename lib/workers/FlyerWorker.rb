@@ -6,7 +6,7 @@ class FlyerWorker
     teacher = Teacher.where(id: teacher_id).first
     school  = School.where(id: school_id).first
 
-    PhoneImage.create_image(teacher, school)
-    FlyerImage.create_image(teacher, school)
+    PhoneImage.new.create_image(teacher, school)
+    FlyerImage.new.create_image(teacher, school)
   end
 end
