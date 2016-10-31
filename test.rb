@@ -1,6 +1,6 @@
 
 require 'httparty'
-require_relative 'lib/helpers/generate_phone_image'
+# require_relative 'lib/helpers/generate_phone_image'
 require_relative 'config/initializers/aws'
 require_relative 'bin/local'
 # puts UserStats.new.dropouts

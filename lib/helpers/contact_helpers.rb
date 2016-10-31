@@ -5,9 +5,9 @@ require_relative 'twilio_helpers'
 module ContactHelpers
 
   def email_admins(subject, body)
-    Pony.mail(:to => 'phil.esterman@yale.edu,supermcpeek@gmail.com',
+    Pony.mail(:to => 'phil.esterman@yale.edu,davidmcpeek1@gmail.com',
               :cc => 'aawahl@gmail.com',
-              :from => 'supermcpeek@gmail.com',
+              :from => 'davidmcpeek1@gmail.com',
               :headers => { 'Content-Type' => 'text/html' },
               :subject => subject,
               :body => body)

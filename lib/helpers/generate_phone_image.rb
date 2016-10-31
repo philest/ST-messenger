@@ -1,6 +1,6 @@
-require 'rmagick'
+# require 'rmagick'
 require 'fileutils'
-require_relative '../../config/initializers/aws'
+# require_relative '../../config/initializers/aws'
 
 # should phoneImages be stored in the teacher folders? seems a bit excessive for our purposes. 
 class PhoneImage
