@@ -13,7 +13,7 @@ en:
   scripts:
     intro:
       teacher:
-        - "Hi __PARENT__, this is RMP! Here’s your first free story from __TEACHER__!"
+        - "Hi __PARENT__, this is RMP! Here’s your first free story from your teacher!"
         - "Hi __PARENT__, it's __TEACHER__. Here's another story!"
         - "Hi __PARENT__, here's another story :)"
         - "Hi __PARENT__, here's another story from StoryTime!"
@@ -35,7 +35,7 @@ en:
         - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
     intro_sms:
       teacher:
-        - "Hi this is RMP! Welcome to __TEACHER__'s class on StoryTime! She will text you free books :)"
+        - "Hi this is RMP! Welcome to your teacher's class on StoryTime! They will text you free books :)"
         - "Hi! It's RMP. Here's another story from __TEACHER__!"
         - "Hi, here's another story from StoryTime! :)"
         - "Hi, here's another story from StoryTime!"
@@ -53,12 +53,12 @@ en:
     outro:
       teacher:
         this_week:
-          - "__TEACHER__ will share another RMP story this __DAY__! Enjoy :)"
+          - "Your teacher will share another RMP story this __DAY__! Enjoy :)"
           - "You'll get another story this __DAY__. I hope you enjoyed this one! :)"
           - "Another story will come this __DAY__! :)"
           - "Another story will come this __DAY__. Thanks for reading :)"
         next_week:
-          - "__TEACHER__ will share another RMP story next __DAY__. Enjoy! :)"
+          - "Your teacher will share another RMP story next __DAY__. Enjoy! :)"
           - "You'll get another story next __DAY__. I hope you enjoyed this one! :)"
           - "Another story will come next __DAY__! :)"
           - "Another story will come next __DAY__. Thanks for reading :)"
