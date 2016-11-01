@@ -1,3 +1,4 @@
+require_relative '../helpers/contact_helpers'
 require 'httparty'
 # if an SMS hasn't been delivered within twenty seconds or so, send the next_sequence
 class TimerWorker
