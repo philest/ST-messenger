@@ -401,9 +401,6 @@ module Birdv
       end # send_helper
 
 
-
-
-
     end # module FB
   end # module DSL
 end # module Birdv

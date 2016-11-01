@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.3.1'
+
 
 # this version of ruby seems to make jruby and cruby 
 # play nicely. The jruby implementation we used is
@@ -13,7 +15,6 @@ source 'https://rubygems.org'
 # end
 
 # params = ruby_version_get
-ruby '2.3.1'
 
 # if RUBY_ENGINE=='jruby'
 #   	# gem 'activerecord-jdbcpostgresql-adapter', 	'1.3.20'
@@ -25,6 +26,10 @@ ruby '2.3.1'
 
 
 gem 'pg'
+
+# aws and image generation
+gem 'aws-sdk'
+gem 'gruff'
 
 
 gem 'airbrake'

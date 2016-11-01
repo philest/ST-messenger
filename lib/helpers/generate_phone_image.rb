@@ -1,6 +1,6 @@
-# require 'rmagick'
+require 'rmagick'
 require 'fileutils'
-# require_relative '../../config/initializers/aws'
+require_relative '../../config/initializers/aws'
 
 # should phoneImages be stored in the teacher folders? seems a bit excessive for our purposes. 
 class PhoneImage
@@ -12,9 +12,6 @@ class PhoneImage
 
     path = File.expand_path("#{File.dirname(__FILE__)}/phone-text-blank.png")
 
-    img = Magick::Image.ping( path ).first
-    width = img.columns
-    height = img.rows
 
     canvas = Magick::Image.from_blob(IO.read(path))[0]
     text = Magick::Draw.new
@@ -70,9 +67,7 @@ class FlyerImage
 
     path = File.expand_path("#{File.dirname(__FILE__)}/StoryTime-invite-packet2.png")
 
-    img = Magick::Image.ping( path ).first
-    width = img.columns
-    height = img.rows
+
 
     canvas = Magick::Image.from_blob(IO.read(path))[0]
 
@@ -142,10 +137,6 @@ class FlyerImage
     # spanish now 
 
     path = File.expand_path("#{File.dirname(__FILE__)}/StoryTime-invite-packet-es.png")
-
-    img = Magick::Image.ping( path ).first
-    width = img.columns
-    height = img.rows
 
     canvas_es = Magick::Image.from_blob(IO.read(path))[0]
 

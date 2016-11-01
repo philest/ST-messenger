@@ -44,6 +44,69 @@ class TextApi < Sinatra::Base
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
+
+  post '/signup' do
+
+    puts "RACK_ENV = #{ENV['RACK_ENV']}"
+
+    # create teacher here
+    email       = params[:email]
+    signature   = params[:signature]
+    password    = params[:password]
+
+    puts "birdv params = #{params}"
+
+    if !email or !signature or !password
+      return 500
+    end
+
+    password_regexp = Regexp.new("#{password}\\|.+", 'i')
+    
+    # note: when we give out passwords, we just do the english version of a school
+    school = School.where(Sequel.like(:code, password_regexp)).first
+    puts "school = #{school.inspect}"
+    puts "this is shit"
+    if school.nil?
+      return 501
+    end
+    # maybe have some way to increment teacher codes for schools? 
+    teacher = Teacher.where(email: email).first
+    if teacher.nil?
+      teacher = Teacher.create(email: email)
+      new_teacher = true
+    else
+      new_teacher = false
+    end
+    teacher.update(signature: signature)
+
+    puts "teacher = #{teacher.inspect}"
+    puts "help me"
+    # this will automatically create a teacher code
+    school.signup_teacher(teacher)
+
+    teacher.reload
+    FlyerWorker.perform_async(teacher.id, school.id)
+    # PhoneImage.new.create_image(teacher, school)
+    # FlyerImage.new.create_image(teacher, school)
+
+    unless password.downcase == 'test'
+      if new_teacher
+        notify_admins("#{teacher.signature} at #{school.signature} signed up for StoryTime", "Email #{teacher.email}")
+      else
+        notify_admins("#{teacher.signature} at #{school.signature} signed into their account", "")
+      end
+    end
+
+
+    status 200
+
+    return {
+      teacher: teacher,
+      school: school,
+      secret: 'our little secret'
+    }.to_json
+
+  end
   
 
   get '/delivery_status' do
