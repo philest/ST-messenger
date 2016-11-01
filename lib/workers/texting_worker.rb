@@ -16,6 +16,8 @@ class TextingWorker
     10 * (count + 1) # (i.e. 10, 20, 30, 40)
   end
 
+  # hashes passed in sidekiq workers could be bad
+
   def perform (msg, to_phone, from_phone=ENV['ST_MAIN_NO'], type=SMS, next_sequence={}) 
     if type == MMS 
       # send MMS to user

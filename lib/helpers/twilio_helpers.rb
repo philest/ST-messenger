@@ -105,25 +105,6 @@ module TwilioTextingHelpers
   end 
 
 
-  def reply_joint(media_url, body)
-    puts "Replied MMS and SMS."
-    twiml = Twilio::TwiML::Response.new do |r|
-      r.Message do |m|
-        m.Media media_url
-        m.Body body
-      end
-    end
-    twiml.text
-  end
-
-  def reply_sms(body)
-    puts "Replied MMS and SMS."
-    twiml = Twilio::TwiML::Response.new do |r|
-      r.Message body
-    end
-    twiml.text
-  end
-
 
   def get_carrier(phone)
     # Get the user's phone carrier. 
@@ -133,20 +114,6 @@ module TwilioTextingHelpers
     return carrier
   end
 
-  def email_admins(subject, body)
-    Pony.mail(:to => 'phil.esterman@yale.edu',
-              :cc => 'aawahl@gmail.com',
-              :from => 'davidmcpeek1@gmail.com',
-              :headers => { 'Content-Type' => 'text/html' },
-              :subject => subject,
-              :body => body)
-  end
-
-  def text_admins(body)
-    sms(body, "+15612125831", USER_REPLIES_NO)
-    sms(body, "+18186897323", USER_REPLIES_NO)
-    sms(body, "+13013328953", USER_REPLIES_NO)
-  end
 
   # Does the carrier need 160-char segments? 
   def good_carrier?(carrier)

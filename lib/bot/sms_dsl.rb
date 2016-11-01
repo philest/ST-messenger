@@ -1,4 +1,5 @@
 require_relative '../helpers/contact_helpers'
+require_relative '../workers/schedule_worker'
 
 module Birdv
   module DSL
@@ -37,7 +38,7 @@ module Birdv
           return text[1..-1]
         end
 
-        text = teacher_school_messaging(text, usr)
+        new_text = teacher_school_messaging(text, usr)
 
         next_day = nil # by default
 
@@ -45,16 +46,16 @@ module Birdv
         # if it matches a day of the week thing
         # window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
         window_text_regex = /scripts.outro.(teacher|school|none)(\[\d+\])/i
-        if window_text_regex.match(text)
+        if window_text_regex.match(new_text)
           # get the code thing to transfer over
           bracket_index = $2.to_s
           just_the_text_regex = /.*[^\[\d+\]]/i
-          just_the_text = just_the_text_regex.match(text).to_s
+          just_the_text = just_the_text_regex.match(new_text).to_s
           # ok, so now we have the bracket and the text
           # so now we want to get this_week or next_week
 
           # first, grab their current day of the week
-          require_relative '../workers/schedule_worker'
+          
           sw = ScheduleWorker.new
           schedule = sw.get_schedule(@script_day)
 
@@ -73,16 +74,16 @@ module Birdv
             end
           end
 
-          text = just_the_text + week + bracket_index
+          new_text = just_the_text + week + bracket_index
         end # window_text_regex.match
 
         # other indexing stuff. ay yay yay....
         re_index = /\[(\d+)\]/i
-        match = re_index.match(text)
+        match = re_index.match(new_text)
         if match
           index = $1
           code_regex = /.*[^\[\d+\]]/i
-          translation_code = code_regex.match(text)
+          translation_code = code_regex.match(new_text)
           translation_array = I18n.t translation_code.to_s.downcase
           if translation_array.is_a? Array
             translation = name_codes translation_array[index.to_i], phone, next_day
@@ -93,13 +94,13 @@ module Birdv
             raise StandardError, 'array indexing with translation failed, check your translation logic bitxh'
           end
         end
-        trans = I18n.t text
+        trans = I18n.t new_text
 
         if trans.include? 'translation missing'
           notify_admins(trans, '')
         end
 
-        puts "trans = #{trans}"
+        puts "translation = #{trans}"
         if trans.is_a? Array
           return name_codes trans[@script_day - 1], phone, next_day
         else
@@ -136,13 +137,13 @@ module Birdv
           puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"
           return
         end
-        text = translate_sms(phone, text)
-        if text == false
+        translated_text = translate_sms(phone, text)
+        if translated_text == false
           puts "something went wrong, can't translate this text (likely, the phone # doesn't belong to a user in the system)"
           return
         end
 
-        TextingWorker.perform_async(text, phone, ENV['ST_MAIN_NO'], 'SMS',
+        TextingWorker.perform_async(translated_text, phone, ENV['ST_MAIN_NO'], 'SMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 

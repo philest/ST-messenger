@@ -246,6 +246,9 @@ class TextApi < Sinatra::Base
       # perform the day1 mms sequence
       StartDayWorker.perform_async(phone, platform='sms')
 
+      # possibly run this synchronously?
+      # there could be race conditions
+
       # let us know
         our_phones = ["5612125831", "8186897323", "3013328953"]
         is_us = our_phones.include? phone 
@@ -338,7 +341,7 @@ class TextApi < Sinatra::Base
     if regex.match body
       phone = $1.to_s
       # process format
-      phone.gsub!(/[-()\s]/, '')
+      phone = phone.gsub(/[-()\s]/, '')
       puts "phone is #{phone}"
       # check database
       user = User.where(phone: phone).first

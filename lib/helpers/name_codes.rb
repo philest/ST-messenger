@@ -37,6 +37,7 @@ module NameCodes
   end
 
   def name_codes(str, recipient, day=nil)
+    # look into passing a user
       if recipient.is_a? User
         user = recipient
         user.reload
@@ -79,18 +80,18 @@ module NameCodes
           code = "READ"
         end
 
-        str.gsub!(/__CODE__/, code)
-        str.gsub!(/__TEACHER__/, teacher)
-        str.gsub!(/__PARENT__/, parent)
-        str.gsub!(/__SCHOOL__/, school)
-        str.gsub!(/__CHILD__/, child)
+        str = str.gsub(/__CODE__/, code)
+        str = str.gsub(/__TEACHER__/, teacher)
+        str = str.gsub(/__PARENT__/, parent)
+        str = str.gsub(/__SCHOOL__/, school)
+        str = str.gsub(/__CHILD__/, child)
         return str
       else # just return what we started with. It's 
-        str.gsub!(/__CODE__/, 'go')
-        str.gsub!(/__TEACHER__/, 'StoryTime')
-        str.gsub!(/__PARENT__/, '')
-        str.gsub!(/__SCHOOL__/, 'StoryTime')
-        str.gsub!(/__CHILD__/, 'your child')
+        str = str.gsub(/__CODE__/, 'go')
+        str = str.gsub(/__TEACHER__/, 'StoryTime')
+        str = str.gsub(/__PARENT__/, '')
+        str = str.gsub(/__SCHOOL__/, 'StoryTime')
+        str = str.gsub(/__CHILD__/, 'your child')
         return str
       end
   end

@@ -53,13 +53,11 @@ describe ContactHelpers do
          with(:body => "recipient=%2B15612125831&text=Here%27s%20the%20subject%3A%0AHere%27s%20the%20body&sender=%2B12032750946").
          to_return(:status => 200, :body => "", :headers => {})
 
-
-
 		end		     
 
 
 		it "should email the admins" do
-    		expect(Pony).to(receive(:mail).with({:to=>"phil.esterman@yale.edu,davidmcpeek1@gmail.com", :cc=>"aawahl@gmail.com", :from=>"davidmcpeek1@gmail.com", :headers=>{"Content-Type"=>"text/html"}, :subject=>"Here's the subject", :body=>"Here's the body"}))
+    		expect(Pony).to(receive(:mail).with({:to=>"phil.esterman@yale.edu,supermcpeek@gmail.com", :cc=>"aawahl@gmail.com", :from=>"david.mcpeek@yale.edu", :headers=>{"Content-Type"=>"text/html"}, :subject=>"Here's the subject", :body=>"Here's the body"}))
     		notify_admins("Here's the subject", "Here's the body")	      # 	}
 		end
 	end
