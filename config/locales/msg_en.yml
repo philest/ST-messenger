@@ -53,12 +53,12 @@ en:
     outro:
       teacher:
         this_week:
-          - "Your teacher will share another RMP story this __DAY__! Enjoy :)"
+          - "__TEACHER__ will share another RMP story this __DAY__! Enjoy :)"
           - "You'll get another story this __DAY__. I hope you enjoyed this one! :)"
           - "Another story will come this __DAY__! :)"
           - "Another story will come this __DAY__. Thanks for reading :)"
         next_week:
-          - "Your teacher will share another RMP story next __DAY__. Enjoy! :)"
+          - "__TEACHER__ will share another RMP story next __DAY__. Enjoy! :)"
           - "You'll get another story next __DAY__. I hope you enjoyed this one! :)"
           - "Another story will come next __DAY__! :)"
           - "Another story will come next __DAY__. Thanks for reading :)"
