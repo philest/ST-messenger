@@ -56,7 +56,15 @@ class TextApi < Sinatra::Base
 
     puts "birdv params = #{params}"
 
-    if !email or !signature or !password
+    if email.nil? or signature.nil? or password.nil? or email.empty? or signature.empty? or password.empty? 
+      txt = "Email: #{email.inspect}, Signature: #{signature.inspect}, Password: #{password.inspect}"
+
+      missing = []
+      missing << "email" if (email.nil? or email.empty?)
+      missing << "password" if (password.nil? or password.empty?)
+      missing << "signature" if (signature.nil? or signature.empty?)
+
+      notify_admins("A teacher failed to sign in to their account - missing #{missing}", txt)
       return 500
     end
 
