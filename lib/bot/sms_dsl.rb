@@ -60,8 +60,9 @@ module Birdv
           schedule = sw.get_schedule(@script_day)
 
           # what is our current day?
-          current_date = sw.get_local_time(Time.now.utc, usr.tz_offset)
-          current_weekday = current_date.wday
+          # current_date = sw.get_local_time(Time.now.utc, usr.tz_offset)
+          # current_weekday = current_date.wday
+          current_weekday = sw.get_local_day(Time.now.utc, usr)
 
           next_day = schedule[0] # the first part of the next week by default
           week = '.next_week'

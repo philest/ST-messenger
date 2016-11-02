@@ -261,7 +261,7 @@ class ScheduleWorker
 
   # returns a time in the specified timezone offset
   def get_local_time(time, tz_offset)
-    return time + tz_offset
+    return time + tz_offset.hours
   end
 
   # returns the user's DST-adjusted local time
