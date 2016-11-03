@@ -98,7 +98,7 @@ en:
         none: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
 
     enrollment:
-      call_to_action: "Get longer books on Facebook Messenger. Tap here and type your class code: __CODE__\njoinstorytime.com/go\n\nIf you don't have Messenger just text back your full name"
+      call_to_action: "Get longer books with Facebook Messenger. Tap here and type your class code, which is __CODE__:\njoinstorytime.com/go\n\nIf you do not have Messenger, text back STORY"
       sms_optin:
         teacher: "Great! We'll start sharing the stories.\n\nHere's the first story from __TEACHER__!"
         school: "Great! We'll start sending you stories.\n\nHere's the first one:"
@@ -116,11 +116,11 @@ en:
     remind_sms:
       teacher:
         - "Hi! It's RMP again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "If you do not have Messenger just text back STORY"
       school:
         - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "If you do not have Messenger just text back STORY"
       none:
         - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "If you do not have Messenger just text back STORY"
 
