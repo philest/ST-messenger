@@ -271,6 +271,98 @@ describe 'sms' do
 
     end
 
+    it "writes a person's first/last name to the DB", name: true do
+      text_body = "test"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+
+      text_body = "David McFuckingPeek"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      expect(User.where(phone: "5555555555").first.first_name).to eq "David"
+      expect(User.where(phone: "5555555555").first.last_name).to eq "McFuckingPeek"
+      expect(User.where(phone: "5555555555").first.state_table.story_number).to eq 2
+      expect(User.where(phone: "5555555555").first.state_table.subscribed?).to be true
+
+    end
+
+
+    it "writes a person's first/last name to the DB", name: true do
+      text_body = "test"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+
+      text_body = "David"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      expect(User.where(phone: "5555555555").first.first_name).to eq "David"
+      expect(User.where(phone: "5555555555").first.last_name).to be_nil
+      expect(User.where(phone: "5555555555").first.state_table.story_number).to eq 2
+      expect(User.where(phone: "5555555555").first.state_table.subscribed?).to be true
+
+    end
+
+    it "writes a person's first/last name to the DB", name: true do
+      text_body = "test"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      text_body = "David McFuckingPeek the III"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+      
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      expect(User.where(phone: "5555555555").first.first_name).to eq "David"
+      expect(User.where(phone: "5555555555").first.last_name).to eq "McFuckingPeek the III"
+      expect(User.where(phone: "5555555555").first.state_table.story_number).to eq 2
+      expect(User.where(phone: "5555555555").first.state_table.subscribed?).to be true
+
+    end
+
+    it "writes a person's first/last name to the DB", name: true do
+      text_body = "test"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+
+      text_body = "who is this"
+      sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
+
+      Sidekiq::Testing.inline! do
+        post '/sms', sms_params
+      end
+
+      expect(User.where(phone: "5555555555").first.first_name).to be_nil
+      expect(User.where(phone: "5555555555").first.last_name).to be_nil
+      expect(User.where(phone: "5555555555").first.state_table.story_number).to eq 1
+      expect(User.where(phone: "5555555555").first.state_table.subscribed?).to be false
+    end
+
+
     it "adds user to the correct teacher's classroom and writes the correct name", correct: true do
       school = School.create(signature: "Rocky Mountain Prep", code: "RMP|RMP-es")
       20.times do |n|
@@ -307,16 +399,12 @@ describe 'sms' do
       trans = @day1.translate_sms('5555555555', 'scripts.intro_sms.__poc__[0]')
       puts "TRANSLATING TRANSLATING TRANSLATING"
       puts "trans = #{trans}"
-
-
-
     end
 
-    it 'adds a user to the db, but unsubscribed' do
 
+    it 'adds a user to the db, but unsubscribed' do
       expect(@u1.state_table.subscribed?).to eq false
       expect(@u2.state_table.subscribed?).to eq false
-
     end
 
     it 'sends the initial sms to these users, but not the second one' do

@@ -89,7 +89,6 @@ module MessageReplyHelpers
     I18n.locale = user.locale
     
     if user.state_table.subscribed? == false
-      
       is_sms = (user.platform == 'sms' or user.platform == 'feature')
       story_no = user.state_table.story_number
 
@@ -164,7 +163,35 @@ module MessageReplyHelpers
     when OK_MSG
       ":)"    
     else #default msg 
-      ''
+      # check if user is one story 1 and unsubscribed... 
+      if user.state_table.story_number == 1 and user.state_table.subscribed? == false
+        # get this person's first_name, last_name on the phone, dawg! 
+        terms = body.split(' ')
+        if terms.size < 1
+          return ''
+        elsif terms.size == 1 # just the first name
+          first_name = terms.first
+          user.update(first_name: first_name)
+        elsif terms.size > 1 # first and last names, baby!!!!!! it's a gold mine over here!!!!
+          first_name = terms.first
+          last_name = terms[1..-1].join(' ')
+          user.update(first_name: first_name, last_name: last_name)
+        end
+        # now do all the enrollment stuff
+        user.update(platform: 'sms')
+        user.state_table.update(subscribed?: true, story_number: 2)
+        trans_code = teacher_school_messaging('scripts.enrollment.sms_optin.__poc__', user)
+        I18n.t trans_code
+
+      else
+        return ''
+      end
+
+
+
+
+
+      
       # if body.include? "?"
       #   I18n.t 'user_response.default'
       # else

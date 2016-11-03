@@ -143,14 +143,13 @@ class TextApi < Sinatra::Base
     user = User.where(phone: phone.to_s).first
     puts "user = #{user}, phone = #{phone}"
 
-
-
     if user # is enrolled in the system already
 
       msg = get_reply(params[:Body], user)
 
       puts "session = #{session.inspect}"
       
+      # we're getting the name_codes for reply
       reply = ''
       if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
         # do nothing, don't send message
@@ -167,14 +166,18 @@ class TextApi < Sinatra::Base
       
       unless reply.nil? or reply.empty? or reply.downcase.include? 'translation missing'
         TextingWorker.perform_async(reply, phone)
-
         #
         # conditional reply logic below
         #
-        if reply == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
-           reply == (I18n.t 'scripts.enrollment.sms_optin.school') or
-           reply == (I18n.t 'scripts.enrollment.sms_optin.none')
+        # this didn't work because the condition wouldn't fire with the teacher
+        if msg == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
+           msg == (I18n.t 'scripts.enrollment.sms_optin.school') or
+           msg == (I18n.t 'scripts.enrollment.sms_optin.none') or 
+           (/(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i).match(params[:Body])
+
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
+          user.reload
+          email_admins("User #{user.phone} sent us their precious name: #{user.first_name} #{user.last_name}", "We feel good about that.")
         end
         # handle english/spanish conversation
         if (reply == "Got it! We'll send you English stories instead.") or
@@ -313,7 +316,6 @@ class TextApi < Sinatra::Base
         # body_text = params[:Body].delete(' ')
         #                          .delete('-')
         #                          .downcase
-
 
         if code.include? body_text
           en, sp = code.split('|')
