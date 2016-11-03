@@ -217,13 +217,40 @@ class TextApi < Sinatra::Base
           
     else # this is a new user, enroll them in the system 
 
-      puts "Someone texted in, creating user. Msg: #{params[:Body]}"
+      puts "Someone texted in. Msg: #{params[:Body]}"
 
-      new_user = User.create(phone: phone, platform: 'sms')
-      # user start out as unsubscribed and needs to opt-in to SMS
-      new_user.state_table.update(subscribed?: false)
-      # story_number needs to start at 0 for texting
-      # new_user.state_table.update(story_number: 0)
+      # get all available codes...
+      all_codes =  School.map(:code).compact
+      all_codes += Teacher.map(:code).compact
+
+      puts "all codes (teachers, schools) = #{all_codes}"
+
+      all_codes = all_codes.map {|c| c.delete(' ').delete('-').downcase }
+
+      # need to split up the codes by individual english/spanish
+      all_codes = all_codes.inject([]) do |result, elt|
+        result += elt.split('|')
+      end
+
+      body_text = params[:Body].delete(' ').delete('-').downcase
+
+      if all_codes.include? body_text # then create a new user
+        puts "creating user...."
+        new_user = User.create(phone: phone, platform: 'sms')
+        # user start out as unsubscribed and needs to opt-in to SMS
+        new_user.state_table.update(subscribed?: false)
+        # story_number needs to start at 0 for texting
+        # new_user.state_table.update(story_number: 0)
+      else
+        puts "no matching school code"
+        msg = "StoryTime: Sorry, there is no school with that code. Please check your spelling and try again.\n\n"
+        msg << "Español: Lo siento, pero no existe el código de clase que entriste. Por favor, revise su ortografía."
+
+        TextingWorker.perform_async(msg, phone, ENV['ST_MAIN_NO'])
+        # exit the route
+        return "<Response/>"
+      end
+
 
       # if the first text has "spanish" or "español" in it...
       spanish_regex = /(spanish)|(espa[ñn]ol)/i
@@ -240,15 +267,19 @@ class TextApi < Sinatra::Base
       # 2. separated by pipe
       # 3. spaces and dashes allow
       #  
+
+      # can't I do this whole block of code with a simple regex?
+      # it's pretty hard with the way i've set up codes. ugh...
+
       School.each do |school|
         code = school.code
         if code.nil?
           next
         end
         code = code.delete(' ').delete('-').downcase
-        body_text = params[:Body].delete(' ')
-                                 .delete('-')
-                                 .downcase
+        # body_text = params[:Body].delete(' ')
+        #                          .delete('-')
+        #                          .downcase
 
         if code.include? body_text
           en, sp = code.split('|')
@@ -279,9 +310,9 @@ class TextApi < Sinatra::Base
           next
         end
         code = code.delete(' ').delete('-').downcase
-        body_text = params[:Body].delete(' ')
-                                 .delete('-')
-                                 .downcase
+        # body_text = params[:Body].delete(' ')
+        #                          .delete('-')
+        #                          .downcase
 
 
         if code.include? body_text
