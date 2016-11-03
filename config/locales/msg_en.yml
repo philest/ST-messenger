@@ -14,7 +14,7 @@ en:
     intro:
       teacher:
         - "Hi __PARENT__, this is RMP! Here’s your first free story from __TEACHER__!"
-        - "Hi __PARENT__, here's another story!"
+        - "Hi __PARENT__, here's another story from __TEACHER__!"
         - "Hi __PARENT__, here's another story :)"
         - "Hi __PARENT__, here's another story from StoryTime!"
         - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
@@ -36,7 +36,7 @@ en:
     intro_sms:
       teacher:
         - "Hi this is RMP! Welcome to __TEACHER__'s class on StoryTime! They will text you free books :)"
-        - "Hi! It's RMP. Here's another story from __TEACHER__!"
+        - "Here's another story from __TEACHER__!"
         - "Hi, here's another story from StoryTime! :)"
         - "Hi, here's another story from StoryTime!"
       school:
@@ -54,12 +54,12 @@ en:
       teacher:
         this_week:
           - "__TEACHER__ will share another RMP story this __DAY__! Enjoy :)"
-          - "You'll get another story this __DAY__. I hope you enjoyed this one! :)"
+          - "__TEACHER__ will share another RMP story this __DAY__! Hope you enjoyed this one :)"
           - "Another story will come this __DAY__! :)"
           - "Another story will come this __DAY__. Thanks for reading :)"
         next_week:
           - "__TEACHER__ will share another RMP story next __DAY__. Enjoy! :)"
-          - "You'll get another story next __DAY__. I hope you enjoyed this one! :)"
+          - "__TEACHER__ will share another RMP story next __DAY__. Hope you enjoyed this one :)"
           - "Another story will come next __DAY__! :)"
           - "Another story will come next __DAY__. Thanks for reading :)"
       school:
@@ -98,7 +98,7 @@ en:
         none: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
 
     enrollment:
-      call_to_action: "Get longer books with Facebook Messenger. Tap here and type your class code, which is __CODE__:\njoinstorytime.com/go\n\nIf you do not have Messenger, text back STORY"
+      call_to_action: "Get longer books on Facebook Messenger. Tap here and type your class code: __CODE__\njoinstorytime.com/go\n\nIf you don't have Messenger just text back your full name"
       sms_optin:
         teacher: "Great! We'll start sharing the stories.\n\nHere's the first story from __TEACHER__!"
         school: "Great! We'll start sending you stories.\n\nHere's the first one:"
@@ -116,11 +116,11 @@ en:
     remind_sms:
       teacher:
         - "Hi! It's RMP again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
-        - "If you do not have Messenger, text back STORY"
+        - "If you do not have Messenger just text back your full name."
       school:
         - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back STORY"
+        - "If you do not have Messenger just text back your full name."
       none:
         - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back STORY"
+        - "If you do not have Messenger just text back your full name."
 

@@ -171,14 +171,16 @@ class TextApi < Sinatra::Base
         #
         # conditional reply logic below
         #
-        if reply == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
-           reply == (I18n.t 'scripts.enrollment.sms_optin.school') or
-           reply == (I18n.t 'scripts.enrollment.sms_optin.none')
+        if msg == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
+           msg == (I18n.t 'scripts.enrollment.sms_optin.school') or
+           msg == (I18n.t 'scripts.enrollment.sms_optin.none') or
+           (/(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i).match(params[:Body])
+
           MessageWorker.perform_async(phone, 'day2', 'image1', 'sms')
         end
         # handle english/spanish conversation
-        if (reply == "Got it! We'll send you English stories instead.") or
-           (reply == "Bien! Le enviaremos cuentos en español :)")
+        if (msg == "Got it! We'll send you English stories instead.") or
+           (msg == "Bien! Le enviaremos cuentos en español :)")
 
            # only do this for the first text... 
            # otherwise, just change their locale and keep according to the SCRIPT!!!
