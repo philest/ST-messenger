@@ -28,8 +28,8 @@ ruby '2.3.1'
 gem 'pg'
 
 # aws and image generation
-gem 'aws-sdk'
-gem 'gruff'
+# gem 'aws-sdk'
+# gem 'gruff'
 
 
 gem 'airbrake'
