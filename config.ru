@@ -23,7 +23,7 @@ if RUBY_PLATFORM == 'jruby'
 end
 
 require_relative 'config/initializers/locale'
-require_relative 'config/initializers/aws'
+# require_relative 'config/initializers/aws'
 
 
 use Airbrake::Rack::Middleware
