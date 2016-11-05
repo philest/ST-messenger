@@ -123,6 +123,7 @@ module Birdv
       end
 
 
+      # send SMS!
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first
         if user.nil?
@@ -144,12 +145,21 @@ module Birdv
           return
         end
 
+        # record that this text has been sent...
+        b = ButtonPressLog.new(script_name:@script_name, 
+                             sequence_name:last_sequence_name, 
+                             platform: user.platform)
+
+        user.add_button_press_log(b)
+        puts "sendLog added: #{b.inspect}"
+
         TextingWorker.perform_async(translated_text, phone, ENV['ST_MAIN_NO'], 'SMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 
       end
 
+      # send MMS!
       def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
         user = User.where(phone: phone).first
         if user.nil?
@@ -172,14 +182,20 @@ module Birdv
           return
         end
 
+        # record that this text has been sent...
+        b = ButtonPressLog.new(script_name:@script_name, 
+                             sequence_name:last_sequence_name, 
+                             platform: user.platform)
+        
+        user.add_button_press_log(b)
+        puts "sendLog added: #{b.inspect}"
+
         TextingWorker.perform_async(img_url, phone, ENV['ST_MAIN_NO'], 'MMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
                                 'last_sequence'=> last_sequence_name) 
 
       end
-
-
 
     end # module MMS
   end # module DSL

@@ -571,21 +571,6 @@ class TextApi < Sinatra::Base
     status = params['MessageStatus']
     puts "status: #{status}"
 
-    # or maybe the clock worker happens here...
-    if status == 'delivered' then # we've completed a sequence, so record its history
-      u = User.where(phone: phone).first
-
-      if u.nil? 
-        return 400
-      end
-
-      b = ButtonPressLog.new(script_name:script, 
-                             sequence_name:last_sequence, 
-                             platform: u.platform)
-      u.add_button_press_log(b) unless u.nil? 
-      puts "b.user = #{b.user.inspect}"
-    end
-
     if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
       user = User.where(phone: phone).first
 
@@ -593,23 +578,14 @@ class TextApi < Sinatra::Base
         return 400
       end
 
-      user_buttons = ButtonPressLog.where(user_id:user.id)
-      # if next_sequence == nil, then they've probably already seen a sequence like nil
-      we_have_a_history = !user_buttons.where(platform:user.platform,
-                                             script_name:script, 
-                                             sequence_name:next_sequence).first.nil?
-      if we_have_a_history
-        puts "app.rb - WE'VE ALREADY SEEN #{script.upcase} #{next_sequence.upcase}!!!!"
-      else
-        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform) 
-      end
+      puts "app.rb: now sending (#{user.platform}) script: #{script}, sequence: #{next_sequence}"
+      MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform) 
 
     elsif next_sequence.to_s == ''
       puts "no more sequences, we're all done with this script :)"
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
       # should TimerWorker perform the next_sequence, or the last_sequence? Oh God!!!!!
       TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
-
     elsif status == 'failed'
       # do something else
       puts "message failed to send."
