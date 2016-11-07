@@ -125,15 +125,25 @@ module Birdv
 
       # send SMS!
       def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
+        puts "in send_sms: #{phone} #{text} #{last_sequence_name} #{next_sequence_name}"
         user = User.where(phone: phone).first
         if user.nil?
           return
         end
         user_buttons = ButtonPressLog.where(user_id:user.id) 
+
+        puts "BUTTON_INFO:"
+        user_buttons.each do |b|
+          puts "#{b.script_name} -  #{b.sequence_name} - #{b.platform} already seen"
+        end
+        puts "today's script = #{@script_name}"
+
         # if next_sequence == nil, then they've probably already seen a sequence like nil
         we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:@script_name, 
                                                sequence_name:next_sequence_name).first.nil?
+
+        puts "we_have_a_history = #{we_have_a_history}"
 
         if we_have_a_history
           puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"

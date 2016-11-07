@@ -585,7 +585,7 @@ class TextApi < Sinatra::Base
       puts "no more sequences, we're all done with this script :)"
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
       # should TimerWorker perform the next_sequence, or the last_sequence? Oh God!!!!!
-      TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
+      TimerWorker.perform_in(15.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
     elsif status == 'failed'
       # do something else
       puts "message failed to send."

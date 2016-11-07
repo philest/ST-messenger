@@ -3,6 +3,8 @@ require 'httparty'
 # if an SMS hasn't been delivered within twenty seconds or so, send the next_sequence
 class TimerWorker
   include Sidekiq::Worker
+  include ContactHelpers
+
 
   def delivery_status(messageSid)
     begin 
@@ -12,7 +14,7 @@ class TimerWorker
       return status
     rescue => e
       p "MessageSID: #{messageSid} - " + e.message
-      email_admins("st-enroll: something went wrong with MessageSID: #{messageSid}", e.message)
+      email_admins("birdv: something went wrong with MessageSID: #{messageSid}", e.message)
     end
   end
 
@@ -43,7 +45,7 @@ class TimerWorker
         return 400
       end
 
-      puts "TimerWorker: now sending (#{user.platform}) script: #{script}, sequence: #{next_sequence}"
+      puts "TimerWorker: now sending (#{user.platform}) script: #{script_name}, sequence: #{next_sequence}"
       MessageWorker.perform_async(phone, script_name, next_sequence, platform=user.platform)
 
     end
