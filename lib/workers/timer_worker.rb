@@ -13,7 +13,7 @@ class TimerWorker
       return status
     rescue => e
       p "MessageSID: #{messageSid} - " + e.message
-      email_admins("st-enroll: something went wrong with MessageSID: #{messageSid}", e.message)
+      email_admins("birdv: something went wrong with MessageSID: #{messageSid}", e.message)
     end
   end
 
@@ -44,15 +44,8 @@ class TimerWorker
         return 400
       end
 
-      user_buttons = ButtonPressLog.where(user_id:user.id)
-      we_have_a_history = !user_buttons.where(platform:user.platform,
-                                             script_name:script_name, 
-                                             sequence_name:next_sequence).first.nil?
-      if we_have_a_history
-        puts "timer_worker.rb - WE'VE ALREADY SEEN #{script_name.upcase} #{next_sequence.upcase}!!!!"
-      else
-        MessageWorker.perform_async(phone, script_name, next_sequence, platform=user.platform)
-      end
+      puts "TimerWorker: now sending (#{user.platform}) script: #{script_name}, sequence: #{next_sequence}"
+      MessageWorker.perform_async(phone, script_name, next_sequence, platform=user.platform)
 
     end
 

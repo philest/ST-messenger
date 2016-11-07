@@ -559,57 +559,35 @@ class TextApi < Sinatra::Base
     puts "IN THE BIRDV TWILIO CALLBACK URL YAY BIRDV!!!"
     puts params.inspect
 
-    phone         = params['phone']
-    script        = params['script']
-    next_sequence = params['next_sequence'] 
-    last_sequence = params['last_sequence']
-    messageSid    = params['MessageSid']
+    phone               = params['phone']
+    script              = params['script']
+    sequence_to_send    = params['next_sequence'] 
+    sequence_last_sent  = params['last_sequence']
+    messageSid          = params['MessageSid']
     puts "script: #{script}"
-    puts "next_sequence: #{next_sequence}"
-    puts "last_sequence: #{last_sequence}"
+    puts "sequence_to_send: #{sequence_to_send}"
+    puts "sequence_last_sent: #{sequence_last_sent}"
 
     status = params['MessageStatus']
     puts "status: #{status}"
 
-    # or maybe the clock worker happens here...
-    if status == 'delivered' then # we've completed a sequence, so record its history
-      u = User.where(phone: phone).first
-
-      if u.nil? 
-        return 400
-      end
-
-      b = ButtonPressLog.new(script_name:script, 
-                             sequence_name:last_sequence, 
-                             platform: u.platform)
-      u.add_button_press_log(b) unless u.nil? 
-      puts "b.user = #{b.user.inspect}"
-    end
-
-    if status == 'delivered' and next_sequence.to_s != '' # if it's not an empty sequence dawg....
+    if status == 'delivered' and sequence_to_send.to_s != '' # if it's not an empty sequence dawg....
       user = User.where(phone: phone).first
 
       if user.nil?
+        puts "user doesn't exist for some reason. poor guy..."
         return 400
       end
 
-      user_buttons = ButtonPressLog.where(user_id:user.id)
-      # if next_sequence == nil, then they've probably already seen a sequence like nil
-      we_have_a_history = !user_buttons.where(platform:user.platform,
-                                             script_name:script, 
-                                             sequence_name:next_sequence).first.nil?
-      if we_have_a_history
-        puts "app.rb - WE'VE ALREADY SEEN #{script.upcase} #{next_sequence.upcase}!!!!"
-      else
-        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform) 
-      end
+      puts "app.rb: now sending (#{user.platform}) script: #{script}, sequence: #{sequence_to_send}"
+      MessageWorker.perform_async(phone, script_name=script, sequence=sequence_to_send, platform=user.platform) 
 
-    elsif next_sequence.to_s == ''
+    elsif sequence_to_send.to_s == ''
       puts "no more sequences, we're all done with this script :)"
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
-      # should TimerWorker perform the next_sequence, or the last_sequence? Oh God!!!!!
-      TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=next_sequence)
-
+      # should TimerWorker perform the sequence_to_send, or the sequence_last_sent? Oh God!!!!!
+      # TimerWorker.perform_async(messageSid, phone, script_name=script, next_sequence=sequence_to_send)
+      TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=sequence_to_send)
     elsif status == 'failed'
       # do something else
       puts "message failed to send."
