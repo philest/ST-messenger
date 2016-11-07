@@ -3,6 +3,7 @@ require 'httparty'
 # if an SMS hasn't been delivered within twenty seconds or so, send the next_sequence
 class TimerWorker
   include Sidekiq::Worker
+  include ContactHelpers
 
   def delivery_status(messageSid)
     begin 
