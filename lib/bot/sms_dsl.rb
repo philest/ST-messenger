@@ -122,10 +122,9 @@ module Birdv
         puts "a fake implementation of `send`"
       end
 
-
       # send SMS!
-      def send_sms( phone, text, last_sequence_name=nil, next_sequence_name=nil )
-        puts "in send_sms: #{phone} #{text} #{last_sequence_name} #{next_sequence_name}"
+      def send_sms( phone, text, current_sequence=nil, next_sequence_name=nil )
+        puts "in send_sms: #{phone} #{text} #{current_sequence} #{next_sequence_name}"
         user = User.where(phone: phone).first
         if user.nil?
           return
@@ -141,12 +140,12 @@ module Birdv
         # if next_sequence == nil, then they've probably already seen a sequence like nil
         we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:@script_name, 
-                                               sequence_name:next_sequence_name).first.nil?
+                                               sequence_name:current_sequence).first.nil?
 
         puts "we_have_a_history = #{we_have_a_history}"
 
         if we_have_a_history
-          puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"
+          puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
           return
         end
         translated_text = translate_sms(phone, text)
@@ -157,7 +156,7 @@ module Birdv
 
         # record that this text has been sent...
         b = ButtonPressLog.new(script_name:@script_name, 
-                             sequence_name:last_sequence_name, 
+                             sequence_name:current_sequence, 
                              platform: user.platform)
 
         user.add_button_press_log(b)
@@ -166,23 +165,32 @@ module Birdv
         TextingWorker.perform_async(translated_text, phone, ENV['ST_MAIN_NO'], 'SMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
-                                'last_sequence'=> last_sequence_name) 
+                                'last_sequence'=> current_sequence) 
       end
 
       # send MMS!
-      def send_mms( phone, img_url, last_sequence_name=nil, next_sequence_name=nil )
+      def send_mms( phone, img_url, current_sequence=nil, next_sequence_name=nil )
+        puts "in send_mms: #{phone} #{img_url} #{current_sequence} #{next_sequence_name}"
         user = User.where(phone: phone).first
         if user.nil?
           return
         end
         user_buttons = ButtonPressLog.where(user_id:user.id) 
+
+        puts "BUTTON_INFO:"
+        user_buttons.each do |b|
+          puts "#{b.script_name} -  #{b.sequence_name} - #{b.platform} already seen"
+        end
+        puts "today's script = #{@script_name}"
         # if next_sequence == nil, then they've probably already seen a sequence like nil
         we_have_a_history = !user_buttons.where(platform:user.platform,
                                                script_name:@script_name, 
-                                               sequence_name:next_sequence_name).first.nil?
+                                               sequence_name:current_sequence).first.nil?
+
+        puts "we_have_a_history = #{we_have_a_history}"
 
         if we_have_a_history
-          puts "send_mms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{next_sequence_name.upcase}!!!!"
+          puts "send_mms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
           return
         end
 
@@ -194,7 +202,7 @@ module Birdv
 
         # record that this text has been sent...
         b = ButtonPressLog.new(script_name:@script_name, 
-                             sequence_name:last_sequence_name, 
+                             sequence_name:current_sequence, 
                              platform: user.platform)
         
         user.add_button_press_log(b)
@@ -203,7 +211,7 @@ module Birdv
         TextingWorker.perform_async(img_url, phone, ENV['ST_MAIN_NO'], 'MMS',
                                 'script' => @script_name, 
                                 'sequence' => next_sequence_name, 
-                                'last_sequence'=> last_sequence_name) 
+                                'last_sequence'=> current_sequence) 
 
       end
 
