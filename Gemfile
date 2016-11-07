@@ -56,6 +56,9 @@ gem 'clockwork'
 gem 'pony'
 gem 'twilio-ruby'
 
+# mobile app stuff
+gem 'fcm'
+
 gem 'dotenv'
 
 group :production do

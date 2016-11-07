@@ -1,10 +1,10 @@
-#  app.rb                                     David McPeek      
-# 
-#  The routes controller. Recieves POST from 
-#  www.joinstorytime.com/enroll with family phones and names. 
+#  app.rb                                     David McPeek
+#
+#  The routes controller. Recieves POST from
+#  www.joinstorytime.com/enroll with family phones and names.
 #  --------------------------------------------------------
 
-#sinatra dependencies 
+#sinatra dependencies
 require 'sinatra/base'
 require 'sidekiq'
 require 'sidekiq/web'
@@ -16,7 +16,7 @@ Dotenv.load if ENV['RACK_ENV'] != 'production'
 require_relative '../config/pony'
 require_relative 'workers'
 require 'httparty'
-require_relative 'helpers/contact_helpers' 
+require_relative 'helpers/contact_helpers'
 require_relative 'helpers/reply_helpers'
 require_relative 'helpers/twilio_helpers'
 require_relative 'helpers/name_codes'
@@ -26,12 +26,15 @@ require_relative 'bot/sms_dsl'
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 
+require_relative 'fcm/st_app_methods'
+
 
 class TextApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
   include TwilioTextingHelpers
   include NameCodes
+  include STApp
 
   use Airbrake::Rack::Middleware
 
@@ -61,7 +64,7 @@ class TextApi < Sinatra::Base
     end
 
     password_regexp = Regexp.new("#{password}\\|.+", 'i')
-    
+
     # note: when we give out passwords, we just do the english version of a school
     school = School.where(Sequel.like(:code, password_regexp)).first
     puts "school = #{school.inspect}"
@@ -69,7 +72,7 @@ class TextApi < Sinatra::Base
     if school.nil?
       return 501
     end
-    # maybe have some way to increment teacher codes for schools? 
+    # maybe have some way to increment teacher codes for schools?
     teacher = Teacher.where(email: email).first
     if teacher.nil?
       teacher = Teacher.create(email: email)
@@ -107,10 +110,10 @@ class TextApi < Sinatra::Base
     }.to_json
 
   end
-  
+
 
   get '/delivery_status' do
-    begin 
+    begin
       messageSid    = params['messageSid']
       client        = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
       message       = client.account.messages.get( messageSid )
@@ -142,7 +145,7 @@ class TextApi < Sinatra::Base
       msg = get_reply(params[:Body], user)
 
       puts "session = #{session.inspect}"
-      
+
       reply = ''
       if (msg == (I18n.t 'user_response.default')) && session['end_conversation'] == true
         # do nothing, don't send message
@@ -156,7 +159,7 @@ class TextApi < Sinatra::Base
         reply = name_codes(msg, user)
         puts "reply to send = #{reply}"
       end
-      
+
       unless reply.nil? or reply.empty? or reply.downcase.include? 'translation missing'
         TextingWorker.perform_async(reply, phone)
 
@@ -172,7 +175,7 @@ class TextApi < Sinatra::Base
         if (reply == "Got it! We'll send you English stories instead.") or
            (reply == "Bien! Le enviaremos cuentos en español :)")
 
-           # only do this for the first text... 
+           # only do this for the first text...
            # otherwise, just change their locale and keep according to the SCRIPT!!!
            if user.state_table.story_number == 1
               call_to_action = name_codes(I18n.t('scripts.enrollment.call_to_action'), user)
@@ -182,7 +185,7 @@ class TextApi < Sinatra::Base
         #
         # end conditional reply logic below
         #
-      else # there was no reply, so we want to personally respond to this. 
+      else # there was no reply, so we want to personally respond to this.
         REDIS.set('last_textin', phone) # remember the last person who texted in
 
         if reply.include? 'translation missing'
@@ -195,7 +198,7 @@ class TextApi < Sinatra::Base
       is_us = our_phones.include? phone
 
 
-      if !is_us 
+      if !is_us
         notify_admins "#{phone} texted StoryTime", "Msg: \"#{params[:Body]}\""
         unless reply.nil? or reply.empty?
           reply_blurb = reply[0..60]
@@ -206,8 +209,8 @@ class TextApi < Sinatra::Base
 
       # a necessary tag... must always respond with TwiML
       "<Response/>"
-          
-    else # this is a new user, enroll them in the system 
+
+    else # this is a new user, enroll them in the system
 
       puts "Someone texted in, creating user. Msg: #{params[:Body]}"
 
@@ -223,15 +226,15 @@ class TextApi < Sinatra::Base
         new_user.update(locale: 'es')
       end
       # TODO: error handling, nil-value checking
-      # 
+      #
       # FORMAT FOR SCHOOL CODES:
       # "english_word|spanish_word"
       # Example: 'read1|leer1'
-      # 
+      #
       # 1. English first, then Spanish
       # 2. separated by pipe
       # 3. spaces and dashes allow
-      #  
+      #
       School.each do |school|
         code = school.code
         if code.nil?
@@ -255,7 +258,7 @@ class TextApi < Sinatra::Base
             new_user.update(locale: 'es')
             puts "school info: #{school.signature}, #{school.inspect}"
             school.add_user(new_user)
-          else 
+          else
             puts "#{code} did not match with #{school.name} regex!"
           end
         else
@@ -298,7 +301,7 @@ class TextApi < Sinatra::Base
               teacher.school.add_user(new_user)
             end
 
-          else 
+          else
             puts "#{code} did not match with #{teacher.name} regex!"
           end
         else
@@ -314,9 +317,9 @@ class TextApi < Sinatra::Base
 
       # let us know
         our_phones = ["5612125831", "8186897323", "3013328953"]
-        is_us = our_phones.include? phone 
+        is_us = our_phones.include? phone
 
-        if !is_us 
+        if !is_us
           notify_admins "A new user #{phone} has enrolled by texting in", \
                  "Code: \"#{params[:Body]}\""
         end
@@ -345,16 +348,16 @@ class TextApi < Sinatra::Base
       #       to try submitting again
       teacher = Teacher.where(email: params['teacher_email']).first
     end
-    
+
     # Create the parents
     25.times do |idx| # TODO: this loop is shit
-      
+
       if params["phone_#{idx}"] != nil
         phone_num   = params["phone_#{idx}"]
         child_name  = params["name_#{idx}"]
-      else 
+      else
         # email Phil
-        next      
+        next
       end
 
       # TODO some day: when insertion fails, let teacher know that parent already exists
@@ -365,7 +368,7 @@ class TextApi < Sinatra::Base
         parent = User.where(phone: phone_num).first
 
         # create new parent if didn't already exists
-        if parent.nil? then 
+        if parent.nil? then
           parent = User.create(:phone => phone_num, platform: 'sms')
           parent.state_table.update(subscribed?: false)
           # parent.state_table.update(story_number: 0)
@@ -381,11 +384,11 @@ class TextApi < Sinatra::Base
         if !teacher.school.nil? # if this teacher belongs to a school
           teacher.school.add_user(parent)
         end
-      
+
       rescue Sequel::Error => e
         puts e.message
         # TODO: send email to Phil...
-      end     
+      end
     end
 
     # success even if twilio stuff not work 'cos
@@ -398,7 +401,7 @@ class TextApi < Sinatra::Base
     # get the first string in the message
     # check to see if user exists with that number
     # if they do, send the rest of the text to them
-    # 
+    #
     body = params[:Body]
     regex = / \s* reply \s* (\d+) \s* $/ix
     if regex.match body
@@ -498,7 +501,7 @@ class TextApi < Sinatra::Base
     platform = params['platform']
     recipient = params['recipient']
 
-    if recipient.nil? 
+    if recipient.nil?
       if platform == 'fb'
         recipient = "1042751019139427"
       else
@@ -519,7 +522,7 @@ class TextApi < Sinatra::Base
 
     phone         = params['phone']
     script        = params['script']
-    next_sequence = params['next_sequence'] 
+    next_sequence = params['next_sequence']
     last_sequence = params['last_sequence']
     messageSid    = params['MessageSid']
     puts "script: #{script}"
@@ -533,14 +536,14 @@ class TextApi < Sinatra::Base
     if status == 'delivered' then # we've completed a sequence, so record its history
       u = User.where(phone: phone).first
 
-      if u.nil? 
+      if u.nil?
         return 400
       end
 
-      b = ButtonPressLog.new(script_name:script, 
-                             sequence_name:last_sequence, 
+      b = ButtonPressLog.new(script_name:script,
+                             sequence_name:last_sequence,
                              platform: u.platform)
-      u.add_button_press_log(b) unless u.nil? 
+      u.add_button_press_log(b) unless u.nil?
       puts "b.user = #{b.user.inspect}"
     end
 
@@ -554,12 +557,12 @@ class TextApi < Sinatra::Base
       user_buttons = ButtonPressLog.where(user_id:user.id)
       # if next_sequence == nil, then they've probably already seen a sequence like nil
       we_have_a_history = !user_buttons.where(platform:user.platform,
-                                             script_name:script, 
+                                             script_name:script,
                                              sequence_name:next_sequence).first.nil?
       if we_have_a_history
         puts "app.rb - WE'VE ALREADY SEEN #{script.upcase} #{next_sequence.upcase}!!!!"
       else
-        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform) 
+        MessageWorker.perform_async(phone, script_name=script, sequence=next_sequence, platform=user.platform)
       end
 
     elsif next_sequence.to_s == ''
@@ -578,10 +581,26 @@ class TextApi < Sinatra::Base
 
     # send the demo
   post '/demo' do
-    phone = params[:phone]
-    puts "sending demo to #{phone}"
-    MessageWorker.perform_async(phone, script_name='demo', sequence='firstmessage', platform='demo')
-  end 
+    # phone = params[:phone]
+    # puts "sending demo to #{phone}"
+    # MessageWorker.perform_async(phone, script_name='demo', sequence='firstmessage', platform='demo')
+
+    # TODO: throw error if this isn't a legitimate post?
+
+    phone = params[:From][2..-1]
+    demo_msg = params[:Body].downcase
+
+    if demo_msg=='new'
+
+      res = STApp.demo_send_new_story[:status_code].to_i
+      puts res
+      return 200
+      # STApp.poop
+    end
+
+
+
+  end
 
   post '/demo/sms' do
     # msg = "Hi! We're away now, but we'll see your messsage soon. "+
@@ -597,12 +616,3 @@ class TextApi < Sinatra::Base
 
 
 end # class SMS < Sinatra::Base
-
-
-
-
-
-
-
-
-
