@@ -11,7 +11,7 @@ module MessageReplyHelpers
   LOVE_MSG        = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG    = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG          = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
-  RESUBSCRIBE_MSG = /(\A\s*GO\s*\z)|(libros)/i
+  GO_MSG          = /(\A\s*GO\s*\z)|(libros)/i
   ENROLL_MSG      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
   FEATURE_PHONES  = /\A\s*SMS\s*\z/i
   ENGLISH_PLZ     = /(english)|(ingles)|(inglés)/i
@@ -94,7 +94,7 @@ module MessageReplyHelpers
 
       unless (is_sms && story_no == 1) or
              story_no == 0 or
-             body.match RESUBSCRIBE_MSG or 
+             body.match GO_MSG or 
              body.match ENROLL_MSG or 
              body.match LINK_CODE or 
              body.match FEATURE_PHONES or
@@ -116,7 +116,7 @@ module MessageReplyHelpers
         # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
       end
       ''
-    when RESUBSCRIBE_MSG
+    when GO_MSG
       if user.state_table.subscribed? == false
         user.state_table.update(subscribed?: true,
                              num_reminders: 0,
@@ -126,7 +126,10 @@ module MessageReplyHelpers
                             )
         I18n.t 'scripts.subscription.resubscribe'
       else
-        ''
+        # send their next story
+        script_name = "day" + user.state_table.story_number.to_s
+        MessageWorker.perform_async(user.fb_id, script_name, :storysequence, 'fb') if user.platform == 'fb'
+        return ''
       end
     when ENROLL_MSG
       # update story number! because you'll have just sent the first story.

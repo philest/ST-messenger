@@ -5,10 +5,9 @@ require 'httparty'
 localhost = "http://localhost:5000/"
 birdv     = "http://birdv.herokuapp.com/"
 
-# puts HTTParty.get(
-#   birdv + "startdayworker",
-#   query: {
-#     platform: "fb",
-#     recipient: '1018586858239134'
-#   }
-# )
+puts HTTParty.get(
+  localhost + "startdayworker",
+  query: {
+    platform: "fb"
+  }
+)

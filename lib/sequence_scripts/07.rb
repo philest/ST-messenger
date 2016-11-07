@@ -9,7 +9,7 @@ Birdv::DSL::ScriptClient.new_script 'day7' do
 	#
 	button_story({
 		name: 		'tap_here',
-		title: 		'scripts.buttons.title[1]',
+		title: 		'scripts.buttons.title[0]',
 		image_url:  'scripts.buttons.story_img_url', 
 		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
 	})
