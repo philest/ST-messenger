@@ -553,6 +553,12 @@ class TextApi < Sinatra::Base
     MessageWorker.perform_async(recipient, script, sequence, platform)
   end
 
+  # aubrey  3013328953
+  # phil    5612125831
+  # david   8186897323
+  # raquel  8188049338
+  # emily   8184292090
+
 
   post '/twilio_callback_url' do
 
@@ -587,7 +593,7 @@ class TextApi < Sinatra::Base
     elsif status == 'sent' # it's been over a minute since we've received the last message and we're not waiting anymore...
       # should TimerWorker perform the sequence_to_send, or the sequence_last_sent? Oh God!!!!!
       # TimerWorker.perform_async(messageSid, phone, script_name=script, next_sequence=sequence_to_send)
-      TimerWorker.perform_in(45.seconds, messageSid, phone, script_name=script, next_sequence=sequence_to_send)
+      TimerWorker.perform_in(30.seconds, messageSid, phone, script_name=script, next_sequence=sequence_to_send)
     elsif status == 'failed'
       # do something else
       puts "message failed to send."
