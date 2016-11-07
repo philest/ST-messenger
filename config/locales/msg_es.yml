@@ -13,6 +13,7 @@ es:
       none: "Bien! Le enviaremos cuentos en español :)"
       
   scripts:
+    introduce_button: "¡Aquí viene otro cuento! Para conseguirlo, pulse el botón de abajo o escribe GO"
     intro:
       teacher:
         - "Hola __PARENT__, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"

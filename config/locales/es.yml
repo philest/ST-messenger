@@ -29,7 +29,7 @@ es:
     buttons:
       story_img_url: 'https://s3.amazonaws.com/st-messenger/day1/es/%{story_name}/%{story_name}-button.jpg'
       title:
-        - "Vamos a leer el cuento nuevo."
+        - "Pulse el botón de abajo o escribe GO"
         - "¡Su cuento nuevo ya viene!"
       tap: "¡Pulse aquí!"
       tap_here: https://s3.amazonaws.com/st-messenger/day1/es/tap_here.jpg

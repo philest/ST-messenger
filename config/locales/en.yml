@@ -29,7 +29,7 @@ en:
     buttons:
       story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'
       title:
-        - "Reply GO or tap below to start!"
+        - "Just tap below or reply GO!"
         - "Let's read tonight's story."
       tap: "Tap here!"
       tap_here: https://s3.amazonaws.com/st-messenger/day1/tap_here.jpg
