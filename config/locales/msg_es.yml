@@ -3,11 +3,13 @@ es:
     english_plz:
       teacher: "Got it! I'll send you English stories instead."
       school: "Got it! We'll send you English stories instead."
+      both: "Got it! I'll send you English stories instead."
       none: "Got it! We'll send you English stories instead."
 
     spanish_plz:
       teacher: "Bien! Le enviaré cuentos en español :)"
       school: "Bien! Le enviaremos cuentos en español :)"
+      both: "Bien! Le enviaré cuentos en español :)"
       none: "Bien! Le enviaremos cuentos en español :)"
       
   scripts:
@@ -26,6 +28,13 @@ es:
         - "Hola __PARENT__, es __SCHOOL__. ¡Aquí viene otro cuento!"
         - "¡Hola __PARENT__! Esperamos que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
         - "¡Hola __PARENT__! Este cuento es uno de nuestros favoritos."
+      both:
+        - "Hola __PARENT__, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
+        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para __CHILD__."
+        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento! :)"
+        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
+        - "¡Hola __PARENT__! Espero que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
+        - "¡Hola __PARENT__! Este cuento es uno de mis favoritos."
       none:
         - "Hola __PARENT__, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
         - "Hola __PARENT__, es __SCHOOL__. ¡Aquí viene otro cuento para __CHILD__."
@@ -44,6 +53,11 @@ es:
         - "Hola, es __SCHOOL__. Aquí viene otro cuento para __CHILD__."
         - "Hola! Aquí viene otro cuento de StoryTime :)"
         - "Hola! Aquí viene otro cuento de StoryTime :)"
+      both:
+        - "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!"
+        - "Hola, es __TEACHER__. Aquí viene otro cuento para __CHILD__."
+        - "Hola! Aquí viene otro cuento de StoryTime :)"
+        - "Hola! Aquí viene otro cuento de StoryTime :)"
       none: 
         - "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!"
         - "Hola, es StoryTime. Aquí viene otro cuento para __CHILD__."
@@ -55,39 +69,51 @@ es:
         this_week:
           - "Le enviaré un cuento nuevo este __DAY__ :)"
           - "Le enviaré un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento este __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaré otro cuento este __DAY__ :)"
           - "Le enviaré otro cuento este __DAY__ :)"
         next_week:
           - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
           - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento el próximo __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaré otro cuento el próximo __DAY__ :)"
           - "Le enviaré otro cuento el próximo __DAY__ :)"
       school:
         this_week:
           - "Le enviaremos un cuento nuevo este __DAY__ :)"
           - "Le enviaremos un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento este __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaremos otro cuento este __DAY__ :)"
           - "Le enviaremos otro cuento este __DAY__ :)"
         next_week:
           - "Le enviaremos un cuento nuevo el próximo __DAY__ :)"
           - "Le enviaremos un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ . ¡Van muy bien! :)"
           - "Le enviaremos otro cuento el próximo __DAY__ :)"
+          - "Le enviaremos otro cuento el próximo __DAY__ :)"
+      both:
+        this_week:
+          - "Le enviaré un cuento nuevo este __DAY__ :)"
+          - "Le enviaré un cuento nuevo este __DAY__. ¡Gracias! :)"
+          - "Le enviaré otro cuento este __DAY__ :)"
+          - "Le enviaré otro cuento este __DAY__ :)"
+        next_week:
+          - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
+          - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
+          - "Le enviaré otro cuento el próximo __DAY__ :)"
+          - "Le enviaré otro cuento el próximo __DAY__ :)"
       none:
         this_week:
           - "Le enviaremos un cuento nuevo este __DAY__ :)"
           - "Le enviaremos un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento este __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaremos otro cuento este __DAY__ :)"
           - "Le enviaremos otro cuento este __DAY__ :)"
         next_week:
           - "Le enviaremos un cuento nuevo el próximo __DAY__ :)"
           - "Le enviaremos un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ . ¡Van muy bien! :)"
+          - "Le enviaremos otro cuento el próximo __DAY__ :)"
           - "Le enviaremos otro cuento el próximo __DAY__ :)"
 
     first_book:
       teacher: "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
       school: "Hola, es __SCHOOL__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
+      both: "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
       none: "Hola, es StoryTime. ¡Aquí viene su primer cuento! Espero que lo disfrute."
 
     subscription:
@@ -95,6 +121,7 @@ es:
       unsubscribe:
         teacher: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
         school: Hola __PARENT__, vimos que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
+        both: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
         none: Hola __PARENT__, vimos que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
 
     enrollment:
@@ -102,15 +129,18 @@ es:
       sms_optin:
         teacher: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
         school: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
+        both: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
         none: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
       img:
         teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
         school: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
+        both: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
         none: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
 
     remind:
       teacher: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
       school: Hola __PARENT__, vimos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí tiene!
+      both: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
       none: Hola __PARENT__, vimos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí tiene!
 
     remind_sms:
@@ -119,6 +149,9 @@ es:
         - "Si no tenga Facebook Messenger, responde con su nombre completo."
       school:
         - "Hola! Es __SCHOOL__. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+        - "Si no tenga Facebook Messenger, responde con su nombre completo."
+      both:
+        - "Hola! Es __TEACHER__. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
         - "Si no tenga Facebook Messenger, responde con su nombre completo."
       none:
         - "Hola! Es StoryTime. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"

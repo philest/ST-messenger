@@ -24,7 +24,7 @@ en:
     end_conversation: "I'll see your message by tonight! If you need more help just reply LEARN"
   scripts:
     code:
-      enter_code: "Hi, this is StoryTime!\n\nTo get started, just reply with your class code (we texted it to you)."
+      enter_code: "Hi, this is StoryTime!\n\nTo get started, just reply with your class code."
       success: "Great! Here's your first story :)"
     buttons:
       story_img_url:  'https://s3.amazonaws.com/st-messenger/day1/%{story_name}/%{story_name}-button.jpg'

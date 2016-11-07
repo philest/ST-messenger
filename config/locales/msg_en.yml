@@ -3,29 +3,38 @@ en:
     english_plz:
       teacher: "Got it! I'll send you English stories instead."
       school: "Got it! We'll send you English stories instead."
+      both: "Got it! I'll send you English stories instead."
       none: "Got it! We'll send you English stories instead."
 
     spanish_plz:
       teacher: "Bien! Le enviaré cuentos en español :)"
       school: "Bien! Le enviaremos cuentos en español :)"
+      both: "Bien! Le enviaré cuentos en español :)"
       none: "Bien! Le enviaremos cuentos en español :)"
       
   scripts:
     intro:
       teacher:
-        - "Hi __PARENT__, this is RMP! Here’s your first free story from __TEACHER__!"
-        - "Hi __PARENT__, here's another story from __TEACHER__!"
-        - "Hi __PARENT__, here's another story :)"
-        - "Hi __PARENT__, here's another story from StoryTime!"
+        - "Hi __PARENT__, this is StoryTime! Here’s your first free story from __TEACHER__!"
+        - "Hi __PARENT__, it's StoryTime again! Here's another story from __TEACHER__!"
+        - "Hello from StoryTime! __PARENT__, __TEACHER__ chose a fun story for you tonight. We hope you enjoy it!"
+        - "Hi again! __TEACHER__ wanted to share this story with you. Enjoy!"
         - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
         - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
       school:
-        - "Hi __PARENT__, this is __SCHOOL__. We will text you free books with StoryTime :)"
-        - "Hi __PARENT__, it's __SCHOOL__. Here's another story!"
-        - "Hi __PARENT__, here's another story :)"
-        - "Hi __PARENT__, here's another story from StoryTime!"
+        - "Hi __PARENT__, this is __SCHOOL__! Here's your first free story from StoryTime! :)"
+        - "Hi __PARENT__, it's __SCHOOL__ again! Here's another story from StoryTime!"
+        - "Hello from __SCHOOL__! __PARENT__, we wanted to share this story with you. Enjoy!"
+        - "__PARENT__, here's another story from StoryTime!"
         - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
-        - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
+        - "Hi __PARENT__, it's __SCHOOL__. Here's one of our favorites again. Enjoy :)"
+      both:
+        - "Hi __PARENT__, this is __SCHOOL__! Here’s your first free story from __TEACHER__!"
+        - "Hi __PARENT__, it's __SCHOOL__ again! Here's tonight's story from __TEACHER__!"
+        - "Hello from __SCHOOL__! __PARENT__, __TEACHER__ chose a fun story for you tonight. We hope you enjoy it!"
+        - "Hi again! __TEACHER__ wanted to share this story with you. Enjoy!"
+        - "Hi __PARENT__, we hoped you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
+        - "Hi __PARENT__, it's __SCHOOL__. Here's one of our favorites again. Enjoy :)"
       none:
         - "Hi __PARENT__, this is StoryTime. We will text you free books for you and your child :)"
         - "Hi __PARENT__, it's StoryTime. Here's another story!"
@@ -35,31 +44,36 @@ en:
         - "Hi __PARENT__, here's one of our favorites again. Enjoy :)"
     intro_sms:
       teacher:
-        - "Hi this is RMP! Welcome to __TEACHER__'s class on StoryTime! They will text you free books :)"
-        - "Here's another story from __TEACHER__!"
-        - "Hi, here's another story from StoryTime! :)"
-        - "Hi, here's another story from StoryTime!"
+        - "Welcome to __TEACHER__'s class on StoryTime! They will text you free books!"
+        - "Hi, it's StoryTime again! Here's another story from __TEACHER__!"
+        - "Hello from StoryTime! __TEACHER__ wanted to share this story with you. Enjoy!"
+        - "Hi again, here's another story from __TEACHER__!"
       school:
-        - "Hi this is __SCHOOL__! We will text you free books with StoryTime!" 
-        - "Hi! It's __SCHOOL__. Here's another story from StoryTime!"
-        - "Hi, here's another story from StoryTime! :)"
+        - "Hi, this is __SCHOOL__! Welcome to StoryTime, where we'll text you free books!" 
+        - "Hi! It's __SCHOOL__ again! Here's another story from StoryTime!"
+        - "Hello from __SCHOOL__! We wanted to share this story with you. Enjoy!"
         - "Hi, here's another story from StoryTime!"
+      both:
+        - "Hi this is __SCHOOL__! Welcome to __TEACHER__'s class on StoryTime! They will text you free books!"
+        - "Hi, it's __SCHOOL__ again! Here's another story from __TEACHER__!"
+        - "Hello from __SCHOOL__! __TEACHER__ wanted to share this story with you. Enjoy!"
+        - "Hi, here's another story from __TEACHER__!"
       none: 
         - "Hi this is StoryTime! We'll be texting you free books :)"
-        - "Hi! It's StoryTime. Here's another story from StoryTime!"
+        - "Hi! It's StoryTime. Here's another story!"
         - "Hi, here's another story from StoryTime! :)"
         - "Hi, here's another story from StoryTime!"
 
     outro:
       teacher:
         this_week:
-          - "__TEACHER__ will share another RMP story this __DAY__! Enjoy :)"
-          - "__TEACHER__ will share another RMP story this __DAY__! Hope you enjoyed this one :)"
+          - "__TEACHER__ will share another story this __DAY__! Enjoy :)"
+          - "__TEACHER__ will get you another story this __DAY__ :)"
           - "Another story will come this __DAY__! :)"
           - "Another story will come this __DAY__. Thanks for reading :)"
         next_week:
-          - "__TEACHER__ will share another RMP story next __DAY__. Enjoy! :)"
-          - "__TEACHER__ will share another RMP story next __DAY__. Hope you enjoyed this one :)"
+          - "__TEACHER__ will share another __SCHOOL__ story next __DAY__. Enjoy! :)"
+          - "__TEACHER__ will share another __SCHOOL__ story next __DAY__. Hope you enjoyed this one :)"
           - "Another story will come next __DAY__! :)"
           - "Another story will come next __DAY__. Thanks for reading :)"
       school:
@@ -72,6 +86,17 @@ en:
           - "You'll get another story next __DAY__!"
           - "You'll get another story next __DAY__. We hope you enjoyed this one! :)"
           - "Another story will come next __DAY__. Enjoy! :)"
+          - "Another story will come next __DAY__. Thanks for reading :)"
+      both:
+        this_week:
+          - "__TEACHER__ will share another __SCHOOL__ story this __DAY__! Enjoy :)"
+          - "__TEACHER__ will share another __SCHOOL__ story this __DAY__! Hope you enjoyed this one :)"
+          - "Another story will come this __DAY__! :)"
+          - "Another story will come this __DAY__. Thanks for reading :)"
+        next_week:
+          - "__TEACHER__ will share another __SCHOOL__ story next __DAY__. Enjoy! :)"
+          - "__TEACHER__ will share another __SCHOOL__ story next __DAY__. Hope you enjoyed this one :)"
+          - "Another story will come next __DAY__! :)"
           - "Another story will come next __DAY__. Thanks for reading :)"
       none:
         this_week:
@@ -86,8 +111,9 @@ en:
           - "Another story will come next __DAY__. Thanks for reading :)"
                
     first_book:
-      teacher: "Hi! This is RMP. Here's your first free book from __TEACHER__!"
+      teacher: "Hi! This is __SCHOOL__. Here's your first free book from __TEACHER__!"
       school: "Hi! This is __SCHOOL__. Here's your first free book on StoryTime!"
+      both: "Hi! This is __SCHOOL__. Here's your first free book from __TEACHER__!"
       none: "Hi! This is StoryTime. Here's your first free book!"
 
     subscription:
@@ -95,30 +121,37 @@ en:
       unsubscribe:
         teacher: "Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
         school: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
+        both: "Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
         none: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
 
     enrollment:
       call_to_action: "If you have Facebook Messenger, tap here and type your class code, which is __CODE__:\njoinstorytime.com/go\n\nIf you do not have Messenger, text back your full name"
       sms_optin:
         teacher: "Great! We'll start sharing the stories.\n\nHere's the first story from __TEACHER__!"
-        school: "Great! We'll start sending you stories.\n\nHere's the first one:"
+        school: "Great! We'll start sending you stories.\n\nHere's the first one from __SCHOOL__:"
+        both: "Great! We'll start sharing the stories.\n\nHere's the first story from __TEACHER__!"
         none: "Great! We'll start sending you stories.\n\nHere's the first one:"
       img:
         teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
         school: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
+        both: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
         none: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-final.jpg
 
     remind:
       teacher: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
       school: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
+      both: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
       none: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
 
     remind_sms:
       teacher:
-        - "Hi! It's RMP again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
+        - "Hi! It's __SCHOOL__ again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
         - "If you do not have Messenger just text back your full name."
       school:
         - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back your full name."
+      both:
+        - "Hi! It's __SCHOOL__ again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
         - "If you do not have Messenger just text back your full name."
       none:
         - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"

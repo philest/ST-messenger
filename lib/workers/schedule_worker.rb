@@ -83,17 +83,17 @@ class ScheduleWorker
     # first fb
     if fb.size > 0
 
-      if fb.size < 30
+      if fb.size < 10
         total_time = fb.size.minutes
       else
-        total_time = 30.minutes
+        total_time = 10.minutes
       end 
 
       ind_delay = total_time / fb.size
 
       fb.size.times do |i|
         delay = (ind_delay * i)
-        puts "delay for fb user = #{delay} seconds, #{delay/1.minute} minutes"
+        puts "delay for fb user = #{delay} seconds, #{delay/1.minute.to_f} minutes"
         user = fb[i]
         StartDayWorker.perform_in(delay.seconds, user.fb_id, platform='fb') if user.fb_id
       end

@@ -4,6 +4,7 @@ es:
       intro:
         teacher: "Hola, es __TEACHER__ otra vez! Espero que te haya gustado estos pequeños libros."
         school: "Hola, es __SCHOOL__ otra vez! Esperamos que te haya gustado estos pequeños libros."
+        both: "Hola, es __TEACHER__ otra vez! Espero que te haya gustado estos pequeños libros."
         none: "Hola, es StoryTime otra vez! Esperamos que te haya gustado estos pequeños libros."
       fb: "Para recibir más cuentos, sigue el enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
     stories:

@@ -26,7 +26,7 @@ module NameCodes
 
         replace = 'school'  if has_school
         replace = 'teacher' if has_teacher
-        # replace = 'both'    if has_both
+        replace = 'both'    if has_both
         replace = 'none'    if has_none
 
         new_stub = trans_stub.gsub(/__poc__/, replace)
