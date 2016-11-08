@@ -585,7 +585,7 @@ class TextApi < Sinatra::Base
         return 400
       end
 
-      puts "app.rb: now sending (#{user.platform}) script: #{script}, sequence: #{sequence_to_send}"
+      puts "app.rb: now sending (#{user.platform}) script to #{phone}: #{script}, sequence: #{sequence_to_send}"
       MessageWorker.perform_async(phone, script_name=script, sequence=sequence_to_send, platform=user.platform) 
 
     elsif sequence_to_send.to_s == ''

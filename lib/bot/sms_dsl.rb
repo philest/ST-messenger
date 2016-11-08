@@ -45,7 +45,7 @@ module Birdv
         # Translate the weekday here. do it, why don't you?
         # if it matches a day of the week thing
         # window_text_regex = /scripts.buttons.window_text(\[\d+\])/i
-        window_text_regex = /scripts.outro.(teacher|school|none)(\[\d+\])/i
+        window_text_regex = /scripts.outro.(teacher|school|both|none)(\[\d+\])/i
         if window_text_regex.match(new_text)
           # get the code thing to transfer over
           bracket_index = $2.to_s
