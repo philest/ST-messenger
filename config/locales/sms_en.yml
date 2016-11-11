@@ -26,7 +26,7 @@ en:
   feature:
     messages:
       opt-in:
-        intro: If these pictures are hard to read, reply SMS for stories without pictures.
+        intro: If these pictures are hard to read, reply TEXT for stories without pictures.
         confirmation: Great! You'll get stories without pictures now :) 
     poems:
       hero:

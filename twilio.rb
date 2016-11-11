@@ -15,11 +15,9 @@ line3 = "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely 
 # @message = client.account.messages.get("M1ea228a51d444121b0f5f94a63daee0a")
 # puts @message.body
 
-
-
 client.account.messages.create(
-  body: "Perdón! En español: Si tiene Facebook Messenger visite este enlace y escribe su código de clase: 29\njoinstorytime.com/go\n\nSi no tenga Facebook Messenger responde con CUENTO",
-  # to: "7204996678",
+  body: "SMS es un mensaje texto sin imagen. Deséa recibir cuentos así?",
+  # to: "",
   from: STORYTIME_NO
 )
 

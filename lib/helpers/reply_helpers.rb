@@ -12,8 +12,8 @@ module MessageReplyHelpers
   EMOTICON_MSG    = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG          = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
   GO_MSG          = /(\A\s*GO\s*\z)|(libros)/i
-  ENROLL_MSG      = /(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
-  FEATURE_PHONES  = /\A\s*SMS\s*\z/i
+  ENROLL_MSG      = /(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
+  FEATURE_PHONES  = /(\A\s*SMS\s*\z)|(\A\s*TEXT\s*\z)|(\A\s*TEXTO\s*\z)/i
   ENGLISH_PLZ     = /(english)|(ingles)|(inglés)/i
   SPANISH_PLZ     = /(spanish)|(espanol)|(español)/i
 

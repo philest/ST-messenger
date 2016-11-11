@@ -26,7 +26,7 @@ es:
   feature:
     messages:
       opt-in:
-        intro: Si su mobil no puede ver mensajes de foto, responde con SMS para recibir cuentos sin fotos
+        intro: Si su mobil no puede ver mensajes de foto, responde con TEXTO para recibir cuentos sin fotos
         confirmation: ¡Estupendo! Ahora recibirás cuentos por mensaje texto (sin fotos) :) 
     poems:
       hero:
