@@ -16,7 +16,7 @@ line3 = "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely 
 # puts @message.body
 
 client.account.messages.create(
-  body: "SMS es un mensaje texto sin imagen. Deséa recibir cuentos así?",
+  body: "¡Bueno! Ahora recibirás cuentos por mensaje texto (sin fotos) :) ",
   # to: "",
   from: STORYTIME_NO
 )
