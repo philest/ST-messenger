@@ -106,7 +106,7 @@ module MessageReplyHelpers
 
     end
 
-
+    
     case body
     when LINK_CODE
       # logic for connecting the person to their phone account and school....

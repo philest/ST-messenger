@@ -27,6 +27,12 @@ require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 
 
+# aubrey  3013328953
+# phil    5612125831
+# david   8186897323
+# raquel  8188049338
+# emily   8184292090
+  
 class TextApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers

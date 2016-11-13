@@ -7,7 +7,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 	end
 
 	sequence 'image1' do |phone_no|
-		img = 'mms.stories.hero[0]'
+		img = 'mms.stories.clouds[0]'
 		puts "sending first image..."
 		send_mms phone_no, img, 'image1', 'image2'
 	end
@@ -15,7 +15,7 @@ Birdv::DSL::ScriptClient.new_script 'day2', 'sms' do
 	sequence 'image2' do |phone_no|
 		# one more button
 		puts "sending second image..."
-		img = 'mms.stories.hero[1]'
+		img = 'mms.stories.clouds[1]'
 		send_mms phone_no, img, 'image2', 'feature-phones'
 
 	end
