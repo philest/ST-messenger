@@ -149,6 +149,44 @@ class TextApi < Sinatra::Base
     user = User.where(phone: phone.to_s).first
     puts "user = #{user}, phone = #{phone}"
 
+
+    # make this work for phil
+    phil = '5612125831'
+    if phone == phil
+        # check if it's a school code
+        is_school_code = false
+
+        School.each do |school|
+          code = school.code
+          if code.nil?
+            next
+          end
+          code = code.delete(' ').delete('-').downcase
+          body_text = params[:Body].delete(' ').delete('-').downcase
+          if code.include? body_text
+            en, sp = code.split('|')
+            if body_text == en or body_text == sp
+              is_school_code = true
+            end
+          end
+        end
+
+        if is_school_code
+          User.where(phone: phil).destroy
+          user = nil
+        end
+    end
+
+    # check if it's phil's number
+    # if it is:
+    #   check if it's a school code
+    #   if it is: 
+    #     destroy phil, mark user = nil
+    #   if not:
+    #     keep phil as a user
+    #    
+    # 
+
     if user # is enrolled in the system already
 
       msg = get_reply(params[:Body], user)
