@@ -155,6 +155,7 @@ class TextApi < Sinatra::Base
     if phone == phil
         # check if it's a school code
         is_school_code = false
+        is_teacher_code = false
 
         School.each do |school|
           code = school.code
@@ -171,7 +172,27 @@ class TextApi < Sinatra::Base
           end
         end
 
-        if is_school_code
+
+        Teacher.each do |teacher|
+          code = teacher.code
+          if code.nil?
+            next
+          end
+          code = code.delete(' ').delete('-').downcase
+          body_text = params[:Body].delete(' ')
+                                   .delete('-')
+                                   .downcase
+
+          if code.include? body_text
+            en, sp = code.split('|')
+            if body_text == en or body_text == sp
+              is_teacher_code = true
+            end
+          end # if code.include? body_text
+        end # Teacher.each do |teacher|
+
+
+        if is_school_code or is_teacher_code
           User.where(phone: phil).destroy
           user = nil
         end
