@@ -13,6 +13,12 @@ class Teacher < Sequel::Model(:teachers)
 
   def signup_user(user)
     # write this method
+    self.add_user(user)
+
+    if self.school != nil
+      self.school.add_user(user)
+    end
+
   end
 
 

@@ -11,7 +11,7 @@ es:
       school: "Bien! Le enviaremos cuentos en español :)"
       both: "Bien! Le enviaré cuentos en español :)"
       none: "Bien! Le enviaremos cuentos en español :)"
-      
+
   scripts:
     introduce_button: "¡Aquí viene otro cuento! Para conseguirlo, pulse el botón de abajo o escribe GO"
     intro:
@@ -111,7 +111,7 @@ es:
           - "Un cuento nuevo saldrá el próximo __DAY__. Que lo pase bien! :)"
           - "Un cuento nuevo saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
                
-     first_book:
+    first_book:
       teacher: "Saludos desde __SCHOOL__! Aquí viene el primer cuento, por parte de __TEACHER__!"
       school: "Hola! Esto es __SCHOOL__. Aquí viene el primer cuento de StoryTime!"
       both: Saludos desde __SCHOOL__! Aquí viene el primer cuento, por parte de __TEACHER__!"
@@ -139,10 +139,10 @@ es:
         none: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
 
     remind:
-      teacher: Hola __PARENT__, noté que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí viene!
-      school: Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!
-      both: Hola __PARENT__, not que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquíé viene!
-      none: Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!
+      teacher: "Hola __PARENT__, noté que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí viene!"
+      school: "Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!"
+      both: "Hola __PARENT__, not que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquíé viene!"
+      none: "Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!"
 
     remind_sms:
       teacher:
