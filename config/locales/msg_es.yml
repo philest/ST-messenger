@@ -5,7 +5,7 @@ es:
       school: "Got it! We'll send you English stories instead."
       both: "Got it! I'll send you English stories instead."
       none: "Got it! We'll send you English stories instead."
-
+      
     spanish_plz:
       teacher: "Bien! Le enviaré cuentos en español :)"
       school: "Bien! Le enviaremos cuentos en español :)"
@@ -16,122 +16,122 @@ es:
     introduce_button: "¡Aquí viene otro cuento! Para conseguirlo, pulse el botón de abajo o escribe GO"
     intro:
       teacher:
-        - "Hola __PARENT__, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para __CHILD__."
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento! :)"
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-        - "¡Hola __PARENT__! Espero que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
-        - "¡Hola __PARENT__! Este cuento es uno de mis favoritos."
+        - "¡Hola __PARENT__, esto es StoryTime! A continuación viene el primer cuento gratis por parte de __TEACHER__!"
+        - "¡Hola __PARENT__, es StoryTime de nuevo! Aquí viene otro cuento gratis por parte de __TEACHER__!"
+        - "¡Saludos desde StoryTime,  __PARENT__,! __TEACHER__ escogió un cuento divertido para hoy. ¡Esperamos que lo disfrute!"
+        - "¡Saludos! __TEACHER__ quiere compartirle otro cuento. ¡Disfrútelo!"
+        - "¡Hola __PARENT__, esperamos haya disfrutado de estos cuentos!\n\nLe sugerimos que los lea de nuevo con __CHILD__, pero esta vez pregúntele acerca de cada ilustración. Que lo disfruten :)"
+        - "Hola __PARENT__, este cuento es uno de nuestros favoritos. Disfrútelo :)"
       school:
-        - "Hola __PARENT__, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!\n\n" 
-        - "Hola __PARENT__, es __SCHOOL__. ¡Aquí viene otro cuento para __CHILD__."
-        - "Hola __PARENT__, es __SCHOOL__. ¡Aquí viene otro cuento! :)"
-        - "Hola __PARENT__, es __SCHOOL__. ¡Aquí viene otro cuento!"
-        - "¡Hola __PARENT__! Esperamos que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
-        - "¡Hola __PARENT__! Este cuento es uno de nuestros favoritos."
+        - "¡Hola __PARENT__, esto es __SCHOOL__! Aquí viene el primer cuento gratis por parte de StoryTime! :)"
+        - "¡Hola __PARENT__, es __SCHOOL__ de nuevo! Aquí viene otro cuento gratis por parte de StoryTime!"
+        - "¡Saludos desde __SCHOOL__! __PARENT__, queremos compartirle este cuento. ¡Esperamos que lo disfrute!"
+        - "¡Saludos! A continuación viene otro cuento por parte de StoryTime."
+        - "¡Hola __PARENT__, esperamos que haya disfrutado de estos cuentos!\n\nLe sugerimos que los lea de nuevo con __CHILD__, pero esta vez pregúntele acerca de cada ilustración. Que lo disfruten :)"
+        - "Hola __PARENT__, es __SCHOOL__. Este cuento es uno de nuestros favoritos. Disfrútelo :)"
       both:
-        - "Hola __PARENT__, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!\n\n"
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento para __CHILD__."
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento! :)"
-        - "Hola __PARENT__, es __TEACHER__. ¡Aquí viene otro cuento!"
-        - "¡Hola __PARENT__! Espero que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
-        - "¡Hola __PARENT__! Este cuento es uno de mis favoritos."
+        - "¡Hola __PARENT__, esto es __SCHOOL__! Aquí viene el primer cuento gratis por parte de __TEACHER__! :)"
+        - "¡Hola __PARENT__, es __SCHOOL__ de nuevo! Aquí viene otro cuento gratis por parte de __TEACHER__!"
+        - "¡Saludos desde __SCHOOL__, __PARENT__! __TEACHER__ escogió un cuento divertido para hoy. ¡Esperamos que lo disfruten!"
+        - "¡Saludos! __TEACHER__ quiere compartirle otro cuento. ¡Disfrútelo!"
+        - "¡Hola __PARENT__, esperamos que haya disfrutado de estos cuentos!\n\nLe sugerimos que los lea de nuevo con __CHILD__, pero esta vez pregúntele acerca de cada ilustración. Que lo disfruten :)"
+        - "Hola __PARENT__, es __SCHOOL__. Este cuento es uno de nuestros favoritos. Disfrútelo :)"
       none:
-        - "Hola __PARENT__, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
-        - "Hola __PARENT__, es StoryTime. ¡Aquí viene otro cuento para __CHILD__."
-        - "Hola __PARENT__, es StoryTime. ¡Aquí viene otro cuento! :)"
+        - "Hola __PARENT__, esto es StoryTime. Le enviaremos cuentos gratis para __CHILD__!\n\n"
         - "Hola __PARENT__, es StoryTime. ¡Aquí viene otro cuento!"
-        - "¡Hola __PARENT__! Esperamos que le haya gustado los cuentos.\n\nOjo! Cuando los lea de nuevo, preguntele a __CHILD__ sobre cada imagen. Que lo disfrute :)"
-        - "¡Hola __PARENT__! Este cuento es uno de nuestros favoritos."
+        - "Hola __PARENT__. ¡Aquí viene otro cuento!"
+        - "Hola __PARENT__. Aquí viene otro cuento :)"
+        - "¡Hola __PARENT__, esperamos que haya disfrutado de estos cuentos!\n\nLe sugerimos que los lea de nuevo con __CHILD__, pero esta vez pregúntele acerca de cada ilustración. Que lo disfruten :)"
+        - "¡Saludos, __PARENT__! Este cuento es uno de nuestros favoritos. Disfrútelo :)"
     intro_sms:
       teacher:
-        - "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!"
-        - "Hola, es __TEACHER__. Aquí viene otro cuento para __CHILD__."
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
+        - "Bienvenido a la clase de __TEACHER__ en StoryTime! __TEACHER__ le enviará cuentos gratis!"
+        - "¡Saludos, es StoryTime (otra vez)! ¡A continuación, otro cuento gratis por parte de __TEACHER__!"
+        - "Saludos desde StoryTime! __TEACHER__ quiere compartirle otro cuento. Disfrútelo!"
+        - "Saludos de nuevo. Ahore sigue otro cuento por parte de __TEACHER__!"
       school:
-        - "Hola, es __SCHOOL__. Le enviaremos cuentos gratis para __CHILD__ con StoryTime!" 
-        - "Hola, es __SCHOOL__. Aquí viene otro cuento para __CHILD__."
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
+        - "Hola, esto es __SCHOOL__! Bienvenido a StoryTime. Le mandaremos cuento gratis!" 
+        - "Saludos! Es __SCHOOL__ (otra vez)! A continuación, otro cuento gratis por parte de StoryTime!"
+        - "Saludos desde __SCHOOL__! Queremos compartirle este cuento. Disfrútelo!"
+        - "Hola, ahore viene otro cuento por parte de StoryTime!"
       both:
-        - "Hola, es __TEACHER__. Le enviaré cuentos gratis para __CHILD__ con StoryTime!"
-        - "Hola, es __TEACHER__. Aquí viene otro cuento para __CHILD__."
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
+        - "Saludos desde __SCHOOL__! Bienvenido a la clase de __TEACHER__ en StoryTime! __TEACHER__ le enviará cuentos gratis!"        
+        - "Saludos! Es __SCHOOL__ otra vez! A continuación, otro cuento gratis por parte de __TEACHER__!"        
+        - "Saludos desde __SCHOOL__! __TEACHER__ quiere compartirle otro cuento. Disfrútelo!"        
+        - "Hola, ahore viene otro cuento por parte de __TEACHER__!"
       none: 
-        - "Hola, es StoryTime. Le enviaremos cuentos gratis para __CHILD__!"
-        - "Hola, es StoryTime. Aquí viene otro cuento para __CHILD__."
+        - "Hola, es StoryTime. Le enviaremos cuentos gratis!"
+        - "Hola, es StoryTime. Aquí viene otro cuento!"
         - "Hola! Aquí viene otro cuento de StoryTime :)"
-        - "Hola! Aquí viene otro cuento de StoryTime :)"
+        - "Hola! Aquí viene otro cuento de StoryTime"
 
     outro:
       teacher:
         this_week:
-          - "Le enviaré un cuento nuevo este __DAY__ :)"
-          - "Le enviaré un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento este __DAY__ :)"
-          - "Le enviaré otro cuento este __DAY__ :)"
+          - "__TEACHER__ le enviará un cuento nuevo este __DAY__! Que lo pase bien :)"
+          - "__TEACHER__ le enviará un cuento nuevo este __DAY__ :)"
+          - "El próximo cuento saldrá este __DAY__! :)"
+          - "El próximo cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
         next_week:
-          - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
-          - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento el próximo __DAY__ :)"
-          - "Le enviaré otro cuento el próximo __DAY__ :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__. Disfrútelo! :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__. Esperamos que le haya gustado el de hoy! :)"
+          - "El próximo cuento saldrá este __DAY__! :)"
+          - "El próximo cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
       school:
         this_week:
-          - "Le enviaremos un cuento nuevo este __DAY__ :)"
-          - "Le enviaremos un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento este __DAY__ :)"
-          - "Le enviaremos otro cuento este __DAY__ :)"
+          - "Recibirás un cuento nuevo este __DAY__!"
+          - "Recibirás un cuento nuevo este __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Otro cuento saldrá este __DAY__. Que lo pase bien! :)"
+          - "Otro cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
         next_week:
-          - "Le enviaremos un cuento nuevo el próximo __DAY__ :)"
-          - "Le enviaremos un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ :)"
+          - "Recibirás un cuento nuevo este __DAY__!"
+          - "Recibirás un cuento nuevo este __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Otro cuento saldrá el próximo __DAY__. Que lo pase bien! :)"
+          - "Otro cuento saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
       both:
         this_week:
-          - "Le enviaré un cuento nuevo este __DAY__ :)"
-          - "Le enviaré un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento este __DAY__ :)"
-          - "Le enviaré otro cuento este __DAY__ :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__! Que le vaya bien :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Otro cuento saldrá este __DAY__. Que lo pase bien! :)"
+          - "Otro cuento saldrá este __DAY__! Gracias por leer con nosotros"
         next_week:
-          - "Le enviaré un cuento nuevo el próximo __DAY__ :)"
-          - "Le enviaré un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaré otro cuento el próximo __DAY__ :)"
-          - "Le enviaré otro cuento el próximo __DAY__ :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ el próximo __DAY__! Que le vaya bien :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ el próximo __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Un cuento nuevo saldrá el próximo __DAY__. Que lo pase bien! :)"
+          - "Un cuento nuevo saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
       none:
         this_week:
-          - "Le enviaremos un cuento nuevo este __DAY__ :)"
-          - "Le enviaremos un cuento nuevo este __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento este __DAY__ :)"
-          - "Le enviaremos otro cuento este __DAY__ :)"
+          - "Recibirás otro cuento este __DAY__!"
+          - "Recibirás otro cuento este __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Otro cuento saldrá este __DAY__. Que lo pase bien! :)"
+          - "Otro cuento saldrá este __DAY__! Gracias por leer con nosotros"
         next_week:
-          - "Le enviaremos un cuento nuevo el próximo __DAY__ :)"
-          - "Le enviaremos un cuento nuevo el próximo __DAY__. ¡Gracias! :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ :)"
-          - "Le enviaremos otro cuento el próximo __DAY__ :)"
-
-    first_book:
-      teacher: "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      school: "Hola, es __SCHOOL__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      both: "Hola, es __TEACHER__. ¡Aquí viene su primer cuento! Espero que lo disfrute."
-      none: "Hola, es StoryTime. ¡Aquí viene su primer cuento! Espero que lo disfrute."
+          - "Recibirás un cuento nuevo el próximo __DAY__!"
+          - "Recibirás un cuento nuevo el próximo __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Un cuento nuevo saldrá el próximo __DAY__. Que lo pase bien! :)"
+          - "Un cuento nuevo saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
+               
+     first_book:
+      teacher: "Saludos desde __SCHOOL__! Aquí viene el primer cuento, por parte de __TEACHER__!"
+      school: "Hola! Esto es __SCHOOL__. Aquí viene el primer cuento de StoryTime!"
+      both: Saludos desde __SCHOOL__! Aquí viene el primer cuento, por parte de __TEACHER__!"
+      none: "Hola! Esto es StoryTime. Aquí viene el primer cuento gratis!"
 
     subscription:
-      resubscribe: "¡Órale! Seguirás recibiendo cuentos.\n\nAquí está el siguiente :)"
+      resubscribe: "¡Órale! Seguirás recibiendo cuentos.\n\nAquí viene el siguiente :)"
       unsubscribe:
-        teacher: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
-        school: Hola __PARENT__, vimos que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
-        both: Hola __PARENT__, vi que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
-        none: Hola __PARENT__, vimos que no hayas leído sus cuentos desde hace mucho tiempo... le gustaría seguir de recibirlos? Si quiere, escribe GO
+        teacher: "Hola __PARENT__, vi que no ha leído sus cuentos desde hace mucho tiempo...  Si le gustaría seguir de recibirlos, escribe GO"
+        school: "Hola __PARENT__, vimos que no ha leído sus cuentos desde hace mucho tiempo... Si le gustaría seguir de recibirlos, escribe GO"
+        both: "Hola __PARENT__, vi que no ha leído sus cuentos desde hace mucho tiempo... Si le gustaría seguir de recibirlos, escribe GO"
+        none: "Hola __PARENT__, vimos que no ha leído sus cuentos desde hace mucho tiempo... Si le gustaría seguir de recibirlos, escribe GO"
 
     enrollment:
-      call_to_action: "Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go\n\nSi no tenga Messenger, responde con su nombre completo"
+      call_to_action: "Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go\n\nSi no tiene Messenger, responde con su nombre completo"
       sms_optin:
-        teacher: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
-        school: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
-        both: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
-        none: "¡Estupendo! Ahora recibirás los cuentos.\n\nAquí está el primero:"
+        teacher: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento por parte de __TEACHER__:"
+        school: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento por parte de __SCHOOL__:"
+        both: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento por parte de __TEACHER__:"
+        none: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento:"
       img:
         teacher: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
         school: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
@@ -139,21 +139,22 @@ es:
         none: http://d2p8iyobf0557z.cloudfront.net/day1/twilio-mms-child-es.jpg
 
     remind:
-      teacher: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
-      school: Hola __PARENT__, vimos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí tiene!
-      both: Hola __PARENT__, vi que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí tiene!
-      none: Hola __PARENT__, vimos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí tiene!
+      teacher: Hola __PARENT__, noté que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquí viene!
+      school: Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!
+      both: Hola __PARENT__, not que no leiste su último cuento. Deseo compartirlo de nuevo. ¡Aquíé viene!
+      none: Hola __PARENT__, notamos que no leiste su último cuento. Deseamos compartirlo de nuevo. ¡Aquí viene!
 
     remind_sms:
       teacher:
-        - "Hola! Es __TEACHER__. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
-        - "Si no tenga Facebook Messenger, responde con su nombre completo."
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene Facebook Messenger, visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+        - "Si no tiene Facebook Messenger, favor responda con su nombre completo."
       school:
-        - "Hola! Es __SCHOOL__. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
-        - "Si no tenga Facebook Messenger, responde con su nombre completo."
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene Facebook Messenger, visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+        - "Si no tiene Facebook Messenger, favor responda con su nombre completo."
       both:
-        - "Hola! Es __TEACHER__. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
-        - "Si no tenga Facebook Messenger, responde con su nombre completo."
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene Facebook Messenger, visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+        - "If you do not have Messenger just text back your full name."
       none:
-        - "Hola! Es StoryTime. Si tiene Facebook Messenger visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
-        - "Si no tenga Facebook Messenger, responde con su nombre completo."
+        - "Saludos desde StoryTime (otra vez!). Si tiene Facebook Messenger, visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
+        - "Si no tiene Facebook Messenger, favor responda con su nombre completo."
+
