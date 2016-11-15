@@ -23,6 +23,16 @@ es:
       bread:
         - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/es/bread/bread2.jpg
+      baboon:
+        - https://s3.amazonaws.com/st-messenger/day1/es/baboon/baboon1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/baboon/baboon2.jpg
+      dino:
+        - https://s3.amazonaws.com/st-messenger/day1/es/dino/dino1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/dino/dino2.jpg
+      elephant:
+        - https://s3.amazonaws.com/st-messenger/day1/es/elephant/elephant1.jpg
+        - https://s3.amazonaws.com/st-messenger/day1/es/elephant/elephant2.jpg
+
   feature:
     messages:
       opt-in:
