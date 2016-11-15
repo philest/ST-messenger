@@ -188,7 +188,8 @@ module Birdv
             # TODO: make this atomic somehow? slash errors
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
-                                        last_story_read?: true)
+                                        last_story_read?: true,
+                                        subscribed?: true)
 
           rescue => e
             p e.message + " failed to send user with fb_id #{recipient} a story"

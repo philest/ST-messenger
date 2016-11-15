@@ -8,13 +8,13 @@ birdv     = "http://birdv.herokuapp.com/"
 # fb_ids = %w(410582582399330 1272545332810367 1118791721561706 1160954020618887 1712062875486643)
 
 
-# fb_ids.each do |fb_id|
-#   puts HTTParty.get(
-#     localhost + "startdayworker",
-#     query: {
-#       platform: "fb",
-#       recipient: fb_id
-#     }
-#   )
-# end
+
+  # puts HTTParty.get(
+  #   birdv + "startdayworker",
+  #   query: {
+  #     platform: "fb",
+  #     recipient: '797424720360624'
+  #   }
+  # )
+
 

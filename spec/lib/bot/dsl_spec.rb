@@ -375,7 +375,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day1.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo el próximo jueves :)"
+        expect(text).to eq "Recibirás un cuento nuevo el próximo jueves!"
       end
     end
 
@@ -387,7 +387,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day2.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo el próximo lunes :)" 
+        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!" 
       end
 
       it "says 'this Thursday' when it's Monday" do
@@ -397,7 +397,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day2.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo este jueves :)" 
+        expect(text).to eq "Recibirás otro cuento este jueves!" 
       end
     end
 
@@ -409,7 +409,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo este martes :)" 
+        expect(text).to eq "Recibirás otro cuento este martes!" 
       end
       it "says 'this Thursday' when it's Tuesday" do
         Timecop.freeze(Time.new(2016, 9, 6, 23, 0, 0, 0))
@@ -418,7 +418,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo este jueves :)" 
+        expect(text).to eq "Recibirás otro cuento este jueves!" 
 
       end
 
@@ -429,7 +429,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Le enviaremos un cuento nuevo el próximo lunes :)" 
+        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!" 
       end
     end
 
@@ -474,10 +474,10 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day1.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo el próximo jueves :)" 
-        # "Le enviaremos un cuento nuevo este jueves :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo jueves!" 
+        # "Recibirás un cuento nuevo este jueves!"
 
-        # - "Le enviaremos un cuento nuevo el próximo __DAY__ :)"
+        # - "Recibirás un cuento nuevo el próximo __DAY__!"
       end
     end
 
@@ -491,7 +491,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day2.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo el próximo lunes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo lunes!"
       end
 
 
@@ -505,7 +505,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day2.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este jueves :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este jueves!"
       end
     end
 
@@ -519,7 +519,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day3.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo el próximo lunes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo lunes!"
 
       end
       it "says 'this Thursday' when it's Monday" do
@@ -531,7 +531,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day3.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este jueves :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este jueves!"
 
       end
     end
@@ -546,7 +546,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day4.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este martes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este martes!"
 
       end
       it "says 'this Thursday' when it's Tuesday" do
@@ -558,7 +558,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day4.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este jueves :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este jueves!"
 
       end
 
@@ -571,7 +571,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day4.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo el próximo lunes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo lunes!"
 
       end
     end
@@ -586,7 +586,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day7.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este martes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este martes!"
 
       end
       it "says 'this Thursday' when it's Tuesday" do
@@ -598,7 +598,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day7.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo este jueves :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás otro cuento este jueves!"
       end
 
       it "says 'next Monday' when it's Thursday" do
@@ -610,7 +610,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day7.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Le enviaremos un cuento nuevo el próximo lunes :)"
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo lunes!"
 
       end
     end
@@ -643,7 +643,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
     # TODO: make this a webmock error
     it 'has no problem the the user is missing first_name' do
-      # stub the request with the expected body :)
+      # stub the request with the expected body!
       @estohb.call '||Lil||Mr. McEsterWahl'
       u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
       t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
@@ -887,12 +887,12 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         # init sequence
         b1 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"Let's read tonight's story.\",\"image_url\":\"https://s3.amazonaws.com/st-messenger/day1/coon/coon-button.jpg\",\"subtitle\":\"\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Tap here!\",\"payload\":\"day1_scratchstory\"}]}]}}}}"
-        @stub_txt.call("Hi Aubs, this is StoryTime. We'll be sending you free books for you and your child :)")
+        @stub_txt.call("Hi Aubs, this is StoryTime. We'll be sending you free books for you and your child!")
         @stub_arb.call(b1)
 
         # scratchstory sequence
         b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg\"}}}}"
-        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great! :)\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
+        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great!!\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
         @stub_arb.call(b2)
         @stub_arb.call(b3)
 
@@ -912,12 +912,17 @@ describe 'Birdv::DSL::StoryTimeScript' do
          to_return(:status => 200, :body => "", :headers => {})
 
          stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"Hi Davidfake, this is StoryTime. We'll be sending you free books for you and your child :)\"}}",
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"Hi Davidfake, this is StoryTime. We'll be sending you free books for you and your child!\"}}",
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
                 stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
-         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"Hi Aubs, this is Ms. McEsterWahl. I will text you free books with StoryTime :)\"}}",
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"Hi Aubs, this is Ms. McEsterWahl. I will text you free books with StoryTime!\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+         stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"You're welcome :)\"}}",
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
@@ -943,6 +948,12 @@ describe 'Birdv::DSL::StoryTimeScript' do
     it 'sends the right story' do
       @make_aubrey.call
       @stub_story.call(@aubrey, 'day1', 'coon', 2)
+
+      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"You're welcome :)\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
       script = @s['day1']
       expect {
           script.send(@aubrey, script.story())
@@ -950,7 +961,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
     end
 
     it 'does not confuse last_sequence with last story_read' do
-      @stub_txt.call("You're welcome :)")
+
+      stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
+         with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"You're welcome :)\"}}",
+              :headers => {'Content-Type'=>'application/json'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+      @stub_txt.call("You're welcome!")
       @make_aubrey.call
       s1 = @s['day1']
       s2 = @s['day2']

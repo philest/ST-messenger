@@ -69,6 +69,8 @@ class ScheduleWorker
   end
 
 
+
+
   def perform(range=5.minutes.to_i)
 
     filtered = filter_users(Time.now, range)

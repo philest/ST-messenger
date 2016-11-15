@@ -166,7 +166,7 @@ Bot.on :message do |message|
 
         fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? or reply.include? 'translation missing'
 
-        if reply == (I18n.t 'scripts.resubscribe')
+        if reply == (I18n.t 'scripts.subscription.resubscribe')
           user_day = "day#{db_user.state_table.story_number}"
           MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
         end
