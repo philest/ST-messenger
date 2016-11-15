@@ -68,7 +68,7 @@ module MessageReplyHelpers
       # destroy later because of shit
       # DestroyerWorker.perform_in(5.minutes, sms_user.id)
 
-      puts "destroying user..."
+      puts "In reply_helpers, destroying user #{sms_user.inspect}..."
       sms_user.destroy
 
       # success

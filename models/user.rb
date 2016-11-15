@@ -43,7 +43,10 @@ class User < Sequel::Model(:users)
 		# end
 
 		# do code shit
-		self.code = generate_code
+		if self.platform != 'fb'
+			self.code = generate_code
+		end
+		
 		puts "start code = #{self.code}"
 
 		while !self.valid?

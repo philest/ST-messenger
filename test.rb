@@ -7,6 +7,13 @@ require_relative 'bin/local'
 # 
 
 
+s = School.create(signature: "ST Prep", code: "test|test-es")
+t = Teacher.create(signature: "Mr. McPeek", email: "david.mcpeek@yale.edu")
+t.signup_user(User.create(first_name: "David", last_name: "McPeek", phone: "8186897323"))
+t.signup_user(User.create(first_name: "Aubrey", last_name: "Wahl", phone: "1112333333"))
+t.signup_user(User.create(first_name: "Aubrey", last_name: "Wahl", phone: "4395575555"))
+
+
 # users = SchoolStats.new("New Haven Free Public Library")
 # users.get_conversation("2034352867")
 if School.where(name: "TEST").first.nil?
