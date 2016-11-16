@@ -16,12 +16,6 @@ get_db_connection()
 
 Bundler.require(:default)
 
-
-if RUBY_PLATFORM == 'jruby'
-	require 'jdbc/postgres'
-	# Jdbc::Postgres.load_driver
-end
-
 require_relative 'config/initializers/locale'
 # require_relative 'config/initializers/aws'
 
