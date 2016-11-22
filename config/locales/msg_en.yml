@@ -13,7 +13,7 @@ en:
       none: "Bien! Le enviaremos cuentos en español :)"
       
   scripts:
-    introduce_button: "Here’s your next story! To start, press the button below or just reply GO"
+    introduce_button: "Your story is waiting! Just tap the button or reply GO"
     intro:
       teacher:
         - "Hi __PARENT__, this is StoryTime! Here’s your first free story from __TEACHER__!"
@@ -32,8 +32,8 @@ en:
       both:
         - "Hi __PARENT__, this is __SCHOOL__! Here’s your first free story from __TEACHER__!"
         - "Hi __PARENT__, it's __SCHOOL__ again! Here's tonight's story from __TEACHER__!"
-        - "Hello from __SCHOOL__! __PARENT__, __TEACHER__ chose a fun story for you tonight. We hope you enjoy it!"
-        - "Hi again! __TEACHER__ wanted to share this story with you. Enjoy!"
+        - "Hello from __SCHOOL__! __PARENT__, __TEACHER__ has a fun story for you tonight. We hope you enjoy it!"
+        - "Hi again! Here is __TEACHER__'s new story for you. Enjoy!"
         - "Hi __PARENT__, we hope you liked these stories so far!\n\nTry reading them again with __CHILD__ and ask them questions about each picture. Enjoy :)"
         - "Hi __PARENT__, it's __SCHOOL__. Here's one of our favorites again. Enjoy :)"
       none:
@@ -57,8 +57,14 @@ en:
       both:
         - "Hi this is __SCHOOL__! Welcome to __TEACHER__'s class on StoryTime! They will text you free books!"
         - "Hi, it's __SCHOOL__ again! Here's another story from __TEACHER__!"
-        - "Hello from __SCHOOL__! __TEACHER__ wanted to share this story with you. Enjoy!"
+        - "Hello from __SCHOOL__! __PARENT__, here is a fun story from __TEACHER__ :)"        
+        - "Hi again from __SCHOOL_! Here is __TEACHER__'s new story for you. Enjoy!"
         - "Hi, here's another story from __TEACHER__!"
+        - "Here is __TEACHER__'s new story for you. Enjoy!"
+        - "Enjoy reading this new __SCHOOL_ story from __TEACHER__ :)"
+
+
+
       none: 
         - "Hi this is StoryTime! We'll be texting you free books :)"
         - "Hi! It's StoryTime. Here's another story!"
@@ -121,9 +127,9 @@ en:
       resubscribe: "Great! You'll keep getting stories.\n\nHere's the next one :)"
       unsubscribe:
         teacher: "Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
-        school: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
-        both: "Hi __PARENT__, I saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
-        none: "Hi __PARENT__, we saw you haven't read your stories in a while... would you like to keep getting them? If yes, just reply GO"
+        school: "Hi __PARENT__, we saw you did not read your last stories :(... if you still want __SCHOOL__ books, just reply GO"
+        both: "Hi __PARENT__, we saw you did not read your last stories :(... if you still want __SCHOOL__ books, just reply GO"
+        none: "Hi __PARENT__, we saw you did not read your last stories :(... if you still want free books, just reply GO"
 
     enrollment:
       call_to_action: "If you have Facebook Messenger, tap here and type your class code, which is __CODE__:\njoinstorytime.com/go\n\nIf you do not have Messenger, text back your full name"
@@ -140,8 +146,8 @@ en:
 
     remind:
       teacher: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
-      school: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
-      both: Hi __PARENT__, I saw you missed your last story and I just want to share it again. Here you go!
+      school: Hi __PARENT__, we saw you missed your last __SCHOOL__ story... Here it is again =)
+      both: Hi __PARENT__, we saw you missed your last __SCHOOL__ story... Here it is again =)
       none: Hi __PARENT__, we saw you missed your last story and just want to share it again. Here you go!
 
     remind_sms:
