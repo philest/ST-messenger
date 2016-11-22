@@ -48,6 +48,7 @@ module MessageReplyHelpers
                      child_name:      sms_user.child_name,
                      child_age:       sms_user.child_age)
 
+      # should I update story_number to 1? 
       fb_user.state_table.update(subscribed?: true)
 
       school  = sms_user.school
@@ -110,7 +111,7 @@ module MessageReplyHelpers
     case body
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
-      if LinkedIn_profiles(user, body) && user.state_table.story_number == 0
+      if user.state_table.story_number == 0 && user.platform == 'fb' && LinkedIn_profiles(user, body)
         puts "FROM GET_REPLY!!!"
         StartDayWorker.perform_async(user.fb_id, platform='fb')
         # MessageWorker.perform_async(user.fb_id, 'day1', 'greeting', 'fb')
@@ -167,7 +168,7 @@ module MessageReplyHelpers
       ":)"    
     else #default msg 
       # check if user is one story 1 and unsubscribed... 
-      if user.state_table.story_number == 1 and user.state_table.subscribed? == false
+      if user.state_table.story_number == 1 and user.state_table.subscribed? == false and ['sms', 'feature'].include? user.platform
         # get this person's first_name, last_name on the phone, dawg! 
         terms = body.split(' ')
         if terms.size < 1

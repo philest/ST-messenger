@@ -32,6 +32,8 @@ es:
       elephant:
         - https://s3.amazonaws.com/st-messenger/day1/es/elephant/elephant1.jpg
         - https://s3.amazonaws.com/st-messenger/day1/es/elephant/elephant2.jpg
+      moon:
+        - https://s3.amazonaws.com/st-messenger/day1/es/moon/moon.jpg
 
   feature:
     messages:

@@ -4,6 +4,7 @@ require_relative '../helpers/contact_helpers'
 class TextingWorker 
   include Sidekiq::Worker
   include TwilioTextingHelpers
+  include ContactHelpers
 
   sidekiq_options :retry => 2
   

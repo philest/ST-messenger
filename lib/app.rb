@@ -153,6 +153,7 @@ class TextApi < Sinatra::Base
         # this didn't work because the condition wouldn't fire with the teacher
         if msg == (I18n.t 'scripts.enrollment.sms_optin.teacher') or
            msg == (I18n.t 'scripts.enrollment.sms_optin.school') or
+           msg == (I18n.t 'scripts.enrollment.sms_optin.both') or
            msg == (I18n.t 'scripts.enrollment.sms_optin.none') or 
            (/(\A\s*TEXT\s*\z)|(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i).match(params[:Body])
 
