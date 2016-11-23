@@ -356,6 +356,24 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @day4 = Birdv::DSL::ScriptClient.new_script 'day4', 'sms' do; end
       @day5 = Birdv::DSL::ScriptClient.new_script 'day7', 'sms' do; end
       @txt = 'scripts.outro.__poc__[0]'
+      def ScheduleWorker.def_schedules
+        return [
+          { 
+            start_day: 1,
+            days: [4]
+          },
+          {
+            start_day: 3,
+            days: [1,4]
+          },
+          {
+            start_day: 6,
+            days: [1,2,4]
+          }
+        ]
+      end
+
+      
     end
 
     before(:each) do
@@ -450,6 +468,23 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @day3 = Birdv::DSL::ScriptClient.scripts['fb']['day3']
       @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
       @day7 = Birdv::DSL::ScriptClient.scripts['fb']['day7']
+
+      def ScheduleWorker.def_schedules
+        return [
+          { 
+            start_day: 1,
+            days: [4]
+          },
+          {
+            start_day: 3,
+            days: [1,4]
+          },
+          {
+            start_day: 6,
+            days: [1,2,4]
+          }
+        ]
+      end
 
       @txt = 'scripts.outro.__poc__[0]'
       @fb_object = @day1.text({text:@txt}) 

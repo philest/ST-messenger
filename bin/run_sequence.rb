@@ -9,9 +9,9 @@ puts HTTParty.get(
   birdv + "run_sequence",
   query: {
     script: "day9",
-    sequence: "storysequence",
-    platform: "fb",
-    # recipient: '1107535505968502'
+    sequence: "firstmessage",
+    platform: "sms",
+    recipient: '8186897323'
   }
 )
 

@@ -280,7 +280,7 @@ describe 'sms' do
       end
 
 
-      text_body = "David McFuckingPeek"
+      text_body = "David mcFuckingPeek"
       sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
 
       Sidekiq::Testing.inline! do
@@ -334,7 +334,7 @@ describe 'sms' do
       end
 
       expect(User.where(phone: "5555555555").first.first_name).to eq "David"
-      expect(User.where(phone: "5555555555").first.last_name).to eq "McFuckingPeek the III"
+      expect(User.where(phone: "5555555555").first.last_name).to eq "McFuckingPeek The III"
       expect(User.where(phone: "5555555555").first.state_table.story_number).to eq 2
       expect(User.where(phone: "5555555555").first.state_table.subscribed?).to be true
 

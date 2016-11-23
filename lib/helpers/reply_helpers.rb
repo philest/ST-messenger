@@ -174,11 +174,11 @@ module MessageReplyHelpers
         if terms.size < 1
           return ''
         elsif terms.size == 1 # just the first name
-          first_name = terms.first
+          first_name = terms.first[0].upcase + terms.first[1..-1]
           user.update(first_name: first_name)
         elsif terms.size > 1 # first and last names, baby!!!!!! it's a gold mine over here!!!!
-          first_name = terms.first
-          last_name = terms[1..-1].join(' ')
+          first_name = terms.first[0].upcase + terms.first[1..-1] 
+          last_name = terms[1..-1].inject("") {|sum, n| sum+" "+(n[0].upcase+n[1..-1])}.strip
           user.update(first_name: first_name, last_name: last_name)
         end
         # now do all the enrollment stuff

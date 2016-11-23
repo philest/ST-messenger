@@ -13,15 +13,15 @@ class ScheduleWorker
   def self.def_schedules
     return [
       { 
-        start_day: 1,
-        days: [4] 
+        start_day: 4,
+        days: [4]
       },
       {
-        start_day: 3,
+        start_day: 30,
         days: [1,4]
       },
       {
-        start_day: 6,
+        start_day: 40,
         days: [1,2,4]
       }
     ]
@@ -29,15 +29,15 @@ class ScheduleWorker
 
   @schedules =  [
     { 
-      start_day: 1,
-      days: [4] 
+      start_day: 4,
+      days: [4]
     },
     {
-      start_day: 3,
+      start_day: 30,
       days: [1,4]
     },
     {
-      start_day: 6,
+      start_day: 40,
       days: [1,2,4]
     }
   ]
@@ -53,8 +53,8 @@ class ScheduleWorker
  
   # very inneficient, redo some day
   def get_schedule(story_number)
-    if @sched
-      sched = @sched
+    if @schedules
+      sched = @schedules
     else
       sched = self.class.def_schedules
     end
