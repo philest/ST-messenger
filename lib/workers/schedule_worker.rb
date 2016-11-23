@@ -17,11 +17,11 @@ class ScheduleWorker
         days: [4]
       },
       {
-        start_day: 30,
+        start_day: 100,
         days: [1,4]
       },
       {
-        start_day: 40,
+        start_day: 150,
         days: [1,2,4]
       }
     ]
@@ -33,11 +33,11 @@ class ScheduleWorker
       days: [4]
     },
     {
-      start_day: 30,
+      start_day: 100,
       days: [1,4]
     },
     {
-      start_day: 40,
+      start_day: 150,
       days: [1,2,4]
     }
   ]
