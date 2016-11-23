@@ -4,7 +4,8 @@ module MessageReplyHelpers
   # TODO: add Spanish words here
   DAY_RQST        = /day\d+/i
   HELP_RQST       = /(help)|(who is this)|(who's this)|(who are you)|(ayuda)|(quien)|(quién)|(learn)|(whos this)|(who this)/i
-  STOP_RQST       = /(stop)|(unsubscribe)|(quit)|(mute)|(parada)|(dejar)|(alto)|(cancel)|(quit)/i
+  STOP_RQST       = /(stop)/i
+  UNSUBSCRIBE_RQST = /(unsubscribe)|(quit)|(mute)|(parada)|(dejar)|(alto)|(cancel)|(quit)/i
   THANK_MSG       = /(thank you)|(thanks)|(thank)|(thx)|(thnks)|(thank u)|(gracias)/i
   HAHA_MSG        = /((ha){2,})|((ja){2,})/i 
   ROBOT_MSG       = /(robot)|(bot)|(automatic)|(automated)|(computer)|(human)|(person)|(humano)/i
@@ -109,6 +110,9 @@ module MessageReplyHelpers
 
     
     case body
+    when STOP_RQST
+      user.state_table.update(subscribed?: false)
+      ''
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
       if user.state_table.story_number == 0 && user.platform == 'fb' && LinkedIn_profiles(user, body)
@@ -151,7 +155,7 @@ module MessageReplyHelpers
       I18n.t trans_code
     when HELP_RQST
       I18n.t 'user_response.help'
-    when STOP_RQST
+    when UNSUBSCRIBE_RQST
       user.state_table.update(subscribed?: false)
       I18n.t 'user_response.stop'
     when THANK_MSG
