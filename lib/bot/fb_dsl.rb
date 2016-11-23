@@ -189,6 +189,7 @@ module Birdv
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
                                         last_story_read?: true,
+                                        num_reminders: 0,
                                         subscribed?: true)
 
           rescue => e
