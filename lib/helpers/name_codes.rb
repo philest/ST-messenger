@@ -5,7 +5,7 @@ module NameCodes
   end
 
   def teacher_school_messaging(trans_stub, recipient) # for translation stub? first thing i thought of
-      if (/__poc__/).match(trans_stub).nil? # if no match, just return the original stub
+      if (/_+poc_+/i).match(trans_stub).nil? # if no match, just return the original stub
         return trans_stub
       end
 
@@ -29,7 +29,7 @@ module NameCodes
         replace = 'both'    if has_both
         replace = 'none'    if has_none
 
-        new_stub = trans_stub.gsub(/__poc__/, replace)
+        new_stub = trans_stub.gsub(/_+poc_+/i, replace)
         return new_stub
       else
         return trans_stub
@@ -72,7 +72,7 @@ module NameCodes
 
         if !day.nil?
           weekday = I18n.t('week')[day]
-          str = str.gsub(/__DAY__/, weekday)
+          str = str.gsub(/_+DAY_+/i, weekday)
         end
         
         code = user.code
@@ -80,18 +80,18 @@ module NameCodes
           code = "READ"
         end
 
-        str = str.gsub(/__CODE__/, code)
-        str = str.gsub(/__TEACHER__/, teacher)
-        str = str.gsub(/__PARENT__/, parent)
-        str = str.gsub(/__SCHOOL__/, school)
-        str = str.gsub(/__CHILD__/, child)
+        str = str.gsub(/_+CODE_+/i, code)
+        str = str.gsub(/_+TEACHER_+/i, teacher)
+        str = str.gsub(/_+PARENT_+/i, parent)
+        str = str.gsub(/_+SCHOOL_+/i, school)
+        str = str.gsub(/_+CHILD_+/i, child)
         return str
       else # just return what we started with. It's 
-        str = str.gsub(/__CODE__/, 'go')
-        str = str.gsub(/__TEACHER__/, 'StoryTime')
-        str = str.gsub(/__PARENT__/, '')
-        str = str.gsub(/__SCHOOL__/, 'StoryTime')
-        str = str.gsub(/__CHILD__/, 'your child')
+        str = str.gsub(/_+CODE_+/i, 'go')
+        str = str.gsub(/_+TEACHER_+/i, 'StoryTime')
+        str = str.gsub(/_+PARENT_+/i, '')
+        str = str.gsub(/_+SCHOOL_+/i, 'StoryTime')
+        str = str.gsub(/_+CHILD_+/i, 'your child')
         return str
       end
   end
