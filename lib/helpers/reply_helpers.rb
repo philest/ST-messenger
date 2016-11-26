@@ -111,7 +111,7 @@ module MessageReplyHelpers
     
     case body
     when STOP_RQST
-      user.state_table.update(subscribed?: false)
+      user.state_table.update(subscribed?: false, unsubscribed_on: Time.now.utc)
       ''
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
@@ -156,7 +156,7 @@ module MessageReplyHelpers
     when HELP_RQST
       I18n.t 'user_response.help'
     when UNSUBSCRIBE_RQST
-      user.state_table.update(subscribed?: false)
+      user.state_table.update(subscribed?: false, unsubscribed_on: Time.now.utc)
       I18n.t 'user_response.stop'
     when THANK_MSG
       I18n.t 'user_response.thanks'

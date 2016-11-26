@@ -13,7 +13,7 @@ class ScheduleWorker
   def self.def_schedules
     return [
       { 
-        start_day: 4,
+        start_day: 2,
         days: [4]
       },
       {
@@ -29,7 +29,7 @@ class ScheduleWorker
 
   @schedules =  [
     { 
-      start_day: 4,
+      start_day: 2,
       days: [4]
     },
     {
