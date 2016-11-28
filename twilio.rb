@@ -16,8 +16,8 @@ line3 = "And baby bird trusted his mom,\nSo once he dried his eyes,\nHe bravely 
 # puts @message.body
 
 client.account.messages.create(
-  body: "¡Bueno! Ahora recibirás cuentos por mensaje texto (sin fotos) :) ",
-  # to: "",
+  body: "Would you like us to send the rest of the stories?",
+  # to: "7203388240",
   from: STORYTIME_NO
 )
 

@@ -112,7 +112,11 @@ module MessageReplyHelpers
     case body
     when STOP_RQST
       user.state_table.update(subscribed?: false, unsubscribed_on: Time.now.utc)
-      ''
+      if user.platform == 'fb'
+        I18n.t 'user_response.stop'
+      else
+        ''
+      end
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
       if user.state_table.story_number == 0 && user.platform == 'fb' && LinkedIn_profiles(user, body)
