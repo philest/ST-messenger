@@ -13,7 +13,7 @@ es:
     child: "su niño"
   user_response:
     help:   "¡Hola, es la Hora de Cuentos (StoryTime)! StoryTime ayuda a su maestro enviar libros de cuento gratis.\n\n - Para dejar de recibir cuentos, responde con ALTO\n - Para ayuda, póngase en contacto: 561-212-5831"
-    stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con 'LIBROS'."
+    stop:   "¡Bien, usted dejará de recibir mensajes! Si deséa recibir libros gratis de nuevo, responde con GO."
     thanks: "De nada :)"
     learn: "StoryTime envía cuentos gratis a través de mensaje texto y Facebook.\n\nPara ayuda: 561-212-5831\nPara dejar de recibir mensajes, responde con ALTO"
     teacher_reply:
