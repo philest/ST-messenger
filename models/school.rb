@@ -7,8 +7,9 @@ class School < Sequel::Model(:schools)
 	one_to_many :users
 	many_to_one :district
 	one_to_many :school_sessions
+  one_to_many :admins
 
-	add_association_dependencies teachers: :nullify, users: :nullify
+	add_association_dependencies teachers: :nullify, users: :nullify, admins: :nullify
 
   def signup_teacher(teacher)
     if self.teachers.select {|t| t.id == teacher.id }.size == 0
