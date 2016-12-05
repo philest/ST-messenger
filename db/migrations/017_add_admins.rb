@@ -1,7 +1,7 @@
 Sequel.migration do
 
   up do
-    create_table(:admins, :ignore_index_errors=>true) do
+    create_table(:admins) do
       primary_key :id
       String :name, :text=>true
       String :first_name, :text=>true
@@ -22,8 +22,8 @@ Sequel.migration do
   end
 
 
-  down do
-    drop_table(:admins)
-  end
+  # down do
+  #   drop_table(:admins)
+  # end
 
 end
