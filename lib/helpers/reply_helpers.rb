@@ -12,7 +12,7 @@ module MessageReplyHelpers
   LOVE_MSG        = /(love)|(like)|(enjoy)|(amo)|(ama)|(aman)|(gusta)/i
   EMOTICON_MSG    = /(:\))|(:D)|(;\))|(:p)/
   OK_MSG          = /(^\s*ok\s*$)|(^\s*okay\s*$)|(^\s*k\s*$)|(^\s*okk\s*$)|(^\s*bueno\s*$)/i
-  GO_MSG          = /(\A\s*GO\s*\z)|(libros)/i
+  GO_MSG          = /(\A\s*GO\s*\z)/i
   ENROLL_MSG      = /(\A\s*STORY\s*\z)|(\A\s*CUENTO\s*\z)/i
   FEATURE_PHONES  = /(\A\s*SMS\s*\z)|(\A\s*TEXT\s*\z)|(\A\s*TEXTO\s*\z)/i
   ENGLISH_PLZ     = /(english)|(ingles)|(inglés)/i
@@ -112,7 +112,11 @@ module MessageReplyHelpers
     case body
     when STOP_RQST
       user.state_table.update(subscribed?: false, unsubscribed_on: Time.now.utc)
-      ''
+      if user.platform == 'fb'
+        I18n.t 'user_response.stop'
+      else
+        ''
+      end
     when LINK_CODE
       # logic for connecting the person to their phone account and school....
       if user.state_table.story_number == 0 && user.platform == 'fb' && LinkedIn_profiles(user, body)

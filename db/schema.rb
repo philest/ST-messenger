@@ -61,7 +61,7 @@ Sequel.migration do
       String :prefix, :text=>true
       String :signature, :text=>true
       String :code, :text=>true
-      Integer :number, :default=>0
+      Integer :t_number, :default=>0
       
       index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true
@@ -111,6 +111,7 @@ Sequel.migration do
       String :last_sequence_seen, :text=>true
       DateTime :updated_at
       Integer :story_number, :default=>0
+      DateTime :unsubscribed_on
     end
     
     create_table(:users, :ignore_index_errors=>true) do

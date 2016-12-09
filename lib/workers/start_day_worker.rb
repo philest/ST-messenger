@@ -143,8 +143,8 @@ class StartDayWorker
 
           if unsubscribe
             # send the unsubscribe message
-            u.state_table.update(subscribed?: false)
-            reminder.run_sequence(recipient, unsubscribed_on: Time.now.utc)
+            u.state_table.update(subscribed?: false, unsubscribed_on: Time.now.utc)
+            reminder.run_sequence(recipient, :unsubscribe)
           end
           # otherwise, do nothing
         end

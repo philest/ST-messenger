@@ -498,16 +498,6 @@ class TextApi < Sinatra::Base
     if params[:recipient] and params[:platform]
       StartDayWorker.perform_async(params[:recipient], params[:platform])
       'ass'
-    else
-      User.each do |u|
-        case u.platform
-        when 'fb'
-          StartDayWorker.perform_async(u.fb_id, 'fb')
-        when 'sms', 'feature'
-          StartDayWorker.perform_async(u.phone, u.platform)
-        end
-      end
-      'hole'
     end
   end
 
