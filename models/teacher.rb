@@ -10,6 +10,9 @@ class Teacher < Sequel::Model(:teachers)
 
 	add_association_dependencies users: :nullify
 
+  def quicklink
+    "http://www.joinstorytime.com/signin?email=#{email}&name=#{signature.split(' ').join('+')}&school=#{self.school.code.split('|')[0]}"
+  end
 
   def signup_user(user)
     # write this method
@@ -18,10 +21,8 @@ class Teacher < Sequel::Model(:teachers)
     if self.school != nil
       self.school.add_user(user)
     end
-
   end
-
-
+  
 	def validate
     super
   	validates_unique :phone, :allow_nil=>true, :message => "phone #{phone} is already taken (teachers)"
