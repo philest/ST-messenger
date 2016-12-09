@@ -36,16 +36,14 @@ module Clockwork
       if Time.now.utc.hour == 12 # 4am PST
         Teacher.each do |t|
           # we don't want any repeats
-          if (Time.now.utc - t.notified_on.utc) > 2.hours
-            NotifyTeacherWorker.perform_async(t.id)
+          if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
+            NotifyTeacherWorker.perform_async(t.id, 'NEW_USERS_NOTIFICATION')
           end
         end
 
       end
 
     end # teacher.notify
-
-
 
 end
 
