@@ -6,6 +6,10 @@ class Admin < Sequel::Model(:admins)
 
   many_to_one :school
 
+  def quicklink
+    "http://www.joinstorytime.com/signin?email=#{email}&name=#{signature.split(' ').join('+')}&school=#{self.school.code.split('|')[0]}&role=admin"
+  end
+
   def validate
     super
     validates_unique :phone, :allow_nil=>true, :message => "#{phone} is already taken (admin)"
