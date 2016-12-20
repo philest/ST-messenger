@@ -108,6 +108,9 @@ class StartDayWorker
     day_number =  update_day(u, platform)
 
     # double quotation
+    # also have to do mod here
+    #   but want to make sure we don't include script 1 when mod'ing...
+    #   also make sure that we don't go over the script count when compensating for that
     script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
 
     if !script.nil?

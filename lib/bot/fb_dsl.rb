@@ -160,6 +160,8 @@ module Birdv
 
 
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
+
+            # this is where we perform the modulo?????????
             storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
@@ -284,7 +286,6 @@ module Birdv
               return trans.is_a?(Array) ? trans[@script_day - 1] : trans
           end # translate
 
-
           m = fb_object[:message]
 
           if !m.nil?
@@ -331,7 +332,6 @@ module Birdv
                   
                 end # window_text_regex.match
 
-                # puts "trans_code before = #{trans_code}"
                 # for intros and teacher/school messaging
                 trans_code = teacher_school_messaging(trans_code, recipient)
                 # puts "trans_code after = #{trans_code}"
