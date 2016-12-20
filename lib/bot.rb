@@ -196,7 +196,7 @@ Bot.on :message do |message|
           # now check if the story they received is one of the uniques....
           if last_unique_read == false
             puts "the last unique story wasn't read, so we must send that one (bot.rb)"
-            user.state_table.update(last_unique_story_read?: true)
+            db_user.state_table.update(last_unique_story_read?: true)
             user_day = "day#{last_unique}"
             MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
 

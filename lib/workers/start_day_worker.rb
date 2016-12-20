@@ -100,7 +100,6 @@ class StartDayWorker
           # send the last_unique_story....
           return last_unique
           
-
         end # if read_yesterday_story?
 
     else # platform == 'mms' or 'sms'
