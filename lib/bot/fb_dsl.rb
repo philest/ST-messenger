@@ -186,7 +186,7 @@ module Birdv
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
                                         last_story_read?: true,
-                                        last_unique_story_read?: false,
+                                        last_unique_story_read?: true,
                                         num_reminders: 0,
                                         subscribed?: true)
 

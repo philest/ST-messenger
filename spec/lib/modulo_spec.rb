@@ -122,7 +122,7 @@ describe 'modulo stories' do
         end
 
 
-        it "updates last_unique_story when getting an old story" do
+        it "updates last_unique_story when getting an old story 2" do
           # $story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../../lib/sequence_scripts/*").inject(0) {|sum, n| /\d+\.rb/.match n ? sum+1 : sum }
           $story_count = 6
           @user.state_table.update(story_number: 7, last_unique_story: 3)
@@ -136,7 +136,7 @@ describe 'modulo stories' do
 
         end
 
-        it "sends the correct modulo story" do
+        it "sends the correct modulo story 2" do
           $story_count = 6
           @user.state_table.update(story_number: 7, last_unique_story: 3)
 
@@ -149,17 +149,37 @@ describe 'modulo stories' do
         end
 
 
-
-
-
     end
 
 
     context "user has more than total stories and there are many new stories" do
 
-        it "does not update last_unique_story when getting an old story" do
+        it "updates last_unique_story when getting an old story" do
+          # $story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../../lib/sequence_scripts/*").inject(0) {|sum, n| /\d+\.rb/.match n ? sum+1 : sum }
+          $story_count = 6
+          @user.state_table.update(story_number: 10, last_unique_story: 3)
+          expect {
+            Sidekiq::Testing.inline! do
+              @sw.perform(@fb_id, 'fb')
+              @user.reload
+            end
+          }.to change{@user.state_table.last_unique_story}.to 4
+
 
         end
+
+        it "sends the correct modulo story" do
+          $story_count = 6
+          @user.state_table.update(story_number: 10, last_unique_story: 3)
+
+          expect(Birdv::DSL::ScriptClient.scripts['fb']['day4']).to receive(:run_sequence).once
+          Sidekiq::Testing.inline! do
+            @sw.perform(@fb_id, 'fb')
+            @user.reload
+          end
+
+        end
+
 
     end
 
