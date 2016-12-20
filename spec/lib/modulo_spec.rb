@@ -5,6 +5,45 @@ require 'timecop'
 require 'workers'
 
 describe 'modulo stories' do
+  context "reminders" do
+    before (:each) do
+      @sw = StartDayWorker.new
+      @mw = MessageWorker.new
+      @fb_id = 'my_fb_id'
+      @user = User.create(fb_id: @fb_id)
+      # this user is still subscribed but hasn't read their last story....
+      @user.state_table.update(last_story_read?:false, subscribed?:true)
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "calling run_sequence with #{args}"
+      end
+    end
+
+
+  end
+
+
+
+  context "resubscribing" do
+    before (:each) do
+      @sw = StartDayWorker.new
+      @mw = MessageWorker.new
+      @fb_id = 'my_fb_id'
+      @user = User.create(fb_id: @fb_id)
+      # this user is unsubscribed and has already received reminders....
+      @user.state_table.update(last_story_read?:false, subscribed?:false)
+
+      allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
+        puts "calling run_sequence with #{args}"
+      end
+    end
+
+
+
+  end
+
+
+
   context "start day worker" do 
     before(:each) do
       @sw = StartDayWorker.new
@@ -15,7 +54,6 @@ describe 'modulo stories' do
       allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
         puts "calling run_sequence with #{args}"
       end
-
     end
 
     context "user has less than total stories" do
@@ -30,6 +68,8 @@ describe 'modulo stories' do
               @user.reload
             end
           }.to change{@user.state_table.last_unique_story}.to 1
+
+          expect(@user.story_number).to eq 1
         end
 
         it "sends a story the normal way" do
@@ -42,6 +82,8 @@ describe 'modulo stories' do
               @sw.perform(@fb_id, 'fb')
               @user.reload
           end
+
+          expect(@user.story_number).to eq 1
         end
     end
 
@@ -63,13 +105,18 @@ describe 'modulo stories' do
 
         it "sends the correct modulo story" do
           $story_count = 5
+          # we have story 7 going INTO this...
           @user.state_table.update(story_number: 7, last_unique_story: 5)
 
-          expect(Birdv::DSL::ScriptClient.scripts['fb']['day3']).to receive(:run_sequence).once
+          # should this send day4 instead of day3? what's the last story that was sent?
+
+          expect(Birdv::DSL::ScriptClient.scripts['fb']['day4']).to receive(:run_sequence).once
           Sidekiq::Testing.inline! do
             @sw.perform(@fb_id, 'fb')
             @user.reload
           end
+
+          expect(@user.story_number).to eq 8
 
         end
 
@@ -80,12 +127,14 @@ describe 'modulo stories' do
 
         it "chooses day2 when mod is 1" do
           $story_count = 6
-          @user.state_table.update(story_number: 12, last_unique_story: 6)
+          @user.state_table.update(story_number: 11, last_unique_story: 6)
           expect(Birdv::DSL::ScriptClient.scripts['fb']['day2']).to receive(:run_sequence).once
           Sidekiq::Testing.inline! do
             @sw.perform(@fb_id, 'fb')
             @user.reload
           end
+
+          expect(@user.story_number).to eq 12
 
 
         end
@@ -119,6 +168,8 @@ describe 'modulo stories' do
             @user.reload
           end
 
+          expect(@user.story_number).to eq 7
+
         end
 
 
@@ -133,6 +184,8 @@ describe 'modulo stories' do
             end
           }.to change{@user.state_table.last_unique_story}.to 4
 
+          expect(@user.story_number).to eq 7
+
 
         end
 
@@ -145,6 +198,8 @@ describe 'modulo stories' do
             @sw.perform(@fb_id, 'fb')
             @user.reload
           end
+
+          expect(@user.story_number).to eq 7
 
         end
 
@@ -164,6 +219,7 @@ describe 'modulo stories' do
               @user.reload
             end
           }.to change{@user.state_table.last_unique_story}.to 4
+          expect(@user.story_number).to eq 10
 
 
         end
@@ -177,6 +233,7 @@ describe 'modulo stories' do
             @sw.perform(@fb_id, 'fb')
             @user.reload
           end
+          expect(@user.story_number).to eq 10
 
         end
 

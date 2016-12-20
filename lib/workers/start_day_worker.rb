@@ -71,7 +71,7 @@ class StartDayWorker
             if st_no > $story_count
               # if our last unique story index is less than the total count of unique stories
               if last_unique < $story_count
-                # increment last_unique bc we are definitely going to send that one.\
+                # increment last_unique bc we are definitely going to send that one.
                 # DO NOT increment story_number
                 puts "sending the next unique story..."
                 user.state_table.update(last_story_read?: false,
@@ -80,11 +80,14 @@ class StartDayWorker
                 # do not increment story_number so next time we'll get back to the same story we were going to read
                 return last_unique + 1
               else # send mod'd story index
-                mod = (st_no % $story_count) + 1
+                # should I update story_number here? and send the NEXT regular story? confusing...
+                mod = (n % $story_count) + 1 # just to get indexed by 1
+                user.state_table.update(story_number: n, 
+                                      last_story_read?: false)
                 return mod == 1 ? 2 : mod
               end
 
-            else # we have seen fewer stories than those available
+            else # NORMAL FUNCTIONING: we have seen fewer stories than those available
               user.state_table.update(story_number: n, 
                                       last_story_read?: false,
                                       last_unique_story: last_unique + 1)
