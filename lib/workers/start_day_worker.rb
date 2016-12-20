@@ -111,7 +111,12 @@ class StartDayWorker
             user.state_table.update(last_unique_story: last_unique + 1)
             return last_unique + 1
           else
-            return (st_no % $sms_story_count) + 1
+            # return (st_no % $sms_story_count) + 1
+
+            # should I update story_number here? and send the NEXT regular story? confusing...
+            mod = (n % $sms_story_count) + 1 # just to get indexed by 1
+            user.state_table.update(story_number: n)
+            return mod == 1 ? 2 : mod
           end
 
         else # we have not seen all the available stories
