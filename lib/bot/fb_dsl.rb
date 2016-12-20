@@ -147,7 +147,6 @@ module Birdv
       end
 
       
-       # TODO: should I delete args? not used
       def story(args={})
         
         return lambda do |recipient|
@@ -157,7 +156,6 @@ module Birdv
             locale  = get_locale(recipient)
 
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
-
 
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
 
@@ -185,12 +183,10 @@ module Birdv
               locale:     locale
             })
             
-            # TODO: error stuff
-
-            # TODO: make this atomic somehow? slash errors
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
                                         last_story_read?: true,
+                                        last_unique_story_read?: false,
                                         num_reminders: 0,
                                         subscribed?: true)
 
@@ -236,8 +232,6 @@ module Birdv
         p e.message
         return false 
       end
-
-
 
       def process_txt( fb_object, user)
           recipient = user.fb_id

@@ -20,6 +20,26 @@ models_dir = File.expand_path("../models/*.rb", File.dirname(__FILE__))
 Dir[models_dir].each {|file| require_relative file }
 
 
+# story_count
+$story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../lib/sequence_scripts/*")
+                .inject(0) do |sum, n|
+                  if /\d+\.rb/.match n
+                    sum + 1
+                  else  
+                    sum
+                  end
+                end
+
+$sms_story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../lib/sms_sequence_scripts/*")
+                .inject(0) do |sum, n|
+                  if /\d+\.rb/.match n
+                    sum + 1
+                  else  
+                    sum
+                  end
+                end
+
+
 def fn(name)
   puts "num_users with name #{name} = #{User.where(first_name:name).count}"
   return User.where(first_name: name).first
