@@ -1,0 +1,8 @@
+I, [2016-12-20T20:48:57.135432 #2096]  INFO -- : (0.050380s) SET standard_conforming_strings = ON
+I, [2016-12-20T20:48:57.182205 #2096]  INFO -- : (0.046567s) SET client_min_messages = 'WARNING'
+I, [2016-12-20T20:48:57.234350 #2096]  INFO -- : (0.052028s) SET DateStyle = 'ISO'
+I, [2016-12-20T20:48:57.305171 #2096]  INFO -- : (0.062517s) CREATE TABLE IF NOT EXISTS "schema_info" ("version" integer DEFAULT 0 NOT NULL)
+I, [2016-12-20T20:48:57.352671 #2096]  INFO -- : (0.047124s) SELECT * FROM "schema_info" LIMIT 1
+I, [2016-12-20T20:48:57.401613 #2096]  INFO -- : (0.048409s) SELECT 1 AS "one" FROM "schema_info" LIMIT 1
+I, [2016-12-20T20:48:57.447685 #2096]  INFO -- : (0.045590s) SELECT count(*) AS "count" FROM "schema_info" LIMIT 1
+I, [2016-12-20T20:48:57.494668 #2096]  INFO -- : (0.046439s) SELECT "version" FROM "schema_info" LIMIT 1

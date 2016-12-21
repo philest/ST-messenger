@@ -9,12 +9,13 @@ birdv     = "http://birdv.herokuapp.com/"
 
 
 
-  # puts HTTParty.get(
-  #   birdv + "startdayworker",
-  #   query: {
-  #     platform: "fb",
-  #     recipient: '1042751019139427'
-  #   }
-  # )
+  puts HTTParty.get(
+    localhost + "startdayworker",
+    query: {
+      platform: "fb",
+      recipient: '1675189005839952'
+    }
+  )
 
 
+# expect story 
