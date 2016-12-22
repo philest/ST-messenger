@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 $stdout.sync = true
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
@@ -27,6 +29,7 @@ run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,
   '/' => TextApi, # probably should change this route to '/sms'...
   '/auth' => AuthApi,
+  '/api' => Api,
   '/sidekiq' => Sidekiq::Web
 })
 

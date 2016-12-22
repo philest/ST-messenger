@@ -1,7 +1,6 @@
-#  app.rb                                     David McPeek      
+#  auth.rb                                     David McPeek      
 # 
-#  The routes controller. Recieves POST from 
-#  www.joinstorytime.com/enroll with family phones and names. 
+#  The auth controller. 
 #  --------------------------------------------------------
 
 #sinatra dependencies 
@@ -28,6 +27,51 @@ require_relative 'bot/dsl'
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 
+
+# 2 parts:
+# 1. login module.
+#   if user does not have a session or refresh_token, they are taken through the login/signup process
+#   success with this redirects them to the api endpoing that they requested
+# 2. api module
+#   for this we'll have a jwt middleware which validates the user's jwt. 
+#   if there is no valid jwt, the user is redirected to login. 
+#   
+#   
+# questions:
+# 1. two different modules for login?
+# 2. use middleware?
+# 3. what again are the responses?
+# 
+# 
+
+
+class AuthApi
+  post '/login' do
+    # on success
+    # redirects to api
+    # 
+    # 
+    # 
+    # 
+  end 
+
+  post '/signup' do
+    # on success
+    # redirects to api
+  end 
+
+end
+
+
+class Api
+  # endpoints
+
+  # at each endpoing
+  # if fails auth jwt
+  #   redirect to AuthApi
+
+end
+
 class AuthApi < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
@@ -43,57 +87,9 @@ class AuthApi < Sinatra::Base
 
   helpers Authentication
   helpers SchoolCodeMatcher
+  helpers STATUS_CODES
 
   helpers do
-    def redirect_to_original_request
-      user = session[:user]
-      flash[:notice] = "Welcome back #{user.name}."
-      original_request = session[:original_request]
-      session[:original_request] = nil
-      redirect original_request
-    end
-
-    def signup_helper(creds)
-      create_user(creds)
-      login_helper(creds)
-    end 
-
-    def login_helper(creds)
-      # what data structure is `creds`? what does it store? 
-      # note: refresh_token that client stories includes the user_id to look up refresh_token_digest in db.
-
-      refresh_token = get_refresh_token(creds)
-      user = User.where(id: creds.id).first
-      refresh_token_digest = user.refresh_token_digest
-
-      if Password.new(refresh_token_digest) == refresh_token
-        session[:user] = creds.id # not sure if this is right
-
-      else
-        if user.authenticate(creds.password)
-          refresh_token = generate_refresh_token()
-          user.update(refresh_token_digest: Password.create(refresh_token))
-          session[:user] = creds.id
-          return refresh_token # make sure content-type is JSON
-
-        end 
-
-      end
-      # refresh_token_digest = 
-
-      # if (hash(creds.refresh_token)== stored refresh_tkn_hash) {
-    #     start new session and return to client
-    # } else {
-    #     if  (creds.valid) {     
-    #         generate_refresh token
-    #         store(hash(referesh_token in db))
-    #         send refresh_tkn to client
-    #         start new sessions adn return to client
-    #     }
-    # }
-    # return 505
-
-    end
 
   end
 
@@ -116,20 +112,13 @@ class AuthApi < Sinatra::Base
       new_user.match_school(code)
       new_user.match_teacher(code)
 
-      # now do session stuff....
-      # what should we store in session variable?
-      session[:user] = new_user.id
-
-      # login_helper????
-
-      # WHAT DO WE RETURN HERE?
-      redirect "SUCCESS!!!!!!!!!!"
+      # great! fantastic, resource created
+      return CREATE_USER_SUCCESS
 
     else # no matching code, don't sign this user up.
       # basically, this condition is how we differentiate between paying customers and randos
-
-      return 404 # or something
-
+      # no school or teacher found
+      return NO_MATCHING_SCHOOL # or something
     end
 
   end
@@ -143,46 +132,51 @@ class AuthApi < Sinatra::Base
 
     user = User.where(phone: phone).first
     if user.nil?
-      return 404
+      return NO_EXISTING_USER
     end
 
     if user.authenticate(password) == true
-      session[:user] = user.id
-      redirect_to_original_request
-    end
-
-    if user = User.authenticate(params)
-      session[:user] = user
-      redirect_to_original_request
+      # create refresh_tkn and send to user
+      content_type :json
+      { token: token(user.id) }.to_json
     else
-      flash[:notice] = 'You could not be signed in. Did you enter the correct username and password?'
-      redirect '/signin'
+      return WRONG_PASSWORD
     end
   end
 
-  # note: everything redirects to signin! if we don't authenticate
+  post '/get_access_tkn/?' do
+    begin
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
-  get '/signin' do
+      user_id = payload['user']['user_id']
 
+      # check in db and cross-reference the bearer and the refres_tkn_digest
+      user = User.where(id: user_id).first
+      if user.nil?
+        return NO_EXISTING_USER
+      end
 
-  end
+      refresh_tkn_hash   = Password.new(user.refresh_token_digest)
+      if refresh_tkn_hash == bearer
 
+      end
 
-  get '/signout' do
-    session[:user] = nil
-    return 200
-  end
-
-  get '/user_info' do
-    case authenticate!
-    when 200
-      return "the user info"
-      # params[:id], whatnot
-    else
-      return 401
+    rescue JWT::DecodeError
+      [401, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
+    rescue JWT::ExpiredSignature
+      [403, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+    rescue JWT::InvalidIssuerError
+      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+    rescue JWT::InvalidIatError
+      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
     end
+    
   end
 
+  # signout????
 
 end
 
