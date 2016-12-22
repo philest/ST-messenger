@@ -52,6 +52,49 @@ class AuthApi < Sinatra::Base
       session[:original_request] = nil
       redirect original_request
     end
+
+    def signup_helper(creds)
+      create_user(creds)
+      login_helper(creds)
+    end 
+
+    def login_helper(creds)
+      # what data structure is `creds`? what does it store? 
+      # note: refresh_token that client stories includes the user_id to look up refresh_token_digest in db.
+
+      refresh_token = get_refresh_token(creds)
+      user = User.where(id: creds.id).first
+      refresh_token_digest = user.refresh_token_digest
+
+      if Password.new(refresh_token_digest) == refresh_token
+        session[:user] = creds.id # not sure if this is right
+
+      else
+        if user.authenticate(creds.password)
+          refresh_token = generate_refresh_token()
+          user.update(refresh_token_digest: Password.create(refresh_token))
+          session[:user] = creds.id
+          return refresh_token # make sure content-type is JSON
+
+        end 
+
+      end
+      # refresh_token_digest = 
+
+      # if (hash(creds.refresh_token)== stored refresh_tkn_hash) {
+    #     start new session and return to client
+    # } else {
+    #     if  (creds.valid) {     
+    #         generate_refresh token
+    #         store(hash(referesh_token in db))
+    #         send refresh_tkn to client
+    #         start new sessions adn return to client
+    #     }
+    # }
+    # return 505
+
+    end
+
   end
 
   before do
@@ -64,6 +107,7 @@ class AuthApi < Sinatra::Base
     last_name   = params[:last_name]
     password    = params[:password]
     code        = params[:code].delete(' ').delete('-').downcase
+    # maybe have a params[:role], but not yet
 
     if is_matching_code?(code) then
       new_user = User.create(phone: phone, first_name: first_name, last_name: last_name, platform: 'app')
@@ -75,6 +119,8 @@ class AuthApi < Sinatra::Base
       # now do session stuff....
       # what should we store in session variable?
       session[:user] = new_user.id
+
+      # login_helper????
 
       # WHAT DO WE RETURN HERE?
       redirect "SUCCESS!!!!!!!!!!"

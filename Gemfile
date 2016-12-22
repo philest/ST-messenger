@@ -13,7 +13,9 @@ gem 'pg'
 
 gem 'airbrake'
 
+# authentication
 gem 'bcrypt'
+gem 'jwt'
 
 
 # bot stuff
