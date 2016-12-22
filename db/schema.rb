@@ -38,6 +38,26 @@ Sequel.migration do
       Integer :teacher_index, :default=>0
     end
     
+    create_table(:admins, :ignore_index_errors=>true) do
+      primary_key :id
+      String :name, :text=>true
+      String :first_name, :text=>true
+      String :last_name, :text=>true
+      String :email, :text=>true
+      String :phone, :text=>true
+      String :password, :text=>true
+      DateTime :enrolled_on
+      DateTime :updated_at
+      foreign_key :school_id, :schools, :key=>[:id]
+      String :signature, :text=>true
+      String :code, :text=>true
+      Integer :signin_count, :default=>0
+      
+      index [:code], :name=>:admins_code_key, :unique=>true
+      index [:email], :name=>:admins_email_key, :unique=>true
+      index [:phone], :name=>:admins_phone_key, :unique=>true
+    end
+    
     create_table(:school_sessions) do
       primary_key :id
       String :session_type, :text=>true
@@ -62,6 +82,8 @@ Sequel.migration do
       String :signature, :text=>true
       String :code, :text=>true
       Integer :t_number, :default=>0
+      DateTime :notified_on
+      Integer :signin_count, :default=>0
       
       index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true
@@ -112,6 +134,8 @@ Sequel.migration do
       DateTime :updated_at
       Integer :story_number, :default=>0
       DateTime :unsubscribed_on
+      Integer :last_unique_story, :default=>0
+      TrueClass :last_unique_story_read?, :default=>true
     end
     
     create_table(:users, :ignore_index_errors=>true) do

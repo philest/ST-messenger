@@ -13,6 +13,8 @@ gem 'pg'
 
 gem 'airbrake'
 
+gem 'bcrypt'
+
 
 # bot stuff
 # gem 'puma', 	'~>3.4.0'

@@ -10,6 +10,7 @@ require_relative 'config/initializers/airbrake'
 require_relative 'lib/bot'
 require 'sinatra'
 require_relative 'lib/app' # the app which handles all text messaging stuff
+require_relative 'lib/auth'
 require 'rack'
 require_relative 'config/environment'
 get_db_connection()
@@ -24,7 +25,8 @@ use Airbrake::Rack::Middleware
 
 run Rack::URLMap.new({
   '/bot' => Facebook::Messenger::Server,
-  '/' => TextApi,
+  '/' => TextApi, # probably should change this route to '/sms'...
+  '/auth' => AuthApi,
   '/sidekiq' => Sidekiq::Web
 })
 
