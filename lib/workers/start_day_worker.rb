@@ -68,7 +68,7 @@ class StartDayWorker
         # only do modulo stuff if we've read yesterday's story... all the same logic applies
         if read_yesterday_story?(user)
             # if our current story number is greater than those available
-            if st_no > $story_count
+            if st_no >= $story_count
               # if our last unique story index is less than the total count of unique stories
               if last_unique < $story_count
                 # increment last_unique bc we are definitely going to send that one.
@@ -106,7 +106,7 @@ class StartDayWorker
       # Update. Since there are no buttons, we just assume peeps have read their story. 
       if user.state_table.subscribed? or user.state_table.story_number == 0
 
-        if st_no > $sms_story_count
+        if st_no >= $sms_story_count
           if last_unique < $sms_story_count
             user.state_table.update(last_unique_story: last_unique + 1)
             return last_unique + 1
@@ -249,10 +249,11 @@ class StartDayWorker
       puts "#{recipient} is at story_number = #{day_number}"
 
       # if the person was on sms, go back 1 story because they shouldn't have updated their story_number
-      if u.platform == 'sms' or u.platform == 'feature'
-        current_no = u.state_table.story_number
-        u.state_table.update(story_number: current_no - 1)
-      end
+      # WITH MODULO, THIS IS WRONG NOW
+      # if u.platform == 'sms' or u.platform == 'feature'
+      #   current_no = u.state_table.story_number
+      #   u.state_table.update(story_number: current_no - 1)
+      # end
 
     end
   end
