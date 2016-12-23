@@ -1,6 +1,7 @@
 require 'sequel'
 require 'dotenv'
 require 'bcrypt'
+include BCrypt
 
 Dotenv.load
 

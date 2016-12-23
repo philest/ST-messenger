@@ -1,31 +1,35 @@
 require 'jwt' 
 
+
 module STATUS_CODES
   CREATE_USER_SUCCESS   = 201
+  MISSING_CREDENTIALS   = 400
   NO_MATCHING_SCHOOL    = 401
   NO_EXISTING_USER      = 402
   NO_VALID_ACCESS_TKN   = 403
   WRONG_PASSWORD        = 404
+  WRONG_ACCESS_TKN_TYPE = 405
 end
 
 module Authentication
 
   def access_token(user_id)
-    JWT.encode payload(user_id, 1.day), ENV['JWT_SECRET'], 'HS256'
+    JWT.encode payload(user_id, 1.day, "access"), ENV['JWT_SECRET'], 'HS256'
   end
 
   def refresh_token(user_id)
-    JWT.encode payload(user_id, 6.months), ENV['JWT_SECRET'], 'HS256'
+    JWT.encode payload(user_id, 6.months, "refresh"), ENV['JWT_SECRET'], 'HS256'
   end
 
-  def payload(user_id, exp)
+  def payload(user_id, exp, type)
     {
-      exp: exp,
+      exp: Time.now.to_i + exp.to_i,
       iat: Time.now.to_i,
       iss: ENV['JWT_ISSUER'],
       user: {
         user_id: user_id
-      }
+      },
+      type: type
     }
   end
 
@@ -42,8 +46,14 @@ class JWTAuth
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
+
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
+
+      if payload['type'] != 'access'
+        return [WRONG_ACCESS_TKN_TYPE, { 'Content-Type' => 'text/plain' }, ['Must be an access token (not refresh).']]
+      end
 
       # payload['user']['user_id']
       env[:user] = payload['user']

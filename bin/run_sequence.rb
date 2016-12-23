@@ -8,10 +8,10 @@ birdv     = "http://birdv.herokuapp.com/"
 # puts HTTParty.get(
 #   birdv + "run_sequence",
 #   query: {
-#     script: "day7",
+#     script: "day6",
 #     sequence: "storysequence",
 #     platform: "fb",
-#     recipient: '1259549677428561'
+#     recipient: ''
 #   }
 # )
 

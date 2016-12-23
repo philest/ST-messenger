@@ -1,5 +1,7 @@
 require 'sequel'
 require 'dotenv'
+require 'bcrypt'
+include BCrypt
 Dotenv.load
 
 require 'active_support/time'

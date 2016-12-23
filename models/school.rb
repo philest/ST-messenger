@@ -17,7 +17,7 @@ class School < Sequel::Model(:schools)
       while true
         teacher_i += 1
         code = self.code.split('|').map{|c| "#{c}#{teacher_i}" }.join('|')
-        puts "teacher_i = #{teacher_i}"  
+        # puts "teacher_i = #{teacher_i}"  
         if Teacher.where(code: code).first.nil? 
           teacher.update(code: code)
           teacher.update(t_number: teacher_i)
@@ -29,7 +29,7 @@ class School < Sequel::Model(:schools)
 
       self.add_teacher(teacher)
 
-      puts "#{teacher.inspect}"
+      # puts "#{teacher.inspect}"
     else
       puts "Teacher #{teacher.signature} is already associated with #{self.signature}"
     end

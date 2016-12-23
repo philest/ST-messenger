@@ -1,4 +1,5 @@
 require 'sequel'
+require 'bcrypt'
 
 def get_db_connection(max_connections=6)
   #The environment variable PG_URL should be in the following format:

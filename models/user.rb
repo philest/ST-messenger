@@ -22,9 +22,15 @@ class User < Sequel::Model(:users)
 		# stored = Password.create(original_password)
 		# password_hash = Password.new(stored)
 		# return true if 
-		return false if input_password.nil? || input_password.empty?
-		password_hash 	= Password.new(self.password_digest)
-		return password_hash == input_password
+    begin 
+  		return false if input_password.nil? || input_password.empty?
+      # return false if self.password_digest.nil?
+  		password_hash 	= Password.new(self.password_digest)
+  		return password_hash == input_password
+    rescue => e
+      p e
+      return false
+    end
 	end
 
 	def set_password(new_password)
@@ -63,10 +69,10 @@ class User < Sequel::Model(:users)
 		if self.platform != 'fb'
 			self.code = generate_code
 		end
-		puts "start code = #{self.code}"
+		# puts "start code = #{self.code}"
 		while !self.valid?
 			self.code = (self.code.to_i + 1).to_s
-			puts "new code = #{self.code}"
+			# puts "new code = #{self.code}"
 		end
 		# set default curriculum version
 		ENV["CURRICULUM_VERSION"] ||= '0'
@@ -95,23 +101,23 @@ class User < Sequel::Model(:users)
         if code.include? body_text
           en, sp = code.split('|')
           if body_text == en
-            puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
+            # puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
             I18n.locale = 'en'
-            puts "school info: #{school.signature}, #{school.inspect}"
+            # puts "school info: #{school.signature}, #{school.inspect}"
             school.add_user(self)
             return school
           elsif body_text == sp
-            puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
+            # puts "WE HAVE A MATCH! User #{phone} goes to #{school.signature}"
             I18n.locale = 'es'
             self.update(locale: 'es')
-            puts "school info: #{school.signature}, #{school.inspect}"
+            # puts "school info: #{school.signature}, #{school.inspect}"
             school.add_user(self)
             return school
           else 
             puts "#{code} did not match with #{school.name} regex!"
           end
         else
-          puts "code #{params[:Body]} doesn't match with #{school.signature}'s code #{school.code}"
+          puts "code #{body_text} doesn't match with #{school.signature}'s code #{school.code}"
         end
       end
   end
@@ -133,8 +139,8 @@ class User < Sequel::Model(:users)
         if code.include? body_text
           en, sp = code.split('|')
           if body_text == en
-            puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
-            puts "#{teacher.signature}, #{teacher.inspect}"
+            # puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
+            # puts "#{teacher.signature}, #{teacher.inspect}"
             I18n.locale = 'en'
             teacher.add_user(self)
             if !teacher.school.nil? # if this teacher belongs to a school
@@ -143,11 +149,11 @@ class User < Sequel::Model(:users)
             return teacher
 
           elsif body_text == sp
-            puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
-            puts "#{teacher.signature}, #{teacher.inspect}"
+            # puts "WE HAVE A MATCH! User #{phone} is in #{teacher.signature}'s class"
+            # puts "#{teacher.signature}, #{teacher.inspect}"
             I18n.locale = 'es'
             self.update(locale: 'es')
-            puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
+            # puts "teacher info: #{teacher.signature}, #{teacher.inspect}"
             teacher.add_user(self)
             if !teacher.school.nil? # if this teacher belongs to a school
               teacher.school.add_user(self)
@@ -157,7 +163,7 @@ class User < Sequel::Model(:users)
             puts "#{code} did not match with #{teacher.name} regex!"
           end
         else
-          puts "code #{params[:Body]} doesn't match with #{teacher.signature}'s code #{teacher.code}"
+          puts "code #{body_text} doesn't match with #{teacher.signature}'s code #{teacher.code}"
         end # if code.include? body_text
       end # Teacher.each do |teacher|
 

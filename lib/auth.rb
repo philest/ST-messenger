@@ -45,12 +45,18 @@ require 'bcrypt'
 # 
 # 
 
-# curl -v -H -X POST -d 'phone_no=8186897323&password=my_pass' http://localhost:5000/auth/signin
+# curl -v -H -X POST -d 'phone=8186897323&password=my_pass' http://localhost:5000/auth/signin
 
-# curl -v -X POST http://localhost:5000/auth/signin -d '{"phone_no": "8186897323", "password": "my_pass"}'
+# curl -v -X POST http://localhost:5000/auth/signin -d '{"phone": "8186897323", "password": "my_pass"}'
 
 
-# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTU1MjAwMCIsImlhdCI6MTQ4MjQ2NzAxNywiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MTQ2OH19.dXZVtBlpj8ETA4dRnyqP-BOuvbZXwSsKMVneYVwI0XA" http://localhost:5000/api
+# next thing to work on: why is JWT.decode not working?
+
+# login
+# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwNjQ2NjUsImlhdCI6MTQ4MjUxMjY2NSwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MTQ2OH19.aD644tTNDlWSuF5jxJpprtqnrjigoWwgGI1J0ltWOOU" http://localhost:5000/api
+# 
+# get_access_token
+# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwNjQ2NjUsImlhdCI6MTQ4MjUxMjY2NSwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MTQ2OH19.aD644tTNDlWSuF5jxJpprtqnrjigoWwgGI1J0ltWOOU" http://localhost:5000/api
 
 class Api < Sinatra::Base
   use JWTAuth
@@ -77,7 +83,7 @@ class AuthApi < Sinatra::Base
 
   use Airbrake::Rack::Middleware
 
-  set :session_secret, "328479283uf923fu8932fu923uf9832f23f232"
+  set :session_secret, ENV['SESSION_SECRET']
   enable :sessions
 
   set :root, File.join(File.dirname(__FILE__), '../')
@@ -95,11 +101,19 @@ class AuthApi < Sinatra::Base
   end
 
   post '/signup' do
-    phone       = params[:phone_no]
+    phone       = params[:phone]
     first_name  = params[:first_name]
     last_name   = params[:last_name]
     password    = params[:password]
-    code        = params[:code].delete(' ').delete('-').downcase
+    code        = params[:code]
+
+    if ([phone, first_name, last_name, password, code].include? nil) or
+       ([phone, first_name, last_name, password, code].include? '')
+       return MISSING_CREDENTIALS
+    end
+
+    code        = code.delete(' ').delete('-').downcase
+
     # maybe have a params[:role], but not yet
 
     if is_matching_code?(code) then
@@ -120,13 +134,17 @@ class AuthApi < Sinatra::Base
 
   end
 
-  # post/get with signin? 
+  # post/get with login? 
   # where do we redirect? 
 
-  post '/signin' do
+  post '/login' do
     puts "params = #{params}"
-    phone       = params[:phone_no]
+    phone       = params[:phone]
     password    = params[:password]
+
+    if phone.nil? or password.nil? or phone.empty? or password.empty?
+      return MISSING_CREDENTIALS
+    end
 
     puts "phone = #{phone}"
     puts "password = #{password}"
@@ -153,13 +171,20 @@ class AuthApi < Sinatra::Base
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       # the bearer is the refresh_token
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
+
+      if payload['type'] != 'refresh'
+        puts "WRONG TYPE!!!!!!!!!"
+        return WRONG_ACCESS_TKN_TYPE
+      end
 
       user_id = payload['user']['user_id']
 
       # check in db and cross-reference the bearer and the refres_tkn_digest
       user = User.where(id: user_id).first
       if user.nil?
+        puts "NO_EXISTING_USER!"
         return NO_EXISTING_USER
       end
 
