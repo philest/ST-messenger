@@ -152,6 +152,7 @@ DEPENDENCIES
   httparty
   i18n
   json
+  jwt
   newrelic_rpm
   pg
   pony

@@ -1,5 +1,13 @@
 require 'jwt' 
 
+module STATUS_CODES
+  CREATE_USER_SUCCESS   = 201
+  NO_MATCHING_SCHOOL    = 401
+  NO_EXISTING_USER      = 402
+  NO_VALID_ACCESS_TKN   = 403
+  WRONG_PASSWORD        = 404
+end
+
 module Authentication
 
   def access_token(user_id)
@@ -33,6 +41,7 @@ class JWTAuth
   def call(env)
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
@@ -55,11 +64,5 @@ class JWTAuth
   end
 end
 
-module STATUS_CODES
-  CREATE_USER_SUCCESS   = 201
-  NO_MATCHING_SCHOOL    = 401
-  NO_EXISTING_USER      = 402
-  NO_VALID_ACCESS_TKN   = 403
-  WRONG_PASSWORD        = 404
-end
+
 

@@ -26,6 +26,7 @@ require_relative 'bot/dsl'
 # may want to have an app_dsl
 require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
+require 'bcrypt'
 
 
 # 2 parts:
@@ -44,26 +45,21 @@ require_relative '../config/initializers/redis'
 # 
 # 
 
+# curl -v -H -X POST -d 'phone_no=8186897323&password=my_pass' http://localhost:5000/auth/signin
 
-class AuthApi
-  post '/login' do
-    # on success
-    # redirects to api
-    # 
-    # 
-    # 
-    # 
-  end 
-
-  post '/signup' do
-    # on success
-    # redirects to api
-  end 
-
-end
+# curl -v -X POST http://localhost:5000/auth/signin -d '{"phone_no": "8186897323", "password": "my_pass"}'
 
 
-class Api
+# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNTU1MjAwMCIsImlhdCI6MTQ4MjQ2NzAxNywiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MTQ2OH19.dXZVtBlpj8ETA4dRnyqP-BOuvbZXwSsKMVneYVwI0XA" http://localhost:5000/api
+
+class Api < Sinatra::Base
+  use JWTAuth
+
+  get '/' do
+    puts "you are logged in!"
+    return "you are logged in!"
+  end
+
   # endpoints
 
   # at each endpoing
@@ -77,6 +73,7 @@ class AuthApi < Sinatra::Base
   include MessageReplyHelpers
   include TwilioTextingHelpers
   include NameCodes
+  include BCrypt
 
   use Airbrake::Rack::Middleware
 
@@ -97,7 +94,7 @@ class AuthApi < Sinatra::Base
     headers 'Content-Type' => 'text/html; charset=utf-8'
   end
 
-  post '/signup/?' do
+  post '/signup' do
     phone       = params[:phone_no]
     first_name  = params[:first_name]
     last_name   = params[:last_name]
@@ -126,11 +123,16 @@ class AuthApi < Sinatra::Base
   # post/get with signin? 
   # where do we redirect? 
 
-  post '/signin/?' do
+  post '/signin' do
+    puts "params = #{params}"
     phone       = params[:phone_no]
     password    = params[:password]
 
+    puts "phone = #{phone}"
+    puts "password = #{password}"
     user = User.where(phone: phone).first
+    puts "user = #{user.inspect}"
+
     if user.nil?
       return NO_EXISTING_USER
     end
@@ -146,7 +148,7 @@ class AuthApi < Sinatra::Base
     end
   end
 
-  post '/get_access_tkn/?' do
+  post '/get_access_tkn' do
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       # the bearer is the refresh_token
