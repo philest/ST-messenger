@@ -252,6 +252,37 @@ describe 'modulo stories' do
 
     end
 
+    context "user has read every single story and there are no new stories" do
+      it "does not update last_unique_story" do
+        $story_count = 10
+        @user.state_table.update(story_number: 10, last_unique_story: 10)
+        expect {
+            Sidekiq::Testing.inline! do
+              @sw.perform(@fb_id, 'fb')
+              @user.reload
+            end
+          }.not_to change{@user.state_table.last_unique_story}
+
+        expect(@user.story_number).to eq 11
+      end
+
+      it "sends the correct modulo story" do
+          $story_count = 10
+          @user.state_table.update(story_number: 10, last_unique_story: 10)
+
+          expect(Birdv::DSL::ScriptClient.scripts['fb']['day2']).to receive(:run_sequence).once
+          Sidekiq::Testing.inline! do
+            @sw.perform(@fb_id, 'fb')
+            @user.reload
+          end
+
+          expect(@user.story_number).to eq 11
+
+      end
+
+    end
+
+
 
     context "user has more than total stories and there is one new story" do
 
