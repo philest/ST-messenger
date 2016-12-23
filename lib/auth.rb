@@ -138,7 +138,9 @@ class AuthApi < Sinatra::Base
     if user.authenticate(password) == true
       # create refresh_tkn and send to user
       content_type :json
-      { token: token(user.id) }.to_json
+      refresh_tkn = refresh_token(user.id)
+      user.update(refresh_token_digest: Password.create(refresh_tkn))
+      return { token: refresh_tkn }.to_json
     else
       return WRONG_PASSWORD
     end
@@ -161,17 +163,19 @@ class AuthApi < Sinatra::Base
 
       refresh_tkn_hash   = Password.new(user.refresh_token_digest)
       if refresh_tkn_hash == bearer
-
+        # generate a refresh tkn with different stats
+        content_type :json
+        return { token: access_token(user.id) }.to_json
       end
 
     rescue JWT::DecodeError
-      [401, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
+      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
     rescue JWT::ExpiredSignature
-      [403, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
     rescue JWT::InvalidIssuerError
-      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
     rescue JWT::InvalidIatError
-      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
     end
     
   end
