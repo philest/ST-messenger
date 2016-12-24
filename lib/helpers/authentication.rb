@@ -44,28 +44,23 @@ class JWTAuth
 
   def call(env)
     begin
-      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      # puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
 
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      puts "bearer = #{bearer}"
-      puts "ENV = #{ENV['JWT_ISSUER']} #{ENV['JWT_SECRET']}"
+      # JWT decode magic
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
-      puts "payload = #{payload.inspect}"
 
       if payload['type'] != 'access'
         return [WRONG_ACCESS_TKN_TYPE, { 'Content-Type' => 'text/plain' }, ['Must be an access token (not refresh).']]
       end
 
-      # payload['user']['user_id']
       env[:user] = payload['user']
 
+      # check if user doesn't exist anymore for some reason......
       if User.where(id: env[:user]['user_id']).first.nil?
         return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ["User with id #{env[:user]['user_id']} doesn't exist"]]
       end
 
-      # what should I return here? the full env object, or just the user?
-      # depends on what we'll need.....
       @app.call(env)
 
     rescue JWT::DecodeError => e

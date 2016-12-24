@@ -42,54 +42,54 @@ describe 'protected api', api: true do
       @user.update(refresh_token_digest: BCrypt::Password.create(@refresh_tkn))
   end
 
-  context 'the api endpoints' do
+  # context 'the api endpoints' do
 
-    it "tests", test:true do
-      puts "ENV"
-      get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
-    end
+  #   it "tests", test:true do
+  #     puts "ENV"
+  #     get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
+  #   end
 
-    context "/chat_message" do
-      it "does something" do
-        get '/chat_message', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
-      end
+  #   context "/chat_message" do
+  #     it "does something" do
+  #       get '/chat_message', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
+  #     end
 
-    end
+  #   end
 
-    it "returns SUCCESS with valid access token" do
+  #   it "returns SUCCESS with valid access token" do
 
-      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      # puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
+  #     options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+  #     # puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
 
-      # bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      # puts "bearer = #{bearer}"
-      # puts "ENV = #{ENV['JWT_ISSUER']} #{ENV['JWT_SECRET']}"
-      payload, header = JWT.decode @access_tkn, ENV['JWT_SECRET'], true, options
-      puts "TESSSSSSSSST = #{payload.inspect}"
+  #     # bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+  #     # puts "bearer = #{bearer}"
+  #     # puts "ENV = #{ENV['JWT_ISSUER']} #{ENV['JWT_SECRET']}"
+  #     payload, header = JWT.decode @access_tkn, ENV['JWT_SECRET'], true, options
+  #     puts "TESSSSSSSSST = #{payload.inspect}"
 
 
-      get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
-      expect(last_response.status).to eq STATUS_CODES::SUCCESS
-    end
+  #     get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@access_tkn}"}
+  #     expect(last_response.status).to eq STATUS_CODES::SUCCESS
+  #   end
 
-  end
+  # end
 
-  context 'bad access token' do
+  # context 'bad access token' do
 
-    it "returns WRONG_TKN_TYPE it's a refresh token and not an access token", god:true do 
-      # get a refresh token
-      # try to access
-      x = get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@refresh_tkn}"}
-      puts "x = #{x.inspect}"
-      expect(last_response.status).to eq STATUS_CODES::WRONG_ACCESS_TKN_TYPE
-    end
+  #   it "returns WRONG_TKN_TYPE it's a refresh token and not an access token", god:true do 
+  #     # get a refresh token
+  #     # try to access
+  #     x = get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@refresh_tkn}"}
+  #     puts "x = #{x.inspect}"
+  #     expect(last_response.status).to eq STATUS_CODES::WRONG_ACCESS_TKN_TYPE
+  #   end
 
-    it "fails at every api endpoint with a bad access token" do
-      get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: my_ass_is_an_access_token...i mean, maybe"}
-      expect(last_response.status).to eq STATUS_CODES::NO_VALID_ACCESS_TKN
-    end
+  #   it "fails at every api endpoint with a bad access token" do
+  #     get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: my_ass_is_an_access_token...i mean, maybe"}
+  #     expect(last_response.status).to eq STATUS_CODES::NO_VALID_ACCESS_TKN
+  #   end
 
-  end 
+  # end 
 
 end
 

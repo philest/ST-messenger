@@ -29,23 +29,17 @@ require_relative '../config/initializers/airbrake'
 require_relative '../config/initializers/redis'
 require 'bcrypt'
 
-
+# CREATE USER: (assumes school with code 'school' already exists)
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass&first_name=David&last_name=McPeek&code=school' http://localhost:5000/auth/signup
 
+# LOGIN, gets refresh token
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass' http://localhost:5000/auth/login
 
-# get access token
-# refresh_tkn=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwODYzNzAsImlhdCI6MTQ4MjUzNDM3MCwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MjMwMH0sInR5cGUiOiJyZWZyZXNoIn0.Y6hNMawxdPC_bYPl0nsEbjfTdL3_BSqPpfPz7Usq1s0
-# curl -v -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwODYzNzAsImlhdCI6MTQ4MjUzNDM3MCwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MjMwMH0sInR5cGUiOiJyZWZyZXNoIn0.Y6hNMawxdPC_bYPl0nsEbjfTdL3_BSqPpfPz7Usq1s0" -X POST http://localhost:5000/auth/get_access_tkn
+# /get_access_token from refresh token
+# curl -v -H "Authorization: Bearer THE_REFRESH_TOKEN" -X POST http://localhost:5000/auth/get_access_tkn
 
-# next thing to work on: why is JWT.decode not working?
-
-# login
-# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwNjQ2NjUsImlhdCI6MTQ4MjUxMjY2NSwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MTQ2OH19.aD644tTNDlWSuF5jxJpprtqnrjigoWwgGI1J0ltWOOU" http://localhost:5000/api
-# 
-# test
-# access_tkn=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0ODI2MjA3OTYsImlhdCI6MTQ4MjUzNDM5NiwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MjMwMH0sInR5cGUiOiJhY2Nlc3MifQ.zlXv4MgMM_0HEty1QIAUBs7PYSBMbL7lnBRJ3qFB4qM
-# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0ODI2MjA3OTYsImlhdCI6MTQ4MjUzNDM5NiwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MjMwMH0sInR5cGUiOiJhY2Nlc3MifQ.zlXv4MgMM_0HEty1QIAUBs7PYSBMbL7lnBRJ3qFB4qM" http://localhost:5000/api/test
+# USING THE API
+# curl -H "Authorization: Bearer THE_ACCESS_TOKEN" http://localhost:5000/api/*
 
 class Api < Sinatra::Base
   include ContactHelpers
@@ -282,10 +276,7 @@ class AuthApi < Sinatra::Base
       return NO_MATCHING_SCHOOL # or something
     end
 
-  end
-
-  # post/get with login? 
-  # where do we redirect? 
+  end 
 
   post '/login' do
     puts "params = #{params}"
