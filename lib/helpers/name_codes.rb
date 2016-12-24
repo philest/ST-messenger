@@ -36,7 +36,7 @@ module NameCodes
       end
   end
 
-  def name_codes(str, recipient, day=nil)
+  def name_codes(str, recipient, day=nil, locale=nil)
     # look into passing a user
       if recipient.is_a? User
         user = recipient
@@ -51,7 +51,13 @@ module NameCodes
       if user
         parent  = user.first_name.nil? ? "" : user.first_name
         puts "name_codes parent = #{parent} for #{recipient}"
-        I18n.locale = user.locale
+        
+        if locale
+          I18n.locale = locale
+        else
+          I18n.locale = user.locale
+        end
+
         child   = user.child_name.nil? ? I18n.t('defaults.child') : user.child_name.split[0]
         
         if !user.teacher.nil?

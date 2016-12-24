@@ -1,7 +1,17 @@
 require 'jwt' 
 
+module Translate
+
+  def translate(user, text)
+
+
+  end
+end
+
+
 
 module STATUS_CODES
+  SUCCESS               = 200
   CREATE_USER_SUCCESS   = 201
   MISSING_CREDENTIALS   = 400
   NO_MATCHING_SCHOOL    = 401
@@ -45,11 +55,13 @@ class JWTAuth
   def call(env)
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
+      # puts "auth = #{env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)}"
 
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
       puts "bearer = #{bearer}"
+      puts "ENV = #{ENV['JWT_ISSUER']} #{ENV['JWT_SECRET']}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
+      puts "payload = #{payload.inspect}"
 
       if payload['type'] != 'access'
         return [WRONG_ACCESS_TKN_TYPE, { 'Content-Type' => 'text/plain' }, ['Must be an access token (not refresh).']]
@@ -62,7 +74,8 @@ class JWTAuth
       # depends on what we'll need.....
       @app.call(env)
 
-    rescue JWT::DecodeError
+    rescue JWT::DecodeError => e
+      p e
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
     rescue JWT::ExpiredSignature
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]

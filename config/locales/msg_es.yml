@@ -73,10 +73,10 @@ es:
           - "El próximo cuento saldrá este __DAY__! :)"
           - "El próximo cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
         next_week:
-          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__. Disfrútelo! :)"
-          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ este __DAY__. Esperamos que le haya gustado el de hoy! :)"
-          - "El próximo cuento saldrá este __DAY__! :)"
-          - "El próximo cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ el próximo __DAY__. Disfrútelo! :)"
+          - "__TEACHER__ le enviará un cuento nuevo de __SCHOOL__ el próximo __DAY__. Esperamos que le haya gustado el de hoy! :)"
+          - "El próximo cuento saldrá el próximo __DAY__! :)"
+          - "El próximo cuento saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
       school:
         this_week:
           - "Recibirás un cuento nuevo este __DAY__!"
@@ -84,8 +84,8 @@ es:
           - "Otro cuento saldrá este __DAY__. Que lo pase bien! :)"
           - "Otro cuento saldrá este __DAY__! Gracias por leer con nosotros :)"
         next_week:
-          - "Recibirás un cuento nuevo este __DAY__!"
-          - "Recibirás un cuento nuevo este __DAY__! Esperamos que le haya disfrutado el de hoy!"
+          - "Recibirás un cuento nuevo el próximo __DAY__!"
+          - "Recibirás un cuento nuevo el próximo __DAY__! Esperamos que le haya disfrutado el de hoy!"
           - "Otro cuento saldrá el próximo __DAY__. Que lo pase bien! :)"
           - "Otro cuento saldrá el próximo __DAY__! Gracias por leer con nosotros :)"
       both:
