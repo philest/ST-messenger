@@ -1,15 +1,5 @@
 require 'jwt' 
 
-module Translate
-
-  def translate(user, text)
-
-
-  end
-end
-
-
-
 module STATUS_CODES
   SUCCESS               = 200
   CREATE_USER_SUCCESS   = 201
@@ -69,6 +59,10 @@ class JWTAuth
 
       # payload['user']['user_id']
       env[:user] = payload['user']
+
+      if User.where(id: env[:user]['user_id']).first.nil?
+        return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ["User with id #{env[:user]['user_id']} doesn't exist"]]
+      end
 
       # what should I return here? the full env object, or just the user?
       # depends on what we'll need.....

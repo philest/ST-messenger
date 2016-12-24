@@ -30,26 +30,9 @@ require_relative '../config/initializers/redis'
 require 'bcrypt'
 
 
-# 2 parts:
-# 1. login module.
-#   if user does not have a session or refresh_token, they are taken through the login/signup process
-#   success with this redirects them to the api endpoing that they requested
-# 2. api module
-#   for this we'll have a jwt middleware which validates the user's jwt. 
-#   if there is no valid jwt, the user is redirected to login. 
-#   
-#   
-# questions:
-# 1. two different modules for login?
-# 2. use middleware?
-# 3. what again are the responses?
-# 
-# 
-
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass&first_name=David&last_name=McPeek&code=school' http://localhost:5000/auth/signup
 
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass' http://localhost:5000/auth/login
-
 
 # get access token
 # refresh_tkn=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgwODYzNzAsImlhdCI6MTQ4MjUzNDM3MCwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6MjMwMH0sInR5cGUiOiJyZWZyZXNoIn0.Y6hNMawxdPC_bYPl0nsEbjfTdL3_BSqPpfPz7Usq1s0
@@ -83,33 +66,6 @@ class Api < Sinatra::Base
   set :session_secret, ENV['SESSION_SECRET']
   enable :sessions
 
-  # before do
-  #   begin
-  #     options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-  #     bearer = request.env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-  #     puts "bearer = #{bearer}"
-  #     payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
-  #     if payload['type'] != 'access'
-  #       halt WRONG_ACCESS_TKN_TYPE, { 'Content-Type' => 'text/plain' }, 'Must be an access token (not refresh).'
-  #     end
-
-  #     puts "payload = #{payload.inspect}"
-
-  #     request.env[:user] = payload['user']
-
-  #   rescue JWT::DecodeError => e
-  #     p e.inspect
-  #     halt NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, 'A token must be passed.'
-  #   rescue JWT::ExpiredSignature
-  #     halt NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, 'The token has expired.'
-  #   rescue JWT::InvalidIssuerError
-  #     halt NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, 'The token does not have a valid issuer.'
-  #   rescue JWT::InvalidIatError
-  #     halt NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, 'The token does not have a valid "issued at" time.'
-  #   end
-
-  # end
-
   get '/test' do
     puts "you are logged in!"
     return SUCCESS
@@ -128,7 +84,13 @@ class Api < Sinatra::Base
   end
 
   post '/timezone' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
 
+    user.update(timezone: params[:timezone])
+    return SUCCESS
   end
 
   get '/booklist' do
