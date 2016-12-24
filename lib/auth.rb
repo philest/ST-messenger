@@ -115,6 +115,33 @@ class Api < Sinatra::Base
     return SUCCESS
   end
 
+  get '/story_number' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
+    st_no = user.state_table.story_number
+    content_type :json
+    return {
+      story_number: user.state_table.story_number
+    }.to_json
+
+  end
+
+  post '/story_number' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
+    st_no = user.state_table.story_number
+    user.state_table.update(story_number: st_no + 1)
+
+    content_type :json
+    return {
+      story_number: user.state_table.story_number
+    }.to_json
+  end
+
   get '/chat_message' do
     puts "request.env.user = #{request.env[:user]}"
     user = User.where(id: request.env[:user]['user_id']).first
