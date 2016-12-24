@@ -137,6 +137,34 @@ class StartDayWorker
     case platform
     when 'fb'
       u = User.where(fb_id:recipient).first
+    when 'app'
+      u = User.where(firebase_id:recipient).first
+      if u.nil?
+        puts "user with firebase_id #{recipient} does not exist"
+        return
+      else
+        # update story_number
+        u.state_table.update(story_number: u.state_table.story_number + 1)
+
+        # AUBREY WAHL!!!!!!!!!
+        # DO FIREBASE STUFF HERE!!!!!!!!!
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # END FIREBASE STUFF AUBREY WAHL!!!!!!!
+        # END IT!!!!!!!!!!
+
+        # KEEP THIS RETURN! WE DON'T WANT ANY CODE PAST HERE TO RUN.
+        return
+
+      end
     else
       u = User.where(phone:recipient).first
     end

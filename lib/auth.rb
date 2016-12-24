@@ -125,7 +125,15 @@ class Api < Sinatra::Base
     return {
       story_number: user.state_table.story_number
     }.to_json
+  end
 
+  post '/timezone' do
+
+  end
+
+  get '/booklist' do
+    # download json object
+    # return
   end
 
   post '/story_number' do
@@ -205,8 +213,8 @@ class Api < Sinatra::Base
     en_intro = name_codes(en_intro, user)
     es_intro = name_codes(es_intro, user)
 
-    en_outro = name_codes(en_outro, user, next_day)
-    es_outro = name_codes(es_outro, user, next_day)
+    en_outro = name_codes(en_outro, user, next_day, 'en')
+    es_outro = name_codes(es_outro, user, next_day, 'es')
 
     content_type :json
 
@@ -257,6 +265,19 @@ class AuthApi < Sinatra::Base
     headers 'Content-Type' => 'text/html; charset=utf-8'
   end
 
+  get '/check_phone' do
+    phone = params[:phone]
+    user = User.where(phone: phone).first
+
+    if user.nil?
+      return 404
+    else
+      return 200
+    end
+
+  end
+
+
   post '/signup' do
     phone       = params[:phone]
     first_name  = params[:first_name]
@@ -279,7 +300,6 @@ class AuthApi < Sinatra::Base
       # associate school/teacher, whichever
       new_user.match_school(code)
       new_user.match_teacher(code)
-
       # great! fantastic, resource created
       return CREATE_USER_SUCCESS
 

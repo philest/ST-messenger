@@ -64,9 +64,13 @@ class User < Sequel::Model(:users)
 		self.state_table = st
 		st.user = self
 
-		self.state_table.update(subscribed?: false) unless ENV['RACK_ENV'] == 'test'
 
-		if self.platform != 'fb'
+    if self.platform != 'app'
+		  self.state_table.update(subscribed?: false) unless ENV['RACK_ENV'] == 'test'
+      # self.state_table.update(subscribed?: true)
+    end
+
+		if not ['fb', 'app'].include? self.platform
 			self.code = generate_code
 		end
 		# puts "start code = #{self.code}"

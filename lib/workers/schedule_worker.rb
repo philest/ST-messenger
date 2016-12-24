@@ -76,6 +76,12 @@ class ScheduleWorker
     filtered = filter_users(Time.now, range)
     fb       = filtered.select { |u| u.platform == 'fb' }
     sms      = filtered.select { |u| u.platform == 'sms' or u.platform == 'feature' }
+    app      = filtered.select { |u| u.platform == 'app' }
+
+    # schedule for app
+    app.each do |user|
+      StartDayWorker.perform_async(user.firebase_id, platform='app') if user.firebase_id
+    end
 
     # for user in fb
     #   puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
