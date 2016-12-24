@@ -132,8 +132,20 @@ class Api < Sinatra::Base
   end
 
   get '/booklist' do
-    # download json object
-    # return
+    file = File.read("#{File.expand_path(File.dirname(__FILE__))}/helpers/fullBookList.json")
+    file = JSON.parse(file)
+    content_type :json
+    return file.to_json
+  end
+
+  post '/firebase_id' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
+
+    user.update(firebase_id: params[:firebase_id])
+    return SUCCESS
   end
 
   post '/story_number' do
@@ -274,7 +286,6 @@ class AuthApi < Sinatra::Base
     else
       return 200
     end
-
   end
 
 
