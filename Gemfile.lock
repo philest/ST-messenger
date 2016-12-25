@@ -45,6 +45,7 @@ GEM
     fuubar (2.2.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
+    git-version-bump (0.15.1)
     hashdiff (0.3.0)
     htmlentities (4.3.4)
     httparty (0.14.0)
@@ -79,6 +80,9 @@ GEM
     public_suffix (2.0.4)
     puma (3.6.0)
     rack (1.6.5)
+    rack-contrib (1.4.0)
+      git-version-bump (~> 0.15)
+      rack (~> 1.4)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -159,6 +163,7 @@ DEPENDENCIES
   pry
   pry-nav
   puma
+  rack-contrib (~> 1.4)
   rack-test
   rake
   redis

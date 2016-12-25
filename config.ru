@@ -22,7 +22,7 @@ Bundler.require(:default)
 require_relative 'config/initializers/locale'
 # require_relative 'config/initializers/aws'
 
-
+use ::Rack::PostBodyContentTypeParser
 use Airbrake::Rack::Middleware
 
 run Rack::URLMap.new({

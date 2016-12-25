@@ -10,6 +10,7 @@ gem 'pg'
 # gem 'aws-sdk'
 # gem 'gruff'
 
+gem 'rack-contrib', '~> 1.4'
 
 gem 'airbrake'
 
