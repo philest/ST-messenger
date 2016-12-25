@@ -35,17 +35,18 @@ require 'rack/contrib'
 # CREATE USER: (assumes school with code 'school' already exists)
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass&first_name=David&last_name=McPeek&code=school' http://localhost:5000/auth/signup
 # 
-# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
+# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323f","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
 # curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:3000/api/login
 
 # LOGIN, gets refresh token
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass' http://localhost:5000/auth/login
+# curl -H "Content-Type: application/json" -X POST -d '{"phone":"8186897323","password":"my_pass"}' http://localhost:5000/auth/login
 
 # /get_access_token from refresh token
-# curl -v -H "Authorization: Bearer THE_REFRESH_TOKEN" -X POST http://localhost:5000/auth/get_access_tkn
+# curl -v -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTgxODg2MjEsImlhdCI6MTQ4MjYzNjYyMSwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6Mjc0M30sInR5cGUiOiJyZWZyZXNoIn0.yp2ETJaszFZfXuaxdSMH7kLuaxZEAQQ59HaEhnNjM1w" -X POST http://localhost:5000/auth/get_access_tkn
 
 # USING THE API
-# curl -H "Authorization: Bearer THE_ACCESS_TOKEN" http://localhost:5000/api/*
+# curl -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0ODI3MjMwMzksImlhdCI6MTQ4MjYzNjYzOSwiaXNzIjoiYmlyZHYuaGVyb2t1YXBwLmNvbSIsInVzZXIiOnsidXNlcl9pZCI6Mjc0M30sInR5cGUiOiJhY2Nlc3MifQ.-9q-Ag8m9APZYO8AUfP_kenfSFaemqvw0zXJXsOdOkc" http://localhost:5000/api/*
 
 class Api < Sinatra::Base
   include ContactHelpers
