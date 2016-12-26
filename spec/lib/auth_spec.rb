@@ -3,8 +3,11 @@ require 'bot/dsl'
 require 'bot/curricula'
 require 'timecop'
 require 'workers'
-require 'auth'
-require 'helpers/authentication'
+require 'api/auth'
+require 'api/user'
+require 'api/helpers/authentication'
+require 'api/constants/statusCodes'
+require 'api/middleware/authorizeEndpoint'
 require 'bcrypt'
 require 'jwt'
 require 'dotenv'
@@ -17,11 +20,11 @@ require 'rack/test'
 describe 'protected api', api: true do
   include Rack::Test::Methods
   include STATUS_CODES
-  include Authentication
+  include AuthenticationHelpers
   include BCrypt
 
   def app
-    Api
+    UserAPI
   end
 
   before(:each) do
@@ -76,7 +79,7 @@ describe 'protected api', api: true do
 
   # context 'bad access token' do
 
-  #   it "returns WRONG_TKN_TYPE it's a refresh token and not an access token", god:true do 
+  #   it "returns WRONG_TKN_TYPE it's a refresh token and not an access token", god:true do
   #     # get a refresh token
   #     # try to access
   #     x = get '/test', {}, {"HTTP_AUTHORIZATION"=>"Bearer: #{@refresh_tkn}"}
@@ -89,7 +92,7 @@ describe 'protected api', api: true do
   #     expect(last_response.status).to eq STATUS_CODES::NO_VALID_ACCESS_TKN
   #   end
 
-  # end 
+  # end
 
 end
 
@@ -101,7 +104,7 @@ describe 'auth' do
 
 
   def app
-    AuthApi
+    AuthAPI
   end
 
   context 'getting an access token' do
@@ -127,7 +130,7 @@ describe 'auth' do
 
     end
 
-    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else" do 
+    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else" do
       post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{@token}"}
 
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
@@ -136,16 +139,16 @@ describe 'auth' do
 
       access_tkn_payload, header = JWT.decode access_tkn, ENV['JWT_SECRET'], true, options
 
-      user = access_tkn_payload['user'] 
+      user = access_tkn_payload['user']
       type = access_tkn_payload['type']
 
-      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{access_tkn}"}     
+      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{access_tkn}"}
       expect(last_response.status).to eq STATUS_CODES::WRONG_ACCESS_TKN_TYPE
 
      end
 
     it "returns a valid access token when refresh token is good" do
-      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{@token}"}     
+      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{@token}"}
 
       token =  JSON.parse(last_response.body)['token']
 
@@ -158,7 +161,7 @@ describe 'auth' do
 
       puts "FINAL TOKEN = #{access_tkn_payload.inspect}"
 
-      
+
       user = access_tkn_payload['user']
       type = access_tkn_payload['type']
 
@@ -168,7 +171,7 @@ describe 'auth' do
     end
 
     it "returns error when invalid refresh token" do
-      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer my_ass_is_a_token"} 
+      post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer my_ass_is_a_token"}
       expect(last_response.status).to eq STATUS_CODES::NO_VALID_ACCESS_TKN
     end
 
@@ -231,7 +234,7 @@ describe 'auth' do
 
       payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
 
-      user = payload['user'] 
+      user = payload['user']
       type = payload['type']
 
       expect(user['user_id']).to eq @user.id
