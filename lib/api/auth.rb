@@ -1,5 +1,5 @@
 #  auth.rb                                     David McPeek
-#
+#                (with significant assistance from A. Wahl)
 #
 #  The auth controller.
 #  --------------------------------------------------------
