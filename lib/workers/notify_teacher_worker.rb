@@ -6,25 +6,6 @@ Dotenv.load
 class NotifyTeacherWorker
   include Sidekiq::Worker
 
-  def teacher_signup_success(teacher)
-    # Authenticate with your API key
-    auth = { :api_key => ENV['CREATESEND_API_KEY'] }
-
-    # The unique identifier for this smart email
-    smart_email_id = 'a7ad322e-3631-4bf5-af7e-c85ffddbf4fd'
-
-    # Create a new mailer and define your message
-    tx_smart_mailer = CreateSend::Transactional::SmartEmail.new(auth, smart_email_id)
-    message = {
-      'To' => 'josedmcpeek@gmail.com',
-      'Data' => {
-        'signature' => teacher.signature,
-      }
-    }
-
-    # Send the message and save the response
-    response = tx_smart_mailer.send(message)
-  end
 
   def new_users_notification(teacher)
     last_notified = teacher.notified_on.nil? ? teacher.enrolled_on : teacher.notified_on
@@ -108,8 +89,6 @@ class NotifyTeacherWorker
     end
 
     case msg_type
-    when 'TEACHER_SIGNUP_SUCCESS'
-      teacher_signup_success(teacher)
     when 'NEW_USERS_NOTIFICATION'
       new_users_notification(teacher)
     end
