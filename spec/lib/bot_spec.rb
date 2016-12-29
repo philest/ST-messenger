@@ -134,7 +134,7 @@ def app() Facebook::Messenger::Server end
 			end
 
 			it "replies with confirmation" do 
-				expect(@reply).to eq ""
+				expect(@reply).to eq "Okay, you'll stop getting messages! If you want free books again just type GO"
 			end 
 		end
 

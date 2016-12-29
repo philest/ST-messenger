@@ -1,4 +1,3 @@
-
 require 'httparty'
 require_relative 'config/initializers/aws'
 require_relative 'bin/local'
@@ -26,4 +25,5 @@ require_relative 'lib/workers/notify_teacher_worker'
 worker = NotifyTeacherWorker.new
 
 worker.new_users_notification(t)
+
 

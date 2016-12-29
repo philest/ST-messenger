@@ -13,7 +13,18 @@ class User < Sequel::Model(:users)
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
+	def story_number
+		self.state_table.story_number
+	end
 
+	def mod_story_no
+		mod = story_number % $story_count
+		return mod + 1
+	end
+
+	def mod_script
+		mod_story_no == 1 ? mod_story_no + 1 : mod_story_no
+	end
 
 	# @@code_index = 0
 

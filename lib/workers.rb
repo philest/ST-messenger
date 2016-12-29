@@ -30,6 +30,27 @@ Birdv::DSL::Curricula.load
 
 require_relative 'bot/dsl'
 
+puts Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sequence_scripts/*")
+
+# story_count
+$story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sequence_scripts/*")
+                .inject(0) do |sum, n|
+                  if /\d+\.rb/.match n
+                    sum + 1
+                  else  
+                    sum
+                  end
+                end
+
+$sms_story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sms_sequence_scripts/*")
+                .inject(0) do |sum, n|
+                  if /\d+\.rb/.match n
+                    sum + 1
+                  else  
+                    sum
+                  end
+                end
+
 Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/sms_sequence_scripts/*")
 			.each {|f| require_relative f }
 

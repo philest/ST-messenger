@@ -136,9 +136,34 @@ module MessageReplyHelpers
         I18n.t 'scripts.subscription.resubscribe'
       else
         # send their next story
-        script_name = "day" + user.state_table.story_number.to_s
-        MessageWorker.perform_async(user.fb_id, script_name, :storysequence, 'fb') if user.platform == 'fb'
+        # script_name = "day" + user.state_table.story_number.to_s
+        # have to do modulo here too......
+        # but this time they're still subscribed, so how does that change things?
+        st_no = user.state_table.story_number
+        last_unique = user.state_table.last_unique_story
+        last_unique_read = user.state_table.last_unique_story_read?
+
+        if last_unique_read == false # signifies that our last story was the "unique" exception
+          puts "the last unique story wasn't read, so we must send that one (bot.rb)"
+          user.state_table.update(last_unique_story_read?: true)
+          user_day = "day#{last_unique}"
+          MessageWorker.perform_in(2.seconds, user.fb_id, user_day, :storysequence, 'fb')
+
+        elsif st_no > $story_count # but we have read our last unique story
+          # get the button we sent before
+          mod = (st_no % $story_count) + 1 # just to be 1-indexed
+          user_day = (mod == 1) ? 2 : mod
+          user_day = "day#{user_day}"
+          MessageWorker.perform_in(2.seconds, user.fb_id, user_day, :storysequence, 'fb')
+
+        else # PERFORM REGULAR FUNCTION bc they still haven't gone through all stories 
+          user_day = "day#{st_no}"
+          MessageWorker.perform_in(2.seconds, user.fb_id, user_day, :storysequence, 'fb')
+        end
         return ''
+
+        # MessageWorker.perform_async(user.fb_id, script_name, :storysequence, 'fb') if user.platform == 'fb'
+        # return ''
       end
     when ENROLL_MSG
       # update story number! because you'll have just sent the first story.

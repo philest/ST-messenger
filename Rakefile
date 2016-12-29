@@ -42,6 +42,22 @@ namespace :db do
 
   end
 
+  task :run_migration, [:version] do |t, args|
+    require "sequel"
+    Sequel.extension :migration
+    puts "DB_URL = #{ENV.fetch("PG_URL")}"
+    db = Sequel.connect(ENV.fetch("PG_URL"))
+    if args[:version]
+      puts "Migrating to version #{args[:version]}"
+      Sequel::Migrator.run(db, "db/migrations", target: args[:version].to_i)
+    else
+      puts "Migrating to latest"
+      Sequel::Migrator.run(db, "db/migrations")
+    end
+
+  end
+
+
   namespace :migrate do
     Sequel.extension :migration
     desc "Perform migration reset (full erase and migration up)"

@@ -31,6 +31,7 @@ module Clockwork
     # so every hour, we check if we're within the hour of 4am california time.
     # that means that everyone will get their notification before 7am, which is what we want. 
 
+ 
 
     every 1.hour, 'teacher.notify' do
       if Time.now.utc.hour == 12 # 4am PST
@@ -40,7 +41,6 @@ module Clockwork
             NotifyTeacherWorker.perform_async(t.id, 'NEW_USERS_NOTIFICATION')
           end
         end
-
       end
 
     end # teacher.notify

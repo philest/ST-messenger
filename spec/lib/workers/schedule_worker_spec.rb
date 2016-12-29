@@ -42,6 +42,7 @@ describe ScheduleWorker do
     @late.state_table.update(story_number: @story_num)
 
     @users = [@on_time, @just_early, @just_late, @early, @late]
+    $story_count = 1000
 
   end
 
@@ -631,7 +632,8 @@ describe ScheduleWorker do
   
     context '#update_day' do
 
-      it 'increments the day # when last story was read' do
+      it 'increments the day # when last story was read', ass:true do
+        $story_count = 1000
         expect(@script).to receive(:run_sequence)
         @u1.state_table.update(last_story_read?:true)
         expect{
@@ -641,7 +643,7 @@ describe ScheduleWorker do
         }.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
 
       end
-        # TODO: i need a trickier way to test this
+      # TODO: i need a trickier way to test this
       it 'should update day before running the sequence', order:true do
         # expect(@script).to receive(:run_sequence)
 

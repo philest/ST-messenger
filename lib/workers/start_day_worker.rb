@@ -54,19 +54,80 @@ class StartDayWorker
   end
 
   def update_day(user, platform)
-    n = user.state_table.story_number + 1
+    # do all the modulo logic here.... so don't update story_number if modulo logic applies
+    st_no = user.state_table.story_number
+    n = st_no + 1
+    last_unique = user.state_table.last_unique_story
+    puts "story_number = #{st_no}, last_unique = #{last_unique}, $story_count = #{$story_count}"
+
+    puts "user = #{user.inspect}"
+    puts "user.state_table = #{user.state_table.inspect}"
+
     case platform
     when 'fb'
-      if read_yesterday_story?(user)
-        user.state_table.update(story_number: n, 
-                                last_story_read?: false)
-      end
+        # only do modulo stuff if we've read yesterday's story... all the same logic applies
+        if read_yesterday_story?(user)
+            # if our current story number is greater than those available
+            if st_no >= $story_count
+              # if our last unique story index is less than the total count of unique stories
+              if last_unique < $story_count
+                # increment last_unique bc we are definitely going to send that one.
+                # DO NOT increment story_number
+                puts "sending the next unique story..."
+                user.state_table.update(last_story_read?: false,
+                                        last_unique_story: last_unique + 1, 
+                                        last_unique_story_read?: false)
+                # do not increment story_number so next time we'll get back to the same story we were going to read
+                return last_unique + 1
+              else # send mod'd story index
+                # should I update story_number here? and send the NEXT regular story? confusing...
+                mod = (n % $story_count) + 1 # just to get indexed by 1
+                user.state_table.update(story_number: n, 
+                                      last_story_read?: false)
+                return mod == 1 ? 2 : mod
+              end
+
+            else # NORMAL FUNCTIONING: we have seen fewer stories than those available
+              user.state_table.update(story_number: n, 
+                                      last_story_read?: false,
+                                      last_unique_story: last_unique + 1)
+              return user.state_table.story_number
+            end
+
+
+        # if the last_unique_story we read is false
+        elsif user.state_table.last_unique_story_read? == false
+          # send the last_unique_story....
+          return last_unique
+          
+        end # if read_yesterday_story?
+
     else # platform == 'mms' or 'sms'
       # Update. Since there are no buttons, we just assume peeps have read their story. 
       if user.state_table.subscribed? or user.state_table.story_number == 0
-        user.state_table.update(story_number: n)
-      end
-    end
+
+        if st_no >= $sms_story_count
+          if last_unique < $sms_story_count
+            user.state_table.update(last_unique_story: last_unique + 1)
+            return last_unique + 1
+          else
+            # return (st_no % $sms_story_count) + 1
+
+            # should I update story_number here? and send the NEXT regular story? confusing...
+            mod = (n % $sms_story_count) + 1 # just to get indexed by 1
+            user.state_table.update(story_number: n)
+            return mod == 1 ? 2 : mod
+          end
+
+        else # we have not seen all the available stories
+          user.state_table.update(story_number: n, last_unique_story: last_unique + 1)
+
+        end # if st_no > $sms_story_count
+
+      end # if subscribed
+
+    end # case platformm
+
 
     return user.state_table.story_number
     # TODO: do error handling in a smart idempotent way (I mean, MAYBE)
@@ -108,6 +169,9 @@ class StartDayWorker
     day_number =  update_day(u, platform)
 
     # double quotation
+    # also have to do mod here
+    #   but want to make sure we don't include script 1 when mod'ing...
+    #   also make sure that we don't go over the script count when compensating for that
     script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
 
     if !script.nil?
@@ -185,10 +249,11 @@ class StartDayWorker
       puts "#{recipient} is at story_number = #{day_number}"
 
       # if the person was on sms, go back 1 story because they shouldn't have updated their story_number
-      if u.platform == 'sms' or u.platform == 'feature'
-        current_no = u.state_table.story_number
-        u.state_table.update(story_number: current_no - 1)
-      end
+      # WITH MODULO, THIS IS WRONG NOW
+      # if u.platform == 'sms' or u.platform == 'feature'
+      #   current_no = u.state_table.story_number
+      #   u.state_table.update(story_number: current_no - 1)
+      # end
 
     end
   end

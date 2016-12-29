@@ -164,11 +164,54 @@ Bot.on :message do |message|
         #   REDIS.expire(redis_limit_key, 60)
         # end
 
+        # i send an old story.
+        # user = story 15
+        # story count = 8
+        # last sent = 4
+        # last_unique_story = 8
+        # last_unique_story_read = true
+
+        # i still haven't read all the stories
+        # user = story 3
+        # story count = 8
+        # last sent = 3
+        # last_unique_story = 3
+        # last_unique_story_read = true
+
+
+        # i send a new story.
+        # user = story 15
+        # story count = 8
+        # last sent = 8
+        # last_unique_story = 8
+        # last_unique_story_read = false
+
+
         fb_send_txt(message.sender, reply) unless reply.nil? or reply.empty? or reply.include? 'translation missing'
 
         if reply == (I18n.t 'scripts.subscription.resubscribe')
-          user_day = "day#{db_user.state_table.story_number}"
-          MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
+          st_no = db_user.state_table.story_number
+          last_unique = db_user.state_table.last_unique_story
+          last_unique_read = db_user.state_table.last_unique_story_read?
+          # now check if the story they received is one of the uniques....
+          if last_unique_read == false
+            puts "the last unique story wasn't read, so we must send that one (bot.rb)"
+            db_user.state_table.update(last_unique_story_read?: true)
+            user_day = "day#{last_unique}"
+            MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
+
+          elsif st_no > $story_count # but we have read our last unique story
+            # get the button we sent before
+            mod = (st_no % $story_count) + 1 # just to be 1-indexed
+            user_day = (mod == 1) ? 2 : mod
+            user_day = "day#{user_day}"
+            MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
+
+          else # PERFORM REGULAR FUNCTION bc they still haven't gone through all stories 
+            user_day = "day#{st_no}"
+            MessageWorker.perform_in(2.seconds, sender_id, user_day, :storysequence, 'fb')
+          end
+
         end
 
       end # case message.text

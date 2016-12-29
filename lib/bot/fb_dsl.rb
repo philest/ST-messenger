@@ -147,7 +147,6 @@ module Birdv
       end
 
       
-       # TODO: should I delete args? not used
       def story(args={})
         
         return lambda do |recipient|
@@ -158,8 +157,9 @@ module Birdv
 
             curriculum = Birdv::DSL::Curricula.get_version(version.to_i)
 
-
             # needs to be indexed at 0, so subtract 1 from the script day, which begins at 1
+
+            # this is where we perform the modulo?????????
             storyinfo = curriculum[@script_day - 1]
 
             lib, title, num_pages = storyinfo
@@ -183,12 +183,10 @@ module Birdv
               locale:     locale
             })
             
-            # TODO: error stuff
-
-            # TODO: make this atomic somehow? slash errors
             User.where(fb_id:recipient).first.state_table.update(
                                         last_story_read_time:Time.now.utc, 
                                         last_story_read?: true,
+                                        last_unique_story_read?: true,
                                         num_reminders: 0,
                                         subscribed?: true)
 
@@ -234,8 +232,6 @@ module Birdv
         p e.message
         return false 
       end
-
-
 
       def process_txt( fb_object, user)
           recipient = user.fb_id
@@ -284,7 +280,6 @@ module Birdv
               return trans.is_a?(Array) ? trans[@script_day - 1] : trans
           end # translate
 
-
           m = fb_object[:message]
 
           if !m.nil?
@@ -331,7 +326,6 @@ module Birdv
                   
                 end # window_text_regex.match
 
-                # puts "trans_code before = #{trans_code}"
                 # for intros and teacher/school messaging
                 trans_code = teacher_school_messaging(trans_code, recipient)
                 # puts "trans_code after = #{trans_code}"

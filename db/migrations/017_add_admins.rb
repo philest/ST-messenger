@@ -22,8 +22,8 @@ Sequel.migration do
   end
 
 
-  # down do
-  #   drop_table(:admins)
-  # end
+  down do
+    drop_table(:admins)
+  end
 
 end

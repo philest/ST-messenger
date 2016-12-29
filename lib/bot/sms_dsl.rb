@@ -145,8 +145,14 @@ module Birdv
         puts "we_have_a_history = #{we_have_a_history}"
 
         if we_have_a_history
-          puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
-          return
+          # most recent button_press_log.....
+          history = user_buttons.where(platform:user.platform,
+                                               script_name:@script_name, 
+                                               sequence_name:current_sequence).max(:created_at)
+          if (Time.now - history) < 6.hours
+            puts "send_sms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
+            return
+          end
         end
         translated_text = translate_sms(phone, text)
         if translated_text == false
@@ -187,11 +193,19 @@ module Birdv
                                                script_name:@script_name, 
                                                sequence_name:current_sequence).first.nil?
 
+
+
         puts "we_have_a_history = #{we_have_a_history}"
 
         if we_have_a_history
-          puts "send_mms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
-          return
+          # most recent button_press_log.....
+          history = user_buttons.where(platform:user.platform,
+                                               script_name:@script_name, 
+                                               sequence_name:current_sequence).max(:created_at)
+          if (Time.now - history) < 6.hours
+            puts "send_mms() - WE'VE ALREADY SEEN #{@script_name.upcase} #{current_sequence.upcase}!!!!"
+            return
+          end
         end
 
         img_url = translate_sms(phone, img_url)

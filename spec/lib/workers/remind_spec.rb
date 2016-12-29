@@ -220,7 +220,6 @@ describe "Reminders" do
     expect(@on_time.state_table.last_reminded_time).to eq Time.now
     expect(@on_time.state_table.num_reminders).to eq 1
     puts "state table after remind = #{@on_time.state_table.inspect}"
-
   end
 
   it "should not remind users again after they've already gotten a reminder" do

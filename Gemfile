@@ -13,7 +13,8 @@ gem 'pg'
 
 gem 'airbrake'
 
-gem 'createsend'
+gem 'json'
+# gem 'createsend'
 
 
 # bot stuff
@@ -29,7 +30,6 @@ gem 'i18n'
 gem 'httparty'
 gem 'rake'
 gem 'sequel'
-gem 'json'
 gem 'redis'
 gem 'sidekiq'
 gem 'sidekiq-unique-jobs'

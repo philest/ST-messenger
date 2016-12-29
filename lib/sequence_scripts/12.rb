@@ -1,53 +1,42 @@
 Birdv::DSL::ScriptClient.new_script 'day12' do
 
-	# day 6
-	#
-	# register some buttons for reuse!
-	# ================================
-	# NOTE: always call story_button, template_generic, 
-	# and button_normal OUTSIDE of sequence blocks
-	#
-	button_story({
-		name: 		'tap_here',
-		title: 		'scripts.buttons.title[1]',
-		image_url:  'scripts.buttons.story_img_url', 
-		buttons: 	[postback_button('scripts.buttons.tap', script_payload(:storysequence))]
-	})
 
-	# button_normal({
-	# 	name: 			 'thanks',
-	# 	window_text: 'scripts.buttons.window_text',
-	# 	buttons: 			[postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
-	# })
+  button_story({
+    name:     'tap_here',
+    title:    'scripts.buttons.title[0]',
+    image_url:  'scripts.buttons.story_img_url', 
+    buttons:  [postback_button('scripts.buttons.tap', script_payload(:storysequence))]
+  })
 
-	sequence 'greeting' do |recipient|
-		txt = 'scripts.intro.__poc__[5]'
-		send recipient, text({text: txt})
-		delay recipient, 'storybutton', 3.seconds
-	end
 
-	sequence 'storybutton' do |recipient|		
-		# send tap_here button
-		send recipient, button({name:'tap_here'})
-	end
+  sequence 'greeting' do |recipient|
+    txt = 'scripts.intro.__poc__[1]'
+    send recipient, text({text: txt})
+    delay recipient, 'storybutton', 3.seconds
+  end
 
-	sequence 'storysequence' do |recipient|
-		
-		# send out story
-		send recipient, story()
+  sequence 'storybutton' do |recipient|   
+    # send tap_here button
+    send recipient, button({name:'tap_here'})
+  end
 
-		# delay 'thanks'
-		delay recipient, 'thanks', 23.seconds
-	end
+  sequence 'storysequence' do |recipient|
+    
+    # send out story
+    send recipient, story()
 
-	sequence 'thanks' do |recipient|
-		# one more button
-		# send recipient, button({name:'thanks'})
-		txt = 'scripts.outro.__poc__[1]'
-		send recipient, text({text:txt})
-	end
+    # delay 'thanks'
+    delay recipient, 'thanks', 23.seconds
+  end
 
-	sequence 'yourwelcome' do |recipient|
-		send recipient, text({text:'scripts.buttons.welcome'})
-	end
+  sequence 'thanks' do |recipient|
+    # one more button
+    # send recipient, button({name:'thanks'})
+    txt = 'scripts.outro.__poc__[3]'
+    send recipient, text({text:txt})
+  end
+
+  sequence 'yourwelcome' do |recipient|
+    send recipient, text({text:'scripts.buttons.welcome'})
+  end
 end 
