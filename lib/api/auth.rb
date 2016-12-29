@@ -39,13 +39,8 @@ require_relative 'constants/statusCodes'
 
 # CREATE USER: (assumes school with code 'school' already exists)
 # curl -v -H -X POST -d 'phone=8186897323&password=my_pass&first_name=David&last_name=McPeek&code=school' http://localhost:5000/auth/signup
-<<<<<<< HEAD:lib/auth.rb
-# 
-# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
-=======
 #
-# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323f","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
->>>>>>> backup:lib/api/auth.rb
+# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
 # curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:3000/api/login
 
 # LOGIN, gets refresh token
