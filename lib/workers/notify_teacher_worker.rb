@@ -1,7 +1,7 @@
-require 'createsend'
+# require 'createsend'
 require 'sidekiq'
 require 'dotenv'
-Dotenv.load
+Dotenv.load if ['development', 'test'].include? ENV['RACK_ENV']
 
 class NotifyTeacherWorker
   include Sidekiq::Worker
@@ -60,29 +60,41 @@ class NotifyTeacherWorker
   end
 
   def new_users_notification_helper(sig, email, count, family, list_o_names, quicklink)
-    # Authenticate with your API key
-    auth = { :api_key => ENV['CREATESEND_API_KEY'] }
-    # The unique identifier for this smart email
-    smart_email_id = '98b9048d-a381-445e-8d21-65a3a5cb2b37'
-
-    # Create a new mailer and define your message
-    tx_smart_mailer = CreateSend::Transactional::SmartEmail.new(auth, smart_email_id)
-
-      message = {
-        'To' => email,
-        'Data' => {
-          'signature' => sig,
-          'family_count' => count,
-          'family_or_families' => family,
-          'list_of_families' => list_o_names,
-          'quicklink' => quicklink
-        }
+    HTTParty.post(
+      ENV['ST_ENROLL_WEBHOOK'] + '/update_teacher',
+      body: {
+        sig: sig,
+        email: email,
+        count: count,
+        family: family,
+        list_o_names: list_o_names,
+        quicklink: quicklink
       }
-    # Send the message and save the response
-    response = tx_smart_mailer.send(message)
+    )
+
+    # # Authenticate with your API key
+    # auth = { :api_key => ENV['CREATESEND_API_KEY'] }
+    # # The unique identifier for this smart email
+    # smart_email_id = '98b9048d-a381-445e-8d21-65a3a5cb2b37'
+
+    # # Create a new mailer and define your message
+    # tx_smart_mailer = CreateSend::Transactional::SmartEmail.new(auth, smart_email_id)
+
+    #   message = {
+    #     'To' => email,
+    #     'Data' => {
+    #       'signature' => sig,
+    #       'family_count' => count,
+    #       'family_or_families' => family,
+    #       'list_of_families' => list_o_names,
+    #       'quicklink' => quicklink
+    #     }
+    #   }
+    # # Send the message and save the response
+    # response = tx_smart_mailer.send(message)
   end
 
-  def perform(teacher_id, msg_type)
+  def perform(teacher_id, msg_type='NEW_USERS_NOTIFICATION')
     teacher = Teacher.where(id: teacher_id).first
     if teacher.nil?
       return

@@ -12,6 +12,8 @@ class Teacher < Sequel::Model(:teachers)
 
   def quicklink
     "http://www.joinstorytime.com/signin?email=#{email}&name=#{signature.split(' ').join('+')}&school=#{self.school.code.split('|')[0]}&role=teacher"
+  rescue => e
+    p e + " -> possibly missing a teacher field."
   end
 
   def signup_user(user)

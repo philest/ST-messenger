@@ -13,9 +13,8 @@ gem 'pg'
 
 gem 'airbrake'
 
-gem 'json'
-gem 'createsend'
-gem 'multi_json'
+# gem 'createsend'
+# gem 'json', '~>1.0.0'
 
 
 # bot stuff

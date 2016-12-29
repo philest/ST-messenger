@@ -27,10 +27,6 @@ GEM
     connection_pool (2.2.1)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    createsend (4.0.1)
-      hashie (>= 1.2, < 3)
-      httparty (~> 0.10)
-      json
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
     dotenv (2.1.1)
@@ -49,12 +45,10 @@ GEM
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     hashdiff (0.3.2)
-    hashie (2.1.2)
     htmlentities (4.3.4)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-    json (2.0.2)
     jwt (1.5.6)
     launchy (2.4.3)
       addressable (~> 2.3)
@@ -145,7 +139,6 @@ DEPENDENCIES
   airbrake
   capybara
   clockwork
-  createsend
   database_cleaner
   dotenv
   email_spec
@@ -155,8 +148,6 @@ DEPENDENCIES
   fuubar
   httparty
   i18n
-  json
-  multi_json
   newrelic_rpm
   pg
   pony
