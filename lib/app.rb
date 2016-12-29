@@ -51,17 +51,10 @@ class TextApi < Sinatra::Base
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
 
-  get '/notify_teachers' do
-    school = School.where(signature: "ST Prep").first
-    if school.nil?
-      school = School.create(signature: "ST Prep")
-    end
+  get '/notify_teachers_test' do
+
     teacher = Teacher.where(email: "josedmcpeek@gmail.com").first
-    if teacher.nil?
-      teacher = Teacher.create(email: "josedmcpeek@gmail.com")
-    end
-    school.signup_teacher(teacher)
-    NotifyTeacherWorker.perform_async(teacher.id)
+    NotifyTeacherWorker.perform_async(teacher.id) if teacher
 
   end
   
