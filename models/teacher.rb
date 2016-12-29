@@ -11,7 +11,11 @@ class Teacher < Sequel::Model(:teachers)
   add_association_dependencies users: :nullify
 
   def quicklink
-    "http://www.joinstorytime.com/signin?email=#{email}&name=#{signature.split(' ').join('+')}&school=#{self.school.code.split('|')[0]}&role=teacher"
+    if email and signature and self.school and role
+      "http://www.joinstorytime.com/signin?email=#{email}&name=#{signature.split(' ').join('+')}&school=#{self.school.code.split('|')[0]}&role=teacher"
+    else
+      ''
+    end
   rescue => e
     p e + " -> possibly missing a teacher field."
   end
