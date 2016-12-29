@@ -12,11 +12,12 @@ require_relative 'workers'
 
 # configure facebook-messenger gem 
 include Facebook::Messenger
-Facebook::Messenger.configure do |config|
-  config.access_token = ENV['FB_ACCESS_TKN']
-  config.app_secret   = ENV['APP_SECRET']
-  config.verify_token = ENV['FB_VERIFY_TKN']
-end
+# we might not need to configure anymore? 
+# Facebook::Messenger.configure do |config|
+#   config.access_token = ENV['FB_ACCESS_TKN']
+#   config.app_secret   = ENV['APP_SECRET']
+#   config.verify_token = ENV['FB_VERIFY_TKN']
+# end
 
 # custom fb helpers that we wrote
 require_relative 'helpers/fb'
