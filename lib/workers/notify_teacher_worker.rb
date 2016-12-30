@@ -26,11 +26,26 @@ class NotifyTeacherWorker
       if named.size == 1
         list_o_names = named.first.first_name
         list_o_names += " #{named.first.last_name.to_s}" if not named.first.last_name.nil?
+
+        if unnamed.size > 0
+          list_o_names += " and #{unnamed.size} other#{unnamed.size > 1 ? 's' : ''}"
+        end
+
       elsif named.size == 2
-        list_o_names = named.first.first_name
-        list_o_names += " #{named.first.last_name.to_s}" if not named.first.last_name.nil?
-        list_o_names += " and #{named.last.first_name}"
-        list_o_names += " #{named.last.last_name.to_s}" if not named.last.last_name.nil?
+
+        if unnamed.size > 0
+          list_o_names = named.first.first_name
+          list_o_names += " #{named.first.last_name.to_s}" if not named.first.last_name.nil?
+          list_o_names += ", #{named.last.first_name}"
+          list_o_names += " #{named.last.last_name.to_s}" if not named.last.last_name.nil?
+          list_o_names += ", and #{unnamed.size} other#{unnamed.size > 1 ? 's' : ''}"
+        else
+          list_o_names = named.first.first_name
+          list_o_names += " #{named.first.last_name.to_s}" if not named.first.last_name.nil?
+          list_o_names += " and #{named.last.first_name}"
+          list_o_names += " #{named.last.last_name.to_s}" if not named.last.last_name.nil?
+        end 
+
       else
         last_user = named.pop
         list_o_names = named.inject('') do |string, user|
@@ -44,7 +59,7 @@ class NotifyTeacherWorker
         last_u_name += " #{last_user.last_name.to_s}" if not last_user.last_name.nil?
 
         if unnamed.size > 0
-          list_o_names += "#{last_u_name}, and #{unnamed.size} others"
+          list_o_names += "#{last_u_name}, and #{unnamed.size} other#{unnamed.size > 1 ? 's' : ''}"
         else
           list_o_names += "and #{last_u_name}"
         end
