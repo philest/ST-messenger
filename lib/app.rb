@@ -54,10 +54,13 @@ class TextApi < Sinatra::Base
   end
 
   get '/notify_teachers_test' do
-
     teacher = Teacher.where(email: "josedmcpeek@gmail.com").first
     NotifyTeacherWorker.perform_async(teacher.id) if teacher
+  end
 
+  get '/notify_admins_test' do
+    admin = Admin.where(email: "josedmcpeek@gmail.com").first
+    NotifyAdminWorker.perform_async(admin.id) if admin
   end
   
   post '/sms' do
