@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'rack/test'
 require 'timecop'
 require 'active_support/time'
+require 'json'
 
 require 'bot'
 require 'facebook/messenger'
@@ -26,11 +27,11 @@ describe 'TheBot', integration:true do
   let(:challenge) { ENV['FB_ACCESS_TKN'] }    # is this correct?
 
   before do
-    Facebook::Messenger.configure do |config|
-      # config.access_token = ENV['FB_ACCESS_TKN']
-      # config.app_secret   = ENV['APP_SECRET']
-      config.verify_token = verify_token
-    end
+    # Facebook::Messenger.configure do |config|
+    #   # config.access_token = ENV['FB_ACCESS_TKN']
+    #   # config.app_secret   = ENV['APP_SECRET']
+    #   config.verify_token = verify_token
+    # end
   end
 
   include RSpecMixin
@@ -90,8 +91,8 @@ describe 'TheBot', integration:true do
   describe 'POST' do
     context 'with the right verify token' do
       it 'responds with the challenge' do
-        get '/', 'hub.verify_token' => verify_token,
-                 'hub.challenge' => challenge
+        get '/', 'hub.verify_token' => ENV['VERIFY_TOKEN'],
+                 'hub.challenge' => ENV['ACCESS_TOKEN']
 
         expect(last_response.status).to eq(200)
         expect(last_response.body).to eq(challenge)
@@ -134,7 +135,7 @@ describe 'TheBot', integration:true do
 
           signature = OpenSSL::HMAC.hexdigest(
             OpenSSL::Digest.new('sha1'),
-            Facebook::Messenger.config.app_secret,
+            ENV['APP_SECRET'],
             body
           )
         
@@ -212,7 +213,7 @@ describe 'TheBot', integration:true do
         return 'HTTP_X_HUB_SIGNATURE' => "sha1=#{
           OpenSSL::HMAC.hexdigest(
           OpenSSL::Digest.new('sha1'),
-          Facebook::Messenger.config.app_secret,
+          ENV['APP_SECRET'],
           body)}"
       }
   end

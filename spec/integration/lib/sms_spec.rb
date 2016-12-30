@@ -91,6 +91,16 @@ describe 'sms' do
 
     end
 
+    after(:all) {
+      School.each {|s| s.destroy}
+    }
+
+    after(:each) {
+      School.each {|s| s.destroy}
+    }
+
+
+
     before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
 
     before(:each) do

@@ -1,24 +1,14 @@
 source 'https://rubygems.org'
-
 ruby '2.3.1'
-
-
-
 gem 'pg'
-
 # aws and image generation
 # gem 'aws-sdk'
 # gem 'gruff'
-
 gem 'rack-contrib', '~> 1.4'
-
 gem 'airbrake'
-
 # authentication
 gem 'bcrypt'
 gem 'jwt'
-
-
 # bot stuff
 # gem 'puma', 	'~>3.4.0'
 gem 'puma'
@@ -32,7 +22,6 @@ gem 'i18n'
 gem 'httparty'
 gem 'rake'
 gem 'sequel'
-gem 'json'
 gem 'redis'
 gem 'sidekiq'
 gem 'sidekiq-unique-jobs'

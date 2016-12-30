@@ -24,6 +24,27 @@ module Clockwork
   		# TODO: remove .minutes! should be in seconds
   		ScheduleWorker.perform_async(sched_range)
   	end
+
+    # we want once per day in the morning for teachers to be notified
+    # we don't know what timezone the teacher's in, but it's between -8 and -5
+
+    # so every hour, we check if we're within the hour of 4am california time.
+    # that means that everyone will get their notification before 7am, which is what we want. 
+
+ 
+
+    every 1.hour, 'teacher.notify' do
+      if Time.now.utc.hour == 12 # 4am PST
+        Teacher.each do |t|
+          # we don't want any repeats
+          if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
+            NotifyTeacherWorker.perform_async(t.id, 'NEW_USERS_NOTIFICATION')
+          end
+        end
+      end
+
+    end # teacher.notify
+
 end
 
 

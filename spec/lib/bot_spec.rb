@@ -232,7 +232,7 @@ def app() Facebook::Messenger::Server end
 
 				        @signature = OpenSSL::HMAC.hexdigest(
 				          OpenSSL::Digest.new('sha1'),
-				          Facebook::Messenger.config.app_secret,
+				          ENV['APP_SECRET'],
 				          @body
 				        )
 	      

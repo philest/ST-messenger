@@ -9,13 +9,14 @@ Sequel.migration do
     end
 
   end
+  
   down do
     alter_table(:admins) do
-      drop_column :signin_count 
+      drop_column :signin_count
     end
 
     alter_table(:teachers) do
-      drop_column :signin_count 
+      drop_column :signin_count
     end
 
   end

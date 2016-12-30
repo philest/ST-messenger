@@ -7,7 +7,6 @@ require 'workers'
 describe 'modulo stories' do
   context "reminders" do
 
-
     before(:each) do
       # clean everything up
       # DatabaseCleaner.clean
@@ -378,11 +377,8 @@ describe 'modulo stories' do
           expect(@user.story_number).to eq 10
 
         end
-
-
+        
     end
-
-
 
   end
 

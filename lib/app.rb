@@ -52,6 +52,13 @@ class TextApi < Sinatra::Base
     params[:kingdom] ||= "Angels"
     "Bring me to the Kingdom of #{params[:kingdom]}"
   end
+
+  get '/notify_teachers_test' do
+
+    teacher = Teacher.where(email: "josedmcpeek@gmail.com").first
+    NotifyTeacherWorker.perform_async(teacher.id) if teacher
+
+  end
   
   post '/sms' do
     content_type 'text/xml'

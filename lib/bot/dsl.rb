@@ -139,9 +139,8 @@ module Birdv
         if u then # u might not exist because it's a demo
           u.state_table.update(last_sequence_seen: sqnce_name.to_s)
         end
-        
         return ret
-
+        
       rescue => e  
         puts "#{sqnce_name} from script #{@script_name} failed!"
         puts "the known sequences are: #{@sequences}"
