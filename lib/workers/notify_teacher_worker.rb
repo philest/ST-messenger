@@ -3,9 +3,88 @@ require 'sidekiq'
 require 'dotenv'
 Dotenv.load if ['development', 'test'].include? ENV['RACK_ENV']
 
-class NotifyTeacherWorker
+
+class NotifyAdminWorker
   include Sidekiq::Worker
 
+  def new_teachers_notification(admin)
+    last_notified = admin.notified_on.nil? ? admin.enrolled_on : admin.notified_on
+
+    # all teachers should have a signature, so......
+    teachers = Teacher.where(school: admin.school).where{enrolled_on > last_notified}.all
+    count = teachers.size
+
+    sing_or_plural = count > 1 ? 'teachers' : 'teacher'
+    quicklink = admin.quicklink
+
+
+    if count == 0
+      puts "no new teachers signed up"
+      return
+    end
+
+    if count > 0
+      if count == 1
+        list_o_names = teachers.first.signature
+
+      elsif count == 2
+          list_o_names = teachers.first.signature
+          list_o_names += " and #{teachers.last.signature}"
+
+      else
+        last_teacher = teachers.pop
+        list_o_names = teachers.inject('') do |string, teacher|
+          str = teacher.signature.to_s
+          str += ", "
+          string += str
+        end
+
+        last_u_name = last_teacher.signature
+
+        list_o_names += "and #{last_u_name}"
+
+      end
+    else # we only have teachers users...
+      list_o_names = "See who"
+    end # if named.size > 0
+
+    puts admin.first_name, admin.email, count, sing_or_plural, list_o_names, quicklink
+
+    new_teachers_notification_helper(admin.first_name, admin.email, count, sing_or_plural, list_o_names, quicklink)
+  end
+
+  def new_teachers_notification_helper(sig, email, count, teacher_or_teachers, list_o_names, quicklink)
+    HTTParty.post(
+      ENV['ST_ENROLL_WEBHOOK'] + '/update_admin',
+      body: {
+        sig: sig,
+        email: email,
+        count: count,
+        teacher_or_teachers: teacher_or_teachers,
+        list_o_names: list_o_names,
+        quicklink: quicklink
+      }
+    )
+
+  end
+
+  def perform(admin_id)
+    admin = Admin.where(id: admin_id).first
+    if admin.nil?
+      return
+    end
+
+    new_teachers_notification(admin)
+
+    admin.update(notified_on: Time.now.utc)
+
+  end # perform
+
+end
+
+
+class NotifyTeacherWorker
+  include Sidekiq::Worker
 
   def new_users_notification(teacher)
     last_notified = teacher.notified_on.nil? ? teacher.enrolled_on : teacher.notified_on
@@ -87,38 +166,15 @@ class NotifyTeacherWorker
       }
     )
 
-    # # Authenticate with your API key
-    # auth = { :api_key => ENV['CREATESEND_API_KEY'] }
-    # # The unique identifier for this smart email
-    # smart_email_id = '98b9048d-a381-445e-8d21-65a3a5cb2b37'
-
-    # # Create a new mailer and define your message
-    # tx_smart_mailer = CreateSend::Transactional::SmartEmail.new(auth, smart_email_id)
-
-    #   message = {
-    #     'To' => email,
-    #     'Data' => {
-    #       'signature' => sig,
-    #       'family_count' => count,
-    #       'family_or_families' => family,
-    #       'list_of_families' => list_o_names,
-    #       'quicklink' => quicklink
-    #     }
-    #   }
-    # # Send the message and save the response
-    # response = tx_smart_mailer.send(message)
   end
 
-  def perform(teacher_id, msg_type='NEW_USERS_NOTIFICATION')
+  def perform(teacher_id)
     teacher = Teacher.where(id: teacher_id).first
     if teacher.nil?
       return
     end
 
-    case msg_type
-    when 'NEW_USERS_NOTIFICATION'
-      new_users_notification(teacher)
-    end
+    new_users_notification(teacher)
 
     teacher.update(notified_on: Time.now.utc)
 
