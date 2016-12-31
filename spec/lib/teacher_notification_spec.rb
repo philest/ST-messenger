@@ -43,7 +43,7 @@ describe 'teacher notifications' do
         @teacher.signup_user(User.create)
         @teacher.signup_user(User.create)
         @teacher.signup_user(User.create)
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
       it "does many named, no unnamed correctly" do
@@ -55,7 +55,7 @@ describe 'teacher notifications' do
         @teacher.signup_user(@named)
         @teacher.signup_user(user1)
         @teacher.signup_user(user2)
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
       it "does many unnamed, no named correctly" do
@@ -68,7 +68,7 @@ describe 'teacher notifications' do
         @teacher.signup_user(user1)
         @teacher.signup_user(user2)
         @teacher.signup_user(user3)
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
       it "does unnamed, no named correctly" do
@@ -77,7 +77,7 @@ describe 'teacher notifications' do
 
         @teacher.signup_user(@unnamed)
 
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
       it "does named, no unnamed correctly" do
@@ -86,7 +86,7 @@ describe 'teacher notifications' do
 
         @teacher.signup_user(@named)
 
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
       it "does first name" do
@@ -96,7 +96,7 @@ describe 'teacher notifications' do
 
         @teacher.signup_user(user)
 
-        @nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        @nw.perform(@teacher.id)
       end
 
   end
@@ -121,7 +121,7 @@ describe 'teacher notifications' do
       Sidekiq::Testing.fake! do
         nw = NotifyTeacherWorker.new
         expect(nw).not_to receive(:new_users_notification_helper)
-        nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        nw.perform(@teacher.id)
       end
     end
 
@@ -130,7 +130,7 @@ describe 'teacher notifications' do
         nw = NotifyTeacherWorker.new
         expect(nw).to receive(:new_users_notification_helper).once
         @teacher.signup_user(User.create)
-        nw.perform(@teacher.id, 'NEW_USERS_NOTIFICATION')
+        nw.perform(@teacher.id)
       end
     end
 
@@ -150,7 +150,7 @@ describe 'teacher notifications' do
                 puts "teacher = #{t.inspect}"
                 # we don't want any repeats
                 if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
-                  NotifyTeacherWorker.perform_async(t.id, 'NEW_USERS_NOTIFICATION')
+                  NotifyTeacherWorker.perform_async(t.id)
                 end
               end
             end
@@ -174,7 +174,7 @@ describe 'teacher notifications' do
             puts "teacher = #{t.inspect}"
             # we don't want any repeats
             if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
-              NotifyTeacherWorker.perform_async(t.id, 'NEW_USERS_NOTIFICATION')
+              NotifyTeacherWorker.perform_async(t.id)
             end
           end
 
