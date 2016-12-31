@@ -52,6 +52,7 @@ Sequel.migration do
       String :signature, :text=>true
       String :code, :text=>true
       Integer :signin_count, :default=>0
+      DateTime :notified_on
       
       index [:code], :name=>:admins_code_key, :unique=>true
       index [:email], :name=>:admins_email_key, :unique=>true
@@ -164,9 +165,15 @@ Sequel.migration do
       String :platform, :default=>"fb", :text=>true
       Float :tz_offset
       String :code, :text=>true
+      String :password_digest, :text=>true
+      String :email, :text=>true
+      String :refresh_token_digest, :text=>true
+      String :firebase_id, :text=>true
       
       index [:code], :name=>:users_code_key, :unique=>true
+      index [:email], :name=>:users_email_key, :unique=>true
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
+      index [:firebase_id], :name=>:users_firebase_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end
     

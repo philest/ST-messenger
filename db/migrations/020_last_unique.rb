@@ -8,7 +8,7 @@ Sequel.migration do
   down do
     alter_table(:state_tables) do
       drop_column :last_unique_story
-      drop_column :last_unique_storye_story_read?
+      drop_column :last_unique_story_read?
     end
   end
 end
