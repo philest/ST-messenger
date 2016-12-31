@@ -85,9 +85,9 @@ class AuthAPI < Sinatra::Base
     user = User.where(phone: phone).first
 
     if user.nil?
-      return 404
+      return 420
     else
-      return 200
+      return 204
     end
   end
 
