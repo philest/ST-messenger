@@ -18,11 +18,11 @@ class ScheduleWorker
       },
       {
         start_day: 100,
-        days: [1,4]
+        days: [2,4]
       },
       {
         start_day: 150,
-        days: [1,2,4]
+        days: [2,3,4]
       }
     ]
   end
@@ -34,11 +34,11 @@ class ScheduleWorker
     },
     {
       start_day: 100,
-      days: [1,4]
+      days: [2,4]
     },
     {
       start_day: 150,
-      days: [1,2,4]
+      days: [2,3,4]
     }
   ]
 
