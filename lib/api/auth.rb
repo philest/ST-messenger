@@ -81,6 +81,7 @@ class AuthAPI < Sinatra::Base
   end
 
   get '/check_phone' do
+    puts 'he'
     phone = params[:phone]
     user = User.where(phone: phone).first
 
@@ -94,27 +95,43 @@ class AuthAPI < Sinatra::Base
 
   post '/signup' do
     puts "params = #{params}"
-    phone       = params[:phone]
-    first_name  = params[:first_name]
-    last_name   = params[:last_name]
-    password    = params[:password]
-    code        = params[:code]
+    phone       = params["phone"]
+    first_name  = params["first_name"]
+    last_name   = params["last_name"]
+    password    = params["password"]
+    class_code  = params["class_code"]
+    time_zone   = params["time_zone"]
 
-    if ([phone, first_name, last_name, password, code].include? nil) or
-       ([phone, first_name, last_name, password, code].include? '')
+    default_story_number = 3
+
+    if ([phone, first_name, password, class_code].include? nil) or
+       ([phone, first_name, password, class_code].include? '')
        return MISSING_CREDENTIALS
     end
 
-    code        = code.delete(' ').delete('-').downcase
+    class_code        = class_code.delete(' ').delete('-').downcase
 
     # maybe have a params[:role], but not yet
 
-    if is_matching_code?(code) then
-      new_user = User.create(phone: phone, first_name: first_name, last_name: last_name, platform: 'app')
+    if is_matching_code?(class_code) then
+      userData = {
+        phone: phone,
+        first_name: first_name,
+        last_name: last_name,
+        class_code: class_code,
+        platform: 'app'
+      }
+
+      if (time_zone) then
+        userData['tz_offset'] = time_zone
+      end
+
+      new_user = User.create(userData)
       new_user.set_password(password)
+      new_user.state_table.update(story_number: default_story_number)
       # associate school/teacher, whichever
-      new_user.match_school(code)
-      new_user.match_teacher(code)
+      new_user.match_school(class_code)
+      new_user.match_teacher(class_code)
       # great! fantastic, resource created
       return CREATE_USER_SUCCESS
 
@@ -127,7 +144,6 @@ class AuthAPI < Sinatra::Base
   end
 
   post '/login' do
-    puts "params = #{params}"
     phone       = params[:phone]
     password    = params[:password]
 

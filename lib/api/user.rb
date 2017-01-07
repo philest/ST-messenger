@@ -132,6 +132,57 @@ class UserAPI < Sinatra::Base
     }.to_json
   end
 
+
+
+
+  get '/user_data' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
+
+    user_data = {
+      story_number: user.state_table.story_number,
+      teacher_signature: user.teacher.signature,
+      school_signature: user.school.signature,
+      first_name: user.first_name,
+    }
+
+    content_type :json
+    return user_data.to_json
+  end
+
+
+
+  post '/user_data' do
+    puts 'peepee'
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return NO_EXISTING_USER
+    end
+
+    fcm_token = params['fcm_token']
+    platform  = params['platform']
+
+    user_data = {
+      platform: platform,
+      fcm_token: fcm_token,
+    }
+
+    puts user_data
+
+    begin
+      puts 'hey'
+      user.update(platform: platform, fcm_token: fcm_token)
+      puts 'ho'
+    rescue Exception => e
+      puts e
+      return INTERNAL_ERROR
+    end
+
+
+  end
+
   get '/chat_message' do
     puts "request.env.user = #{request.env[:user]}"
     user = User.where(id: request.env[:user]['user_id']).first
