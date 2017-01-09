@@ -1,5 +1,5 @@
 #  auth.rb                                     David McPeek
-#                (with significant assistance from A. Wahl) 
+#                (with significant assistance from A. Wahl)
 #
 #  The user api controller.
 #  --------------------------------------------------------
@@ -35,6 +35,7 @@ require_relative '../workers'
 require_relative 'helpers/authentication'
 require_relative 'middleware/authorizeEndpoint'
 require_relative 'constants/statusCodes'
+require_relative 'constants/userID'
 
 
 # CREATE USER: (assumes school with code 'school' already exists)
@@ -69,6 +70,26 @@ class UserAPI < Sinatra::Base
   use AuthorizeEndpoint
   use Airbrake::Rack::Middleware
 
+  configure do
+    puts USER_IDS::TEACHER
+    spex =  JSON.parse(File.read("#{File.expand_path(File.dirname(__FILE__))}/data/bookSpecs.json"))
+    set bookSpecs: {
+      time_last_updated: spex['timeLastUpdated'].to_i,
+      json: spex['specs'],
+    }
+    set curriculum: JSON.parse(File.read("#{File.expand_path(File.dirname(__FILE__))}/data/curriculum.json"))
+    set schedule: [
+      {
+        "storyNumber": 5,
+        schedule: [0,0,0,1,0,0,0] # starts on monday
+      },
+      {
+        "storyNumber": 10000,
+        schedule: [0,1,0,1,0,0,0]
+      },
+    ]
+  end
+
   # use Rack::PostBodyContentTypeParser
 
   set :session_secret, ENV['SESSION_SECRET']
@@ -101,11 +122,18 @@ class UserAPI < Sinatra::Base
     return SUCCESS
   end
 
-  get '/booklist' do
-    file = File.read("#{File.expand_path(File.dirname(__FILE__))}/../helpers/fullBookList.json")
-    file = JSON.parse(file)
+  get '/book_list' do
+    theTime = params["timeLastUpdated"].to_i
+    if( settings.bookSpecs[:time_last_updated] <= theTime)
+      return 200
+    end
+
     content_type :json
-    return file.to_json
+    return {
+      specs: settings.bookSpecs[:json],
+      curriculum: settings.curriculum,
+      schedule: settings.schedule
+    }.to_json
   end
 
   post '/firebase_id' do
@@ -251,16 +279,56 @@ class UserAPI < Sinatra::Base
 
     content_type :json
 
-    return {
-      intro: {
-        en: en_intro,
-        es: es_intro
-      },
-      outro: {
-        en: en_outro,
-        es: es_outro
+    # return {
+    #   intro: {
+    #     en: en_intro,
+    #     es: es_intro
+    #   },
+    #   outro: {
+    #     en: en_outro,
+    #     es: es_outro
+    #   }
+    # }.to_json
+
+
+    genMessage = proc { |m, user_id, user_code| { "text" => m,
+        "_id" => rand(1000000),
+        "createdAt" => Time.now.utc.to_i()*1000,
+        "user" => {
+          "_id" => user_id,
+          "name" => user_code,
+        }
       }
-    }.to_json
+    }
+
+    genStory = proc { |n| { "text" => '',
+        "_id" => rand(1000000),
+        "newStory": n,
+        "createdAt" => Time.now.utc.to_i()*1000,
+        "user" => {
+          "_id" => USER_IDS::APP,
+          "name" => "__APP__",
+        }
+      }
+    }
+
+    msgs = { messages: {
+        en: [
+          genStory.call(st_no),
+          genMessage.call(en_intro, USER_IDS::SCHOOL, '__SCHOOL__'),
+          # en_outro
+        ],
+        es: [
+          genStory.call(st_no),
+          genMessage.call(es_intro, USER_IDS::SCHOOL, '__SCHOOL__'),
+          # es_outro
+        ]
+      },
+    }
+
+    puts msgs
+
+    return  msgs.to_json
 
   end
 
