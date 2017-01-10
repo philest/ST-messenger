@@ -263,7 +263,7 @@ describe 'auth' do
         first_name: 'David',
         last_name: 'McPeek',
         password: 'my_password',
-        code: 'wrong-ass_code'
+        class_code: 'wrong-ass_code'
       }
       post '/signup', body
 
@@ -284,7 +284,7 @@ describe 'auth' do
         first_name: 'David',
         last_name: 'McPeek',
         password: 'my_password',
-        code: @teacher.code.split('|')[0] # correct code
+        class_code: @teacher.code.split('|')[0] # correct code
       }
       post '/signup', body
 
@@ -306,7 +306,7 @@ describe 'auth' do
         first_name: 'David',
         last_name: 'McPeek',
         password: 'my_password',
-        code: @teacher.code.split('|')[1] # correct code
+        class_code: @teacher.code.split('|')[1] # correct code
       }
       post '/signup', body
 

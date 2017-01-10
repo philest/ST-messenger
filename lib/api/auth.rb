@@ -106,6 +106,7 @@ class AuthAPI < Sinatra::Base
 
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
+       puts "#{phone}#{first_name}#{password}#{class_code}"
        return MISSING_CREDENTIALS
     end
 
