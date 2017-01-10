@@ -328,7 +328,7 @@ class UserAPI < Sinatra::Base
       },
     }
 
-    user.state_table.update(story_number: st_no)
+    user.state_table.update(story_number: st_no -1)
     return  msgs.to_json
 
   end
