@@ -1,8 +1,12 @@
 require_relative '../helpers/fb'
+require 'fcm'
+
+
 
 class StartDayWorker
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
+  @@Fcm = FCM.new(ENV["FCM_API_KEY_STAPP"])
 
   sidekiq_options :retry => 3
 
@@ -143,21 +147,26 @@ class StartDayWorker
         puts "user with firebase_id #{recipient} does not exist"
         return
       else
-        # update story_number
-        u.state_table.update(story_number: u.state_table.story_number + 1)
 
         # AUBREY WAHL!!!!!!!!!
         # DO FIREBASE STUFF HERE!!!!!!!!!
-        # 
-        # 
-        # 
-        # 
-        # 
-        # 
-        # 
-        # 
-        # 
-        # 
+        msg_title = "A new story has landed!"
+        msg_body  = "Tap here to read it. :)"
+
+        @@Fcm.send_with_notification_key(
+          u.firebase_id,
+          notification: {
+            title: msg_title,
+            body: msg_body
+          },
+          data: {
+            title: msg_title,
+            body: msg_body,
+            story_time_action: 'NEW_BOOK',
+            timeSent: Time.now().to_i*1000 # this is important for the NEW_BOOK action
+          },
+          content_availible: true
+        )
         # END FIREBASE STUFF AUBREY WAHL!!!!!!!
         # END IT!!!!!!!!!!
 

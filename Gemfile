@@ -13,6 +13,7 @@ gem 'jwt'
 # gem 'puma', 	'~>3.4.0'
 gem 'puma'
 gem 'facebook-messenger'
+gem 'fcm'
 gem 'sinatra'
 
 # gem 'i18n', '~> 0.7.0'

@@ -106,6 +106,7 @@ class AuthAPI < Sinatra::Base
 
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
+       puts "#{phone}#{first_name}#{password}#{class_code}"
        return MISSING_CREDENTIALS
     end
 
@@ -200,14 +201,14 @@ class AuthAPI < Sinatra::Base
         return { token: access_token(user.id) }.to_json
       end
 
-    rescue JWT::DecodeError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
     rescue JWT::ExpiredSignature
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
     rescue JWT::InvalidIssuerError
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
     rescue JWT::InvalidIatError
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+    rescue JWT::DecodeError
+      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
     end
 
   end

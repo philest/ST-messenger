@@ -101,6 +101,7 @@ class UserAPI < Sinatra::Base
   end
 
   get '/story_number' do
+    st_no = params['story_number']
     user = User.where(id: request.env[:user]['user_id']).first
     if user.nil?
       return NO_EXISTING_USER
@@ -211,14 +212,15 @@ class UserAPI < Sinatra::Base
 
   end
 
-  get '/chat_message' do
+  post '/chat_message' do
     puts "request.env.user = #{request.env[:user]}"
     user = User.where(id: request.env[:user]['user_id']).first
     if user.nil?
       return NO_EXISTING_USER
     end
 
-    st_no = user.state_table.story_number
+    st_no = params['story_number']
+
 
     # intros
     # english
@@ -326,8 +328,7 @@ class UserAPI < Sinatra::Base
       },
     }
 
-    puts msgs
-
+    user.state_table.update(story_number: st_no -1)
     return  msgs.to_json
 
   end
