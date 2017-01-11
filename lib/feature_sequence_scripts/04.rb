@@ -29,11 +29,11 @@ Birdv::DSL::ScriptClient.new_script 'day4', 'feature' do
   end
 
 
-  sequence 'goodbye' do |phone_no|
-    puts "saying goodbye..."
+  # sequence 'goodbye' do |phone_no|
+  #   puts "saying goodbye..."
 
-    txt = 'scripts.outro.__poc__[1]'
-    send_sms phone_no, txt, 'goodbye'
-  end
+  #   txt = 'scripts.outro.__poc__[1]'
+  #   send_sms phone_no, txt, 'goodbye'
+  # end
 end 
 

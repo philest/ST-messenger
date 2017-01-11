@@ -18,12 +18,12 @@ Birdv::DSL::ScriptClient.new_script 'day9', 'sms' do
     send_mms phone_no, img, 'image2', 'goodbye'
   end
 
-  sequence 'goodbye' do |phone_no|
-    puts "saying goodbye..."
+  # sequence 'goodbye' do |phone_no|
+  #   puts "saying goodbye..."
 
-    txt = 'scripts.outro.__poc__[3]'
-    send_sms phone_no, txt, 'goodbye'
-  end
+  #   txt = 'scripts.outro.__poc__[3]'
+  #   send_sms phone_no, txt, 'goodbye'
+  # end
 
 end 
 
