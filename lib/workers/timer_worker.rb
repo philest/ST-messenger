@@ -25,7 +25,6 @@ class TimerWorker
     puts "next_sequence = #{next_sequence}"
     puts "******************************************"
 
-    # res = HTTParty.get("#{ENV['ST_ENROLL_WEBHOOK']}/delivery_status?messageSid=#{messageSid}")
     status = delivery_status(messageSid)
     puts "delivery_status = #{status.inspect}"
     

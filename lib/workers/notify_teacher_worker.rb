@@ -55,7 +55,7 @@ class NotifyAdminWorker
 
   def new_teachers_notification_helper(sig, email, count, teacher_or_teachers, list_o_names, quicklink)
     HTTParty.post(
-      ENV['ST_ENROLL_WEBHOOK'] + '/update_admin',
+      ENV['STORYTIME_URL'] + '/update_admin',
       body: {
         sig: sig,
         email: email,
@@ -155,7 +155,7 @@ class NotifyTeacherWorker
 
   def new_users_notification_helper(sig, email, count, family, list_o_names, quicklink)
     HTTParty.post(
-      ENV['ST_ENROLL_WEBHOOK'] + '/update_teacher',
+      ENV['STORYTIME_URL'] + '/update_teacher',
       body: {
         sig: sig,
         email: email,
