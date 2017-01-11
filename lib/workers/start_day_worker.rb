@@ -141,10 +141,10 @@ class StartDayWorker
     case platform
     when 'fb'
       u = User.where(fb_id:recipient).first
-    when 'app'
-      u = User.where(firebase_id:recipient).first
+    when 'app', 'android', 'ios'
+      u = User.where(fcm_token:recipient).first
       if u.nil?
-        puts "user with firebase_id #{recipient} does not exist"
+        puts "user with fcm_token #{recipient} does not exist"
         return
       else
 
@@ -154,7 +154,7 @@ class StartDayWorker
         msg_body  = "Tap here to read it. :)"
 
         @@Fcm.send_with_notification_key(
-          u.firebase_id,
+          u.fcm_token,
           notification: {
             title: msg_title,
             body: msg_body

@@ -117,7 +117,7 @@ describe 'auth' do
       # @user = User.create(phone: @phone, password_digest: BCrypt::Password.create('my_password'))
       # @teacher.signup_user(@user)
 
-      post '/signup', {phone:@phone, first_name: 'David', last_name: 'McPeek', password: 'my_password', code: 'school1'}
+      post '/signup', {phone:@phone, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
 
       @user = User.where(phone: @phone).first
       puts "@user = #{@user.inspect}"

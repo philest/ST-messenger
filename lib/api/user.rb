@@ -137,13 +137,13 @@ class UserAPI < Sinatra::Base
     }.to_json
   end
 
-  post '/firebase_id' do
+  post '/fcm_token' do
     user = User.where(id: request.env[:user]['user_id']).first
     if user.nil?
       return NO_EXISTING_USER
     end
 
-    user.update(firebase_id: params[:firebase_id])
+    user.update(fcm_token: params[:fcm_token])
     return SUCCESS
   end
 
