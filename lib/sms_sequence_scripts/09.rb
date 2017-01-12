@@ -15,7 +15,7 @@ Birdv::DSL::ScriptClient.new_script 'day9', 'sms' do
   sequence 'image2' do |phone_no|
     puts "sending second image..."
     img = 'mms.stories.floating_shoe[1]'
-    send_mms phone_no, img, 'image2', 'goodbye'
+    send_mms phone_no, img, 'image2'
   end
 
   # sequence 'goodbye' do |phone_no|

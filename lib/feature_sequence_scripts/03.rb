@@ -16,7 +16,7 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'feature' do
 
 	sequence 'verse3' do |phone_no|
 		txt = 'feature.poems.bird[2]'
-		send_sms phone_no, txt, 'verse3', 'goodbye'
+		send_sms phone_no, txt, 'verse3'
 	end
 
 	# sequence 'goodbye' do |phone_no|

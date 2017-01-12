@@ -26,7 +26,7 @@ Birdv::DSL::ScriptClient.new_script 'day3', 'sms' do
 		# one more button
 		puts "sending second image..."
 		img = 'mms.stories.hero[1]'
-		send_mms phone_no, img, 'image2', 'goodbye'
+		send_mms phone_no, img, 'image2'
 
 		# delay phone_no, 'goodbye', MMS_WAIT
 	end
