@@ -50,6 +50,46 @@ describe ScheduleWorker do
     Timecop.return
   end
 
+  context "app users", app:true do
+    before(:each) do
+      @users.each do |u|
+        case u.id % 3
+        when 0
+          u.update(platform: 'app', fcm_token: 'fun')
+        when 1
+          u.update(platform: 'android', fcm_token: 'fun')
+        when 2
+          u.update(platform: 'ios', fcm_token: 'fun')
+        end
+          
+        u.update(send_time: @time)
+        u.reload
+      end
+    end
+    # start day worker methods
+    #   remind? always returns false
+    #   update_day always increments user day
+
+
+    it "calls StartDayWorker the correct number of times" do
+      sw =  ScheduleWorker.new
+      allow(sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, [Time.now.wday], &block)
+      end
+      expect(ScheduleWorker.jobs.size).to eq(0)
+      
+      Sidekiq::Testing.fake! do
+        expect {
+         sw.perform(@interval)
+          ScheduleWorker.drain
+        }.to change(StartDayWorker.jobs, :size).by(@users.size)
+      end
+    end
+
+  end
+
+
+
   context "completely new users", new:true do
     it "creates a new user when someone presses 'get started'" do
       start_day_worker = StartDayWorker.new

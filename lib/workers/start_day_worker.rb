@@ -1,8 +1,6 @@
 require_relative '../helpers/fb'
 require 'fcm'
 
-
-
 class StartDayWorker
   include Sidekiq::Worker
   include Facebook::Messenger::Helpers
@@ -147,7 +145,6 @@ class StartDayWorker
         puts "user with fcm_token #{recipient} does not exist"
         return
       else
-
         # AUBREY WAHL!!!!!!!!!
         # DO FIREBASE STUFF HERE!!!!!!!!!
         msg_title = "A new story has landed!"

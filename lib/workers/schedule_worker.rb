@@ -77,6 +77,7 @@ class ScheduleWorker
     fb       = filtered.select { |u| u.platform == 'fb' }
     sms      = filtered.select { |u| u.platform == 'sms' or u.platform == 'feature' }
     app      = filtered.select { |u| u.platform == 'app' or u.platform == 'android' or u.platform == 'ios' }
+    puts "app users = #{app.inspect}"
 
     # schedule for app
     app.each do |user|

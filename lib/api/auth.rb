@@ -129,7 +129,13 @@ class AuthAPI < Sinatra::Base
 
       new_user = User.create(userData)
       new_user.set_password(password)
-      new_user.state_table.update(story_number: default_story_number)
+      init_state_table = {
+        story_number: default_story_number,
+        subscribed?: true,
+        last_story_read?: true,
+        last_unique_story: default_story_number
+      }
+      new_user.state_table.update(init_state_table)
       # associate school/teacher, whichever
       new_user.match_school(class_code)
       new_user.match_teacher(class_code)
