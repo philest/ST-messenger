@@ -454,7 +454,7 @@ describe 'TheBot', integration:true do
 
         # move to Monday! Stories be coming out!
         # we would expect fb_ids [1,7] to be recieving something
-        Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))        
+        Timecop.freeze(Time.new(2016, 6, 28, 23, 0, 0, 0))        
         
         expect{
           Sidekiq::Testing.fake! do
@@ -568,7 +568,7 @@ describe 'TheBot', integration:true do
 
         # move to Monday! Stories be coming out!
         # we would expect fb_ids [1,7] to be recieving something
-        Timecop.freeze(Time.new(2016, 6, 27, 23, 0, 0, 0))        
+        Timecop.freeze(Time.new(2016, 6, 28, 23, 0, 0, 0))        
         
         expect{
           Sidekiq::Testing.fake! do
