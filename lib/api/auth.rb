@@ -102,7 +102,7 @@ class AuthAPI < Sinatra::Base
     class_code  = params["class_code"]
     time_zone   = params["time_zone"]
 
-    default_story_number = 3
+    default_story_number = 2
 
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
