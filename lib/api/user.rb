@@ -316,11 +316,13 @@ class UserAPI < Sinatra::Base
 
     msgs = { messages: {
         en: [
+          genMessage.call(en_outro, USER_IDS::SCHOOL, '__SCHOOL__'),
           genStory.call(st_no),
           genMessage.call(en_intro, USER_IDS::SCHOOL, '__SCHOOL__'),
           # en_outro
         ],
         es: [
+          genMessage.call(es_outro, USER_IDS::SCHOOL, '__SCHOOL__'),
           genStory.call(st_no),
           genMessage.call(es_intro, USER_IDS::SCHOOL, '__SCHOOL__'),
           # es_outro
@@ -328,7 +330,7 @@ class UserAPI < Sinatra::Base
       },
     }
 
-    user.state_table.update(story_number: st_no -1)
+    user.state_table.update(story_number: st_no)
     return  msgs.to_json
 
   end
