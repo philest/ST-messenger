@@ -157,8 +157,8 @@ class AuthAPI < Sinatra::Base
     if is_matching_code?(class_code) then
       userData = {
         phone: phone,
-        first_name: first_name,
-        last_name: last_name,
+        first_name: first_name.strip,
+        last_name: last_name.strip,
         class_code: class_code,
         platform: 'app'
       }
