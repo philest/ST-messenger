@@ -36,6 +36,10 @@ group :production do
 	gem 'newrelic_rpm'
 end
 
+group :development do
+  # gem "better_errors"
+  gem "sinatra-contrib"
+end
 
 
 group :test do

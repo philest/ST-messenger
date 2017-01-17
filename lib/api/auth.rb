@@ -1,5 +1,5 @@
-#  auth.rb                                     David McPeek
-#                (with significant assistance from A. Wahl)
+#  auth.rb                       Aubrey Wahl & David McPeek
+#                
 #
 #  The auth controller.
 #  --------------------------------------------------------
@@ -59,6 +59,12 @@ class AuthAPI < Sinatra::Base
   include NameCodes
   include BCrypt
 
+  require "sinatra/reloader" if development? 
+
+  configure :development do
+    register Sinatra::Reloader
+  end
+
   use Airbrake::Rack::Middleware
 
   # use Rack::PostBodyContentTypeParser
@@ -90,6 +96,40 @@ class AuthAPI < Sinatra::Base
     else
       return 204
     end
+  end
+
+  post '/reset_password' do
+    # not sure if it'll be in JSON?
+    # get phone
+    phone = params['phone']
+    if phone.nil? or phone.empty?
+      return [MISSING_CREDENTIALS, { 'Content-Type' => 'text/plain' }, ['Missing phone param!']]
+    end
+    user = User.where(phone: phone).first
+    if user.nil?
+      return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ["User with phone #{phone} doesn't exist"]]
+    end
+
+    # get a random string of integers...
+    generate_code = proc do
+      Array.new(4){[*'0'..'9'].sample}.join
+    end
+
+    new_password = generate_code.call()
+    user.set_password(new_password)
+
+    # now text them.....
+    case user.locale
+    when 'es'
+      msg = "Aquí está tu nueva contraseña:\n#{new_password}"
+    else
+      msg = "Here's your new StoryTime password:\n#{new_password}"
+    end
+    puts "I mean, maybe"
+
+    TextingWorker.perform_async(msg, phone)
+
+    return [SUCCESS, { 'Content-Type' => 'text/plain' }, ["Password updated for user with phone #{phone}."]]
   end
 
 
