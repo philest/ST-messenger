@@ -125,6 +125,7 @@ class UserAPI < Sinatra::Base
 
   get '/book_list' do
     theTime = params["timeLastUpdated"].to_i
+    puts "#{settings.bookSpecs[:time_last_updated]} <=? #{theTime}"
     if( settings.bookSpecs[:time_last_updated] <= theTime)
       return 200
     end
@@ -175,6 +176,7 @@ class UserAPI < Sinatra::Base
       teacher_signature: user.teacher.signature,
       school_signature: user.school.signature,
       first_name: user.first_name,
+      phone_number: user.phone
     }
 
     content_type :json
@@ -192,17 +194,19 @@ class UserAPI < Sinatra::Base
 
     fcm_token = params['fcm_token']
     platform  = params['platform']
+    app_version = params['app_version']
 
     user_data = {
       platform: platform,
       fcm_token: fcm_token,
+      app_version: app_version,
     }
 
     puts user_data
 
     begin
       puts 'hey'
-      user.update(platform: platform, fcm_token: fcm_token)
+      user.update(platform: platform, fcm_token: fcm_token, app_version_number: app_version)
       puts 'ho'
     rescue Exception => e
       puts e
