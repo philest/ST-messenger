@@ -89,8 +89,8 @@ class NotifyTeacherWorker
   def new_users_notification(teacher)
     last_notified = teacher.notified_on.nil? ? teacher.enrolled_on : teacher.notified_on
 
-    named = User.where(teacher: teacher).where{enrolled_on > last_notified}.exclude(first_name: nil).all
-    unnamed = User.where(teacher: teacher).where{enrolled_on > last_notified}.where(first_name: nil).all
+    named = User.where(teacher: teacher,role:'parent').where{enrolled_on > last_notified}.exclude(first_name: nil).all
+    unnamed = User.where(teacher: teacher,role:'parent').where{enrolled_on > last_notified}.where(first_name: nil).all
     count = named.size + unnamed.size
     family = count > 1 ? 'families' : 'family'
     quicklink = teacher.quicklink
