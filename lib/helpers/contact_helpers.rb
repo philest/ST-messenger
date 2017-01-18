@@ -16,14 +16,15 @@ module ContactHelpers
 	def notify_admins(subject, body)
     email_admins(subject, body)
     text_body   = subject + ":\n" + body
-    david, phil = '+18186897323', '+15612125831'
+    david, phil, aubs = '+18186897323', '+15612125831', '+13013328953'
     if text_body.length < 360
       TextingWorker.perform_async(text_body, david, ENV['ST_USER_REPLIES_NO'])
       TextingWorker.perform_async(text_body, phil, ENV['ST_USER_REPLIES_NO'])
+      TextingWorker.perform_async(text_body, aubs, ENV['ST_USER_REPLIES_NO'])
     else
       TextingWorker.perform_async(subject, david, ENV['ST_USER_REPLIES_NO'])
       TextingWorker.perform_async(subject, phil, ENV['ST_USER_REPLIES_NO'])
-
+      TextingWorker.perform_async(subject, aubs, ENV['ST_USER_REPLIES_NO'])
     end
 	end
   
