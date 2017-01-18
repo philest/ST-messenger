@@ -43,8 +43,8 @@ class TextApi < Sinatra::Base
 
   use Airbrake::Rack::Middleware
 
-  set :session_secret, "328479283uf923fu8932fu923uf9832f23f232"
   enable :sessions
+  set :session_secret, ENV['SESSION_SECRET']
 
   set :root, File.join(File.dirname(__FILE__), '../')
 

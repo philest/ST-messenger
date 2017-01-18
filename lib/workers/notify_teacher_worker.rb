@@ -86,7 +86,12 @@ end
 class NotifyTeacherWorker
   include Sidekiq::Worker
 
-  def new_users_notification(teacher)
+  def new_users_notification(teacher_id)
+    teacher = Teacher.where(id: teacher_id).first
+    if teacher.nil?
+      return
+    end
+
     last_notified = teacher.notified_on.nil? ? teacher.enrolled_on : teacher.notified_on
 
     named = User.where(teacher: teacher,role:'parent').where{enrolled_on > last_notified}.exclude(first_name: nil).all
@@ -155,7 +160,7 @@ class NotifyTeacherWorker
 
   def new_users_notification_helper(sig, email, count, family, list_o_names, quicklink)
     HTTParty.post(
-      ENV['STORYTIME_URL'] + '/update_teacher',
+      ENV['STORYTIME_URL'] + '/enroll/update_teacher',
       body: {
         sig: sig,
         email: email,
@@ -169,12 +174,8 @@ class NotifyTeacherWorker
   end
 
   def perform(teacher_id)
-    teacher = Teacher.where(id: teacher_id).first
-    if teacher.nil?
-      return
-    end
-
-    new_users_notification(teacher)
+    
+    new_users_notification(teacher_id)
 
     teacher.update(notified_on: Time.now.utc)
 

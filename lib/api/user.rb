@@ -113,6 +113,22 @@ class UserAPI < Sinatra::Base
     }.to_json
   end
 
+  post '/user_message' do
+    user = User.where(id: request.env[:user]['user_id']).first
+    if user.nil?
+      return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ['no existing user with that user_id']]
+    end
+
+    msg = params['usr_msg']
+
+    if msg
+      notify_admins("User #{request.env[:user]['user_id']} messaged thru app", params.to_s)
+    end
+
+    return SUCCESS
+  end
+
+
   post '/timezone' do
     user = User.where(id: request.env[:user]['user_id']).first
     if user.nil?
