@@ -119,10 +119,11 @@ class UserAPI < Sinatra::Base
       return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ['no existing user with that user_id']]
     end
 
-    msg = params['usr_msg']
+    msg = params['user_message']
+    puts msg
 
     if msg
-      notify_admins("User #{request.env[:user]['user_id']} messaged thru app", params.to_s)
+      notify_admins("User #{request.env[:user]['user_id']} #{user.first_name} #{user.last_name} [#{user.phone}]  messaged thru app", msg)
     end
 
     return SUCCESS
