@@ -7,6 +7,8 @@ Dotenv.load if ['development', 'test'].include? ENV['RACK_ENV']
 class NotifyAdminWorker
   include Sidekiq::Worker
 
+  sidekiq_options :retry => false # job will be discarded immediately if failed
+
   def new_teachers_notification(admin)
     last_notified = admin.notified_on.nil? ? admin.enrolled_on : admin.notified_on
 
@@ -86,11 +88,9 @@ end
 class NotifyTeacherWorker
   include Sidekiq::Worker
 
-  def new_users_notification(teacher_id)
-    teacher = Teacher.where(id: teacher_id).first
-    if teacher.nil?
-      return
-    end
+  sidekiq_options :retry => false # job will be discarded immediately if failed
+
+  def new_users_notification(teacher)
 
     last_notified = teacher.notified_on.nil? ? teacher.enrolled_on : teacher.notified_on
 
@@ -105,6 +105,8 @@ class NotifyTeacherWorker
       puts "no new users signed up"
       return
     end
+
+
 
     if named.size > 0
       if named.size == 1
@@ -153,7 +155,8 @@ class NotifyTeacherWorker
       list_o_names = "See who"
     end # if named.size > 0
 
-    puts teacher.signature, teacher.email, count, family, list_o_names, quicklink
+    puts "sending email to #{teacher.signature}, #{teacher.email}, #{count}, #{family}, #{list_o_names}, #{quicklink}"
+
 
     new_users_notification_helper(teacher.signature, teacher.email, count, family, list_o_names, quicklink)
   end
@@ -175,7 +178,15 @@ class NotifyTeacherWorker
 
   def perform(teacher_id)
     
-    new_users_notification(teacher_id)
+    teacher = Teacher.where(id: teacher_id).first
+
+    if teacher.nil?
+      puts "teacher with id #{teacher_id} doesn't exist"
+      return
+    end
+
+    new_users_notification(teacher)
+
 
     teacher.update(notified_on: Time.now.utc)
 

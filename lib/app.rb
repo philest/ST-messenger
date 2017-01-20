@@ -54,7 +54,7 @@ class TextApi < Sinatra::Base
   end
 
   get '/notify_teachers_test' do
-    teacher = Teacher.where(email: "josedmcpeek@gmail.com").first
+    teacher = Teacher.where(Sequel.ilike(:email, "josedmcpeek@gmail.com")).first
     NotifyTeacherWorker.perform_async(teacher.id) if teacher
   end
 
