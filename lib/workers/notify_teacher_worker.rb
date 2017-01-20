@@ -57,7 +57,7 @@ class NotifyAdminWorker
 
   def new_teachers_notification_helper(sig, email, count, teacher_or_teachers, list_o_names, quicklink)
     HTTParty.post(
-      ENV['STORYTIME_URL'] + '/update_admin',
+      ENV['STORYTIME_URL'] + '/enroll/update_admin',
       body: {
         sig: sig,
         email: email,
