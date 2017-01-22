@@ -189,7 +189,7 @@ class AuthAPI < Sinatra::Base
     class_code  = params["class_code"]
     time_zone   = params["time_zone"]
 
-    SIGNUP::register_user2(new_user, class_code, default_story_number, default_story_number, true)
+    SIGNUP::register_user2(new_user, class_code, password, default_story_number, default_story_number, true)
     [status, headers, body.map(&:upcase)]
 
   end
@@ -241,7 +241,7 @@ class AuthAPI < Sinatra::Base
       end
 
       new_user = User.create(userData)
-      SIGNUP::register_user(new_user, class_code, default_story_number, default_story_number, true)
+      SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
       return CREATE_USER_SUCCESS
 
     else # no matching code, don't sign this user up.
