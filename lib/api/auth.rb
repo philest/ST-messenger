@@ -1,5 +1,5 @@
 #  auth.rb                       Aubrey Wahl & David McPeek
-#                
+#
 #
 #  The auth controller.
 #  --------------------------------------------------------
@@ -32,6 +32,7 @@ require_relative '../helpers/name_codes'
 require_relative '../workers'
 
 require_relative 'helpers/authentication'
+require_relative 'helpers/signup' # SIGNUP::cool_method
 require_relative 'constants/statusCodes'
 
 
@@ -59,7 +60,7 @@ class AuthAPI < Sinatra::Base
   include NameCodes
   include BCrypt
 
-  require "sinatra/reloader" if development? 
+  require "sinatra/reloader" if development?
 
   configure :development do
     register Sinatra::Reloader
@@ -133,6 +134,78 @@ class AuthAPI < Sinatra::Base
   end
 
 
+  post '/signup_freeagent' do
+    school_name = 'Free Agent School'
+    school_sig  = 'StoryTime'
+    school_code = 'freeagent|freeagent-es'
+
+    teacher_name = "#{school_name} Teacher"
+    teacher_sig  = school_sig
+    davids_email = 'david@joinstorytime.com'
+
+    default_school = School.where(name: school_name).first
+    begin
+      # if for some reason the default school doesn't exists, create it
+      if (!default_school)
+        default_school = School.create(
+          signature: school_sig,
+          name: school_name,
+          code: school_sig,
+        )
+      end
+
+    rescue Exception => e # TODO, better error handling
+      # TODO: throw this error instead of printing?...
+      puts "ERROR: Could not create free agent school ["
+      puts e
+      puts "]"
+      return INTERNAL_ERROR
+
+    end
+
+    default_teacher = Teacher.where(name: teacher_name).first
+    begin
+      # if for some reason the default school doesn't exists, create it
+      if (!default_teacher)
+        default_teacher = Teacher.create(
+          signature: teacher_sig,
+          name: teacher_name,
+          email: davids_email,
+        )
+        default_school.signup_teacher(default_teacher)
+      end
+
+    rescue Exception => e # TODO, better error handling
+      puts "ERROR: Could not create free agent teacher ["
+      puts e
+      puts "]"
+      return INTERNAL_ERROR
+    end
+
+    phone       = params["phone"]
+    first_name  = params["first_name"]
+    last_name   = params["last_name"]
+    password    = params["password"]
+    class_code  = params["class_code"]
+    time_zone   = params["time_zone"]
+
+    SIGNUP::register_user2(new_user, class_code, default_story_number, default_story_number, true)
+    [status, headers, body.map(&:upcase)]
+
+  end
+
+  # this is how to call another route, but not treat it as a redirect
+  # post '/merge_test' do
+  #   status, headers, body = call env.merge("PATH_INFO" => '/merge_redirect')
+  #   [status, headers, body.map(&:upcase)]
+  # end
+
+  # post '/merge_redirect' do
+  #   puts params # the params are passed :)
+  #   puts "REDIRECTED"
+  #   200
+  # end
+
   post '/signup' do
     puts "params = #{params}"
     phone       = params["phone"]
@@ -160,7 +233,7 @@ class AuthAPI < Sinatra::Base
         first_name: first_name.strip,
         last_name: last_name.strip,
         class_code: class_code,
-        platform: 'app'
+        platform: 'app',
       }
 
       if (time_zone) then
@@ -168,18 +241,7 @@ class AuthAPI < Sinatra::Base
       end
 
       new_user = User.create(userData)
-      new_user.set_password(password)
-      init_state_table = {
-        story_number: default_story_number,
-        subscribed?: true,
-        last_story_read?: true,
-        last_unique_story: default_story_number
-      }
-      new_user.state_table.update(init_state_table)
-      # associate school/teacher, whichever
-      new_user.match_school(class_code)
-      new_user.match_teacher(class_code)
-      # great! fantastic, resource created
+      SIGNUP::register_user(new_user, class_code, default_story_number, default_story_number, true)
       return CREATE_USER_SUCCESS
 
     else # no matching code, don't sign this user up.

@@ -35,7 +35,7 @@ require_relative '../workers'
 require_relative 'helpers/authentication'
 require_relative 'middleware/authorizeEndpoint'
 require_relative 'constants/statusCodes'
-require_relative 'constants/userID'
+require_relative 'constants/userID' # USER_IDS::
 
 
 # CREATE USER: (assumes school with code 'school' already exists)
