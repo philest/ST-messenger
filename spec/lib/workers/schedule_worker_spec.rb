@@ -13,7 +13,7 @@ describe ScheduleWorker do
 
     @time = Time.new(2016, 6, 22, 23, 0, 0, 0) # with 0 utc-offset
     @time_range = 10.minutes.to_i
-    @interval = @time_range / 2.0               
+    @interval = @time_range / 2.0
     Timecop.freeze(@time)
 
     @s = ScheduleWorker.new
@@ -23,7 +23,7 @@ describe ScheduleWorker do
     # Time.now is @time
     @on_time = User.create(:send_time => @time, fb_id: "12345")
 
-    # 6:55:00 
+    # 6:55:00
     @just_early = User.create(:send_time => @time - @interval, fb_id: "23456")
 
     #  7:04:59pm
@@ -61,7 +61,7 @@ describe ScheduleWorker do
         when 2
           u.update(platform: 'ios', fcm_token: 'fun')
         end
-          
+
         u.update(send_time: @time)
         u.reload
       end
@@ -77,7 +77,7 @@ describe ScheduleWorker do
         original_method.call(*args, [Time.now.wday], &block)
       end
       expect(ScheduleWorker.jobs.size).to eq(0)
-      
+
       Sidekiq::Testing.fake! do
         expect {
          sw.perform(@interval)
@@ -101,7 +101,6 @@ describe ScheduleWorker do
         start_day_worker.perform("new user", 'fb')
       end
 
-      puts User.where(fb_id: "new user").first.inspect
       expect(User.where(fb_id: "new user").first).to_not be_nil
 
     end
@@ -125,7 +124,7 @@ describe ScheduleWorker do
         ScheduleWorker.perform_async(@interval)
       end
     end
-    
+
   end
 
   context "it handles Pacific time cases", pacific:true do
@@ -136,15 +135,13 @@ describe ScheduleWorker do
 
         # change those timezones dawg!
         User.each do |user|
-          puts "updating users #{user.fb_id}...."
           user.update(tz_offset: -7)
-          puts "send_time = #{user.send_time}"
         end
 
         # 7pm in Pacific Time during DST
 
         Timecop.freeze(@west_time)
-      end   
+      end
 
       after(:each) do
         Timecop.return
@@ -156,7 +153,7 @@ describe ScheduleWorker do
       end
 
 
-      it "returns true for users within the time interval at a given time" do 
+      it "returns true for users within the time interval at a given time" do
         just_early = User.where(fb_id: "23456").first
         just_late = User.where(fb_id: "34567").first
         expect(@s.within_time_range(just_early, @interval, [Time.now.wday])).to be true
@@ -174,13 +171,13 @@ describe ScheduleWorker do
         user.state_table.update(story_number: @story_num)
         expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
         Timecop.freeze(Time.now + @time_range)
-        expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false      
+        expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false
       end
 
     end # context within_time_range function
 
 
-  end # context it handles Pacific time cases 
+  end # context it handles Pacific time cases
 
 
 
@@ -208,7 +205,7 @@ describe ScheduleWorker do
   #     expect(@s.adjust_tz(user)).to eq(user.send_time - 1.hour)
   #   end
 
-  #   it "adds an hour to the UTC clock when it's winter and the user enrolled during the summer" do 
+  #   it "adds an hour to the UTC clock when it's winter and the user enrolled during the summer" do
   #   # when the user enrolled in the summer and it's currently winter
   #     Timecop.freeze(@summer)
   #     user = User.create(:send_time => @summer)
@@ -221,11 +218,9 @@ describe ScheduleWorker do
   context "within_time_range function", :range => true do
 
     it 'gets fucked' do
-      puts "FUCKED!"
       Timecop.freeze(Time.now + 8.days)
       @on_time.state_table.update(story_number: 9)
       @on_time = User.where(fb_id: "12345").first
-      puts "#{@on_time.state_table.inspect}"
       expect(@s.within_time_range(@on_time, @interval)).to be true
 
     end
@@ -249,7 +244,7 @@ describe ScheduleWorker do
       user.state_table.update(story_number: @story_num)
       expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be true
       Timecop.freeze(Time.now + @time_range)
-      expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false      
+      expect(@s.within_time_range(user, @interval, [Time.now.wday])).to be false
     end
 
   end # context 'within_time_range function'
@@ -291,7 +286,7 @@ describe ScheduleWorker do
       end
       users = [@on_time, @just_early, @just_late]
       expect(ScheduleWorker.jobs.size).to eq(0)
-      
+
       Sidekiq::Testing.fake! do
         expect {
          sw.perform(@interval)
@@ -331,18 +326,18 @@ describe ScheduleWorker do
         sw.perform
       end
     end
-  
+
 
   # end # context 'filtering users'
 
 		context 'people should be following schedule rules nao', timeline:true do
 			before(:all) do
-				@sw_curric = ScheduleWorker.new 
-				
+				@sw_curric = ScheduleWorker.new
+
 				@sw_curric.schedules = [
-			    { 
+			    {
 			      start_day: 1,
-			      days: [4] 
+			      days: [4]
 			    },
 			    {
 			      start_day: 3,
@@ -355,7 +350,7 @@ describe ScheduleWorker do
 				]
 
       	dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
-      	@c 	= Birdv::DSL::Curricula.load(dir, absolute=true) 
+      	@c 	= Birdv::DSL::Curricula.load(dir, absolute=true)
 			end
 
 			after(:all) do
@@ -379,7 +374,7 @@ describe ScheduleWorker do
 			describe 'day 1 behaviour', day1:true do
 
         before(:all) do
-          Birdv::DSL::ScriptClient.clear_scripts 
+          Birdv::DSL::ScriptClient.clear_scripts
 
 
           Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/test_scripts/*")
@@ -389,16 +384,6 @@ describe ScheduleWorker do
 
           @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
           @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
-          
-
-
-
-          # allow(@day2).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
-          #   puts "run_sequence for @day2"
-          # end
-          # allow(@remind_script).to  receive(:run_sequence).and_wrap_original do |original_method, *args|
-          #   puts "run_sequence for @remind_script"
-          # end
 
           @sw = ScheduleWorker.new
           @startday = StartDayWorker.new
@@ -425,11 +410,11 @@ describe ScheduleWorker do
 				# 	# last story read on Tuesday!
 				# 	@users.each do |u|
 				# 		u.state_table.update( last_story_read_time: start_time )
-				# 	end	
+				# 	end
 
 				# 	expect{
 				# 		Sidekiq::Testing.fake! {
-				# 			# run that same day to ensure not send stuff						
+				# 			# run that same day to ensure not send stuff
 				# 			@sw_curric.perform(@interval)
 				# 			(3..10).each do |day|
 				# 				start_time += 1.day
@@ -441,25 +426,25 @@ describe ScheduleWorker do
 
 				# 	# now we finally reach that [4]
 				# 	start_time += 1.day
-				# 	Timecop.freeze(start_time)		
+				# 	Timecop.freeze(start_time)
 
 				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-				# 	@sw_curric.perform(@interval)		
+				# 	@sw_curric.perform(@interval)
 				# end
-				
+
 				# it 'sends next story on [4] of next week if day1 on 3' do
 				# 	start_time = Time.new(2016, 7, 27, 23, 0, 0, 0)
 				# 	Timecop.freeze(start_time)
 				# 	# last story read on Wednesday!
 				# 	@users.each do |u|
 				# 		u.state_table.update( last_story_read_time: start_time )
-				# 	end	
+				# 	end
 
 				# 	# cycle through the days
 				# 	expect{
 				# 		Sidekiq::Testing.fake! {
-				# 			# run that same day to ensure not send stuff				
-				# 			@sw_curric.perform(@interval)			
+				# 			# run that same day to ensure not send stuff
+				# 			@sw_curric.perform(@interval)
 				# 			(4..10).each do |day|
 				# 				start_time += 1.day
 				# 				Timecop.freeze(start_time)
@@ -470,10 +455,10 @@ describe ScheduleWorker do
 
 				# 	# now we finally reach that [4]
 				# 	start_time += 1.day
-				# 	Timecop.freeze(start_time)		
+				# 	Timecop.freeze(start_time)
 
 				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-				# 	@sw_curric.perform(@interval)	
+				# 	@sw_curric.perform(@interval)
 				# end
 
 
@@ -486,13 +471,13 @@ describe ScheduleWorker do
 				# 	# day1 read on Monday!
 				# 	@users.each do |u|
 				# 		u.state_table.update( last_story_read_time: start_time )
-				# 	end	
+				# 	end
 
 				# 	# cycle through the days
 				# 	expect{
 				# 		Sidekiq::Testing.fake! {
-				# 			# run that same day to ensure not send stuff				
-				# 			@sw_curric.perform(@interval)			
+				# 			# run that same day to ensure not send stuff
+				# 			@sw_curric.perform(@interval)
 				# 			(2..11).each do |day|
 				# 				start_time += 1.day
 				# 				Timecop.freeze(start_time)
@@ -503,10 +488,10 @@ describe ScheduleWorker do
 
 				# 	# now we finally reach that [4]
 				# 	start_time += 1.day
-				# 	Timecop.freeze(start_time)		
+				# 	Timecop.freeze(start_time)
 
 				# 	expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-				# 	@sw_curric.perform(@interval)					
+				# 	@sw_curric.perform(@interval)
 				# end
 
 
@@ -519,13 +504,13 @@ describe ScheduleWorker do
 			# 		# last story read on Wednesday!
 			# 		@users.each do |u|
 			# 			u.state_table.update( last_story_read_time: start_time )
-			# 		end	
+			# 		end
 
 			# 		# cycle through the days
 			# 		expect{
 			# 			Sidekiq::Testing.fake! {
-			# 			# run that same day to ensure not send stuff				
-			# 				@sw_curric.perform(@interval)			
+			# 			# run that same day to ensure not send stuff
+			# 				@sw_curric.perform(@interval)
 			# 				(4..10).each do |day|
 			# 					start_time += 1.day
 			# 					Timecop.freeze(start_time)
@@ -536,10 +521,10 @@ describe ScheduleWorker do
 
 			# 		# now we finally reach that [4]
 			# 		start_time += 1.day
-			# 		Timecop.freeze(start_time)		
+			# 		Timecop.freeze(start_time)
 
 			# 		expect(StartDayWorker).to receive(:perform_async).exactly(3).times
-			# 		@sw_curric.perform(@interval)	
+			# 		@sw_curric.perform(@interval)
 			# 	end
 			end  # END describe 'day 1 behaviour', day1:true do
 
@@ -552,8 +537,8 @@ describe ScheduleWorker do
 				# cycle through the days
 				expect{
 					Sidekiq::Testing.fake! {
-						# run that same day to ensure not send stuff				
-						@sw_curric.perform(@interval)			
+						# run that same day to ensure not send stuff
+						@sw_curric.perform(@interval)
 						(4..10).each do |day|
 							start_time += 1.day
 							Timecop.freeze(start_time)
@@ -569,13 +554,13 @@ describe ScheduleWorker do
 				local_users = @users
 				aub = User.create(first_name: 'Aubrey',
 													last_name:  'Wahl',
-													fb_id: 			'11') 
+													fb_id: 			'11')
 				vid = User.create(first_name: 'David',
 													last_name:  'McPeek',
-													fb_id: 			'12') 
+													fb_id: 			'12')
 				fil = User.create(first_name: 'Phil',
 													last_name:  'Esterman',
-													fb_id: 			'13') 
+													fb_id: 			'13')
 				local_users << aub
 				local_users << vid
 				local_users << fil
@@ -583,14 +568,14 @@ describe ScheduleWorker do
 				local_users.each do |u|
 					u.state_table.update(story_number:6)
 				end
-				
+
 				# freeze on a Sunday! no one except us should get them stories!
 				start_time = Time.new(2016, 7, 24, 23, 0, 0, 0)
 				Timecop.freeze(start_time)
 
 				expect{
 					Sidekiq::Testing.fake! {
-						@sw_curric.perform(@interval)			
+						@sw_curric.perform(@interval)
 					}
 				}.to change{StartDayWorker.jobs.size}.by 3
 
@@ -611,28 +596,28 @@ describe ScheduleWorker do
 
 				expect{
 					Sidekiq::Testing.fake! {
-						@sw_curric.perform(@interval)			
+						@sw_curric.perform(@interval)
 					}
-				}.not_to change{StartDayWorker.jobs.size}				
+				}.not_to change{StartDayWorker.jobs.size}
 
 				# freeze on a Monday!
 				start_time += 1.day
 				Timecop.freeze(start_time)
 				expect{
 					Sidekiq::Testing.fake! {
-						@sw_curric.perform(@interval)	
+						@sw_curric.perform(@interval)
 						start_time += 1.day
 						Timecop.freeze(start_time)
-						@sw_curric.perform(@interval)			
+						@sw_curric.perform(@interval)
 					}
 				}.to change{StartDayWorker.jobs.size}.by 6
 
-				# following two days			
+				# following two days
 				expect{
 					Sidekiq::Testing.fake! {
 						start_time += 1.day
 						Timecop.freeze(start_time)
-						@sw_curric.perform(@interval)			
+						@sw_curric.perform(@interval)
 					}
 				}.not_to change{StartDayWorker.jobs.size}
 
@@ -641,7 +626,7 @@ describe ScheduleWorker do
 				Timecop.freeze(start_time)
 				expect{
 					Sidekiq::Testing.fake! {
-						@sw_curric.perform(@interval)			
+						@sw_curric.perform(@interval)
 					}
 				}.to change{StartDayWorker.jobs.size}.by 3
 			end
@@ -661,15 +646,12 @@ describe ScheduleWorker do
 
       @s = Birdv::DSL::ScriptClient.new_script 'day901' do
         day (901) #dang this is kinda dangerless (plz enforce =  @starting_story_num+1)
-        sequence 'dummy_first' do |r|
-          puts 'hey this worked'
-        end
       end
 
       @script = Birdv::DSL::ScriptClient.scripts['fb']["day#{@starting_story_num+1}"]
 
     end
-  
+
     context '#update_day' do
 
       it 'increments the day # when last story was read', ass:true do
@@ -696,10 +678,10 @@ describe ScheduleWorker do
         # }.to change{User.where(fb_id: @u1_id).first.state_table.story_number}.by 1
 
       end
-      
+
       it 'does not increment day number when hasnt read last story', nosend:true do
         day = User.where(fb_id: @u1_id).first.state_table.story_number
-        u1script = Birdv::DSL::ScriptClient.scripts['fb']["day#{day+1}"] 
+        u1script = Birdv::DSL::ScriptClient.scripts['fb']["day#{day+1}"]
         expect(u1script).not_to receive(:run_sequence)
         expect{
           Sidekiq::Testing.inline! do
@@ -730,20 +712,20 @@ describe ScheduleWorker do
 
     it "does not send a message to a unsubscribed user." do
 
-    end 
+    end
 
   end
 
   describe "our_friend?" do
 
-    it "knows a rando's students aren't our friends" do 
+    it "knows a rando's students aren't our friends" do
       teacher = create(:teacher, signature: "Mr. Jew")
       user = create(:user)
       teacher.add_user(user)
       expect(ScheduleWorker.new.our_friend?(user)).to be false
     end
 
-    it "knows our students are friends" do 
+    it "knows our students are friends" do
       teacher = create(:teacher, signature: "Mr. Esterman")
       user = create(:user)
       teacher.add_user(user)

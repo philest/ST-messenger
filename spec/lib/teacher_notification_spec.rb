@@ -147,7 +147,6 @@ describe 'teacher notifications' do
             if Time.now.utc.hour == 12 # 4am PST
               puts "now = #{Time.now.utc}"
               Teacher.each do |t|
-                puts "teacher = #{t.inspect}"
                 # we don't want any repeats
                 if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
                   NotifyTeacherWorker.perform_async(t.id)
@@ -171,7 +170,6 @@ describe 'teacher notifications' do
           expect(Time.now.utc - @teacher.notified_on.utc).to be < 6.hours
 
           Teacher.each do |t|
-            puts "teacher = #{t.inspect}"
             # we don't want any repeats
             if t.notified_on.nil? or (Time.now.utc - t.notified_on.utc) > 6.hours
               NotifyTeacherWorker.perform_async(t.id)

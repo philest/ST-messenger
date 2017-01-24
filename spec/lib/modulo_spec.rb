@@ -14,7 +14,7 @@ describe 'modulo stories' do
 
       @time = Time.new(2016, 6, 22, 23, 0, 0, 0) # with 0 utc-offset
       @time_range = 10.minutes.to_i
-      @interval = @time_range / 2.0               
+      @interval = @time_range / 2.0
       Timecop.freeze(@time)
 
       @sw = ScheduleWorker.new
@@ -72,11 +72,11 @@ describe 'modulo stories' do
         puts "sending story for @day4"
         recipient = args[0]
         User.where(fb_id:recipient).first.state_table.update(
-                                          last_story_read_time:Time.now.utc, 
+                                          last_story_read_time:Time.now.utc,
                                           last_story_read?: true,
                                           last_unique_story_read?: true
                                           )
-      
+
       end
     end
 
@@ -113,7 +113,6 @@ describe 'modulo stories' do
       @on_time.reload()
       expect(@on_time.state_table.last_reminded_time).to eq Time.now
       expect(@on_time.state_table.num_reminders).to eq 1
-      puts "state table after remind = #{@on_time.state_table.inspect}"
 
     end
 
@@ -134,7 +133,6 @@ describe 'modulo stories' do
       @on_time.state_table.reload
       expect(@on_time.state_table.subscribed?).to eq false
 
-      puts "that state table though #{@on_time.state_table.inspect}"
     end
 
   end
@@ -154,7 +152,7 @@ describe 'modulo stories' do
     end
   end
 
-  context "start day worker" do 
+  context "start day worker" do
     before(:each) do
       @sw = StartDayWorker.new
       @fb_id = 'my_fb_id'
@@ -377,7 +375,7 @@ describe 'modulo stories' do
           expect(@user.story_number).to eq 10
 
         end
-        
+
     end
 
   end
@@ -389,13 +387,13 @@ describe 'modulo stories' do
   #       .inject(0) do |sum, n|
   #                   if /\d+\.rb/.match n
   #                     sum + 1
-  #                   else  
+  #                   else
   #                     sum
   #                   end
   #                 end
 
   #     puts $story_count
-  #     expect($story_count).to eq my_story_count    
+  #     expect($story_count).to eq my_story_count
   #     expect($story_count).to_not eq 0
   #   end
   # end

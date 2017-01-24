@@ -2,7 +2,7 @@
 #
 #
 #  The auth controller.
-#  --------------------------------------------------------
+#  "-----""-----""-----""-----""-----""-----""-----""-----""-----""-----""-----"-
 
 #sinatra dependencies
 require 'sinatra/base'
@@ -33,6 +33,7 @@ require_relative '../workers'
 
 require_relative 'helpers/authentication'
 require_relative 'helpers/signup' # SIGNUP::cool_method
+require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
@@ -75,16 +76,14 @@ class AuthAPI < Sinatra::Base
 
   set :root, File.join(File.dirname(__FILE__), '../')
 
+  helpers JSONMacros
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
 
-  helpers do
-
-  end
-
+  # all of our endpoints return json
   before do
-    headers 'Content-Type' => 'text/html; charset=utf-8'
+    content_type :json
   end
 
   get '/check_phone' do
@@ -134,63 +133,46 @@ class AuthAPI < Sinatra::Base
   end
 
 
-  post '/signup_freeagent' do
-    school_name = 'Free Agent School'
-    school_sig  = 'StoryTime'
-    school_code = 'freeagent|freeagent-es'
-
-    teacher_name = "#{school_name} Teacher"
-    teacher_sig  = school_sig
-    davids_email = 'david@joinstorytime.com'
-
-    default_school = School.where(name: school_name).first
-    begin
-      # if for some reason the default school doesn't exists, create it
-      if (!default_school)
-        default_school = School.create(
-          signature: school_sig,
-          name: school_name,
-          code: school_sig,
-        )
-      end
-
-    rescue Exception => e # TODO, better error handling
-      # TODO: throw this error instead of printing?...
-      puts "ERROR: Could not create free agent school ["
-      puts e
-      puts "]"
-      return INTERNAL_ERROR
-
-    end
-
-    default_teacher = Teacher.where(name: teacher_name).first
-    begin
-      # if for some reason the default school doesn't exists, create it
-      if (!default_teacher)
-        default_teacher = Teacher.create(
-          signature: teacher_sig,
-          name: teacher_name,
-          email: davids_email,
-        )
-        default_school.signup_teacher(default_teacher)
-      end
-
-    rescue Exception => e # TODO, better error handling
-      puts "ERROR: Could not create free agent teacher ["
-      puts e
-      puts "]"
-      return INTERNAL_ERROR
-    end
-
+  post '/signup_free_agent' do
+    puts request.body.read
+    # required params
     phone       = params["phone"]
     first_name  = params["first_name"]
-    last_name   = params["last_name"]
     password    = params["password"]
-    class_code  = params["class_code"]
+    # mostly optional params
+    last_name   = params["last_name"]
     time_zone   = params["time_zone"]
 
-    SIGNUP::register_user2(new_user, class_code, password, default_story_number, default_story_number, true)
-    [status, headers, body.map(&:upcase)]
+    puts "this should be stuff #{phone}:#{first_name}:#{password}"
+
+    default_story_number = 0
+
+    if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
+      # puts jsonError(MISSING_CREDENTIALS, "empty username or password")
+      return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
+      # return 404, json({code:MISSING_CREDENTIALS, title:"empty username or password"})
+    end
+
+    # if default school/teacher doesn't exists, create it
+    begin
+      default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher)
+    rescue Exception => e
+      notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+      return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
+    end
+
+    # TODO: make 'app' something that's passed in from client  :P
+    begin
+      app_platform = 'app'
+      new_user = SIGNUP::create_user( User, phone, first_name, last_name, school_code, app_platform, time_zone)
+      SIGNUP::register_user( new_user, school_code, params["password"], default_story_number, default_story_number, true)
+    rescue Exception => e # TODO, better error handling
+      notify_admins("Free-agent creation failed somehow...", e)
+      return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
+      # TODO: should probably attempt to destroy user
+    end
+
+    CREATE_USER_SUCCESS
 
   end
 
@@ -228,21 +210,25 @@ class AuthAPI < Sinatra::Base
     # maybe have a params[:role], but not yet
 
     if is_matching_code?(class_code) then
-      userData = {
-        phone: phone,
-        first_name: first_name.strip,
-        last_name: last_name.strip,
-        class_code: class_code,
-        platform: 'app',
-      }
 
-      if (time_zone) then
-        userData['tz_offset'] = time_zone
-      end
+      new_user = SIGNUP::create_user(
+        User,
+        phone,
+        first_name,
+        last_name,
+        class_code,
+        'app', # TODO: make 'app' something that's passed in from client  :P
+        time_zone,
+      )
 
-      new_user = User.create(userData)
-      SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
-      return CREATE_USER_SUCCESS
+      SIGNUP::register_user(
+        new_user,
+        class_code,
+        password,
+        default_story_number,
+        default_story_number,
+        true,
+      )
 
     else # no matching code, don't sign this user up.
       # basically, this condition is how we differentiate between paying customers and randos
@@ -250,6 +236,7 @@ class AuthAPI < Sinatra::Base
       return NO_MATCHING_SCHOOL # or something
     end
 
+      CREATE_USER_SUCCESS
   end
 
   post '/login' do
@@ -257,7 +244,7 @@ class AuthAPI < Sinatra::Base
     password    = params[:password]
 
     if phone.nil? or password.nil? or phone.empty? or password.empty?
-      return MISSING_CREDENTIALS
+      halt MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
     end
 
     puts "phone = #{phone}"
@@ -271,12 +258,11 @@ class AuthAPI < Sinatra::Base
 
     if user.authenticate(password) == true
       # create refresh_tkn and send to user
-      content_type :json
       refresh_tkn = refresh_token(user.id)
       user.update(refresh_token_digest: Password.create(refresh_tkn))
       return { token: refresh_tkn }.to_json
     else
-      return WRONG_PASSWORD
+      return 404, jsonError(WRONG_PASSWORD, 'wrong password')
     end
   end
 
@@ -305,7 +291,7 @@ class AuthAPI < Sinatra::Base
       refresh_tkn_hash   = Password.new(user.refresh_token_digest)
       if refresh_tkn_hash == bearer
         # generate a refresh tkn with different stats
-        content_type :json
+
         return { token: access_token(user.id) }.to_json
       end
 

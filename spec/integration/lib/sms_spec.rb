@@ -10,7 +10,7 @@ describe 'sms' do
   include EmailSpec::Matchers
 
   def app
-    TextApi 
+    TextApi
   end
 
   context 'delay test', delay: true do
@@ -31,7 +31,7 @@ describe 'sms' do
     before(:each) { allow(Pony).to(receive(:mail).with(hash_including(:to, :cc, :from, :headers, :body, :subject))) }
 
     before(:each) do
-      
+
 
     end
 
@@ -62,7 +62,7 @@ describe 'sms' do
       end
 
     end
-    
+
   end
 
 
@@ -199,7 +199,7 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.school.name).to eq "TurkeyFuck Academy"
       expect(user.teacher).to be_nil
-      
+
 
     end
 
@@ -215,7 +215,7 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.school.name).to eq "YWCA"
       expect(user.locale).to eq 'en'
-      
+
 
     end
 
@@ -231,7 +231,7 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.school.name).to eq "YWCA"
       expect(user.locale).to eq 'es'
-      
+
 
     end
 
@@ -247,7 +247,7 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.teacher.name).to eq "TeacherMan"
       expect(user.locale).to eq 'en'
-      
+
     end
 
     it "handles weird regexes IV", regex: true do
@@ -262,7 +262,7 @@ describe 'sms' do
       user = User.where(phone: "5555555555").first
       expect(user.teacher.name).to eq "TeacherMan"
       expect(user.locale).to eq 'es'
-      
+
 
     end
 
@@ -338,7 +338,7 @@ describe 'sms' do
 
       text_body = "David McFuckingPeek the III"
       sms_params = {"ToCountry"=>"US", "ToState"=>"CT", "SmsMessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "NumMedia"=>"0", "ToCity"=>"DARIEN", "FromZip"=>"90066", "SmsSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "FromState"=>"CA", "SmsStatus"=>"received", "FromCity"=>"LOS ANGELES", "Body"=>text_body, "FromCountry"=>"US", "To"=>"+12032023505", "ToZip"=>"06820", "NumSegments"=>"1", "MessageSid"=>"SM3461cd2ebfa515456d2a956c03dee788", "AccountSid"=>"ACea17e0bba30660770f62b1e28e126944", "From"=>"+15555555555", "ApiVersion"=>"2010-04-01"}
-      
+
       Sidekiq::Testing.inline! do
         post '/sms', sms_params
       end
@@ -397,18 +397,13 @@ describe 'sms' do
         post '/sms', sms_params
       end
 
-      puts "teachers = #{school.teachers}"
-
       user = User.where(phone: "5555555555").first
       expect(user.school.signature).to eq "Rocky Mountain Prep"
       the_teacher = Teacher.where(code: "RMP3|RMP-es3").first
       expect(user.teacher.signature).to eq the_teacher.signature
-      puts "teacher's sig = #{the_teacher.signature}"
 
       # then test name_codes
       trans = @day1.translate_sms('5555555555', 'scripts.intro_sms.__poc__[0]')
-      puts "TRANSLATING TRANSLATING TRANSLATING"
-      puts "trans = #{trans}"
     end
 
 
@@ -520,10 +515,6 @@ describe 'sms' do
       allow_any_instance_of(Birdv::DSL::StoryTimeScript).to receive(:run_sequence).and_wrap_original do |original_method, *args, &block|
         puts "running sequence with args #{args}"
       end
-
-      # allow_any_instance_of(StartDayWorker).to receive(:perform).and_wrap_original do |original_method, *args| 
-      #   puts "ASSSSSSSS!!!!!!!"
-      # end 
 
       # users' initial state...
       expect(User.where(phone: '5612125831').first.state_table.story_number).to eq 0

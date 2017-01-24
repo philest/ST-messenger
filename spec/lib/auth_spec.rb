@@ -16,13 +16,17 @@ Dotenv.load
 ENV['RACK_ENV'] = 'test'
 require 'rack/test'
 
-
-
+module JSONHelper
+  def post_json(uri, json)
+    return post uri, json.to_json, "CONTENT_TYPE" => "application/json"
+  end
+end
 
 describe 'auth' do
   include Rack::Test::Methods
   include STATUS_CODES
   include BCrypt
+  include JSONHelper
 
 
   def app
@@ -42,13 +46,10 @@ describe 'auth' do
       post '/signup', {phone:@phone, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
 
       @user = User.where(phone: @phone).first
-      puts "@user = #{@user.inspect}"
 
       post '/login', {phone: @phone, password: 'my_password'}
 
       @token = JSON.parse(last_response.body)['token']
-
-      puts "@refresh_token = #{@token.inspect}"
 
     end
 
@@ -74,14 +75,10 @@ describe 'auth' do
 
       token =  JSON.parse(last_response.body)['token']
 
-      puts "THIS FUCKEN TOKEN = #{token.inspect}"
-
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       # the bearer is the refresh_token
 
       access_tkn_payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
-
-      puts "FINAL TOKEN = #{access_tkn_payload.inspect}"
 
 
       user = access_tkn_payload['user']
@@ -170,7 +167,7 @@ describe 'auth' do
 
   end
 
-  context 'signing up user' do
+  context 'signing up user with registered teacher/school system' do
     before(:each) do
       # create school/teacher
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
@@ -242,6 +239,109 @@ describe 'auth' do
       expect(user.password_digest).to_not be_nil
       expect(user.first_name).to eq 'David'
       expect(user.last_name).to eq 'McPeek'
+    end
+
+  end
+
+  context 'signing up free-agent', free_agent: true do
+    before(:each) do
+      # create school/teacher
+      # @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
+      # @school  = School.create(signature: "School", name: "School", code: "school|school-es")
+      # @school.signup_teacher(@teacher)
+      @phone = "3013328953"
+    end
+
+    context "errs when missing" do
+      it "first_name" do
+        post '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'David',
+          last_name: 'McPeek',
+          password: 'my_password',
+          time_zone: -4.0,
+        }, { "CONTENT_TYPE" => "application/json" }
+        # puts(last_response.inspect)
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+      end
+      it "phone" do
+        post_json '/signup_free_agent', {
+          phone: @phone,
+          last_name: 'McPeek',
+          password: 'my_password',
+          time_zone: -4.0,
+        }
+        # puts(last_response.inspect)
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+
+      end
+      it "password" do
+        post_json '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'David',
+          last_name: 'McPeek',
+          time_zone: -4.0,
+        }
+        # puts(last_response.body)
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+      end
+
+      it "doesn't create a user" do
+        user = User.where(phone: @phone).first
+        expect(user).to be_nil
+      end
+
+
+    end
+
+    it "returns MISSING_CREDENTIALS with missing creds" do
+      # puts "STATUS_CODES = #{STATUS_CODES}"
+      # post '/signup'
+      # expect(last_response.status).to eq STATUS_CODES::MISSING_CREDENTIALS
+    end
+
+    it "creates a user with correct password_digest, locale, school, teacher, info" do
+      # body = {
+      #   phone: @phone,
+      #   first_name: 'David',
+      #   last_name: 'McPeek',
+      #   password: 'my_password',
+       #   class_code: @teacher.code.split('|')[0] # correct code
+      # }
+      # post '/signup', body
+
+      # expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+      # user = User.where(phone: @phone).first
+      # expect(user).to_not be_nil
+
+      # expect(user.teacher.id).to eq @teacher.id
+      # expect(user.school.id).to eq @school.id
+      # expect(user.locale).to eq 'en'
+      # expect(user.password_digest).to_not be_nil
+      # expect(user.first_name).to eq 'David'
+      # expect(user.last_name).to eq 'McPeek'
+    end
+
+    it 'creates user with spanish' do
+    #   body = {
+    #     phone: @phone,
+    #     first_name: 'David',
+    #     last_name: 'McPeek',
+    #     password: 'my_password',
+    #     class_code: @teacher.code.split('|')[1] # correct code
+    #   }
+    #   post '/signup', body
+
+    #   expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+    #   user = User.where(phone: @phone).first
+    #   expect(user).to_not be_nil
+
+    #   expect(user.teacher.id).to eq @teacher.id
+    #   expect(user.school.id).to eq @school.id
+    #   expect(user.locale).to eq 'es'
+    #   expect(user.password_digest).to_not be_nil
+    #   expect(user.first_name).to eq 'David'
+    #   expect(user.last_name).to eq 'McPeek'
     end
 
   end
