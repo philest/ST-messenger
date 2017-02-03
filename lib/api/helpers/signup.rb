@@ -1,13 +1,13 @@
 module SIGNUP
 
-  def self.create_user(user_constructor, phone, first_name, last_name, password, class_code, time_zone = nil)
+  def self.create_user(user_constructor, phone, first_name, last_name, password, class_code, platform, time_zone = nil)
 
     userData = {
       phone: phone,
       first_name: first_name.strip,
       last_name: last_name.strip,
       class_code: class_code,
-      platform: 'app',
+      platform: platform,
     }
 
     if (time_zone) then
@@ -19,7 +19,7 @@ module SIGNUP
   end
 
 
-	def self.register_user(db_user, class_code, password, story_number,  last_unique_story_number, last_story_read)
+	def self.register_user(db_user, class_code, password, story_number, last_unique_story_number, last_story_read)
       db_user.set_password(password)
       init_state_table = {
         story_number: story_number,
@@ -33,22 +33,23 @@ module SIGNUP
       db_user.match_teacher(class_code)
 	end
 
-  def self.create_free_agent_school(schoolRef, teacherRef)
+  def self.create_free_agent_school(schoolRef, teacherRef, school_code)
     school_name = 'Free Agent School'
     school_sig  = 'StoryTime'
-    school_code = 'freeagent|freeagent-es'
 
     teacher_name = "#{school_name} Teacher"
     teacher_sig  = school_sig
     davids_email = 'david@joinstorytime.com'
 
     default_school = schoolRef.where(name: school_name).first
+
     begin
+
       if (!default_school)
         default_school = schoolRef.create(
           signature: school_sig,
           name: school_name,
-          code: school_sig,
+          code: school_code,
         )
       end
 
@@ -58,9 +59,11 @@ module SIGNUP
       puts e
       puts "]"
       raise e # TODO: make this error more specific
+
     end
 
     begin
+
       default_teacher = teacherRef.where(name: teacher_name).first
       if (!default_teacher)
         default_teacher = teacherRef.create(
@@ -70,13 +73,18 @@ module SIGNUP
         )
         default_school.signup_teacher(default_teacher)
       end
+
     rescue Exception => e # TODO, better error handling
+
       puts "ERROR: Could not create free agent teacher ["
       puts e
       puts "]"
       raise e
+
     end
+
     return [default_teacher, default_school]
+
   end
 
 end

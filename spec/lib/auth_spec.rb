@@ -6,6 +6,7 @@ require 'workers'
 require 'api/auth'
 require 'api/user'
 require 'api/helpers/authentication'
+require 'api/helpers/signup'
 require 'api/constants/statusCodes'
 require 'api/middleware/authorizeEndpoint'
 require 'bcrypt'
@@ -18,7 +19,7 @@ require 'rack/test'
 
 module JSONHelper
   def post_json(uri, json)
-    return post uri, json.to_json, "CONTENT_TYPE" => "application/json"
+    return post uri, json, "CONTENT_TYPE" => "application/json"
   end
 end
 
@@ -167,7 +168,7 @@ describe 'auth' do
 
   end
 
-  context 'signing up user with registered teacher/school system' do
+  context 'signing up user with registered teacher/school system', registered_user: true do
     before(:each) do
       # create school/teacher
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
@@ -198,12 +199,13 @@ describe 'auth' do
     end
 
     it "creates a user with correct password_digest, locale, school, teacher, info" do
+      class_code = @teacher.code.split('|')[0] # correct code
       body = {
         phone: @phone,
         first_name: 'David',
         last_name: 'McPeek',
         password: 'my_password',
-        class_code: @teacher.code.split('|')[0] # correct code
+        class_code: class_code
       }
       post '/signup', body
 
@@ -217,7 +219,11 @@ describe 'auth' do
       expect(user.password_digest).to_not be_nil
       expect(user.first_name).to eq 'David'
       expect(user.last_name).to eq 'McPeek'
+      expect(user.class_code).to eq class_code
+
+
     end
+
 
     it 'creates user with spanish' do
       body = {
@@ -225,7 +231,8 @@ describe 'auth' do
         first_name: 'David',
         last_name: 'McPeek',
         password: 'my_password',
-        class_code: @teacher.code.split('|')[1] # correct code
+        class_code: @teacher.code.split('|')[1], # correct code
+        locale: 'es'
       }
       post '/signup', body
 
@@ -236,7 +243,7 @@ describe 'auth' do
       expect(user.teacher.id).to eq @teacher.id
       expect(user.school.id).to eq @school.id
       expect(user.locale).to eq 'es'
-      expect(user.password_digest).to_not be_nil
+      expect(user.password_digest).to_not be_nil # todo: make this test again b
       expect(user.first_name).to eq 'David'
       expect(user.last_name).to eq 'McPeek'
     end
@@ -245,27 +252,86 @@ describe 'auth' do
 
   context 'signing up free-agent', free_agent: true do
     before(:each) do
-      # create school/teacher
-      # @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
-      # @school  = School.create(signature: "School", name: "School", code: "school|school-es")
-      # @school.signup_teacher(@teacher)
+      # note: no need to create school. the system should automatically create if missing.
       @phone = "3013328953"
     end
 
-    context "errs when missing" do
-      it "first_name" do
+    describe "succesful freeagent signup when" do
+      it "agent fills out everything" do
         post '/signup_free_agent', {
           phone: @phone,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'en',
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq('freeagent1')
+      end
+
+      it "agent signs up in spanish" do
+        post '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'es',
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq('freeagent-es1')
+      end
+    end
+
+    describe "when school and teacher already exist" do
+      before(:each) do
+        @school_code_base = 'freeagent' # NOTE: gotta make sure this matches up with api/auth.rb
+        school_code_expression = "#{@school_code_base}|#{@school_code_base}-es"
+        SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
+      end
+
+
+      it "agent fills out everything" do
+        post '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'en',
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq("#{@school_code_base}1")
+      end
+
+      it "agent signs up in spanish" do
+        post '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'es',
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq("#{@school_code_base}-es1")
+      end
+    end
+
+    describe "errs when missing" do
+      it "phone" do
+        post '/signup_free_agent', {
           first_name: 'David',
           last_name: 'McPeek',
           password: 'my_password',
           time_zone: -4.0,
-        }, { "CONTENT_TYPE" => "application/json" }
+        }
         # puts(last_response.inspect)
         expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
       end
-      it "phone" do
-        post_json '/signup_free_agent', {
+      it "first_name" do
+        post '/signup_free_agent', {
           phone: @phone,
           last_name: 'McPeek',
           password: 'my_password',
@@ -276,13 +342,13 @@ describe 'auth' do
 
       end
       it "password" do
-        post_json '/signup_free_agent', {
+        post '/signup_free_agent', {
           phone: @phone,
           first_name: 'David',
           last_name: 'McPeek',
           time_zone: -4.0,
         }
-        # puts(last_response.body)
+        puts(last_response.body)
         expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
       end
 
@@ -290,62 +356,23 @@ describe 'auth' do
         user = User.where(phone: @phone).first
         expect(user).to be_nil
       end
-
-
     end
 
-    it "returns MISSING_CREDENTIALS with missing creds" do
-      # puts "STATUS_CODES = #{STATUS_CODES}"
-      # post '/signup'
-      # expect(last_response.status).to eq STATUS_CODES::MISSING_CREDENTIALS
+    describe "succesful user creation when" do
+      it "agent fills out everything" do
+        post '/signup_free_agent', {
+          phone: @phone,
+          first_name: 'David',
+          last_name: 'McPeek',
+          time_zone: -4.0,
+          password: 'just some passwoekre3892384(*#$&2'
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq("freeagent1")
+      end
     end
-
-    it "creates a user with correct password_digest, locale, school, teacher, info" do
-      # body = {
-      #   phone: @phone,
-      #   first_name: 'David',
-      #   last_name: 'McPeek',
-      #   password: 'my_password',
-       #   class_code: @teacher.code.split('|')[0] # correct code
-      # }
-      # post '/signup', body
-
-      # expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
-      # user = User.where(phone: @phone).first
-      # expect(user).to_not be_nil
-
-      # expect(user.teacher.id).to eq @teacher.id
-      # expect(user.school.id).to eq @school.id
-      # expect(user.locale).to eq 'en'
-      # expect(user.password_digest).to_not be_nil
-      # expect(user.first_name).to eq 'David'
-      # expect(user.last_name).to eq 'McPeek'
-    end
-
-    it 'creates user with spanish' do
-    #   body = {
-    #     phone: @phone,
-    #     first_name: 'David',
-    #     last_name: 'McPeek',
-    #     password: 'my_password',
-    #     class_code: @teacher.code.split('|')[1] # correct code
-    #   }
-    #   post '/signup', body
-
-    #   expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
-    #   user = User.where(phone: @phone).first
-    #   expect(user).to_not be_nil
-
-    #   expect(user.teacher.id).to eq @teacher.id
-    #   expect(user.school.id).to eq @school.id
-    #   expect(user.locale).to eq 'es'
-    #   expect(user.password_digest).to_not be_nil
-    #   expect(user.first_name).to eq 'David'
-    #   expect(user.last_name).to eq 'McPeek'
-    end
-
   end
-
 end
 
 

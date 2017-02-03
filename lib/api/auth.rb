@@ -134,29 +134,37 @@ class AuthAPI < Sinatra::Base
 
 
   post '/signup_free_agent' do
-    puts request.body.read
     # required params
     phone       = params["phone"]
     first_name  = params["first_name"]
     password    = params["password"]
+
     # mostly optional params
     last_name   = params["last_name"]
     time_zone   = params["time_zone"]
 
-    puts "this should be stuff #{phone}:#{first_name}:#{password}"
+    locale      = params["locale"] || 'en'
+
+    school_code_base = 'freeagent'
+    school_code_expression = "#{school_code_base}|#{school_code_base}-es"
+
+    class_code = "#{school_code_base}#{(locale === 'es' ? '-es' : '')}1"
+
+    puts class_code
 
     default_story_number = 0
 
     if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
-      # puts jsonError(MISSING_CREDENTIALS, "empty username or password")
       return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
-      # return 404, json({code:MISSING_CREDENTIALS, title:"empty username or password"})
     end
 
     # if default school/teacher doesn't exists, create it
     begin
-      default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher)
+      default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
     rescue Exception => e
+      puts "["
+      puts e
+      puts "]"
       notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
       return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
     end
@@ -164,15 +172,16 @@ class AuthAPI < Sinatra::Base
     # TODO: make 'app' something that's passed in from client  :P
     begin
       app_platform = 'app'
-      new_user = SIGNUP::create_user( User, phone, first_name, last_name, school_code, app_platform, time_zone)
-      SIGNUP::register_user( new_user, school_code, params["password"], default_story_number, default_story_number, true)
+
+      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, time_zone)
+      SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
       notify_admins("Free-agent creation failed somehow...", e)
       return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
       # TODO: should probably attempt to destroy user
     end
 
-    CREATE_USER_SUCCESS
+    return CREATE_USER_SUCCESS, jsonSuccess(CREATE_USER_SUCCESS, "user created")
 
   end
 
@@ -201,7 +210,7 @@ class AuthAPI < Sinatra::Base
 
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
-       puts "#{phone}#{first_name}#{password}#{class_code}"
+       puts "#{phone}#{first_name}#{class_code}"
        return MISSING_CREDENTIALS
     end
 
@@ -210,12 +219,12 @@ class AuthAPI < Sinatra::Base
     # maybe have a params[:role], but not yet
 
     if is_matching_code?(class_code) then
-
       new_user = SIGNUP::create_user(
         User,
         phone,
         first_name,
         last_name,
+        password,
         class_code,
         'app', # TODO: make 'app' something that's passed in from client  :P
         time_zone,
