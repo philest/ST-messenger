@@ -4,7 +4,7 @@ require_relative 'twilio_helpers'
 
 module ContactHelpers
 
-  def email_admins(subject, body)
+  def email_admins(subject, body = "[blank]")
     Pony.mail(:to => 'phil.esterman@yale.edu,supermcpeek@gmail.com',
               :cc => 'aawahl@gmail.com',
               :from => 'david.mcpeek@yale.edu',
@@ -13,7 +13,7 @@ module ContactHelpers
               :body => body)
   end
 
-	def notify_admins(subject, body)
+	def notify_admins(subject, body = "[blank]")
     email_admins(subject, body)
     text_body   = subject + ":\n" + body
     david, phil, aubs = '+18186897323', '+15612125831', '+13013328953'
@@ -27,5 +27,4 @@ module ContactHelpers
       TextingWorker.perform_async(subject, aubs, ENV['ST_USER_REPLIES_NO'])
     end
 	end
-  
 end

@@ -142,6 +142,7 @@ class AuthAPI < Sinatra::Base
     # mostly optional params
     last_name   = params["last_name"]
     time_zone   = params["time_zone"]
+    teacher_email = params["teacher_email"]
 
     locale      = params["locale"] || 'en'
 
@@ -180,7 +181,7 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
       # TODO: should probably attempt to destroy user
     end
-
+    notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
     return CREATE_USER_SUCCESS, jsonSuccess(CREATE_USER_SUCCESS, "user created")
 
   end
