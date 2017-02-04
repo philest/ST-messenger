@@ -257,7 +257,7 @@ describe 'auth' do
     end
 
     describe "succesful freeagent signup when" do
-      it "agent fills out everything" do
+      it "agent fills out everything", poop:true do
         post '/signup_free_agent', {
           phone: @phone,
           first_name: 'Aubrey',
@@ -265,7 +265,7 @@ describe 'auth' do
           password: 'my_password',
           locale: 'en',
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq('freeagent1')
       end
@@ -278,7 +278,7 @@ describe 'auth' do
           password: 'my_password',
           locale: 'es',
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq('freeagent-es1')
       end
@@ -300,7 +300,7 @@ describe 'auth' do
           password: 'my_password',
           locale: 'en',
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq("#{@school_code_base}1")
       end
@@ -313,7 +313,7 @@ describe 'auth' do
           password: 'my_password',
           locale: 'es',
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq("#{@school_code_base}-es1")
       end
@@ -348,7 +348,6 @@ describe 'auth' do
           last_name: 'McPeek',
           time_zone: -4.0,
         }
-        puts(last_response.body)
         expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
       end
 
@@ -367,7 +366,7 @@ describe 'auth' do
           time_zone: -4.0,
           password: 'just some passwoekre3892384(*#$&2'
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq("freeagent1")
       end

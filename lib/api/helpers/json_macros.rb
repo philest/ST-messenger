@@ -15,8 +15,8 @@ module JSONMacros
     return json({code:code, title:title})
   end
 
-  def jsonSuccess(code, title="DEFAULT TITLE")
-    return json({code:code, title:title})
+  def jsonSuccess(payload = {})
+    return json(payload)
   end
 
 end

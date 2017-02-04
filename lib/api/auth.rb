@@ -182,7 +182,8 @@ class AuthAPI < Sinatra::Base
       # TODO: should probably attempt to destroy user
     end
     notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
-    return CREATE_USER_SUCCESS, jsonSuccess(CREATE_USER_SUCCESS, "user created")
+
+    return CREATE_USER_SUCCESS
 
   end
 
@@ -197,6 +198,13 @@ class AuthAPI < Sinatra::Base
   #   puts "REDIRECTED"
   #   200
   # end
+
+
+
+
+
+
+
 
   post '/signup' do
     puts "params = #{params}"
@@ -249,32 +257,50 @@ class AuthAPI < Sinatra::Base
       CREATE_USER_SUCCESS
   end
 
+
+
+
+
+
+
+
+
+
   post '/login' do
     phone       = params[:phone]
     password    = params[:password]
 
     if phone.nil? or password.nil? or phone.empty? or password.empty?
-      halt MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
+      return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
     end
 
     puts "phone = #{phone}"
-    puts "password = #{password}"
     user = User.where(phone: phone).first
-    puts "user = #{user.inspect}"
 
     if user.nil?
-      return NO_EXISTING_USER
+      return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, "couldn't find user in db")
     end
 
-    if user.authenticate(password) == true
-      # create refresh_tkn and send to user
-      refresh_tkn = refresh_token(user.id)
-      user.update(refresh_token_digest: Password.create(refresh_tkn))
-      return { token: refresh_tkn }.to_json
-    else
+    if !user.authenticate(password)
       return 404, jsonError(WRONG_PASSWORD, 'wrong password')
     end
+
+    # create refresh_tkn and send to user
+    refresh_tkn = refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(refresh_tkn))
+
+    return 201, jsonSuccess({ token: refresh_tkn })
+
   end
+
+
+
+
+
+
+
+
+
 
   post '/get_access_tkn' do
     begin
@@ -302,7 +328,7 @@ class AuthAPI < Sinatra::Base
       if refresh_tkn_hash == bearer
         # generate a refresh tkn with different stats
 
-        return { token: access_token(user.id) }.to_json
+        return 201, { token: access_token(user.id) }.to_json
       end
 
     rescue JWT::ExpiredSignature
