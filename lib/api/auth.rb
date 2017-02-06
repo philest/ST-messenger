@@ -153,7 +153,7 @@ class AuthAPI < Sinatra::Base
 
     puts class_code
 
-    default_story_number = 0
+    default_story_number = 2
 
     if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
       return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")

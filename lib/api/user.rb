@@ -134,7 +134,7 @@ class UserAPI < Sinatra::Base
     payload = params['payload']
     user = User.where(id: request.env[:user]['user_id']).first
     begin
-      notify_admins("#{event}", "#{user.first_name} #{user.last_name} #{user.phone} did this. Here's the payload: #{payload}")
+      notify_admins("#{event}", "#{user.first_name} #{user.last_name} (#{user.phone}) did this. Here's the payload: #{payload}")
     rescue
       return 404, jsonError(NOTIFY_ADMINS_FAIL, 'failed to notify admins. this should not happen.')
     end
