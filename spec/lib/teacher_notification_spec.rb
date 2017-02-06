@@ -49,7 +49,7 @@ describe 'teacher notifications' do
       it "does many named, no unnamed correctly" do
         user1 = User.create(first_name: "Phil")
         user2 = User.create(first_name: "Aubrey", last_name: "Wahl")
-        args = [@teacher.signature, @teacher.email, 3, 'families', 'Aubrey Wahl, David McPeek, and Phil', @teacher.quicklink]
+        args = [@teacher.signature, @teacher.email, 3, 'families', 'David McPeek, Phil, and Aubrey Wahl', @teacher.quicklink]
         expect(@nw).to receive(:new_users_notification_helper).with(*args).once
 
         @teacher.signup_user(@named)
