@@ -188,15 +188,16 @@ class UserAPI < Sinatra::Base
     theTime = params["timeLastUpdated"].to_i
     puts "#{settings.bookSpecs[:time_last_updated]} <=? #{theTime}"
     if( settings.bookSpecs[:time_last_updated] <= theTime)
-      return 200
+      return 200, jsonSuccess({freshInfo: false})
     end
 
     content_type :json
-    return {
+    return 200, jsonSuccess({
+      freshInfo: true,
       specs: settings.bookSpecs[:json],
       curriculum: settings.curriculum,
       schedule: settings.schedule
-    }.to_json
+    })
   end
 
 
@@ -246,6 +247,9 @@ class UserAPI < Sinatra::Base
       story_number: user.state_table.story_number
     }.to_json
   end
+
+
+
 
 
 

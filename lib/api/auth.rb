@@ -183,7 +183,7 @@ class AuthAPI < Sinatra::Base
     end
     notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
 
-    return CREATE_USER_SUCCESS
+    return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
 
   end
 
@@ -251,10 +251,10 @@ class AuthAPI < Sinatra::Base
     else # no matching code, don't sign this user up.
       # basically, this condition is how we differentiate between paying customers and randos
       # no school or teacher found
-      return NO_MATCHING_SCHOOL # or something
+      return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
-      CREATE_USER_SUCCESS
+      return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
   end
 
 
@@ -289,7 +289,7 @@ class AuthAPI < Sinatra::Base
     refresh_tkn = refresh_token(user.id)
     user.update(refresh_token_digest: Password.create(refresh_tkn))
 
-    return 201, jsonSuccess({ token: refresh_tkn })
+    return 201, jsonSuccess({ token: refresh_tkn, uuid: user.id })
 
   end
 
@@ -305,14 +305,12 @@ class AuthAPI < Sinatra::Base
   post '/get_access_tkn' do
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      # the bearer is the refresh_token
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
       if payload['type'] != 'refresh'
         puts "WRONG TYPE!!!!!!!!!"
-        return WRONG_ACCESS_TKN_TYPE
+        return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
       end
 
       user_id = payload['user']['user_id']
@@ -321,28 +319,28 @@ class AuthAPI < Sinatra::Base
       user = User.where(id: user_id).first
       if user.nil?
         puts "NO_EXISTING_USER!"
-        return NO_EXISTING_USER
+        return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
       end
 
       refresh_tkn_hash   = Password.new(user.refresh_token_digest)
-      if refresh_tkn_hash == bearer
-        # generate a refresh tkn with different stats
-
-        return 201, { token: access_token(user.id) }.to_json
-      end
 
     rescue JWT::ExpiredSignature
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token has expired')
+
     rescue JWT::InvalidIssuerError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid issuer')
+
     rescue JWT::InvalidIatError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid "issued at" time.')
+
     rescue JWT::DecodeError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'A token must be passed in')
+
     end
 
+    if refresh_tkn_hash == bearer
+      return 201, jsonSuccess({token: access_token(user.id)})
+    end
   end
-
-  # signout????
 
 end
