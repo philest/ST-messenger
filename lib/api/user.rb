@@ -35,7 +35,8 @@ require_relative '../workers'
 require_relative 'helpers/authentication'
 require_relative 'middleware/authorizeEndpoint'
 require_relative 'constants/statusCodes'
-require_relative 'constants/userID'
+require_relative 'helpers/json_macros'
+require_relative 'constants/userID' # USER_IDS::
 
 
 # CREATE USER: (assumes school with code 'school' already exists)
@@ -66,6 +67,8 @@ class UserAPI < Sinatra::Base
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
   helpers NameCodes
+  helpers JSONMacros
+
 
   use AuthorizeEndpoint
   use Airbrake::Rack::Middleware
@@ -95,10 +98,20 @@ class UserAPI < Sinatra::Base
   set :session_secret, ENV['SESSION_SECRET']
   enable :sessions
 
+
+
+
+
   get '/test' do
     puts "you are logged in!"
     return SUCCESS
   end
+
+
+
+
+
+
 
   get '/story_number' do
     st_no = params['story_number']
@@ -112,6 +125,28 @@ class UserAPI < Sinatra::Base
       story_number: user.state_table.story_number
     }.to_json
   end
+
+
+
+
+  post '/alert_team' do
+    event = params['event_description']
+    payload = params['payload']
+    user = User.where(id: request.env[:user]['user_id']).first
+    begin
+      notify_admins("#{event}", "#{user.first_name} #{user.last_name} (#{user.phone}) did this. Here's the payload: #{payload}")
+    rescue
+      return 404, jsonError(NOTIFY_ADMINS_FAIL, 'failed to notify admins. this should not happen.')
+    end
+    return 201
+  end
+
+
+
+
+
+
+
 
   post '/user_message' do
     user = User.where(id: request.env[:user]['user_id']).first
@@ -130,6 +165,9 @@ class UserAPI < Sinatra::Base
   end
 
 
+
+
+
   post '/timezone' do
     user = User.where(id: request.env[:user]['user_id']).first
     if user.nil?
@@ -140,20 +178,35 @@ class UserAPI < Sinatra::Base
     return SUCCESS
   end
 
+
+
+
+
+
+
   get '/book_list' do
     theTime = params["timeLastUpdated"].to_i
     puts "#{settings.bookSpecs[:time_last_updated]} <=? #{theTime}"
     if( settings.bookSpecs[:time_last_updated] <= theTime)
-      return 200
+      return 200, jsonSuccess({freshInfo: false})
     end
 
     content_type :json
-    return {
+    return 200, jsonSuccess({
+      freshInfo: true,
       specs: settings.bookSpecs[:json],
       curriculum: settings.curriculum,
       schedule: settings.schedule
-    }.to_json
+    })
   end
+
+
+
+
+
+
+
+
 
   post '/fcm_token' do
     user = User.where(id: request.env[:user]['user_id']).first
@@ -164,6 +217,22 @@ class UserAPI < Sinatra::Base
     user.update(fcm_token: params[:fcm_token])
     return SUCCESS
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   post '/story_number' do
     user = User.where(id: request.env[:user]['user_id']).first
@@ -178,6 +247,9 @@ class UserAPI < Sinatra::Base
       story_number: user.state_table.story_number
     }.to_json
   end
+
+
+
 
 
 
@@ -199,6 +271,14 @@ class UserAPI < Sinatra::Base
     content_type :json
     return user_data.to_json
   end
+
+
+
+
+
+
+
+
 
 
 
@@ -230,8 +310,19 @@ class UserAPI < Sinatra::Base
       return INTERNAL_ERROR
     end
 
-
   end
+
+
+
+
+
+
+
+
+
+
+
+
 
   post '/chat_message' do
     puts "request.env.user = #{request.env[:user]}"

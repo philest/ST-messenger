@@ -111,7 +111,6 @@ describe TextApi do
   # test the new user does indeed add a field to enrollment queue
   context 'post /' do
     before(:example) do
-      puts "TEACHER COUNT = #{Teacher.count} #{Teacher.first.inspect}"
       post '/', @enroll_params
     end
 

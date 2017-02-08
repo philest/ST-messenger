@@ -28,6 +28,8 @@ class AuthorizeEndpoint
 
       @app.call(env)
 
+    # https://philsturgeon.uk/http/2015/09/23/http-status-codes-are-not-enough/
+    # we just need to optimize this a bit
     rescue JWT::DecodeError => e
       p e
       [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]

@@ -9,6 +9,7 @@ gem 'airbrake'
 # authentication
 gem 'bcrypt'
 gem 'jwt'
+gem 'multi_json'
 # bot stuff
 # gem 'puma', 	'~>3.4.0'
 gem 'puma'

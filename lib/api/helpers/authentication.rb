@@ -1,7 +1,8 @@
 module AuthenticationHelpers
 
   def access_token(user_id)
-    JWT.encode payload(user_id, 1.day, "access"), ENV['JWT_SECRET'], 'HS256'
+    puts "HHHHHHHHHIIIIIIIIIIIIIIIIIIIII<<<<<<<<<<<<<<<<<<"
+    JWT.encode payload(user_id, 3.seconds, "access"), ENV['JWT_SECRET'], 'HS256'
   end
 
   def refresh_token(user_id)

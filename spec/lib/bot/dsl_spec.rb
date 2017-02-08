@@ -8,10 +8,10 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
   let (:script_obj) {Birdv::DSL::StoryTimeScript.new('examp') do end}
 
-  
+
   before(:all) do
     ENV['CURRICULUM_VERSION'] = "0"   # for the purposes of this spec
-    @aubrey   = '10209571935726081' # aubrey 
+    @aubrey   = '10209571935726081' # aubrey
     @success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
 
     @stub_story = lambda do |recipient, lib, title, num_pages|
@@ -24,21 +24,21 @@ describe 'Birdv::DSL::StoryTimeScript' do
     end
 
 
-    @stub_txt = lambda do |text|  
+    @stub_txt = lambda do |text|
       success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
        with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
             :headers => {'Content-Type'=>'application/json'}).
-       to_return(:status => 200, :body => @success, :headers => {})     
+       to_return(:status => 200, :body => @success, :headers => {})
     end
 
-    @stub_arb = lambda do |text|  
+    @stub_arb = lambda do |text|
       success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
       stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
        with(:body => text,
             :headers => {'Content-Type'=>'application/json'}).
-       to_return(:status => 200, :body => @success, :headers => {})     
-    end   
+       to_return(:status => 200, :body => @success, :headers => {})
+    end
 
   end
 
@@ -50,9 +50,9 @@ describe 'Birdv::DSL::StoryTimeScript' do
   end
 
   # testing the button_story generation
-  # => # => # => # => 
-  # => # => # => # => 
-  # => # => # => # => 
+  # => # => # => # =>
+  # => # => # => # =>
+  # => # => # => # =>
   context '#button_story' do
     before(:all) do
       @btn_name = 'poop'
@@ -61,13 +61,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
     before(:each) do
       @pb         = script_obj.postback_button('Tap here!', 'dumb_payload')
       @ubt        = script_obj.url_button('Tap here!', 'http://example.com')
-    end     
+    end
 
     it 'hash has required properties' do
       btn = script_obj.button_story ({
-        name: @btn_name, 
+        name: @btn_name,
         title: 'my title',
-        image_url: "b", 
+        image_url: "b",
         subtitle:"c",
         buttons: [@pb, @ubt]
         })
@@ -79,12 +79,12 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
     it 'registers newly made button' do
       btn = script_obj.button_story ({
-        name: @btn_name, 
-        image_url: "b", 
+        name: @btn_name,
+        image_url: "b",
         title: 'my title',
         subtitle:"c",
         buttons: [@pb, @ubt]
-        })      
+        })
       expect(script_obj.button(@btn_name)).to eq(btn)
     end
 
@@ -93,7 +93,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         script_obj.button_story({
         name:'garbage',
         title: 'poop',
-        image_url: "b"      
+        image_url: "b"
         }
       )}.not_to raise_error
     end
@@ -103,7 +103,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         expect{
           script_obj.button_story({
           name:'garbage',
-          image_url: "b"      
+          image_url: "b"
           }
         )}.to raise_error(ArgumentError)
       end
@@ -111,7 +111,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
       it 'raises an error if title and image_url not set properly, no buttons' do
         expect{
           script_obj.button_story({
-          name:'garbage'    
+          name:'garbage'
           }
         )}.to raise_error(ArgumentError)
       end
@@ -119,8 +119,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
       it 'raises an error if title not set properly, with buttons' do
         expect{
         script_obj.button_story ({
-        name: @btn_name, 
-        image_url: "b", 
+        name: @btn_name,
+        image_url: "b",
         subtitle:"c",
         buttons: [@pb, @ubt]
         })}.to raise_error(ArgumentError)
@@ -129,9 +129,9 @@ describe 'Birdv::DSL::StoryTimeScript' do
   end
 
   # Visual separation :P
-  # => # => # => # => 
-  # => # => # => # => 
-  # => # => # => # => 
+  # => # => # => # =>
+  # => # => # => # =>
+  # => # => # => # =>
   context '#button_normal' do
     before(:all) do
       @btn_name = 'btn_normal_test'
@@ -140,7 +140,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
     it 'hash has required properties' do
       btn = script_obj.button_normal({
-        name: @btn_name, 
+        name: @btn_name,
         window_text: @txt,
         buttons: [@pb, @ubt]
         })
@@ -154,10 +154,10 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
     it 'registers newly made button' do
       btn = script_obj.button_normal({
-        name: @btn_name, 
+        name: @btn_name,
         window_text: @txt,
         buttons: [@pb, @ubt]
-      })      
+      })
       expect(script_obj.button(@btn_name)).to eq(btn)
     end
 
@@ -181,8 +181,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
 
   # Visual separation :P
-  # => 
-  # => 
+  # =>
+  # =>
   # =>
   context '#send' do
     before(:each) do
@@ -190,7 +190,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @txt        = "hey this is window text, which can be much longer than button text"
       @lib      = 'day1'
       @title      = 'chomp'
-      
+
 
       User.create first_name:'Aubrey', last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey
     end
@@ -206,13 +206,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
            with(:body => "{\"recipient\":{\"id\":\"#{@aubrey}\"},\"message\":{\"text\":\"#{@txt}\"}}",
                 :headers => {'Content-Type'=>'application/json'}).
            to_return(:status => 200, :body => success, :headers => {})
-    end   
+    end
 
     it 'sends a send_story!', story: true do
       expect {
-        script_obj.send( 
-          @aubrey, 
-          script_obj.send_story({ 
+        script_obj.send(
+          @aubrey,
+          script_obj.send_story({
                   recipient:  @aubrey,
                   library:    @lib,
                   title:      @title,
@@ -232,7 +232,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         )
       }.not_to raise_error
     end
-    
+
 
     # the use case here is if we do send(send_story{args...}), which doesn't have :text field
     it 'does not error when passed json, but doesn\'t contain json' do
@@ -244,8 +244,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
   # check if sequence has already been seen within a given script
   # these are simple unit tests. integration test somewhere else TODO
-  # => 
-  # => 
+  # =>
+  # =>
   # =>
   context '#sequence_seen?' do
     before(:all) do
@@ -258,7 +258,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         sequence 'two' do |recipient|
         end
         sequence 'three' do |recipient|
-        end       
+        end
         sequence 'four' do |recipient|
         end
       end
@@ -277,44 +277,44 @@ describe 'Birdv::DSL::StoryTimeScript' do
     #   expect{
     #     @script_copy.sequence_seen?('nonexistentsequence', 'one')
     #   }.to EMAIL_SHIT
-    # end   
+    # end
 
     # should also email phil
     it 'returns true when input is all wrong?' do
       expect(
         @script_copy.sequence_seen?('nonexistentsequence', 'one')
       ).to eq true
-    end   
+    end
 
 
     it 'returns false when have not seen' do
       expect(
         @script_copy.sequence_seen?('two', 'one')
-      ).to eq false   
+      ).to eq false
 
       expect(
         @script_copy.sequence_seen?('four', 'two')
-      ).to eq false   
+      ).to eq false
     end
 
     it 'returns true when have seen' do
       expect(
         @script_copy.sequence_seen?('two', 'one')
-      ).to eq false 
+      ).to eq false
     end
 
     it 'works properly when input is a symbol' do
       expect(
         @script_copy.sequence_seen?(:two, :one)
-      ).to eq false   
+      ).to eq false
 
       expect(
         @script_copy.sequence_seen?(:four, :two)
-      ).to eq false   
+      ).to eq false
 
       expect(
         @script_copy.sequence_seen?(:nonexistentsequence, :one)
-      ).to eq true      
+      ).to eq true
 
     #   expect{
     #     @script_copy.sequence_seen?(:nonexistentsequence, :one)
@@ -322,15 +322,15 @@ describe 'Birdv::DSL::StoryTimeScript' do
     end
   end
 
-  
+
   # Visual separation :P
-  # => 
-  # => 
+  # =>
+  # =>
   # =>
   # note the difference between 'send story...' and 'send send_story'.
   # the former is usually used in a script, the latter not
   context '#send a #story' do
-    # TODO    
+    # TODO
     # it 'expects certain arguments' do
 
     # end
@@ -358,7 +358,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @txt = 'scripts.outro.__poc__[0]'
       def ScheduleWorker.def_schedules
         return [
-          { 
+          {
             start_day: 1,
             days: [4]
           },
@@ -373,7 +373,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
         ]
       end
 
-      
+
     end
 
     before(:each) do
@@ -397,7 +397,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
       end
     end
 
-    context 'on day2' do 
+    context 'on day2' do
       it "says 'next Monday' when it's Thursday" do
         Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
         text = @day2.translate_sms(@phone, @txt)
@@ -405,7 +405,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day2.translate_sms(@phone, @txt)
-        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!" 
+        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!"
       end
 
       it "says 'this Thursday' when it's Monday" do
@@ -415,7 +415,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day2.translate_sms(@phone, @txt)
-        expect(text).to eq "Recibirás otro cuento este jueves!" 
+        expect(text).to eq "Recibirás otro cuento este jueves!"
       end
     end
 
@@ -427,7 +427,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Recibirás otro cuento este martes!" 
+        expect(text).to eq "Recibirás otro cuento este martes!"
       end
       it "says 'this Thursday' when it's Tuesday" do
         Timecop.freeze(Time.new(2016, 9, 6, 23, 0, 0, 0))
@@ -436,7 +436,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Recibirás otro cuento este jueves!" 
+        expect(text).to eq "Recibirás otro cuento este jueves!"
 
       end
 
@@ -447,7 +447,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         @aubrey.update(locale: 'es')
         text = @day4.translate_sms(@phone, @txt)
-        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!" 
+        expect(text).to eq "Recibirás un cuento nuevo el próximo lunes!"
       end
     end
 
@@ -459,7 +459,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
   context 'outro message', outro: true do
     before(:all) do
-      # Birdv::DSL::ScriptClient.clear_scripts 
+      # Birdv::DSL::ScriptClient.clear_scripts
       Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../workers/test_scripts/*")
         .each {|f| load f }
       @remind_script = Birdv::DSL::ScriptClient.scripts['fb']['remind']
@@ -471,7 +471,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
       def ScheduleWorker.def_schedules
         return [
-          { 
+          {
             start_day: 1,
             days: [4]
           },
@@ -487,17 +487,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
       end
 
       @txt = 'scripts.outro.__poc__[0]'
-      @fb_object = @day1.text({text:@txt}) 
-      puts @fb_object.inspect 
+      @fb_object = @day1.text({text:@txt})
     end
 
     before(:each) do
       @aubrey   = User.create(fb_id: '10209571935726081', first_name:'Aubs', last_name:'Wahl', child_name:'Lil Aubs')
     end
-    # also have to test for sms....
-    # it 'loaded the scripts' do
-    #   puts @day1.inspect, @day2.inspect, @day3.inspect, @day7.inspect, @aubrey.inspect
-    # end
+
 
     context 'on day1' do
       it "says 'next Thursday' when it's Thursday" do
@@ -509,14 +505,14 @@ describe 'Birdv::DSL::StoryTimeScript' do
         @aubrey.update(locale: 'es')
         fb_object = Marshal.load(Marshal.dump(@fb_object))
         @day1.process_txt(fb_object, @aubrey)
-        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo jueves!" 
+        expect(fb_object[:message][:text]).to eq "Recibirás un cuento nuevo el próximo jueves!"
         # "Recibirás un cuento nuevo este jueves!"
 
         # - "Recibirás un cuento nuevo el próximo __DAY__!"
       end
     end
 
-    context 'on day2' do 
+    context 'on day2' do
       it "says 'next Monday' when it's Thursday" do
         Timecop.freeze(Time.new(2016, 9, 8, 23, 0, 0, 0))
         fb_object = Marshal.load(Marshal.dump(@fb_object))
@@ -654,8 +650,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
 
   # Visual separation :P
-  # => 
-  # => 
+  # =>
+  # =>
   # =>
   # the success of these tests is verified by making the corrext HTTP request
   context 'name replacement stuff', text_replace: true do
@@ -665,13 +661,13 @@ describe 'Birdv::DSL::StoryTimeScript' do
       @lib        = 'day1'
       @title      = 'chomp'
       @aubrey   = '10209571935726081' # aubrey
-      
-      @estohb = lambda do |text|  
+
+      @estohb = lambda do |text|
         success = "{\"recipient_id\":\"10209571935726081\",\"message_id\":\"mid.1467836400908:1c1a5ec5710d550e83\"}"
         stub_request(:post, "https://graph.facebook.com/v2.6/me/messages?access_token=EAAYOZCnHw2EUBAKs6JRf5KZBovzuHecxXBoH2e3R5rxEsWlAf9kPtcBPf22AmfWhxsObZAgn66eWzpZCsIZAcyX7RvCy7DSqJe8NVdfwzlFTZBxuZB0oZCw467jxR89FivW46DdLDMKjcYUt6IjM0TkIHMgYxi744y6ZCGLMbtNteUQZDZD").
              with(:body => "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"text\":\"#{text}\"}}",
                   :headers => {'Content-Type'=>'application/json'}).
-             to_return(:status => 200, :body => @success, :headers => {})     
+             to_return(:status => 200, :body => @success, :headers => {})
       end
     end
 
@@ -689,7 +685,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error      
+      }.not_to raise_error
     end
 
     it 'has no problem the the user is missing last_name' do
@@ -702,33 +698,33 @@ describe 'Birdv::DSL::StoryTimeScript' do
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
+      }.not_to raise_error
     end
 
     it 'has no problem the the user is missing last/first_name' do
       @estohb.call '||Lil||Mr. McEsterWahl'
       u = User.create child_name:'Lil Aubs', fb_id: @aubrey
       t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
-      t.add_user u      
+      t.add_user u
       expect {
         script_obj.send(
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
+      }.not_to raise_error
     end
 
     it 'renders the teacher, parent, and child names when all set' do
       @estohb.call 'Aubrey||Lil||Mr. McEsterWahl'
       u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
       t = Teacher.create email:'poop@pee.com', signature: "Mr. McEsterWahl"
-      t.add_user u      
+      t.add_user u
       expect {
         script_obj.send(
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
+      }.not_to raise_error
     end
 
     it 'properly render just the child name, nothing else set' do
@@ -739,7 +735,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
+      }.not_to raise_error
     end
 
     it 'works when user has no teacher' do
@@ -750,41 +746,41 @@ describe 'Birdv::DSL::StoryTimeScript' do
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
-    end   
+      }.not_to raise_error
+    end
     it 'works when teacher has no signature' do
       @estohb.call 'Aubrey||Lil||StoryTime'
       u = User.create last_name:'Wahl', child_name:'Lil Aubs', fb_id: @aubrey, first_name:'Aubrey'
       t = Teacher.create email:'poop@pee.com', signature: nil
-      t.add_user u      
+      t.add_user u
       expect {
         script_obj.send(
           @aubrey,
           script_obj.text({ text: @txt })
         )
-      }.not_to raise_error  
-    end       
-  end 
+      }.not_to raise_error
+    end
+  end
 
 
 
 
   # Visual separation :P
-  # => 
-  # => 
   # =>
-  # 
+  # =>
+  # =>
+  #
   context '#register_sequence' do
     before(:all) do
       @register_dumb_script = lambda do |name, return_str, script|
         script.sequence name do |recipient|
           return_str
-        end       
+        end
       end
     end
 
     it 'registers correct number of sequences' do
-      u = User.create(fb_id:@aubrey)    
+      u = User.create(fb_id:@aubrey)
       @register_dumb_script.call('seq1','a', script_obj)
       @register_dumb_script.call('seq1','b', script_obj)
       @register_dumb_script.call('seq1','c', script_obj)
@@ -796,7 +792,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
     end
 
     it 'overwriting a sequence screws up :init' do
-      u = User.create(fb_id:@aubrey)    
+      u = User.create(fb_id:@aubrey)
       @register_dumb_script.call('seq1','a', script_obj)
       @register_dumb_script.call('seq1','b', script_obj)
       @register_dumb_script.call('seq1','c', script_obj)
@@ -805,9 +801,9 @@ describe 'Birdv::DSL::StoryTimeScript' do
     end
 
     it 'errs when fallatious sequence, also DB is not updated' do
-      u = User.create(fb_id: @aubrey)   
+      u = User.create(fb_id: @aubrey)
       old = u.state_table.last_sequence_seen
-      
+
       # should change the last_sequence_seen
       expect{
         @register_dumb_script.call('seq1','a', script_obj)
@@ -829,8 +825,8 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
 
   # Visual separation :P
-  # =>  
-  # => 
+  # =>
+  # =>
   # =>
   # making sure that we play nicely with scripts
   # basically, we're running a larger part of stack
@@ -848,7 +844,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
       #load curriculae
       dir = "#{File.expand_path(File.dirname(__FILE__))}/test_curricula/"
-      Birdv::DSL::Curricula.load(dir, absolute=true)      
+      Birdv::DSL::Curricula.load(dir, absolute=true)
 
       # load a script
       @cli = Birdv::DSL::ScriptClient
@@ -856,18 +852,18 @@ describe 'Birdv::DSL::StoryTimeScript' do
         button_story({
           name:     'tap_here',
           title:    "scripts.buttons.title",
-          image_url:'scripts.buttons.story_img_url', 
+          image_url:'scripts.buttons.story_img_url',
           buttons:  [postback_button('scripts.buttons.tap', script_payload(:scratchstory))]
         })
         button_normal({
           name:        'thanks',
           window_text: "scripts.buttons.window_text[0]",
           buttons:      [postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
-        })      
+        })
         sequence 'firsttap' do |recipient|
           txt = "scripts.intro.__poc__[0]"
           send recipient, text({text: txt})
-          send recipient, button({name:'tap_here'}) 
+          send recipient, button({name:'tap_here'})
         end
         sequence 'scratchstory' do |recipient|
           send recipient, story()
@@ -877,15 +873,15 @@ describe 'Birdv::DSL::StoryTimeScript' do
         end
         sequence 'yourwelcome' do |recipient|
           send recipient, text({text: "scripts.buttons.welcome"})
-        end         
-      
+        end
+
       end #=>END @cli.new_script 'day1' do
 
       @cli.new_script 'day2' do
         button_story({
           name:     'tap_here',
           title:    "scripts.buttons.title",
-          image_url:'scripts.buttons.story_img_url', 
+          image_url:'scripts.buttons.story_img_url',
           buttons:  [postback_button('scripts.buttons.tap', script_payload(:story))]
         })
 
@@ -893,24 +889,24 @@ describe 'Birdv::DSL::StoryTimeScript' do
           name:        'thanks',
           window_text: "scripts.buttons.window_text[0]",
           buttons:      [postback_button('scripts.buttons.thanks', script_payload(:yourwelcome))]
-        })      
+        })
 
         sequence 'differentfirst' do |recipient|
           txt = "scripts.teacher_intro"
           send recipient, text({text: txt})
-          send recipient, button({name:'tap_here'}) 
+          send recipient, button({name:'tap_here'})
         end
         sequence 'story' do |recipient|
-          send recipient, story 
+          send recipient, story
           img_1 = "http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg"
           send recipient, picture({url: img_1})
           send recipient, button({name: 'thanks'})
         end
         sequence 'yourwelcome' do |recipient|
           send recipient, text({text: "scripts.buttons.welcome"})
-        end         
-      
-      end #=>END @cli.new_script 'day1' do      
+        end
+
+      end #=>END @cli.new_script 'day1' do
       @s = @cli.scripts['fb']
     end #=>END before(:all) do
 
@@ -927,7 +923,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         # scratchstory sequence
         b2 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"http://d2p8iyobf0557z.cloudfront.net/day1/scroll_up.jpg\"}}}}"
-        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great!!\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"      
+        b3 = "{\"recipient\":{\"id\":\"10209571935726081\"},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"You'll get another story next week. You both are doing great!!\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Thank you!\",\"payload\":\"day1_yourwelcome\"}]}}}}"
         @stub_arb.call(b2)
         @stub_arb.call(b3)
 
@@ -961,7 +957,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
               :headers => {'Content-Type'=>'application/json'}).
          to_return(:status => 200, :body => "", :headers => {})
 
-         
+
         pgs = Birdv::DSL::Curricula.get_version(0)[0][2]
         expect(pgs).to eq(2)  # only two pages of coon story
         expect(User.where(fb_id:@aubrey).first.state_table.story_number).to eq(0)
@@ -975,7 +971,7 @@ describe 'Birdv::DSL::StoryTimeScript' do
 
         expect {
           @s['day1'].run_sequence(@aubrey, :scratchstory)
-        }.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from('init').to ('scratchstory')      
+        }.to change{User.where(fb_id:@aubrey).first.state_table.last_sequence_seen}.from('init').to ('scratchstory')
       end
 
     end

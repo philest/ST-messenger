@@ -1,8 +1,8 @@
 #  auth.rb                       Aubrey Wahl & David McPeek
-#                
+#
 #
 #  The auth controller.
-#  --------------------------------------------------------
+#  "-----""-----""-----""-----""-----""-----""-----""-----""-----""-----""-----"-
 
 #sinatra dependencies
 require 'sinatra/base'
@@ -32,6 +32,8 @@ require_relative '../helpers/name_codes'
 require_relative '../workers'
 
 require_relative 'helpers/authentication'
+require_relative 'helpers/signup' # SIGNUP::cool_method
+require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
@@ -59,7 +61,7 @@ class AuthAPI < Sinatra::Base
   include NameCodes
   include BCrypt
 
-  require "sinatra/reloader" if development? 
+  require "sinatra/reloader" if development?
 
   configure :development do
     register Sinatra::Reloader
@@ -74,16 +76,14 @@ class AuthAPI < Sinatra::Base
 
   set :root, File.join(File.dirname(__FILE__), '../')
 
+  helpers JSONMacros
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
 
-  helpers do
-
-  end
-
+  # all of our endpoints return json
   before do
-    headers 'Content-Type' => 'text/html; charset=utf-8'
+    content_type :json
   end
 
   get '/check_phone' do
@@ -133,6 +133,79 @@ class AuthAPI < Sinatra::Base
   end
 
 
+  post '/signup_free_agent' do
+    # required params
+    phone       = params["phone"]
+    first_name  = params["first_name"]
+    password    = params["password"]
+
+    # mostly optional params
+    last_name   = params["last_name"]
+    time_zone   = params["time_zone"]
+    teacher_email = params["teacher_email"]
+
+    locale      = params["locale"] || 'en'
+
+    school_code_base = 'freeagent'
+    school_code_expression = "#{school_code_base}|#{school_code_base}-es"
+
+    class_code = "#{school_code_base}#{(locale === 'es' ? '-es' : '')}1"
+
+    puts class_code
+
+    default_story_number = 2
+
+    if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
+      return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
+    end
+
+    # if default school/teacher doesn't exists, create it
+    begin
+      default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
+    rescue Exception => e
+      puts "["
+      puts e
+      puts "]"
+      notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+      return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
+    end
+
+    # TODO: make 'app' something that's passed in from client  :P
+    begin
+      app_platform = 'app'
+
+      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, time_zone)
+      SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
+    rescue Exception => e # TODO, better error handling
+      notify_admins("Free-agent creation failed somehow...", e)
+      return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
+      # TODO: should probably attempt to destroy user
+    end
+    notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+
+    return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
+
+  end
+
+  # this is how to call another route, but not treat it as a redirect
+  # post '/merge_test' do
+  #   status, headers, body = call env.merge("PATH_INFO" => '/merge_redirect')
+  #   [status, headers, body.map(&:upcase)]
+  # end
+
+  # post '/merge_redirect' do
+  #   puts params # the params are passed :)
+  #   puts "REDIRECTED"
+  #   200
+  # end
+
+
+
+
+
+
+
+
   post '/signup' do
     puts "params = #{params}"
     phone       = params["phone"]
@@ -146,7 +219,7 @@ class AuthAPI < Sinatra::Base
 
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
-       puts "#{phone}#{first_name}#{password}#{class_code}"
+       puts "#{phone}#{first_name}#{class_code}"
        return MISSING_CREDENTIALS
     end
 
@@ -155,80 +228,89 @@ class AuthAPI < Sinatra::Base
     # maybe have a params[:role], but not yet
 
     if is_matching_code?(class_code) then
-      userData = {
-        phone: phone,
-        first_name: first_name.strip,
-        last_name: last_name.strip,
-        class_code: class_code,
-        platform: 'app'
-      }
+      new_user = SIGNUP::create_user(
+        User,
+        phone,
+        first_name,
+        last_name,
+        password,
+        class_code,
+        'app', # TODO: make 'app' something that's passed in from client  :P
+        time_zone,
+      )
 
-      if (time_zone) then
-        userData['tz_offset'] = time_zone
-      end
-
-      new_user = User.create(userData)
-      new_user.set_password(password)
-      init_state_table = {
-        story_number: default_story_number,
-        subscribed?: true,
-        last_story_read?: true,
-        last_unique_story: default_story_number
-      }
-      new_user.state_table.update(init_state_table)
-      # associate school/teacher, whichever
-      new_user.match_school(class_code)
-      new_user.match_teacher(class_code)
-      # great! fantastic, resource created
-      return CREATE_USER_SUCCESS
+      SIGNUP::register_user(
+        new_user,
+        class_code,
+        password,
+        default_story_number,
+        default_story_number,
+        true,
+      )
 
     else # no matching code, don't sign this user up.
       # basically, this condition is how we differentiate between paying customers and randos
       # no school or teacher found
-      return NO_MATCHING_SCHOOL # or something
+      return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
+      return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
   end
+
+
+
+
+
+
+
+
+
 
   post '/login' do
     phone       = params[:phone]
     password    = params[:password]
 
     if phone.nil? or password.nil? or phone.empty? or password.empty?
-      return MISSING_CREDENTIALS
+      return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
     end
 
     puts "phone = #{phone}"
-    puts "password = #{password}"
     user = User.where(phone: phone).first
-    puts "user = #{user.inspect}"
 
     if user.nil?
-      return NO_EXISTING_USER
+      return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, "couldn't find user in db")
     end
 
-    if user.authenticate(password) == true
-      # create refresh_tkn and send to user
-      content_type :json
-      refresh_tkn = refresh_token(user.id)
-      user.update(refresh_token_digest: Password.create(refresh_tkn))
-      return { token: refresh_tkn }.to_json
-    else
-      return WRONG_PASSWORD
+    if !user.authenticate(password)
+      return 404, jsonError(WRONG_PASSWORD, 'wrong password')
     end
+
+    # create refresh_tkn and send to user
+    refresh_tkn = refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(refresh_tkn))
+
+    return 201, jsonSuccess({ token: refresh_tkn, uuid: user.id })
+
   end
+
+
+
+
+
+
+
+
+
 
   post '/get_access_tkn' do
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      # the bearer is the refresh_token
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
       if payload['type'] != 'refresh'
         puts "WRONG TYPE!!!!!!!!!"
-        return WRONG_ACCESS_TKN_TYPE
+        return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
       end
 
       user_id = payload['user']['user_id']
@@ -237,28 +319,28 @@ class AuthAPI < Sinatra::Base
       user = User.where(id: user_id).first
       if user.nil?
         puts "NO_EXISTING_USER!"
-        return NO_EXISTING_USER
+        return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
       end
 
       refresh_tkn_hash   = Password.new(user.refresh_token_digest)
-      if refresh_tkn_hash == bearer
-        # generate a refresh tkn with different stats
-        content_type :json
-        return { token: access_token(user.id) }.to_json
-      end
 
     rescue JWT::ExpiredSignature
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token has expired')
+
     rescue JWT::InvalidIssuerError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid issuer')
+
     rescue JWT::InvalidIatError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid "issued at" time.')
+
     rescue JWT::DecodeError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
+      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'A token must be passed in')
+
     end
 
+    if refresh_tkn_hash == bearer
+      return 201, jsonSuccess({token: access_token(user.id)})
+    end
   end
-
-  # signout????
 
 end

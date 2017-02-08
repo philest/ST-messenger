@@ -173,8 +173,6 @@ describe "Reminders" do
     end
 
     expect(User.count).to eq 1
-    puts "#{User.first.inspect}"
-    puts "#{User.first.state_table.inspect}"
 
   end
 
@@ -219,7 +217,6 @@ describe "Reminders" do
     @on_time.reload()
     expect(@on_time.state_table.last_reminded_time).to eq Time.now
     expect(@on_time.state_table.num_reminders).to eq 1
-    puts "state table after remind = #{@on_time.state_table.inspect}"
   end
 
   it "should not remind users again after they've already gotten a reminder" do
@@ -253,7 +250,6 @@ describe "Reminders" do
     @on_time.state_table.reload
     expect(@on_time.state_table.subscribed?).to eq false
 
-    puts "that state table though #{@on_time.state_table.inspect}"
   end
 
   it "should resubscribe after receiving the resubscribe postback" do
@@ -286,7 +282,6 @@ describe "Reminders" do
     expect(@on_time.state_table.last_story_read?).to eq true
     expect(@on_time.state_table.last_script_sent_time).to be_nil
     expect(@on_time.state_table.last_reminded_time).to be_nil
-    puts "the state table of the ages = #{@on_time.state_table.inspect}"
     # expect the num_reminders to reset
   end
 
@@ -298,11 +293,7 @@ describe "Reminders" do
       @day1 = Birdv::DSL::ScriptClient.scripts['fb']['day1']
       @day2 = Birdv::DSL::ScriptClient.scripts['fb']['day2']
       @day4 = Birdv::DSL::ScriptClient.scripts['fb']['day4']
-      puts "HERE LIE THE SCRIPTS!"
-      puts "#{@remind_script.inspect}"
-      puts "#{@day1.inspect}"
-      puts "#{@day2.inspect}"
-      puts "#{@day4.inspect}"
+
       dir = "#{File.expand_path(File.dirname(__FILE__))}/worker_test_curricula/"
       @c  = Birdv::DSL::Curricula.load(dir, absolute=true) 
     end
@@ -349,7 +340,6 @@ describe "Reminders" do
 
       @on_time.reload()
       @on_time.state_table.reload()
-      puts "new state = #{@on_time.state_table.inspect}"
 
     end
 
@@ -406,7 +396,6 @@ describe "Reminders" do
       @on_time.reload()
       expect(@on_time.state_table.last_reminded_time).to eq Time.now
       expect(@on_time.state_table.num_reminders).to eq 1
-      puts "state table after remind = #{@on_time.state_table.inspect}"
 
     end
 
@@ -440,7 +429,6 @@ describe "Reminders" do
       @on_time.state_table.reload
       expect(@on_time.state_table.subscribed?).to eq false
 
-      puts "that state table though #{@on_time.state_table.inspect}"
     end
 
     it "should resubscribe after receiving the resubscribe postback" do
@@ -472,7 +460,6 @@ describe "Reminders" do
       expect(@on_time.state_table.last_story_read?).to eq true
       expect(@on_time.state_table.last_script_sent_time).to be_nil
       expect(@on_time.state_table.last_reminded_time).to be_nil
-      puts "the state table of the ages = #{@on_time.state_table.inspect}"
       # expect the num_reminders to reset
     end
 
