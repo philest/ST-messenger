@@ -13,7 +13,7 @@ birdv     = "http://birdv.herokuapp.com/"
     localhost + "startdayworker",
     query: {
       platform: "fb",
-      recipient: '1675189005839952'
+      recipient: '1229083957198990'
     }
   )
 
