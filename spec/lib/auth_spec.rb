@@ -247,7 +247,6 @@ describe 'auth' do
       expect(user.first_name).to eq 'David'
       expect(user.last_name).to eq 'McPeek'
     end
-
   end
 
   context 'signing up free-agent', free_agent: true do
@@ -402,6 +401,40 @@ describe 'protected api', api: true do
 
       @user.update(refresh_token_digest: BCrypt::Password.create(@refresh_tkn))
   end
+
+    # TODO some day :'-(
+
+    # it 'can update users info' do
+    #   body = {
+    #     phone: @phone,
+    #     first_name: 'David',
+    #     last_name: 'McPeek',
+    #     password: 'my_password',
+    #     class_code: @teacher.code.split('|')[1], # correct code
+    #     locale: 'es'
+    #   }
+    #   post '/signup', body
+
+    #   expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+    #   user = User.where(phone: @phone).first
+    #   expect(user).to_not be_nil
+
+    #   platform = 'android'
+    #   fcm_token = 'test_tkn'
+    #   app_version = '12 or whatever'
+
+    #   post '/user_data', {
+    #     platform: platform,
+    #     fcm_token: fcm_token,
+    #     app_version: app_version,
+    #   }
+
+    #   expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+
+
+    # end
+
+
 
   # context 'the api endpoints' do
 
