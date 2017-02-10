@@ -281,9 +281,14 @@ class UserAPI < Sinatra::Base
     user_data = {
       story_number: user.state_table.story_number,
       teacher_signature: user.teacher.signature,
+      teacher_id: user.teacher.id,
       school_signature: user.school.signature,
       first_name: user.first_name,
-      phone_number: user.phone
+      last_name: user.last_name,
+      phone_number: user.phone,
+      dbuuid: user.id,
+      role: user.role,
+      class_code: user.class_code
     }
 
     content_type :json
