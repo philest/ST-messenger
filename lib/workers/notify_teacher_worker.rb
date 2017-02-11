@@ -130,7 +130,7 @@ class NotifyTeacherWorker
           list_o_names += " #{named.first.last_name.to_s}" if not named.first.last_name.nil?
           list_o_names += " and #{named.last.first_name}"
           list_o_names += " #{named.last.last_name.to_s}" if not named.last.last_name.nil?
-        end 
+        end
 
       else
         last_user = named.pop
@@ -177,7 +177,7 @@ class NotifyTeacherWorker
   end
 
   def perform(teacher_id)
-    
+
     teacher = Teacher.where(id: teacher_id).first
 
     if teacher.nil?

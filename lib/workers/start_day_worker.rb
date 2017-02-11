@@ -20,7 +20,7 @@ class StartDayWorker
   end
 
   def enroll_sms?(user)
-    if (user.platform == 'sms' or user.platform == 'feature') and 
+    if (user.platform == 'sms' or user.platform == 'feature') and
         user.state_table.subscribed? == false and
         user.state_table.story_number == 1 and
         user.fb_id.nil?
@@ -45,7 +45,7 @@ class StartDayWorker
     else # fb user did NOT read yesterday's story
        # check to see if it's been over four days away...
         last_script_sent_time = user.state_table.last_script_sent_time
-        if last_script_sent_time != nil then 
+        if last_script_sent_time != nil then
           days_elapsed = (Time.now.utc - last_script_sent_time) / 1.day
           # if more than four days have elapsed after the user did not read their last story, it's time to remind them
           return days_elapsed < 4 ? false : true
@@ -77,20 +77,20 @@ class StartDayWorker
                 # DO NOT increment story_number
                 puts "sending the next unique story..."
                 user.state_table.update(last_story_read?: false,
-                                        last_unique_story: last_unique + 1, 
+                                        last_unique_story: last_unique + 1,
                                         last_unique_story_read?: false)
                 # do not increment story_number so next time we'll get back to the same story we were going to read
                 return last_unique + 1
               else # send mod'd story index
                 # should I update story_number here? and send the NEXT regular story? confusing...
                 mod = (n % $story_count) + 1 # just to get indexed by 1
-                user.state_table.update(story_number: n, 
+                user.state_table.update(story_number: n,
                                       last_story_read?: false)
                 return mod == 1 ? 2 : mod
               end
 
             else # NORMAL FUNCTIONING: we have seen fewer stories than those available
-              user.state_table.update(story_number: n, 
+              user.state_table.update(story_number: n,
                                       last_story_read?: false,
                                       last_unique_story: last_unique + 1)
               return user.state_table.story_number
@@ -101,11 +101,11 @@ class StartDayWorker
         elsif user.state_table.last_unique_story_read? == false
           # send the last_unique_story....
           return last_unique
-          
+
         end # if read_yesterday_story?
 
     else # platform == 'mms' or 'sms'
-      # Update. Since there are no buttons, we just assume peeps have read their story. 
+      # Update. Since there are no buttons, we just assume peeps have read their story.
       if user.state_table.subscribed? or user.state_table.story_number == 0
 
         if st_no >= $sms_story_count
@@ -181,8 +181,8 @@ class StartDayWorker
       u = User.where(fb_id:recipient).first
     end
 
-    # problem - unsubscribed sms users don't get to the next part. 
-    # so let's add a conditional. 
+    # problem - unsubscribed sms users don't get to the next part.
+    # so let's add a conditional.
     # have to make sure the rest handles it properly....
     if not u.state_table.subscribed?
       # unless (u.platform == 'sms' or u.platform == 'feature') and u.state_table.story_number == 0 then
@@ -250,7 +250,7 @@ class StartDayWorker
       elsif remind and (u.platform == 'sms' or u.platform == 'feature')
         # do something completely fucking different
         puts "we're in remind for sms! how did we even get here?? user: #{recipient}"
-        # oh, nice! I set myself up for success ;) 
+        # oh, nice! I set myself up for success ;)
         reminder = Birdv::DSL::ScriptClient.scripts[platform]["remind"]
         reminder.run_sequence(recipient, :remind)
 
@@ -264,16 +264,16 @@ class StartDayWorker
         # should be day2
         script = Birdv::DSL::ScriptClient.scripts[platform]["day#{day_number}"]
         puts script.inspect
-        script.run_sequence(recipient, sequence) 
+        script.run_sequence(recipient, sequence)
 
       elsif not read_yesterday_story
-        puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone." 
+        puts "this motherfucker #{recipient} hasn't read his last story. let's just leave him alone."
 
       else # send a story button, the usual way, yippee!!!!!!!!!
         puts "proceeding to send #{recipient} a story... oh look, a cloud!"
         u.state_table.update(last_script_sent_time: Time.now.utc, num_reminders: 0)
         puts "#{u.inspect}, #{u.teacher.inspect}, #{u.school.inspect}"
-        script.run_sequence(recipient, sequence) 
+        script.run_sequence(recipient, sequence)
       end
 
     else

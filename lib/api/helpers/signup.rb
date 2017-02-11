@@ -1,6 +1,6 @@
 module SIGNUP
 
-  def self.create_user(user_constructor, phone, first_name, last_name, password, class_code, platform, time_zone = nil)
+  def self.create_user(user_constructor, phone, first_name, last_name, password, class_code, platform, role, time_zone = nil)
 
     userData = {
       phone: phone,
@@ -8,6 +8,7 @@ module SIGNUP
       last_name: last_name.strip,
       class_code: class_code,
       platform: platform,
+      role: role,
     }
 
     if (time_zone) then

@@ -3,7 +3,7 @@ require_relative 'start_day_worker'
 
 class ScheduleWorker
   include Sidekiq::Worker
-  
+
   # how many times should this retry??
   sidekiq_options :retry => 3
   # sidekiq_options :retry => false
@@ -12,8 +12,8 @@ class ScheduleWorker
 
   def self.def_schedules
     return [
-      { 
-        start_day: 2,
+      {
+        start_day: 5,
         days: [4]
       },
       {
@@ -28,8 +28,8 @@ class ScheduleWorker
   end
 
   @schedules =  [
-    { 
-      start_day: 2,
+    {
+      start_day: 5,
       days: [4]
     },
     {
@@ -50,7 +50,7 @@ class ScheduleWorker
   #              = 5  [1, 2, 4]
   #              = 6  [1, 2, 4]
   #              = 10 [1, 2, 4]
- 
+
   # very inneficient, redo some day
   def get_schedule(story_number)
     if @schedules
@@ -85,7 +85,7 @@ class ScheduleWorker
     end
 
     # for user in fb
-    #   puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}" 
+    #   puts "fb_id = #{user.fb_id}, story_number = #{user.state_table.story_number}"
     #   StartDayWorker.perform_async(user.fb_id, platform='fb') if user.fb_id
     # end
 
@@ -96,7 +96,7 @@ class ScheduleWorker
         total_time = fb.size.minutes
       else
         total_time = 10.minutes
-      end 
+      end
 
       ind_delay = total_time / fb.size
 
@@ -106,12 +106,12 @@ class ScheduleWorker
         user = fb[i]
         StartDayWorker.perform_in(delay.seconds, user.fb_id, platform='fb') if user.fb_id
       end
-      
+
     end
 
 
-    if sms.size == 0 then 
-      return 
+    if sms.size == 0 then
+      return
     end
 
     # split them up into chunks of size = 3 (or 1?)
@@ -132,7 +132,7 @@ class ScheduleWorker
 
     individual_time = total_time - group_time
 
-    # for each chunk, run StartDayWorker a few seconds apart. 
+    # for each chunk, run StartDayWorker a few seconds apart.
     group_delay = group_time / num_groups
     individual_delay = individual_time.to_f / sms.size # where sms.size is the number of individuals
 
@@ -166,12 +166,12 @@ class ScheduleWorker
       lsst = user.state_table.last_script_sent_time
       if ut.nil? or lsst.nil?
         last_story_read_ok = true
-      elsif Time.at(ut).to_date != Time.at(today_day).to_date && 
+      elsif Time.at(ut).to_date != Time.at(today_day).to_date &&
             Time.at(lsst).to_date != Time.at(today_day).to_date
 
         # if the last story wasn't sent today (has to be at least since yesterday)
-        last_story_read_ok = true 
-      else    
+        last_story_read_ok = true
+      else
         last_story_read_ok = false
       end
 
@@ -185,20 +185,20 @@ class ScheduleWorker
     return filtered
   end
 
-  # is this our student? 
+  # is this our student?
   def our_friend?(user)
-    if user.teacher.nil? 
-      return false 
-    end 
+    if user.teacher.nil?
+      return false
+    end
 
-    match = user.teacher.signature.match(/esterman/i) || 
+    match = user.teacher.signature.match(/esterman/i) ||
             user.teacher.signature.match(/wahl/i) ||
             user.teacher.signature.match(/mcpeek/i) ||
             user.teacher.signature.match(/mcesterwahl/i)
-    if match.nil? 
-      return false 
-    else 
-      return true 
+    if match.nil?
+      return false
+    else
+      return true
     end
   end
 
@@ -238,7 +238,7 @@ class ScheduleWorker
     #   # TODO: double-check this logic...
     #   if !lstrt.nil?
     #     last_story_read_time = get_local_time(lstrt, user.tz_offset)
-      
+
     #     days_elapsed = ((now - last_story_read_time) / (24 * 60 * 60)).to_i
     #     if days_elapsed < 7
     #       valid_for_user = false
