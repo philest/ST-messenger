@@ -138,6 +138,7 @@ class AuthAPI < Sinatra::Base
     phone       = params["phone"]
     first_name  = params["first_name"]
     password    = params["password"]
+    role        = params["role"] || "parent"
 
     # mostly optional params
     last_name   = params["last_name"]
@@ -174,7 +175,7 @@ class AuthAPI < Sinatra::Base
     begin
       app_platform = 'app'
 
-      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, time_zone)
+      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, role, time_zone)
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
       notify_admins("Free-agent creation failed somehow...", e)
@@ -183,7 +184,7 @@ class AuthAPI < Sinatra::Base
     end
     notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
 
-    return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
+    return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
   end
 
@@ -214,6 +215,7 @@ class AuthAPI < Sinatra::Base
     password    = params["password"]
     class_code  = params["class_code"]
     time_zone   = params["time_zone"]
+    role        = params["role"] || "parent"
 
     default_story_number = 2
 
@@ -236,6 +238,7 @@ class AuthAPI < Sinatra::Base
         password,
         class_code,
         'app', # TODO: make 'app' something that's passed in from client  :P
+        role,
         time_zone,
       )
 
@@ -254,7 +257,7 @@ class AuthAPI < Sinatra::Base
       return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
-      return CREATE_USER_SUCCESS, jsonSuccess({uuid: new_user.id})
+      return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
   end
 
 
@@ -289,7 +292,7 @@ class AuthAPI < Sinatra::Base
     refresh_tkn = refresh_token(user.id)
     user.update(refresh_token_digest: Password.create(refresh_tkn))
 
-    return 201, jsonSuccess({ token: refresh_tkn, uuid: user.id })
+    return 201, jsonSuccess({ token: refresh_tkn, dbuuid: user.id })
 
   end
 
@@ -339,7 +342,7 @@ class AuthAPI < Sinatra::Base
     end
 
     if refresh_tkn_hash == bearer
-      return 201, jsonSuccess({token: access_token(user.id)})
+      return 201, jsonSuccess({ token: access_token(user.id) })
     end
   end
 
