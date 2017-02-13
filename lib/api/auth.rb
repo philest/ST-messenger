@@ -167,7 +167,9 @@ class AuthAPI < Sinatra::Base
       puts "["
       puts e
       puts "]"
-      notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+      if (ENV["RACK_ENV"] != "development")
+        notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+      end
       return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
     end
 

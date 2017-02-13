@@ -194,7 +194,8 @@ class UserAPI < Sinatra::Base
       freshInfo: true,
       specs: settings.bookSpecs[:json],
       curriculum: settings.curriculum,
-      schedule: settings.schedule
+      schedule: settings.schedule,
+      lastUpdate: settings.bookSpecs[:time_last_updated]
     })
   end
 
