@@ -162,6 +162,7 @@ class AuthAPI < Sinatra::Base
 
     # if default school/teacher doesn't exists, create it
     begin
+      # shouldn't these be switched around?
       default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
     rescue Exception => e
       puts "["
@@ -184,7 +185,10 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
       # TODO: should probably attempt to destroy user
     end
-    notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+
+    if ENV['RACK_ENV'] != 'development'
+      notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+    end
 
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
@@ -201,11 +205,6 @@ class AuthAPI < Sinatra::Base
   #   puts "REDIRECTED"
   #   200
   # end
-
-
-
-
-
 
 
 
@@ -232,33 +231,44 @@ class AuthAPI < Sinatra::Base
     # maybe have a params[:role], but not yet
 
     if is_matching_code?(class_code) then
-      new_user = SIGNUP::create_user(
-        User,
-        phone,
-        first_name,
-        last_name,
-        password,
-        class_code,
-        'app', # TODO: make 'app' something that's passed in from client  :P
-        role,
-        time_zone,
-      )
 
-      SIGNUP::register_user(
-        new_user,
-        class_code,
-        password,
-        default_story_number,
-        default_story_number,
-        true,
-      )
+      begin
+        new_user = SIGNUP::create_user(
+          User,
+          phone,
+          first_name,
+          last_name,
+          password,
+          class_code,
+          'app', # TODO: make 'app' something that's passed in from client  :P
+          role,
+          time_zone,
+        )
+
+        SIGNUP::register_user(
+          new_user,
+          class_code,
+          password,
+          default_story_number,
+          default_story_number,
+          true,
+        )
+
+      rescue => e
+        p e.message
+        puts "returning this shit"
+        return INTERNAL_ERROR
+      end
 
     else # no matching code, don't sign this user up.
       # basically, this condition is how we differentiate between paying customers and randos
       # no school or teacher found
+      puts "no matching school, dude"
       return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
+      puts "I guess we succeeded!"
+      puts "CREATE_USER_SUCCESS = #{CREATE_USER_SUCCESS}..... #{jsonSuccess({dbuuid: new_user.id})}"
       return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
   end
 

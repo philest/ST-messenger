@@ -51,6 +51,7 @@ module SIGNUP
           signature: school_sig,
           name: school_name,
           code: school_code,
+          plan: 'free'
         )
       end
 
