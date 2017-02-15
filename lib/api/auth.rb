@@ -209,6 +209,9 @@ class AuthAPI < Sinatra::Base
 
 
 
+
+
+
   post '/signup' do
     puts "params = #{params}"
     phone       = params["phone"]
@@ -221,45 +224,200 @@ class AuthAPI < Sinatra::Base
 
     default_story_number = 2
 
+
+    # check if minimal credentials sent
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
        puts "#{phone}#{first_name}#{class_code}"
        return MISSING_CREDENTIALS
     end
 
+    # parse class code
     class_code        = class_code.delete(' ').delete('-').downcase
 
-    # maybe have a params[:role], but not yet
 
-    if is_matching_code?(class_code) then
-      new_user = SIGNUP::create_user(
-        User,
-        phone,
-        first_name,
-        last_name,
-        password,
-        class_code,
-        'app', # TODO: make 'app' something that's passed in from client  :P
-        role,
-        time_zone,
-      )
 
-      SIGNUP::register_user(
-        new_user,
-        class_code,
-        password,
-        default_story_number,
-        default_story_number,
-        true,
-      )
-
-    else # no matching code, don't sign this user up.
-      # basically, this condition is how we differentiate between paying customers and randos
-      # no school or teacher found
+    # check if class code exists
+    if !is_matching_code?(class_code)
       return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
-      return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
+
+    # TODO: being...rescue this
+    new_user = SIGNUP::create_user(
+      User,
+      phone,
+      first_name,
+      last_name,
+      password,
+      class_code,
+      'app', # TODO: make 'app' something that's passed in from client  :P
+      role,
+      time_zone,
+    )
+
+    SIGNUP::register_user(
+      new_user,
+      class_code,
+      password,
+      default_story_number,
+      default_story_number,
+      true,
+    )
+
+
+    return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+  post '/forgot_password_phone' do
+    phone = params["phone"]
+
+
+    # check if user is in DB
+    begin
+      user = User.where(phone: phone).first
+      user_id = user.id
+    rescue Exception => e # TODO, better error handling
+      return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
+    end
+
+
+    # encode JWTs
+    begin
+
+      start_time = Time.now.to_i
+      life_length = 3.minutes.to_i
+      random_code = rand(10000).to_s # returns int >= argument
+
+      jwt1 = forgot_password_encode(user_id, start_time, life_length, random_code)
+      jwt2 = forgot_password_encode(user_id, start_time, life_length, "")
+
+    rescue Exception => e # TODO, better error handling
+      puts e
+      return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
+    end
+
+
+
+    # update db entry
+    begin
+      user.update(reset_password_token_digest: Password.create(jwt1))
+    rescue Exception => e # TODO, better error handling
+      puts e
+      return 504, jsonError(INTERNAL_ERROR, 'could not update reset_pswd_digest')
+    end
+
+    TextingWorker.perform_async("Your Storytime confirmation code is: #{random_code}", phone)
+
+
+    # jwt2 is essentially an access token
+    return 201, jsonSuccess({
+      token: jwt2,
+    })
+
+  end
+
+
+
+
+
+
+
+  post '/forgot_password_phone_code' do
+    token = params["token"]
+    random_code  = params["randomCode"]
+
+    # decode JWT from user (access token)
+    payload = forgot_password_decode(token)
+
+    if (payload['user_id'].nil?)
+      return 404, jsonError(payload.code, payload.msg)
+    end
+
+    user_id = payload['user_id']
+    start_time = payload['start_time']
+    life_length = payload['life_length']
+
+    # check if user is in db
+    begin
+      user = User.where(id: user_id).first
+    rescue
+      return 404, jsonError(NO_EXISTING_USER, 'could not find user')
+    end
+
+    # check if text-in code was correct
+    the_token = forgot_password_encode(user_id, start_time, life_length, random_code)
+    submitted_token_digest  = Password.create(the_token)
+    if !(submitted_token_digest == user.reset_password_token_digest)
+      return 404, jsonError(SMS_CODE_WRONG, 'wrong text-in code')
+    end
+
+    return 200, jsonSuccess({
+      token: the_token,
+    })
+
+  end
+
+
+
+
+
+
+
+  post '/reset_password_phone' do
+    token = params["token"]
+    password = params["password"]
+
+
+
+    # check if minimal credentials sent
+    if ([token, password].include? nil) or
+       ([token, password].include? '')
+       puts "#{phone}#{first_name}#{class_code}"
+       return MISSING_CREDENTIALS
+    end
+
+
+
+    # decode JWT from user (access token)
+    # this catches if JWT is expired, etc
+    payload = forgot_password_decode(token)
+    if (payload['user_id'].nil?)
+      return 404, jsonError(payload.code, payload.msg)
+    end
+
+
+
+    # check if token matches stored toek
+    user = User.where(id: payload['user_id']).first
+    if Password.create(token) != user.reset_password_token_digest
+      return 404, jsonError(payload.code, payload.msg)
+    end
+
+
+    # update user's password
+    begin
+      User.update(password_digest: Password.create(password))
+    rescue Exception => e
+      puts e
+      return 404, jsonError(PASSWORD_UPDATE_FAIL, 'could not update password, all else was good tho')
+    end
+
+    return 200
+
   end
 
 

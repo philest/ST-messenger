@@ -326,12 +326,10 @@ class UserAPI < Sinatra::Base
     puts user_data
 
     begin
-      puts 'hey'
       user.update(platform: platform, fcm_token: fcm_token, app_version_number: app_version)
-      puts 'ho'
     rescue Exception => e
       puts e
-      return INTERNAL_ERROR
+      return INTERNAL_ERROR, jsonError(INTERNAL_ERROR, 'failed to update user')
     end
 
     return

@@ -34,6 +34,18 @@ describe 'auth' do
     AuthAPI
   end
 
+
+
+
+
+
+
+
+
+
+
+
+
   context 'getting an access token' do
     before(:each) do
       # create school/teacher
@@ -101,6 +113,42 @@ describe 'auth' do
 
   end
 
+
+  context 'resetting password', forget_password: true do
+    before(:each) do
+      # create school/teacher
+      @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
+      @school  = School.create(signature: "Da Skool", name: "School", code: "school|school-es")
+      @school.signup_teacher(@teacher)
+      @phone = '5555555555'
+      @password = 'my_password'
+      @user = User.create(phone: @phone, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(@user)
+    end
+
+    it 'resets password when all instructions are followed' do
+
+      TextingWorker_double = double("TextingWorker")
+      allow(TextingWorker_double).to receive(:perform_async)
+
+      post '/forgot_password_phone', {phone: @phone}
+
+      expect(last_response.status).to eq 201
+
+    end
+
+  end
+
+
+
+
+
+
+
+
+
+
+
   context 'logging in user' do
     before(:each) do
       # create school/teacher
@@ -167,6 +215,24 @@ describe 'auth' do
     end
 
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   context 'signing up user with registered teacher/school system', registered_user: true do
     before(:each) do
@@ -248,6 +314,20 @@ describe 'auth' do
       expect(user.last_name).to eq 'McPeek'
     end
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   context 'signing up free-agent', free_agent: true do
     before(:each) do
@@ -372,6 +452,21 @@ describe 'auth' do
     end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 describe 'protected api', api: true do
