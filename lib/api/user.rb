@@ -83,12 +83,17 @@ class UserAPI < Sinatra::Base
     set curriculum: JSON.parse(File.read("#{File.expand_path(File.dirname(__FILE__))}/data/curriculum.json"))
     set schedule: [
       {
+
         "storyNumber": 5,
-        schedule: [0,0,0,1,0,0,0] # index 0  = monday
+        schedule: [0,1,0,1,0,0,0], # index 0  = monday
+        start_day: 5,
+        days: [2,4]
       },
       {
         "storyNumber": 10000,
-        schedule: [0,1,0,1,0,0,0]
+        schedule: [0,1,0,1,0,0,0],
+        start_day: 10000,
+        days: [2,4]
       },
     ]
   end
@@ -384,9 +389,10 @@ class UserAPI < Sinatra::Base
     # outros
     # get weekday for outros.......
     sw = ScheduleWorker.new
-    schedule = sw.get_schedule(st_no)
+    schedule = sw.get_schedule(st_no, settings.schedule)
 
     current_weekday = sw.get_local_day(Time.now.utc, user)
+    puts current_weekday
 
     next_day = schedule[0] # the first part of the next week by default
     week = '.next_week'

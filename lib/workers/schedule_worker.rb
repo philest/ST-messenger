@@ -52,11 +52,11 @@ class ScheduleWorker
   #              = 10 [1, 2, 4]
 
   # very inneficient, redo some day
-  def get_schedule(story_number)
+  def get_schedule(story_number, custom_schedule = nil)
     if @schedules
-      sched = @schedules
+      sched = custom_schedule || @schedules
     else
-      sched = self.class.def_schedules
+      sched = custom_schedule || self.class.def_schedules
     end
     last = []
     sched.each do |s|
@@ -81,7 +81,9 @@ class ScheduleWorker
 
     # schedule for app
     app.each do |user|
-      StartDayWorker.perform_async(user.fcm_token, platform='app') if user.fcm_token
+      if user.fcm_token
+        StartDayWorker.perform_async(user.id, platform='app')
+      end
     end
 
     # for user in fb
