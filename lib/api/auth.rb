@@ -229,7 +229,7 @@ class AuthAPI < Sinatra::Base
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
        puts "#{phone}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS
+       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing phone/first_name/class_code')
     end
 
     # parse class code
@@ -281,7 +281,7 @@ class AuthAPI < Sinatra::Base
 
 
 
-
+  # step #1 in phone password reset
   post '/forgot_password_phone' do
     phone = params["phone"]
 
@@ -289,7 +289,7 @@ class AuthAPI < Sinatra::Base
     # check if user is in DB
     begin
       user = User.where(phone: phone).first
-      user_id = user.id
+      user_id = user.id.to_s
     rescue Exception => e # TODO, better error handling
       return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
     end
@@ -299,22 +299,24 @@ class AuthAPI < Sinatra::Base
     begin
 
       start_time = Time.now.to_i
-      life_length = 3.minutes.to_i
-      random_code = rand(10000).to_s # returns int >= argument
+      life = 5.minutes
+      life_length = life.to_i
+      random_code = 4.times.map{rand(10)}.join  # returns int >= argument
 
       jwt1 = forgot_password_encode(user_id, start_time, life_length, random_code)
-      jwt2 = forgot_password_encode(user_id, start_time, life_length, "")
+      jwt2 = forgot_password_access_token(user_id, start_time, life_length)
 
     rescue Exception => e # TODO, better error handling
       puts e
-      return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
+      return 404, jsonError(INTERNAL_ERROR, 'could not create token')
     end
 
 
 
     # update db entry
     begin
-      user.update(reset_password_token_digest: Password.create(jwt1))
+      # puts "digest #{Password.create(jwt1)}"
+      user.update(reset_password_token: jwt1)
     rescue Exception => e # TODO, better error handling
       puts e
       return 504, jsonError(INTERNAL_ERROR, 'could not update reset_pswd_digest')
@@ -335,38 +337,55 @@ class AuthAPI < Sinatra::Base
 
 
 
-
+  # step #2 in phone password reset
   post '/forgot_password_phone_code' do
-    token = params["token"]
-    random_code  = params["randomCode"]
+    token = params["token"] # access JWT, given to user in previous step
+    random_code  = params["randomCode"].to_s
+
+
+
+    # check if minimal credentials sent
+    if ([token, random_code].include? nil) or
+       ([token, random_code].include? '')
+       return 404, jsonError(CREDENTIALS_MISSING, 'missing token or randomCode')
+    end
+
+
 
     # decode JWT from user (access token)
     payload = forgot_password_decode(token)
-
-    if (payload['user_id'].nil?)
-      return 404, jsonError(payload.code, payload.msg)
+    if (payload['user'].nil?)
+      return 404, jsonError(payload[:code], payload[:msg])
     end
 
-    user_id = payload['user_id']
-    start_time = payload['start_time']
-    life_length = payload['life_length']
+
+    user_id = payload['user']['user_id'].to_s
+
+
 
     # check if user is in db
     begin
       user = User.where(id: user_id).first
-    rescue
-      return 404, jsonError(NO_EXISTING_USER, 'could not find user')
+      if user.nil?
+        return 404, jsonError(USER_NOT_EXIST, 'could not find user')
+      end
+    rescue Exception => e
+      puts e
+      return 404, jsonError(INTERNAL_ERROR, 'could not find user')
     end
 
+
+
     # check if text-in code was correct
-    the_token = forgot_password_encode(user_id, start_time, life_length, random_code)
-    submitted_token_digest  = Password.create(the_token)
-    if !(submitted_token_digest == user.reset_password_token_digest)
+    refresh = user.reset_password_token
+    stored_random_code = forgot_password_decode(refresh)["random_code"]
+
+    if !(random_code == stored_random_code)
       return 404, jsonError(SMS_CODE_WRONG, 'wrong text-in code')
     end
 
     return 200, jsonSuccess({
-      token: the_token,
+      token: refresh,
     })
 
   end
@@ -376,18 +395,18 @@ class AuthAPI < Sinatra::Base
 
 
 
-
+  # step #3 in phone password reset
   post '/reset_password_phone' do
-    token = params["token"]
+    token = params["token"] # db-stored JWT, given to user in previous step
     password = params["password"]
+    puts password
 
 
 
     # check if minimal credentials sent
     if ([token, password].include? nil) or
        ([token, password].include? '')
-       puts "#{phone}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS
+       return 404, jsonError(CREDENTIALS_MISSING, 'missing token or randomCode')
     end
 
 
@@ -395,28 +414,42 @@ class AuthAPI < Sinatra::Base
     # decode JWT from user (access token)
     # this catches if JWT is expired, etc
     payload = forgot_password_decode(token)
-    if (payload['user_id'].nil?)
-      return 404, jsonError(payload.code, payload.msg)
+    if (payload['user'].nil?)
+      return 404, jsonError(payload[:code], payload[:msg])
     end
 
+    user_id = payload['user']['user_id']
 
 
-    # check if token matches stored toek
-    user = User.where(id: payload['user_id']).first
-    if Password.create(token) != user.reset_password_token_digest
+
+    # check if user is in db
+    begin
+      user = User.where(id: user_id).first
+      if user.nil?
+        return 404, jsonError(USER_NOT_EXIST, 'could not find user')
+      end
+    rescue Exception => e
+      puts e
+      return 404, jsonError(INTERNAL_ERROR, 'could not find user')
+    end
+
+    refresh = user.reset_password_token
+
+    # check if passed token matches stored token
+    if token != refresh
       return 404, jsonError(payload.code, payload.msg)
     end
 
 
     # update user's password
     begin
-      User.update(password_digest: Password.create(password))
+      user.set_password(password)
     rescue Exception => e
       puts e
       return 404, jsonError(PASSWORD_UPDATE_FAIL, 'could not update password, all else was good tho')
     end
 
-    return 200
+    return 201
 
   end
 
@@ -449,10 +482,10 @@ class AuthAPI < Sinatra::Base
     end
 
     # create refresh_tkn and send to user
-    refresh_tkn = refresh_token(user.id)
-    user.update(refresh_token_digest: Password.create(refresh_tkn))
+    tkn = create_refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(tkn))
 
-    return 201, jsonSuccess({ token: refresh_tkn, dbuuid: user.id })
+    return 201, jsonSuccess({ token: tkn, dbuuid: user.id })
 
   end
 

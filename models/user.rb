@@ -21,8 +21,8 @@ class User < Sequel::Model(:users)
 		# input_password = "password"
 		# stored = Password.create(original_password)
 		# password_hash = Password.new(stored)
-		# return true if 
-    begin 
+		# return true if
+    begin
   		return false if input_password.nil? || input_password.empty?
       # return false if self.password_digest.nil?
   		password_hash 	= Password.new(self.password_digest)
@@ -35,6 +35,7 @@ class User < Sequel::Model(:users)
 
 	def set_password(new_password)
 		return false if new_password.empty? or new_password.nil?
+    puts "HIIIIIIIII"
     password = Password.create(new_password)
     self.update(password_digest: password)
     return password
@@ -43,12 +44,13 @@ class User < Sequel::Model(:users)
   def get_password
   	Password.new(self.password_digest)
   end
-  
+
+
 	def story_number
 		self.state_table.story_number
 	end
 
-	def generate_code 
+	def generate_code
 		Array.new(2){[*'0'..'9'].sample}.join
 	end
 
@@ -82,7 +84,7 @@ class User < Sequel::Model(:users)
 		ENV["CURRICULUM_VERSION"] ||= '0'
 		self.update(curriculum_version: ENV["CURRICULUM_VERSION"].to_i)
 
-		# we would want to do 
+		# we would want to do
 		# self.save_changes
 		# self.state_table.save_changes
 		# but this is already done for us with self.update and self.state_table.update
@@ -117,7 +119,7 @@ class User < Sequel::Model(:users)
             # puts "school info: #{school.signature}, #{school.inspect}"
             school.add_user(self)
             return school
-          else 
+          else
             puts "#{code} did not match with #{school.name} regex!"
           end
         else
@@ -163,7 +165,7 @@ class User < Sequel::Model(:users)
               teacher.school.add_user(self)
             end
             return teacher
-          else 
+          else
             puts "#{code} did not match with #{teacher.name} regex!"
           end
         else
