@@ -111,9 +111,11 @@ class User < Sequel::Model(:users)
 
 
 
+
 	def generate_code
 		Array.new(2){[*'0'..'9'].sample}.join
 	end
+
 
 
 
