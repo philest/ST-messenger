@@ -316,7 +316,7 @@ class AuthAPI < Sinatra::Base
     # update db entry
     begin
       # puts "digest #{Password.create(jwt1)}"
-      user.update(reset_password_token: jwt1)
+      user.set_reset_password_token(jwt1)
     rescue Exception => e # TODO, better error handling
       puts e
       return 504, jsonError(INTERNAL_ERROR, 'could not update reset_pswd_digest')
@@ -351,7 +351,6 @@ class AuthAPI < Sinatra::Base
     end
 
 
-
     # decode JWT from user (access token)
     payload = forgot_password_decode(token)
     if (payload['user'].nil?)
@@ -360,6 +359,8 @@ class AuthAPI < Sinatra::Base
 
 
     user_id = payload['user']['user_id'].to_s
+    start_time = payload['start_time'].to_i
+    life_length = payload['life_length'].to_i
 
 
 
@@ -376,16 +377,15 @@ class AuthAPI < Sinatra::Base
 
 
 
-    # check if text-in code was correct
-    refresh = user.reset_password_token
-    stored_random_code = forgot_password_decode(refresh)["random_code"]
 
-    if !(random_code == stored_random_code)
+    jwt1 = forgot_password_encode(user_id, start_time, life_length, random_code)
+    puts user.authenticate_reset_password_token(jwt1)
+    if !user.authenticate_reset_password_token(jwt1)
       return 404, jsonError(SMS_CODE_WRONG, 'wrong text-in code')
     end
 
     return 200, jsonSuccess({
-      token: refresh,
+      token: jwt1,
     })
 
   end
@@ -433,10 +433,11 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(INTERNAL_ERROR, 'could not find user')
     end
 
-    refresh = user.reset_password_token
+
+    puts token
 
     # check if passed token matches stored token
-    if token != refresh
+    if !user.authenticate_reset_password_token(token)
       return 404, jsonError(payload.code, payload.msg)
     end
 

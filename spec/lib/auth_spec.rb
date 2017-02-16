@@ -305,10 +305,10 @@ describe 'auth' do
         # step 2: user sends random code and access tkn
         post '/forgot_password_phone_code', { randomCode: @random_code, token: access_tkn }
 
-        # if (JSON.parse(last_response.body)["title"])
-        #   puts JSON.parse(last_response.body)["title"]
-        #   puts JSON.parse(last_response.body)["code"]
-        # end
+        if (JSON.parse(last_response.body)["title"])
+          puts JSON.parse(last_response.body)["title"]
+          puts JSON.parse(last_response.body)["code"]
+        end
 
         expect(last_response.status).to eq 200
         refresh_tkn = JSON.parse(last_response.body)["token"]

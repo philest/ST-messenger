@@ -1,7 +1,8 @@
 require 'bcrypt'
-
+require_relative '../lib/api/helpers/authentication'
 class User < Sequel::Model(:users)
 	include BCrypt
+  include AuthenticationHelpers
 	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
@@ -16,6 +17,13 @@ class User < Sequel::Model(:users)
 
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
+
+
+
+
+
+
+
 	# don't put this in user model?
 	def authenticate(input_password=nil)
 		# input_password = "password"
@@ -25,34 +33,91 @@ class User < Sequel::Model(:users)
     begin
   		return false if input_password.nil? || input_password.empty?
       # return false if self.password_digest.nil?
-  		password_hash 	= Password.new(self.password_digest)
-  		return password_hash == input_password
+  		db_password 	= Password.new(self.password_digest)
+  		return db_password == input_password
     rescue => e
       p e
       return false
     end
 	end
 
+
+
+
+
+
+
 	def set_password(new_password)
 		return false if new_password.empty? or new_password.nil?
     puts "HIIIIIIIII"
-    password = Password.create(new_password)
-    self.update(password_digest: password)
-    return password
+    password_hash = Password.create(new_password)
+    self.update(password_digest: password_hash)
+    return password_hash
   end
+
+
+
+
+
+
+
+
+  def set_reset_password_token(token)
+    return false if token.empty? or token.nil?
+    digest = Password.create(token)
+    self.update(reset_password_token_digest: digest)
+    return digest
+  end
+
+
+
+
+
+
+
+  def authenticate_reset_password_token(token)
+    begin
+      return false if token.nil? || token.empty?
+      # return false if self.password_digest.nil?
+      digest  = self.reset_password_token_digest
+      db_token   = Password.new(digest)
+
+      return db_token == token
+    rescue => e
+      p e
+      return false
+    end
+  end
+
+
+
+
+
 
   def get_password
   	Password.new(self.password_digest)
   end
 
 
+
+
+
+
 	def story_number
 		self.state_table.story_number
 	end
 
+
+
+
+
 	def generate_code
 		Array.new(2){[*'0'..'9'].sample}.join
 	end
+
+
+
+
 
 	# ensure that user is added EnrollmentQueue upon creation
 	def after_create

@@ -16,11 +16,13 @@ module AuthenticationHelpers
   end
 
 
-  # TODO: make this nicer
-  def forgot_password_access_token(user_id, start_time, life_length)
 
-    type = "reset password"
 
+
+
+
+
+  def forgot_password_payload(user_id, start_time, life_length, random_code = "")
     config = {
       exp: start_time + life_length,
       iat: start_time,
@@ -28,35 +30,27 @@ module AuthenticationHelpers
       user: {
         user_id: user_id
       },
-      type: type,
+      type: 'reset password',
       start_time: start_time,
       life_length: life_length,
     }
 
-    return JWT.encode config, ENV['JWT_SECRET'], 'HS256'
+    (random_code.empty? || random_code.nil?) ? config : config[:random_code] = random_code
+
+    return config
+  end
+
+
+
+  # TODO: make this nicer
+  def forgot_password_access_token(user_id, start_time, life_length)
+    return JWT.encode forgot_password_payload(user_id, start_time, life_length), ENV['JWT_SECRET'], 'HS256'
   end
 
 
 
   def forgot_password_encode(user_id, start_time, life_length, random_code = "")
-
-    # TODO: check type of start_time
-    type = "reset password"
-
-    config = {
-      exp: start_time + life_length,
-      iat: start_time,
-      iss: ENV['JWT_ISSUER'],
-      user: {
-        user_id: user_id
-      },
-      type: type,
-      random_code: random_code,
-      start_time: start_time,
-      life_length: life_length,
-    }
-
-    return JWT.encode config, ENV['JWT_SECRET'], 'HS256'
+    return JWT.encode forgot_password_payload(user_id, start_time, life_length, random_code), ENV['JWT_SECRET'], 'HS256'
   end
 
 
