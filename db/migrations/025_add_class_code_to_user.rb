@@ -6,7 +6,7 @@ Sequel.migration do
   end
   down do
     alter_table(:users) do
-      drop_column :class_code, String
+      drop_column :class_code
     end
   end
 end

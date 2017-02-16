@@ -1,12 +1,12 @@
 Sequel.migration do
   up do
     alter_table(:users) do
-      rename_column :reset_password_token_digest, :reset_password_token
+      add_column :reset_password_token_digest, String
     end
   end
   down do
     alter_table(:users) do
-      rename_column :reset_password_token, :reset_password_token_digest
+      add_column :reset_password_token, String
     end
   end
 end
