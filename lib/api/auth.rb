@@ -209,6 +209,9 @@ class AuthAPI < Sinatra::Base
 
 
 
+
+
+
   post '/signup' do
     puts "params = #{params}"
     phone       = params["phone"]
@@ -221,52 +224,51 @@ class AuthAPI < Sinatra::Base
 
     default_story_number = 2
 
+
+    # check if minimal credentials sent
     if ([phone, first_name, password, class_code].include? nil) or
        ([phone, first_name, password, class_code].include? '')
        puts "#{phone}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS
+       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing phone/first_name/class_code')
     end
 
+    # parse class code
     class_code        = class_code.delete(' ').delete('-').downcase
 
-    # maybe have a params[:role], but not yet
 
-    if is_matching_code?(class_code) then
-      new_user = SIGNUP::create_user(
-        User,
-        phone,
-        first_name,
-        last_name,
-        password,
-        class_code,
-        'app', # TODO: make 'app' something that's passed in from client  :P
-        role,
-        time_zone,
-      )
 
-      SIGNUP::register_user(
-        new_user,
-        class_code,
-        password,
-        default_story_number,
-        default_story_number,
-        true,
-      )
-
-    else # no matching code, don't sign this user up.
-      # basically, this condition is how we differentiate between paying customers and randos
-      # no school or teacher found
+    # check if class code exists
+    if !is_matching_code?(class_code)
       return NO_MATCHING_SCHOOL, jsonError(NO_MATCHING_SCHOOL, 'no matching school found') # or something
     end
 
-      return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
+
+    # TODO: being...rescue this
+    new_user = SIGNUP::create_user(
+      User,
+      phone,
+      first_name,
+      last_name,
+      password,
+      class_code,
+      'app', # TODO: make 'app' something that's passed in from client  :P
+      role,
+      time_zone,
+    )
+
+    SIGNUP::register_user(
+      new_user,
+      class_code,
+      password,
+      default_story_number,
+      default_story_number,
+      true,
+    )
+
+
+    return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
+
   end
-
-
-
-
-
-
 
 
 
@@ -291,10 +293,10 @@ class AuthAPI < Sinatra::Base
     end
 
     # create refresh_tkn and send to user
-    refresh_tkn = refresh_token(user.id)
-    user.update(refresh_token_digest: Password.create(refresh_tkn))
+    tkn = create_refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(tkn))
 
-    return 201, jsonSuccess({ token: refresh_tkn, dbuuid: user.id })
+    return 201, jsonSuccess({ token: tkn, dbuuid: user.id })
 
   end
 

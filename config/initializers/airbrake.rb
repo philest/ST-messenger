@@ -9,4 +9,5 @@ Airbrake.configure do |config|
   config.project_key = ENV['AIRBRAKE_API_KEY']
   config.environment = ENV['RACK_ENV'] || "development"
   config.logger.level = Logger::DEBUG
+  config.ignore_environments = [:test]
 end

@@ -14,6 +14,7 @@ require 'sinatra'
 require_relative 'lib/app' # the app which handles all text messaging stuff
 require_relative 'lib/api/auth'
 require_relative 'lib/api/user'
+require_relative 'lib/api/reset_password'
 require 'rack'
 require_relative 'config/environment'
 get_db_connection()
@@ -31,5 +32,6 @@ run Rack::URLMap.new({
   '/' => TextApi, # probably should change this route to '/sms'...
   '/api/auth' => AuthAPI,
   '/api/user' => UserAPI,
+  '/reset_password' => ResetPassword,
   '/sidekiq' => Sidekiq::Web
 })
