@@ -112,6 +112,9 @@ GEM
     ruby-progressbar (1.8.1)
     safe_yaml (1.0.4)
     sequel (4.41.0)
+    sequel_pg (1.6.17)
+      pg (>= 0.8.0)
+      sequel (>= 4.0.0)
     sidekiq (4.2.7)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
@@ -183,6 +186,7 @@ DEPENDENCIES
   rspec-mocks
   rspec-sidekiq
   sequel
+  sequel_pg (~> 1.6, >= 1.6.13)
   sidekiq
   sidekiq-unique-jobs
   sinatra

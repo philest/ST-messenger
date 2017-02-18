@@ -55,7 +55,7 @@ module SIGNUP
         )
       end
 
-    rescue Exception => e # TODO, better error handling
+    rescue => e # TODO, better error handling
       # TODO: throw this error instead of printing?...
       puts "ERROR: Could not create free agent school ["
       puts e
@@ -67,6 +67,8 @@ module SIGNUP
     begin
 
       default_teacher = teacherRef.where(name: teacher_name).first
+
+      puts "i guess i'm creating a teacher now....."
       if (!default_teacher)
         default_teacher = teacherRef.create(
           signature: teacher_sig,

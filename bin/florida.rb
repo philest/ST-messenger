@@ -11,11 +11,10 @@ client = Twilio::REST::Client.new ENV['TW_ACCOUNT_SID'], ENV['TW_AUTH_TOKEN']
 
 # send them the messages
 # delete them from the database simulataneously 
-
-
-luciano = School.where(signature: "New Pines").first
+# luciano = School.where(signature: "New Pines").first
+luciano = School.where(signature: "Luciano Martinez").first
 users = User.where(school: luciano).all.select do |u|
-    u.locale=='es' && u.platform.downcase == 'android'
+    u.locale=='es' && u.platform.downcase == 'ios'
 end
 puts users.map {|u| u.inspect }
 puts users.count
