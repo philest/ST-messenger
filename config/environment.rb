@@ -1,25 +1,33 @@
+require 'pg'
 require 'sequel'
 require 'bcrypt'
 
 def get_db_connection(max_connections=6)
-  #The environment variable PG_URL should be in the following format:
-  # => postgresql://{host}:{port}/{database}?user={user}&password={password}
+  #The environment variable DATABASE_URL should be in the following format:
+  # => postgres://{user}:{password}@{host}:{port}/path
   ENV["RACK_ENV"] ||= "development"
-  puts "loading #{ENV['RACK_ENV']} db..."
-  pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
 
   case ENV["RACK_ENV"]
   when "development", "test"
+    # use .env file for local development. no need for extra config files!
     require 'dotenv'
-    puts '!!! loading up local environment vars...'
     Dotenv.load
-    db_url    = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
-    puts "db_url = #{db_url}"
-    db        = Sequel.connect(db_url)
+    puts "loading local db..."
+    db = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
+    puts db.tables.to_s
+  #when "development"
+  # puts "loading development db (quailtime)..."
+  # db = Sequel.connect(ENV['DATABASE_URL_DEVELOPMENT'])
   when "production"
-    db_url    = "#{pg_driver}#{ENV['PG_URL']}"
-    puts "db_url = #{db_url}"
-    db        = Sequel.connect(db_url, :max_connections => (max_connections))
+    puts "loading production db (storytime)..."
+    # heroku says that we generally wanna have same pool size as threads 
+    # https://devcenter.heroku.com/articles/concurrency-and-database-connections#threaded-servers
+    # but I'm gonna do 6 because I expect each of the web, worker, and clock will be using
+    # seperate connections... TODO: not sure if this is true.
+    db = Sequel.connect(ENV['DATABASE_URL'], :sslmode => 'require', :max_connections => (6))
+  else
+    puts "please specify an RACK_ENV in environment.rb, defaulting to local..."
+    db = Sequel.connect(ENV['DATABASE_URL_LOCAL'])
   end
 
   db.timezone = :utc
@@ -28,10 +36,8 @@ def get_db_connection(max_connections=6)
   Dir[models_dir].each {|file| require_relative file }
 
   return db
+
 end
-
-
-
 
 
 

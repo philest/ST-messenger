@@ -28,9 +28,7 @@ $sms_story_count = Dir.glob("#{File.expand_path(File.dirname(__FILE__))}/../lib/
                   end
                 end
 
-pg_driver = RUBY_PLATFORM == 'java' ? 'jdbc:' : ''
-
-db_url = "#{pg_driver}#{ENV['PG_URL_LOCAL']}"
+db_url = "#{ENV['DATABASE_URL_LOCAL']}"
 
 DB = Sequel.connect(db_url)
 
