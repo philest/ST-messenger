@@ -132,24 +132,47 @@ class StartDayWorker
 
 
     return user.state_table.story_number
-    # TODO: do error handling in a smart idempotent way (I mean, MAYBE)
+    # TODO: do error handling in a smart idempotent way
   end
 
   def perform(recipient, platform='fb', sequence=:init)
     case platform
+
+
+
+
+
+
+
     when 'fb'
       u = User.where(fb_id:recipient).first
+
+
+
+
+
+
     when 'app', 'android', 'ios'
-      u = User.where(fcm_token:recipient).first
+      u = User.where(id:recipient).first
+
+
       if u.nil?
         puts "user with fcm_token #{recipient} does not exist"
         return
-      else
-        # AUBREY WAHL!!!!!!!!!
-        # DO FIREBASE STUFF HERE!!!!!!!!!
-        msg_title = "A new story has landed!"
-        msg_body  = "Tap here to read it. :)"
+      end
 
+      # update story_number
+      new_story_num  = u.state_table.story_number + 1
+      u.state_table.update(story_number: new_story_num)
+      puts new_story_num
+
+
+
+      # send out push notification
+      msg_title = "A new story has landed!"
+      msg_body  = "Tap here to read it. :)"
+
+      if (ENV['RACK_ENV'] != 'test')
         @@Fcm.send_with_notification_key(
           u.fcm_token,
           notification: {
@@ -164,13 +187,9 @@ class StartDayWorker
           },
           content_availible: true
         )
-        # END FIREBASE STUFF AUBREY WAHL!!!!!!!
-        # END IT!!!!!!!!!!
-
-        # KEEP THIS RETURN! WE DON'T WANT ANY CODE PAST HERE TO RUN.
-        return
-
       end
+      return
+
     else
       u = User.where(phone:recipient).first
     end

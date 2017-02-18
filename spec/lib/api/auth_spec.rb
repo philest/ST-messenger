@@ -12,6 +12,10 @@ require 'api/middleware/authorizeEndpoint'
 require 'bcrypt'
 require 'jwt'
 require 'dotenv'
+
+
+
+
 Dotenv.load
 
 ENV['RACK_ENV'] = 'test'
@@ -28,11 +32,24 @@ describe 'auth' do
   include STATUS_CODES
   include BCrypt
   include JSONHelper
+  include AuthenticationHelpers
 
 
   def app
     AuthAPI
   end
+
+
+
+
+
+
+
+
+
+
+
+
 
   context 'getting an access token' do
     before(:each) do
@@ -101,6 +118,10 @@ describe 'auth' do
 
   end
 
+
+
+
+
   context 'logging in user' do
     before(:each) do
       # create school/teacher
@@ -167,6 +188,24 @@ describe 'auth' do
     end
 
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   context 'signing up user with registered teacher/school system', registered_user: true do
     before(:each) do
@@ -248,6 +287,20 @@ describe 'auth' do
       expect(user.last_name).to eq 'McPeek'
     end
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   context 'signing up free-agent', free_agent: true do
     before(:each) do
@@ -372,6 +425,21 @@ describe 'auth' do
     end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 describe 'protected api', api: true do
