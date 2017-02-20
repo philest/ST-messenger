@@ -75,14 +75,14 @@ class User < Sequel::Model(:users)
 
 
 
-  def authenticate_reset_password_token(token)
+  def authenticate_reset_password_token(tkn=nil)
     begin
-      return false if token.nil? || token.empty?
+      return false if tkn.nil? || tkn.empty?
       # return false if self.password_digest.nil?
       digest  = self.reset_password_token_digest
       db_token   = Password.new(digest)
 
-      return db_token == token
+      return db_token == tkn
     rescue => e
       p e
       return false
