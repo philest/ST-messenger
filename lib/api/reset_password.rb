@@ -90,9 +90,8 @@ class ResetPassword < Sinatra::Base
 
 
   # step #1 in phone password reset
-  post '/phone' do
+  post '/phone/sms' do
     phone = params["phone"]
-
 
     # check if user is in DB
     begin
@@ -101,6 +100,7 @@ class ResetPassword < Sinatra::Base
     rescue Exception => e # TODO, better error handling
       return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
     end
+
 
 
     # encode JWTs
@@ -113,24 +113,24 @@ class ResetPassword < Sinatra::Base
 
       jwt1 = forgot_password_encode(user_id, start_time, life_length, random_code)
       jwt2 = forgot_password_access_token(user_id, start_time, life_length)
-
+      puts jwt1
     rescue Exception => e # TODO, better error handling
       puts e
       return 404, jsonError(INTERNAL_ERROR, 'could not create token')
     end
 
 
-
+    puts "CERODA: #{random_code}"
     # update db entry
     begin
-      # puts "digest #{Password.create(jwt1)}"
-      user.set_reset_password_token(jwt1)
+      user.set_reset_password_token(random_code)
     rescue Exception => e # TODO, better error handling
       puts e
       return 504, jsonError(INTERNAL_ERROR, 'could not update reset_pswd_digest')
     end
 
     TextingWorker.perform_async("Your Storytime confirmation code is: #{random_code}", phone)
+
 
 
     # jwt2 is essentially an access token
@@ -159,6 +159,7 @@ class ResetPassword < Sinatra::Base
     end
 
 
+
     # decode JWT from user (access token)
     payload = forgot_password_decode(token)
     if (payload['user'].nil?)
@@ -185,10 +186,10 @@ class ResetPassword < Sinatra::Base
 
 
 
-
     jwt1 = forgot_password_encode(user_id, start_time, life_length, random_code)
-    puts user.authenticate_reset_password_token(jwt1)
-    if !user.authenticate_reset_password_token(jwt1)
+    puts jwt1
+    puts user.authenticate_reset_password_token(random_code)
+    if !user.authenticate_reset_password_token(random_code)
       return 404, jsonError(SMS_CODE_WRONG, 'wrong text-in code')
     end
 
@@ -227,8 +228,8 @@ class ResetPassword < Sinatra::Base
     end
 
     user_id = payload['user']['user_id']
-
-
+    random_code = payload['random_code'].to_s
+    puts "CODE: #{random_code}"
 
     # check if user is in db
     begin
@@ -242,13 +243,14 @@ class ResetPassword < Sinatra::Base
     end
 
 
-    puts token
+
 
     # check if passed token matches stored token
-    if !user.authenticate_reset_password_token(token)
-      return 404, jsonError(payload.code, payload.msg)
+    if !user.authenticate_reset_password_token(random_code)
+      return 404, jsonError(SMS_CODE_WRONG, 'probably have a bad token somehow')
     end
 
+    puts 'HEEEE'
 
     # update user's password
     begin

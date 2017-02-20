@@ -88,6 +88,7 @@ class AuthAPI < Sinatra::Base
 
   get '/check_phone' do
     puts 'he'
+
     phone = params[:phone]
     user = User.where(phone: phone).first
 
