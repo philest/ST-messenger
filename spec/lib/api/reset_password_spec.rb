@@ -69,13 +69,13 @@ describe 'auth' do
 
 
 
-    describe '/phone' do
+    describe '/phone/sms' do
       it 'fails when phone is not in db' do
 
         # TextingWorker_double = class_double("TextingWorker")
         # allow(TextingWorker_double).to receive(:perform_async) { nil }
 
-        post '/phone', { phone: "random_fake_phone_number" }
+        post '/phone/sms', { phone: "random_fake_phone_number" }
 
         res = JSON.parse(last_response.body)
         expect(res["code"]).to eq STATUS_CODES::PHONE_NOT_FOUND
@@ -203,8 +203,13 @@ describe 'auth' do
     describe 'full flow', flow: true do
       it 'succeeds when done well, also (just) about to expire', forget_succeed: true do
         # step 1: user requests a password reset
-        post '/phone', { phone: @phone }
+        post '/phone/sms', { phone: @phone }
 
+
+        # if (JSON.parse(last_response.body)["title"])
+        #   puts JSON.parse(last_response.body)["title"]
+        #   puts JSON.parse(last_response.body)["code"]
+        # end
         expect(last_response.status).to eq 201
 
         access_tkn = JSON.parse(last_response.body)["token"]
@@ -231,11 +236,46 @@ describe 'auth' do
         # ... user enters new password
         #
         # step 3: user sends in new password with refresh tkn
-        expect {
-          post '/phone/reset', { password: @new_password, token: refresh_tkn }
-         }.to change{User.where(phone: @phone).first.password_digest}
+        post '/phone/reset', { password: @new_password, token: refresh_tkn }
+        expect(last_response.status).to eq 201
 
-         expect(last_response.status).to eq 201
+        expect(@user.password_digest).to_not eq(User.where(phone: @phone).first.password_digest)
+
+      end
+
+
+
+
+
+
+      it 'fails when wrong code', fail: true do
+        # step 1: user requests a password reset
+        post '/phone/sms', { phone: @phone }
+
+
+        # if (JSON.parse(last_response.body)["title"])
+        #   puts JSON.parse(last_response.body)["title"]
+        #   puts JSON.parse(last_response.body)["code"]
+        # end
+        expect(last_response.status).to eq 201
+
+        access_tkn = JSON.parse(last_response.body)["token"]
+        wrong_code = "ESFSEE"
+
+        Timecop.freeze(@time + @life - 1.second)
+
+        #
+        # ... user checks phone for random code
+        #
+        # step 2: user sends random code and access tkn
+        post '/phone/code', { randomCode: wrong_code, token: access_tkn }
+        res = JSON.parse(last_response.body)
+        expect(res["code"]).to eq STATUS_CODES::SMS_CODE_WRONG
+        post '/phone/code', { randomCode: "#{@random_code}2", token: access_tkn }
+        res = JSON.parse(last_response.body)
+        expect(res["code"]).to eq STATUS_CODES::SMS_CODE_WRONG
+
+
       end
 
 
@@ -246,7 +286,7 @@ describe 'auth' do
 
 
         # step 1: user requests a password reset
-        post '/phone', { phone: @phone }
+        post '/phone/sms', { phone: @phone }
 
         expect(last_response.status).to eq 201
 
@@ -273,7 +313,7 @@ describe 'auth' do
 
 
         # step 1: user requests a password reset
-        post '/phone', { phone: @phone }
+        post '/phone/sms', { phone: @phone }
 
         expect(last_response.status).to eq 201
 
