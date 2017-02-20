@@ -16,7 +16,7 @@ class Teacher < Sequel::Model(:teachers)
 
   def quicklink
     if email and signature and self.school
-      "#{ENV['STORYTIME_URL']}/signin?email=#{email}&digest=#{self.get_password}&role=teacher"
+      "#{ENV['STORYTIME_URL']}/signin?email=#{email}&digest=#{self.password_digest}&role=teacher"
     else
       ''
     end
