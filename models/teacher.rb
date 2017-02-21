@@ -18,6 +18,9 @@ class Teacher < Sequel::Model(:teachers)
 
     st_url = prod ? "https://www.joinstorytime.com" : ENV['STORYTIME_URL']
 
+    st_url = st_url.sub(/^https?\:\/\//, '').sub(/^www./,'')
+
+
     if email and signature and self.school and password_digest
       "#{st_url}/signin?email=#{email}&digest=#{self.password_digest}&role=teacher"
     else
