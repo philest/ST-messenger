@@ -126,7 +126,7 @@ es:
         none: "Hola __PARENT__, vimos que no ha leído sus cuentos desde hace mucho tiempo... Si le gustaría seguir de recibirlos, escribe GO"
 
     enrollment:
-      call_to_action: "Si tiene un smartphone consíga la applicacíon en:\nstbooks.org/app\n\nSi no tiene un smartphone, responde con su nombre completo"
+      call_to_action: "Si tiene un smartphone consíga la aplicacíon en:\nstbooks.org/app\n\nSi no tiene un smartphone, responde con su nombre completo"
       sms_optin:
         teacher: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento por parte de __TEACHER__:"
         school: "¡Estupendo! Ahora los recibirás cuentos semanales de StoryTime.\n\nAquí viene el primer cuento por parte de __SCHOOL__:"
@@ -146,13 +146,13 @@ es:
 
     remind_sms:
       teacher:
-        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la applicacíon en:\nstbooks.org/app"
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la aplicacíon en:\nstbooks.org/app"
         - "Si no tiene un smartphone, favor responda con su nombre completo."
       school:
-        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la applicacíon en:\nstbooks.org/app"
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la aplicacíon en:\nstbooks.org/app"
         - "Si no tiene un smartphone, favor responda con su nombre completo."
       both:
-        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la applicacíon en:\nstbooks.org/app"
+        - "Saludos desde __SCHOOL__ (otra vez!). Si tiene un smartphone consíga la aplicacíon en:\nstbooks.org/app"
         - "Si no tiene un smartphone, favor responda con su nombre completo."
       none:
         - "Saludos desde StoryTime (otra vez!). Si tiene Facebook Messenger, visite este enlace y escribe su código de clase: __CODE__\njoinstorytime.com/go"
