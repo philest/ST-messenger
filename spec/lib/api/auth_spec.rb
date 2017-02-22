@@ -40,7 +40,123 @@ describe 'auth' do
   end
 
 
+  context '/check_username', check_username:true do
+    # note that the db is empty by default
+    before(:all) do
+      @valid_user_name = proc { |s| s == 204 || s == 420 }
+    end
 
+    it 'allows correct phone numbers' do
+      post '/check_username', { username: "3013328953" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+
+      post '/check_username', { username: "1313131313" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+      post '/check_username', { username: "0000000000" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+    end
+
+    it 'allows correct emails' do
+      post '/check_username', { username: "aawahl@gmail.com" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+
+      post '/check_username', { username: "aawahl-test@gmail.com" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+      post '/check_username', { username: "aawahl@pe.poop.zip" }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+    end
+
+    it 'does not allow incorrect phone numbers' do
+      # too small
+      post '/check_username', { username: "301338953" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+      # too big
+      post '/check_username', { username: "30133895322" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+      # whuttt
+      post '/check_username', { username: "3013389asdfasd" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+
+      post '/check_username', { username: "1" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+    end
+
+    it 'does not allow incorrect emails' do
+      # too small
+      post '/check_username', { username: "aawahl" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+      # too big
+      post '/check_username', { username: "aawahl@" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+      # whuttt
+      post '/check_username', { username: "a@a" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+
+
+      post '/check_username', { username: "aawahl@pee." }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_INVALID
+    end
+
+    it 'fails when credentials are empty' do
+
+      post '/check_username', { username: "" }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+
+      post '/check_username', { username: nil }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+
+      post '/check_username', { }
+      res = JSON.parse(last_response.body)
+      expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+    end
+
+    describe '/check_phone redirect' do
+      it 'fails when credentials are empty' do
+
+        get '/check_phone', { phone: "" }
+        res = JSON.parse(last_response.body)
+        expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+
+        get '/check_phone', { phone: nil }
+        res = JSON.parse(last_response.body)
+        expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+
+        get '/check_phone', { }
+        res = JSON.parse(last_response.body)
+        expect(res["code"]).to eq STATUS_CODES::CREDENTIALS_MISSING
+      end
+
+      it 'succeeds when correct phone format' do
+
+        get '/check_phone', { phone: "3013328953" }
+        expect(last_response.status).to satisfy &@valid_user_name
+
+      end
+
+    end
+
+  end
 
 
 

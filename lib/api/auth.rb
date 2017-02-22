@@ -37,6 +37,19 @@ require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
+VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+VALID_PHONE_REGEX = /^\d+$/
+def username_type(username)
+  if VALID_EMAIL_REGEX  =~ username
+    return 'email'
+  elsif (VALID_PHONE_REGEX =~ username) && username.length == 10
+    return 'phone'
+  else
+    return 'unclear'
+  end
+end
+
+
 
 
 # CREATE USER: (assumes school with code 'school' already exists)
@@ -80,24 +93,54 @@ class AuthAPI < Sinatra::Base
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
+  helpers do
+    def check_if_user_exists (username)
+      puts 'he'
+
+      if username.nil? || username.empty?
+        # 400 error is a vestige
+        return 400, jsonError(CREDENTIALS_MISSING, 'missing phone or email!')
+      end
+
+      if username_type(username) == 'email'
+        user = User.where(email: username).first
+      elsif username_type(username) == 'phone'
+        user = User.where(phone: username).first
+      else
+        return 404, jsonError(CREDENTIALS_INVALID, 'malformed phone or email')
+      end
+
+      if user.nil?
+        # user not yet created (this is fine)
+        return 420
+      else
+        # user already exists
+        return 204
+      end
+    end
+  end
 
   # all of our endpoints return json
   before do
     content_type :json
   end
 
+
+  # this is a vestigial route :(
+  # simply forward to /check_username
   get '/check_phone' do
-    puts 'he'
-
-    phone = params[:phone]
-    user = User.where(phone: phone).first
-
-    if user.nil?
-      return 420
-    else
-      return 204
-    end
+    username = params[:phone]
+    return check_if_user_exists(username)
   end
+
+
+
+  post '/check_username' do
+    username = params[:username] || params[:phone]
+    return check_if_user_exists(username)
+  end
+
+
 
   post '/reset_password' do
     # not sure if it'll be in JSON?
@@ -185,7 +228,7 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
       # TODO: should probably attempt to destroy user
     end
-    notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+    notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
 
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
