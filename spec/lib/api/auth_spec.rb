@@ -370,6 +370,7 @@ describe 'auth' do
       post '/login', body
       expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
 
+
     end
 
     it "returns NO_EXISTING_USER when email  is invalid" do
@@ -457,6 +458,33 @@ describe 'auth' do
       user.reload
 
       expect(BCrypt::Password.new(user.refresh_token_digest).is_password? token).to eq true
+
+      # check to see that the type is refresh
+    end
+
+    it "returns a dbuuid, refresh token, and user role" do
+      valid_email = 'david.mcpeek@yale.edu'
+      user = User.create(email: valid_email, password_digest: BCrypt::Password.create(@password), role: 'parent')
+      @teacher.signup_user(user)
+
+      body = { username: valid_email, password: @password }
+
+      post '/login', body
+
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      token = JSON.parse(last_response.body)['token']
+
+      payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
+
+      the_user = payload['user']
+      type = payload['type']
+
+      expect(the_user['user_id']).to eq user.id
+      expect(type).to eq 'refresh'
+      user.reload
+
+      expect(JSON.parse(last_response.body)).to include("role" => user.role, "dbuuid" => user.id )
 
       # check to see that the type is refresh
     end
