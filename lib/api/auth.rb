@@ -37,18 +37,6 @@ require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
-VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-VALID_PHONE_REGEX = /^\d+$/
-def username_type(username)
-  if VALID_EMAIL_REGEX  =~ username
-    return 'email'
-  elsif (VALID_PHONE_REGEX =~ username) && username.length == 10
-    return 'phone'
-  else
-    return 'unclear'
-  end
-end
-
 
 
 class AuthAPI < Sinatra::Base
@@ -77,7 +65,16 @@ class AuthAPI < Sinatra::Base
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
+
   helpers do
+    def base_url
+      @base_url ||= "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
+    end
+  end
+
+
+  helpers do
+
     def check_if_user_exists (username)
       puts 'he'
 
@@ -86,9 +83,9 @@ class AuthAPI < Sinatra::Base
         return 400, jsonError(CREDENTIALS_MISSING, 'missing phone or email!')
       end
 
-      if username_type(username) == 'email'
+      if username.is_email?
         user = User.where(email: username).first
-      elsif username_type(username) == 'phone'
+      elsif username.is_phone?
         user = User.where(phone: username).first
       else
         return 404, jsonError(CREDENTIALS_INVALID, 'malformed phone or email')
@@ -102,6 +99,9 @@ class AuthAPI < Sinatra::Base
         return 204
       end
     end
+
+
+
   end
 
   # all of our endpoints return json
@@ -111,18 +111,12 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
   # this is a vestigial route :(
   # simply forward to /check_username
   get '/check_phone' do
     username = params[:phone]
     return check_if_user_exists(username)
   end
-
-
-
-
 
 
 
@@ -137,22 +131,9 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   post '/signup_free_agent' do
     # required params
-    phone       = params["phone"]
+    username    = params['username'] || params["phone"]
     first_name  = params["first_name"]
     password    = params["password"]
     role        = params["role"] || "parent"
@@ -173,7 +154,7 @@ class AuthAPI < Sinatra::Base
 
     default_story_number = 2
 
-    if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
+    if ([username, first_name, password].include? nil) || ([username, first_name, password].include? '')
       return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
     end
 
@@ -201,7 +182,12 @@ class AuthAPI < Sinatra::Base
     begin
       app_platform = 'app'
 
-      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, role, time_zone)
+      new_user = SIGNUP::create_user(User, username, first_name, last_name, password, class_code, app_platform, role, time_zone)
+      if new_user.nil?
+        return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
+      end
+
+
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
       puts "FOR SOME REASON THIS SHIT FAILED"
@@ -214,7 +200,7 @@ class AuthAPI < Sinatra::Base
 
 
     if ENV['RACK_ENV'] != 'development'
-      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher email: #{teacher_email}")
     end
 
 
@@ -224,11 +210,9 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
   post '/signup' do
     puts "params = #{params}"
-    phone       = params["phone"]
+    username    = params["username"] || params["phone"]
     first_name  = params["first_name"]
     last_name   = params["last_name"]
     password    = params["password"]
@@ -240,10 +224,10 @@ class AuthAPI < Sinatra::Base
 
 
     # check if minimal credentials sent
-    if ([phone, first_name, password, class_code].include? nil) or
-       ([phone, first_name, password, class_code].include? '')
-       puts "#{phone}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing phone/first_name/class_code')
+    if ([username, first_name, password, class_code].include? nil) or
+       ([username, first_name, password, class_code].include? '')
+       puts "#{username}#{first_name}#{class_code}"
+       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing username/first_name/class_code')
     end
 
     # parse class code
@@ -259,7 +243,7 @@ class AuthAPI < Sinatra::Base
     # TODO: being...rescue this
     new_user = SIGNUP::create_user(
       User,
-      phone,
+      username,
       first_name,
       last_name,
       password,
@@ -268,6 +252,11 @@ class AuthAPI < Sinatra::Base
       role,
       time_zone,
     )
+
+    if new_user.nil?
+      return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
+    end
+
 
     SIGNUP::register_user(
       new_user,
@@ -295,15 +284,18 @@ class AuthAPI < Sinatra::Base
 
 
   post '/login' do
-    phone       = params[:phone]
+    username    = params[:username] || params[:phone]
     password    = params[:password]
 
-    if phone.nil? or password.nil? or phone.empty? or password.empty?
+    if username.nil? or password.nil? or username.empty? or password.empty?
       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
     end
 
-    puts "phone = #{phone}"
-    user = User.where(phone: phone).first
+    puts "username = #{username}"
+
+    # check out /models/helpers/phone-email.rb for the class method #where_username_is
+    user = User.where_username_is(username)
+
 
     if user.nil?
       return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, "couldn't find user in db")
@@ -314,22 +306,22 @@ class AuthAPI < Sinatra::Base
     end
 
     # create refresh_tkn and send to user
-    tkn = create_refresh_token(user.id)
-    user.update(refresh_token_digest: Password.create(tkn))
+    refresh_token = create_refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(refresh_token))
 
-    return 201, jsonSuccess({ token: tkn, dbuuid: user.id })
+    return 201, jsonSuccess({ token: refresh_token, dbuuid: user.id })
 
   end
 
-
+  # TODO: clean up token errors
   post '/get_access_tkn' do
     begin
+
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
       if payload['type'] != 'refresh'
-        puts "WRONG TYPE!!!!!!!!!"
         return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
       end
 
@@ -338,7 +330,6 @@ class AuthAPI < Sinatra::Base
       # check in db and cross-reference the bearer and the refres_tkn_digest
       user = User.where(id: user_id).first
       if user.nil?
-        puts "NO_EXISTING_USER!"
         return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
       end
 

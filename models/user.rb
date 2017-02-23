@@ -1,8 +1,13 @@
-require_relative 'auth.rb'
+require_relative 'helpers/auth.rb'
+require_relative 'helpers/phone-email.rb'
 require_relative '../lib/api/helpers/authentication'
+
 class User < Sequel::Model(:users)
   include AuthenticateModel
   include AuthenticationHelpers
+  extend SearchByUsername
+
+
 	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
@@ -18,12 +23,16 @@ class User < Sequel::Model(:users)
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
 
+
+
   def set_reset_password_token(token)
     return false if token.empty? or token.nil?
     digest = Password.create(token)
     self.update(reset_password_token_digest: digest)
     return digest
   end
+
+
 
 
   def authenticate_reset_password_token(tkn=nil)
@@ -42,14 +51,23 @@ class User < Sequel::Model(:users)
 
 
 
+
+
+
 	def story_number
 		self.state_table.story_number
 	end
 
 
+
+
+
 	def generate_code
 		Array.new(2){[*'0'..'9'].sample}.join
 	end
+
+
+
 
 
 	# ensure that user is added EnrollmentQueue upon creation
@@ -91,6 +109,11 @@ class User < Sequel::Model(:users)
 		p e.message + " could not create and associate a state_table, enrollment_queue, or curriculum_version for this user"
 	end
 
+
+
+
+
+
 	def match_school(body_text)
       School.each do |school|
         code = school.code
@@ -125,6 +148,10 @@ class User < Sequel::Model(:users)
         end
       end
   end
+
+
+
+
 
 
   def match_teacher(body_text)
@@ -178,6 +205,7 @@ class User < Sequel::Model(:users)
     super
     validates_unique :code, :allow_nil=>true, :message => "#{code} is already taken (users)"
     validates_unique :phone, :allow_nil=>true, :message => "#{phone} is already taken (users)"
+    validates_unique :email, :allow_nil=>true, :message => "#{email} is already taken (users)"
     validates_unique :fb_id, :allow_nil=>true, :message => "#{fb_id} is already taken (users)"
   end
 

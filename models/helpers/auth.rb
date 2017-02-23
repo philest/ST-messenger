@@ -7,8 +7,8 @@ module AuthenticateModel
     # input_password = "password"
     # stored = Password.create(original_password)
     # password_hash = Password.new(stored)
-    # return true if 
-    begin 
+    # return true if
+    begin
       return false if input_password.nil? || input_password.empty?
       # return false if self.password_digest.nil?
       password_hash   = Password.new(self.password_digest)

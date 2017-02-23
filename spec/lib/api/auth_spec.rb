@@ -14,8 +14,6 @@ require 'jwt'
 require 'dotenv'
 
 
-
-
 Dotenv.load
 
 ENV['RACK_ENV'] = 'test'
@@ -159,8 +157,117 @@ describe 'auth' do
   end
 
 
+  context "phone-email class methods", phoneEmail: true do
+
+      context "emails" do
+        it "rejects invalid emails" do
+          string = "david"
+          expect(string.is_email?).to eq false
+
+          string = "david.com"
+          expect(string.is_email?).to eq false
+
+          string = "david@"
+          expect(string.is_email?).to eq false
+
+          string = "david@gmail"
+          expect(string.is_email?).to eq false
+
+          string = "david@gmail.c3292"
+          expect(string.is_email?).to eq false
+
+          string = "david.mcpeek@yale.company_that_is_mine"
+          expect(string.is_email?).to eq false
+
+          string = "david.mc----peek@y4343ale.edu"
+          expect(string.is_email?).to eq true
+
+        end
+
+        it "accepts valid emails" do
+          string = "david.mcpeek@yale.edu"
+          expect(string.is_email?).to eq true
+
+          string = "david.mcpeek@y4343ale.edu"
+          expect(string.is_email?).to eq true
+
+          string = "david.mcpeek@yale.companythatismine"
+          expect(string.is_email?).to eq true
+
+        end
+
+      end
 
 
+      context "phone numbers" do
+        it "rejects invalid phone numbers" do
+          string = "david.mcpeek@yale.edu"
+          expect(string.is_phone?).to eq false
+
+          string = "12345abcd"
+          expect(string.is_phone?).to eq false
+
+          string = "(818)689-7323"
+          expect(string.is_phone?).to eq false
+
+          string = "098422       "
+          expect(string.is_phone?).to eq false
+
+          string = "1"
+          expect(string.is_phone?).to eq false
+        end
+
+        it "accepts valid phone numbers" do
+          string = "8186897323"
+          expect(string.is_phone?).to eq true
+        end
+
+      end
+
+  end
+
+
+
+
+  context 'signing up with username', signupUsername:true do
+    before(:each) do
+      @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
+      @school  = School.create(signature: "School", name: "School", code: "school|school-es")
+      @school.signup_teacher(@teacher)
+
+    end
+
+    it "adds username to `email` field when email format" do
+      username = 'david.mcpeek@yale.edu'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to_not be_nil
+      expect(phoneUser).to be_nil
+    end
+
+    it "adds username to `phone` field when phone format" do
+      username = '8186897323'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to be_nil
+      expect(phoneUser).to_not be_nil
+    end
+
+    it "fails to sign up a user when username is an invalid email and phone" do
+      username = 'an invalid-ass username.gov'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to be_nil
+      expect(phoneUser).to be_nil
+    end
+
+  end
 
 
 
@@ -170,10 +277,11 @@ describe 'auth' do
   context 'getting an access token' do
     before(:each) do
       # create school/teacher
+
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       # @user = User.create(phone: @phone, password_digest: BCrypt::Password.create('my_password'))
       # @teacher.signup_user(@user)
 
@@ -187,12 +295,14 @@ describe 'auth' do
 
     end
 
-    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else" do
+    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else", atoken:true do
+
       post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{@token}"}
 
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       # the bearer is the refresh_token
       access_tkn = JSON.parse(last_response.body)['token']
+
 
       access_tkn_payload, header = JWT.decode access_tkn, ENV['JWT_SECRET'], true, options
 
@@ -244,18 +354,40 @@ describe 'auth' do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       @password = 'my_password'
       @user = User.create(phone: @phone, password_digest: BCrypt::Password.create(@password))
       @teacher.signup_user(@user)
     end
 
+    it "returns NO_EXISTING_USER when phone number is invalid" do
+      invalid_phone = 'invalid_phone'
+      user = User.create(phone: invalid_phone, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = {  phone: invalid_phone, password: @password }
+
+      post '/login', body
+      expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
+
+    end
+
+    it "returns NO_EXISTING_USER when email  is invalid" do
+      invalid_email = 'invalid_phone'
+      user = User.create(email: invalid_email, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = { phone: invalid_email, password: @password }
+
+      post '/login', body
+      expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
+
+    end
+
+
     it "returns NO_EXISTING_USER when phone number is wrong" do
       wrong_number = 'my_ass'
-      body = {
-        phone: wrong_number,
-        password: @password
-      }
+      body = { phone: wrong_number, password: @password }
       post '/login', body
 
       expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
@@ -263,10 +395,7 @@ describe 'auth' do
 
     it "returns WRONG_PASSWORD when the password is incorrect" do
       wrong_password = 'my_ass'
-      body = {
-        phone: @phone,
-        password: wrong_password
-      }
+      body = { phone: @phone, password: wrong_password }
       post '/login', body
 
       expect(last_response.status).to eq STATUS_CODES::WRONG_PASSWORD
@@ -276,6 +405,63 @@ describe 'auth' do
       post '/login'
       expect(last_response.status).to eq STATUS_CODES::MISSING_CREDENTIALS
     end
+
+
+    it "returns valid refresh token with `username` in params body and it's a PHONE" do
+      valid_phone = '9993331111'
+      user = User.create(phone: valid_phone, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = { username: valid_phone, password: @password }
+
+      post '/login', body
+
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      token = JSON.parse(last_response.body)['token']
+
+      payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
+
+      the_user = payload['user']
+      type = payload['type']
+
+      expect(the_user['user_id']).to eq user.id
+      expect(type).to eq 'refresh'
+      user.reload
+
+      expect(BCrypt::Password.new(user.refresh_token_digest).is_password? token).to eq true
+
+      # check to see that the type is refresh
+    end
+
+    it "returns valid refresh token with `username` in params body and it's an EMAIL" do
+      valid_email = 'david.mcpeek@yale.edu'
+      user = User.create(email: valid_email, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = { username: valid_email, password: @password }
+
+      post '/login', body
+
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      token = JSON.parse(last_response.body)['token']
+
+      payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
+
+      the_user = payload['user']
+      type = payload['type']
+
+      expect(the_user['user_id']).to eq user.id
+      expect(type).to eq 'refresh'
+      user.reload
+
+      expect(BCrypt::Password.new(user.refresh_token_digest).is_password? token).to eq true
+
+      # check to see that the type is refresh
+    end
+
+
 
     it "returns a valid refresh token and updates user with digest (with correct password)" do
       body = {
@@ -329,7 +515,7 @@ describe 'auth' do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'my_phone'
+      @phone = '8186897323'
     end
 
     it "returns NO_MATCHING_SCHOOL with wrong code" do
@@ -375,8 +561,6 @@ describe 'auth' do
       expect(user.first_name).to eq 'David'
       expect(user.last_name).to eq 'McPeek'
       expect(user.class_code).to eq class_code
-
-
     end
 
 
@@ -412,16 +596,12 @@ describe 'auth' do
 
 
 
-
-
-
-
-
-
   context 'signing up free-agent', free_agent: true do
     before(:each) do
       # note: no need to create school. the system should automatically create if missing.
       @phone = "3013328953"
+      @email = "aawahl@gmail.com"
+      @bad_email = "a"
     end
 
     describe "succesful freeagent signup when" do
@@ -460,7 +640,7 @@ describe 'auth' do
       end
 
 
-      it "agent fills out everything" do
+      it "agent fills out everything (legacy)" do
         post '/signup_free_agent', {
           phone: @phone,
           first_name: 'Aubrey',
@@ -472,6 +652,31 @@ describe 'auth' do
         expect(User.all.size).to eq(1)
         expect(User.first.class_code).to eq("#{@school_code_base}1")
       end
+
+      it "agent fills out everything" do
+        post '/signup_free_agent', {
+          username: @email,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'en',
+        }
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(1)
+        expect(User.first.class_code).to eq("#{@school_code_base}1")
+
+        post '/signup_free_agent', {
+          username: @phone,
+          first_name: 'Aubrey',
+          last_name: 'Wahl',
+          password: 'my_password',
+          locale: 'en',
+        }
+        expect(last_response.status).to eq STATUS_CODES::CREATE_USER_SUCCESS
+        expect(User.all.size).to eq(2)
+        expect(User.first.class_code).to eq("#{@school_code_base}1")
+      end
+
 
       it "agent signs up in spanish" do
         post '/signup_free_agent', {
@@ -487,8 +692,8 @@ describe 'auth' do
       end
     end
 
-    describe "errs when missing" do
-      it "phone" do
+    describe "errs when" do
+      it "missing phone (legacy)" do
         post '/signup_free_agent', {
           first_name: 'David',
           last_name: 'McPeek',
@@ -498,7 +703,7 @@ describe 'auth' do
         # puts(last_response.inspect)
         expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
       end
-      it "first_name" do
+      it "missing first_name (legacy)" do
         post '/signup_free_agent', {
           phone: @phone,
           last_name: 'McPeek',
@@ -509,9 +714,29 @@ describe 'auth' do
         expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
 
       end
-      it "password" do
+      it "missing password (legacy)" do
         post '/signup_free_agent', {
           phone: @phone,
+          first_name: 'David',
+          last_name: 'McPeek',
+          time_zone: -4.0,
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+      end
+
+      it "poorly formatted phone" do
+        post '/signup_free_agent', {
+          username: "111222333",
+          first_name: 'David',
+          last_name: 'McPeek',
+          time_zone: -4.0,
+        }
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+      end
+
+      it "poorly formatted email" do
+        post '/signup_free_agent', {
+          username: @bad_email,
           first_name: 'David',
           last_name: 'McPeek',
           time_zone: -4.0,
@@ -573,7 +798,7 @@ describe 'protected api', api: true do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       @user = User.create(phone: @phone, password_digest: BCrypt::Password.create('my_password'))
       @teacher.signup_user(@user)
 
