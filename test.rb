@@ -1,58 +1,46 @@
-require 'httparty'
-require_relative 'config/initializers/aws'
-require_relative 'bin/local'
-require_relative 'lib/workers'
+require_relative 'bin/production'
+require 'csv'
 
-s = School.where(signature: "ST Prep").first
-t = Teacher.where(email: "josedmcpeek@gmail.com").first
-t.update(notified_on: Time.now - 1.week)
-# t.signup_user(User.create(first_name: "David"))
-# t.signup_user(User.create(first_name: "Aubrey", last_name: "Wahl"))
-# t.signup_user(User.create(first_name: "Phil"))
-t.signup_user(User.create())
-t.signup_user(User.create())
-t.signup_user(User.create())
-t.signup_user(User.create())
+csv_file = "editedpublic-school-universe-dataset-2014-2015.csv"
+i = 0
 
+puts "my asshole"
 
-# 1. no names
-# 2. only names
-# 3. both names and unnamed
-# 
-
-require_relative 'lib/workers/notify_teacher_worker'
-
-# require 'createsend'
-
-# # Authenticate with your API key
-# auth = { :api_key => '3178e57316547310895b48c195da986ee9d65a2bab76724d' }
-
-# # The unique identifier for this smart email
-# smart_email_id = '98b9048d-a381-445e-8d21-65a3a5cb2b37'
-
-# # Create a new mailer and define your message
-# tx_smart_mailer = CreateSend::Transactional::SmartEmail.new(auth, smart_email_id)
-# message = {
-#   'To' => 'Phil Esterman <david@joinstorytime.com>',
-#   'Data' => {
-#     'x-apple-data-detectors' => 'x-apple-data-detectorsTestValue',
-#     'href^="tel"' => 'href^="tel"TestValue',
-#     'href^="sms"' => 'href^="sms"TestValue',
-#     'owa' => 'owaTestValue',
-#     'family_count' => 'family_countTestValue',
-#     'family_or_families' => 'family_or_familiesTestValue',
-#     'list_of_families' => 'list_of_familiesTestValue',
-#     'quicklink' => 'quicklinkTestValue',
-#     'signature' => 'signatureTestValue'
-#   }
-# }
-
-# # Send the message and save the response
-# response = tx_smart_mailer.send(message)
+CSV.foreach(csv_file, headers:true) do |row|
+  18578
+  if row['PKOFFERED'] != 'Y'
+    puts "PREK NOT OFFERED AT THIS SCHOOL!"
+    puts "i = #{i}"
+    break
+  end
 
 
-worker = NotifyTeacherWorker.new
+  if i == 18578
+    break
+  end
 
-worker.new_users_notification(t)
+  school_name = row['SCH_NAME'].gsub(/\bsch\b/i, 'School')
+  school_name = school_name.gsub(/\belem\b/i, 'Elementary')
+
+  school_info = {
+    signature: school_name,
+    name: school_name,
+    state: row['STABR'],
+    city: row['MCITY'],
+    zip_code: row['LZIP'],
+    address: row['MSTREET1'],
+    plan: 'free',
+    phone: row['PHONE'].to_s
+
+  }
+
+  FreemiumSchool.create(school_info)
+
+  puts "row#{i} = #{row.inspect}"
+
+  i += 1 
+end
+
+# add all freemium schools from file
 
 

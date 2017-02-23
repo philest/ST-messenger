@@ -132,7 +132,7 @@ en:
         none: "Hi __PARENT__, we saw you did not read your last stories :(... if you still want free books, just reply GO"
 
     enrollment:
-      call_to_action: "If you have Facebook Messenger, tap here and type your class code, which is __CODE__:\njoinstorytime.com/go\n\nIf you do not have Messenger, text back your full name"
+      call_to_action: "If you have a smartphone, get the app here:\nstbooks.org/app\n\nIf you do not have a smartphone, text back your full name"
       sms_optin:
         teacher: "Great! We'll start sharing the stories.\n\nHere's the first story from __TEACHER__!"
         school: "Great! We'll start sending you stories.\n\nHere's the first one from __SCHOOL__:"
@@ -152,15 +152,15 @@ en:
 
     remind_sms:
       teacher:
-        - "Hi! It's __SCHOOL__ again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "Hi! It's __SCHOOL__ again. If you have a smartphone, get the app here:\nstbooks.org/app"
+        - "If you do not have a smartphone just text back your full name."
       school:
-        - "Hi! It's __SCHOOL__ again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "Hi! It's __SCHOOL__ again. If you have a smartphone, get the app here:\nstbooks.org/app"
+        - "If you do not have a smartphone just text back your full name."
       both:
-        - "Hi! It's __SCHOOL__ again. If you have Facebook Messenger, tap the link and type your class code, which is __CODE__.\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "Hi! It's __SCHOOL__ again. If you have a smartphone, get the app here:\nstbooks.org/app"
+        - "If you do not have a smartphone just text back your full name."
       none:
-        - "Hi! It's StoryTime again. To get started on Facebook Messenger, tap the link and type your class code: __CODE__\njoinstorytime.com/go"
-        - "If you do not have Messenger just text back your full name."
+        - "Hi! It's StoryTime again. If you have a smartphone, get the app here:\nstbooks.org/app"
+        - "If you do not have a smartphone just text back your full name."
 

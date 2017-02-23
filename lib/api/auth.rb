@@ -51,22 +51,6 @@ end
 
 
 
-
-# CREATE USER: (assumes school with code 'school' already exists)
-# curl -v -H -X POST -d 'phone=8186897323&password=my_pass&first_name=David&last_name=McPeek&code=school' http://localhost:5000/auth/signup
-#
-# curl -v -X POST -H "Content-Type: application/json" -d '{"phone":"8186897323","password":"my_pass","first_name":"David","last_name":"McPeek","code":"school"}' http://localhost:5000/auth/signup
-# curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:3000/api/login
-
-# LOGIN, gets refresh token
-# curl -v -H -X POST -d 'phone=8186897323&password=my_pass' http://localhost:5000/auth/login
-
-# /get_access_token from refresh token
-# curl -v -H "Authorization: Bearer THE_REFRESH_TOKEN" -X POST http://localhost:5000/auth/get_access_tkn
-
-# USING THE API
-# curl -H "Authorization: Bearer THE_ACCESS_TOKEN" http://localhost:5000/api/*
-
 class AuthAPI < Sinatra::Base
   include ContactHelpers
   include MessageReplyHelpers
@@ -193,13 +177,20 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
     end
 
+    puts "we have our params!"
+
     # if default school/teacher doesn't exists, create it
     begin
+      # shouldn't these be switched around?
+      puts "about to create school/teafcher"
       default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
+      puts "done with that shit man"
     rescue Exception => e
       puts "["
       puts e
       puts "]"
+
+      puts "A FUCKING EXCEPTION WAS RAISED MAN"
       if (ENV["RACK_ENV"] != "development")
         notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
       end
@@ -213,22 +204,23 @@ class AuthAPI < Sinatra::Base
       new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, role, time_zone)
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
-      notify_admins("Free-agent creation failed somehow...", e)
+      puts "FOR SOME REASON THIS SHIT FAILED"
+      if (ENV["RACK_ENV"] != "development")
+        notify_admins("Free-agent creation failed somehow...", e)
+      end
       return 404, jsonError(INTERNAL_ERROR, "couldn't create user in a fatal way")
       # TODO: should probably attempt to destroy user
     end
-    notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+
+
+    if ENV['RACK_ENV'] != 'development'
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+    end
+
 
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
   end
-
-
-
-
-
-
-
 
 
 
@@ -256,7 +248,6 @@ class AuthAPI < Sinatra::Base
 
     # parse class code
     class_code        = class_code.delete(' ').delete('-').downcase
-
 
 
     # check if class code exists
@@ -301,6 +292,8 @@ class AuthAPI < Sinatra::Base
 
 
 
+
+
   post '/login' do
     phone       = params[:phone]
     password    = params[:password]
@@ -327,14 +320,6 @@ class AuthAPI < Sinatra::Base
     return 201, jsonSuccess({ token: tkn, dbuuid: user.id })
 
   end
-
-
-
-
-
-
-
-
 
 
   post '/get_access_tkn' do
