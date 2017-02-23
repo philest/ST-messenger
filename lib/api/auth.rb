@@ -37,6 +37,19 @@ require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
+VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+VALID_PHONE_REGEX = /^\d+$/
+def username_type(username)
+  if VALID_EMAIL_REGEX  =~ username
+    return 'email'
+  elsif (VALID_PHONE_REGEX =~ username) && username.length == 10
+    return 'phone'
+  else
+    return 'unclear'
+  end
+end
+
+
 
 class AuthAPI < Sinatra::Base
   include ContactHelpers
@@ -64,58 +77,77 @@ class AuthAPI < Sinatra::Base
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
+  helpers do
+    def check_if_user_exists (username)
+      puts 'he'
+
+      if username.nil? || username.empty?
+        # 400 error is a vestige
+        return 400, jsonError(CREDENTIALS_MISSING, 'missing phone or email!')
+      end
+
+      if username_type(username) == 'email'
+        user = User.where(email: username).first
+      elsif username_type(username) == 'phone'
+        user = User.where(phone: username).first
+      else
+        return 404, jsonError(CREDENTIALS_INVALID, 'malformed phone or email')
+      end
+
+      if user.nil?
+        # user not yet created (this is fine)
+        return 420
+      else
+        # user already exists
+        return 204
+      end
+    end
+  end
 
   # all of our endpoints return json
   before do
     content_type :json
   end
 
+
+
+
+
+  # this is a vestigial route :(
+  # simply forward to /check_username
   get '/check_phone' do
-    puts 'he'
-
-    phone = params[:phone]
-    user = User.where(phone: phone).first
-
-    if user.nil?
-      return 420
-    else
-      return 204
-    end
+    username = params[:phone]
+    return check_if_user_exists(username)
   end
 
-  post '/reset_password' do
-    # not sure if it'll be in JSON?
-    # get phone
-    phone = params['phone']
-    if phone.nil? or phone.empty?
-      return [MISSING_CREDENTIALS, { 'Content-Type' => 'text/plain' }, ['Missing phone param!']]
-    end
-    user = User.where(phone: phone).first
-    if user.nil?
-      return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ["User with phone #{phone} doesn't exist"]]
-    end
 
-    # get a random string of integers...
-    generate_code = proc do
-      Array.new(4){[*'0'..'9'].sample}.join
-    end
 
-    new_password = generate_code.call()
-    user.set_password(new_password)
 
-    # now text them.....
-    case user.locale
-    when 'es'
-      msg = "Aquí está tu nueva contraseña:\n#{new_password}"
-    else
-      msg = "Here's your new StoryTime password:\n#{new_password}"
-    end
-    puts "I mean, maybe"
 
-    TextingWorker.perform_async(msg, phone)
 
-    return [SUCCESS, { 'Content-Type' => 'text/plain' }, ["Password updated for user with phone #{phone}."]]
+
+
+  post '/check_username' do
+    username = params[:username] || params[:phone]
+    return check_if_user_exists(username)
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   post '/signup_free_agent' do
@@ -180,25 +212,16 @@ class AuthAPI < Sinatra::Base
       # TODO: should probably attempt to destroy user
     end
 
+
     if ENV['RACK_ENV'] != 'development'
-      notify_admins("Free-agent created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
     end
+
 
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
   end
 
-  # this is how to call another route, but not treat it as a redirect
-  # post '/merge_test' do
-  #   status, headers, body = call env.merge("PATH_INFO" => '/merge_redirect')
-  #   [status, headers, body.map(&:upcase)]
-  # end
-
-  # post '/merge_redirect' do
-  #   puts params # the params are passed :)
-  #   puts "REDIRECTED"
-  #   200
-  # end
 
 
 
@@ -259,6 +282,16 @@ class AuthAPI < Sinatra::Base
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
   end
+
+
+
+
+
+
+
+
+
+
 
 
   post '/login' do
