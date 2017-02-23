@@ -292,6 +292,7 @@ class UserAPI < Sinatra::Base
       first_name: user.first_name,
       last_name: user.last_name,
       phone_number: user.phone,
+      email: user.email,
       dbuuid: user.id,
       role: user.role,
       class_code: user.class_code
