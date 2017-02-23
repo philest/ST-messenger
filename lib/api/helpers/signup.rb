@@ -1,15 +1,20 @@
+require_relative '../../models/helpers/phone-email'
+
 module SIGNUP
 
-  def self.create_user(user_constructor, phone, first_name, last_name, password, class_code, platform, role, time_zone = nil)
+  def self.create_user(user_constructor, username, first_name, last_name, password, class_code, platform, role, time_zone = nil)
 
     userData = {
-      phone: phone,
       first_name: first_name.strip,
       last_name: last_name.strip,
       class_code: class_code,
       platform: platform,
       role: role,
     }
+
+    contactType = username.is_phone? ? 'phone' : 'email'
+    userData[contactType] = username
+        
 
     if (time_zone) then
       userData['tz_offset'] = time_zone

@@ -16,6 +16,7 @@ require_relative 'lib/api/auth'
 require_relative 'lib/api/user'
 require_relative 'lib/api/reset_password'
 require 'rack'
+require 'rack/contrib'
 require_relative 'config/environment'
 get_db_connection()
 

@@ -77,7 +77,16 @@ class AuthAPI < Sinatra::Base
   helpers STATUS_CODES
   helpers AuthenticationHelpers
   helpers SchoolCodeMatcher
+
   helpers do
+    def base_url
+      @base_url ||= "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
+    end
+  end
+
+
+  helpers do
+
     def check_if_user_exists (username)
       puts 'he'
 
@@ -102,6 +111,9 @@ class AuthAPI < Sinatra::Base
         return 204
       end
     end
+
+
+
   end
 
   # all of our endpoints return json
@@ -111,18 +123,19 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
   # this is a vestigial route :(
   # simply forward to /check_username
   get '/check_phone' do
     username = params[:phone]
-    return check_if_user_exists(username)
+
+    res = HTTParty.post(
+      "#{base_url}/check_username",
+      body: params
+    )
+
+    # what does it mean that content_type is :json? 
+    return res.code
   end
-
-
-
-
 
 
 
@@ -137,22 +150,9 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   post '/signup_free_agent' do
     # required params
-    phone       = params["phone"]
+    username    = params['username'] || params["phone"]
     first_name  = params["first_name"]
     password    = params["password"]
     role        = params["role"] || "parent"
@@ -173,7 +173,7 @@ class AuthAPI < Sinatra::Base
 
     default_story_number = 2
 
-    if ([phone, first_name, password].include? nil) || ([phone, first_name, password].include? '')
+    if ([username, first_name, password].include? nil) || ([username, first_name, password].include? '')
       return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
     end
 
@@ -201,7 +201,7 @@ class AuthAPI < Sinatra::Base
     begin
       app_platform = 'app'
 
-      new_user = SIGNUP::create_user(User, phone, first_name, last_name, password, class_code, app_platform, role, time_zone)
+      new_user = SIGNUP::create_user(User, username, first_name, last_name, password, class_code, app_platform, role, time_zone)
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
       puts "FOR SOME REASON THIS SHIT FAILED"
@@ -214,7 +214,7 @@ class AuthAPI < Sinatra::Base
 
 
     if ENV['RACK_ENV'] != 'development'
-      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, phone: #{phone}, teacher email: #{teacher_email}")
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher email: #{teacher_email}")
     end
 
 
@@ -224,11 +224,9 @@ class AuthAPI < Sinatra::Base
 
 
 
-
-
   post '/signup' do
     puts "params = #{params}"
-    phone       = params["phone"]
+    username    = params["username"] || params["phone"]
     first_name  = params["first_name"]
     last_name   = params["last_name"]
     password    = params["password"]
@@ -240,10 +238,10 @@ class AuthAPI < Sinatra::Base
 
 
     # check if minimal credentials sent
-    if ([phone, first_name, password, class_code].include? nil) or
-       ([phone, first_name, password, class_code].include? '')
-       puts "#{phone}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing phone/first_name/class_code')
+    if ([username, first_name, password, class_code].include? nil) or
+       ([username, first_name, password, class_code].include? '')
+       puts "#{username}#{first_name}#{class_code}"
+       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing username/first_name/class_code')
     end
 
     # parse class code
@@ -259,7 +257,7 @@ class AuthAPI < Sinatra::Base
     # TODO: being...rescue this
     new_user = SIGNUP::create_user(
       User,
-      phone,
+      username,
       first_name,
       last_name,
       password,
@@ -295,15 +293,18 @@ class AuthAPI < Sinatra::Base
 
 
   post '/login' do
-    phone       = params[:phone]
+    username    = params[:username] || params[:phone]
     password    = params[:password]
 
-    if phone.nil? or password.nil? or phone.empty? or password.empty?
+    if username.nil? or password.nil? or username.empty? or password.empty?
       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
     end
 
-    puts "phone = #{phone}"
-    user = User.where(phone: phone).first
+    puts "username = #{username}"
+
+    # check out /models/helpers/phone-email.rb for the class method #where_username_is
+    user = User.where_username_is(username)
+
 
     if user.nil?
       return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, "couldn't find user in db")

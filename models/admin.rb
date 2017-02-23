@@ -1,7 +1,11 @@
-require_relative 'auth.rb'
+require_relative 'helpers/auth.rb'
+require_relative 'helpers/phone-email.rb'
 
 class Admin < Sequel::Model(:admins)
   include AuthenticateModel
+  extend SearchByUsername
+
+  
   plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
   plugin :validation_helpers
   plugin :association_dependencies

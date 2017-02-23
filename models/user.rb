@@ -1,8 +1,13 @@
-require_relative 'auth.rb'
+require_relative 'helpers/auth.rb'
+require_relative 'helpers/phone-email.rb'
 require_relative '../lib/api/helpers/authentication'
+
 class User < Sequel::Model(:users)
   include AuthenticateModel
   include AuthenticationHelpers
+  extend SearchByUsername
+
+
 	plugin :timestamps, :create=>:enrolled_on, :update=>:updated_at, :update_on_create=>true
 	plugin :validation_helpers
 	plugin :association_dependencies
