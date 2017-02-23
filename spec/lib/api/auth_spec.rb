@@ -44,6 +44,23 @@ describe 'auth' do
       @valid_user_name = proc { |s| s == 204 || s == 420 }
     end
 
+    it 'is case-insenstive' do
+      base_email = "aawahl@gmail.com"
+      variant1 = "AAWAHL@gmail.COM"
+      variant2 = "aawAhl@gmail.Com"
+      post '/signup_free_agent', {username:base_email, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      expect(last_response.status).to eq 201
+
+      post '/check_username', { username: base_email }
+      expect(last_response.status).to satisfy &@valid_user_name
+      post '/check_username', { username: variant1 }
+      expect(last_response.status).to satisfy &@valid_user_name
+      post '/check_username', { username: variant2 }
+      expect(last_response.status).to satisfy &@valid_user_name
+
+
+    end
+
     it 'allows correct phone numbers' do
       post '/check_username', { username: "3013328953" }
       expect(last_response.status).to satisfy &@valid_user_name
