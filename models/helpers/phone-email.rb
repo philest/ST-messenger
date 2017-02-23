@@ -1,3 +1,5 @@
+# TODO: featurize this stuff way better
+
 class NilClass
   def is_email?
     false
@@ -17,7 +19,7 @@ class String
   end
 
   def is_phone?
-    @@phone_regex.match(self) ? true : false
+    (@@phone_regex.match(self) ? true : false) && self.length == 10
   end
 end
 

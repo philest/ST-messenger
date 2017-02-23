@@ -2,6 +2,8 @@ require_relative '../../../models/helpers/phone-email'
 
 module SIGNUP
 
+
+
   def self.create_user(user_constructor, username, first_name, last_name, password, class_code, platform, role, time_zone = nil)
 
     userData = {
@@ -19,10 +21,10 @@ module SIGNUP
     else
       return nil
     end
-        
+
 
     userData[contactType] = username
-        
+
 
     if (time_zone) then
       userData['tz_offset'] = time_zone
@@ -31,6 +33,9 @@ module SIGNUP
     return user_constructor.create(userData)
 
   end
+
+
+
 
 
 	def self.register_user(db_user, class_code, password, story_number, last_unique_story_number, last_story_read)
@@ -46,6 +51,10 @@ module SIGNUP
       db_user.match_school(class_code)
       db_user.match_teacher(class_code)
 	end
+
+
+
+
 
   def self.create_free_agent_school(schoolRef, teacherRef, school_code)
     school_name = 'Free Agent School'

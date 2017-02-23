@@ -23,12 +23,16 @@ class User < Sequel::Model(:users)
 	add_association_dependencies enrollment_queue: :destroy, button_press_logs: :destroy, state_table: :destroy
 
 
+
+
   def set_reset_password_token(token)
     return false if token.empty? or token.nil?
     digest = Password.create(token)
     self.update(reset_password_token_digest: digest)
     return digest
   end
+
+
 
 
   def authenticate_reset_password_token(tkn=nil)
@@ -47,14 +51,23 @@ class User < Sequel::Model(:users)
 
 
 
+
+
+
 	def story_number
 		self.state_table.story_number
 	end
 
 
+
+
+
 	def generate_code
 		Array.new(2){[*'0'..'9'].sample}.join
 	end
+
+
+
 
 
 	# ensure that user is added EnrollmentQueue upon creation
@@ -96,6 +109,11 @@ class User < Sequel::Model(:users)
 		p e.message + " could not create and associate a state_table, enrollment_queue, or curriculum_version for this user"
 	end
 
+
+
+
+
+
 	def match_school(body_text)
       School.each do |school|
         code = school.code
@@ -130,6 +148,10 @@ class User < Sequel::Model(:users)
         end
       end
   end
+
+
+
+
 
 
   def match_teacher(body_text)

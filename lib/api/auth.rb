@@ -37,18 +37,6 @@ require_relative 'helpers/json_macros'
 require_relative 'constants/statusCodes'
 
 
-VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-VALID_PHONE_REGEX = /^\d+$/
-def username_type(username)
-  if VALID_EMAIL_REGEX  =~ username
-    return 'email'
-  elsif (VALID_PHONE_REGEX =~ username) && username.length == 10
-    return 'phone'
-  else
-    return 'unclear'
-  end
-end
-
 
 
 class AuthAPI < Sinatra::Base
@@ -95,9 +83,9 @@ class AuthAPI < Sinatra::Base
         return 400, jsonError(CREDENTIALS_MISSING, 'missing phone or email!')
       end
 
-      if username_type(username) == 'email'
+      if username.is_email?
         user = User.where(email: username).first
-      elsif username_type(username) == 'phone'
+      elsif username.is_phone?
         user = User.where(phone: username).first
       else
         return 404, jsonError(CREDENTIALS_INVALID, 'malformed phone or email')
@@ -318,24 +306,22 @@ class AuthAPI < Sinatra::Base
     end
 
     # create refresh_tkn and send to user
-    tkn = create_refresh_token(user.id)
-    user.update(refresh_token_digest: Password.create(tkn))
+    refresh_token = create_refresh_token(user.id)
+    user.update(refresh_token_digest: Password.create(refresh_token))
 
-    return 201, jsonSuccess({ token: tkn, dbuuid: user.id })
+    return 201, jsonSuccess({ token: refresh_token, dbuuid: user.id })
 
   end
 
-
+  # TODO: clean up token errors
   post '/get_access_tkn' do
     begin
 
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
       if payload['type'] != 'refresh'
-        puts "WRONG TYPE!!!!!!!!!"
         return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
       end
 
@@ -344,7 +330,6 @@ class AuthAPI < Sinatra::Base
       # check in db and cross-reference the bearer and the refres_tkn_digest
       user = User.where(id: user_id).first
       if user.nil?
-        puts "NO_EXISTING_USER!"
         return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
       end
 
