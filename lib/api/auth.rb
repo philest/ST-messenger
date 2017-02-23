@@ -83,10 +83,8 @@ class AuthAPI < Sinatra::Base
         return 400, jsonError(CREDENTIALS_MISSING, 'missing phone or email!')
       end
 
-      if username.is_email?
-        user = User.where(email: username).first
-      elsif username.is_phone?
-        user = User.where(phone: username).first
+      if username.is_email? || username.is_phone?
+        user = User.where_username_is(username)
       else
         return 404, jsonError(CREDENTIALS_INVALID, 'malformed phone or email')
       end
