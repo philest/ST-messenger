@@ -195,6 +195,11 @@ class AuthAPI < Sinatra::Base
       app_platform = 'app'
 
       new_user = SIGNUP::create_user(User, username, first_name, last_name, password, class_code, app_platform, role, time_zone)
+      if new_user.nil?
+        return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
+      end
+
+
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
     rescue Exception => e # TODO, better error handling
       puts "FOR SOME REASON THIS SHIT FAILED"
@@ -259,6 +264,11 @@ class AuthAPI < Sinatra::Base
       role,
       time_zone,
     )
+
+    if new_user.nil?
+      return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
+    end
+
 
     SIGNUP::register_user(
       new_user,

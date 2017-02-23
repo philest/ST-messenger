@@ -12,7 +12,15 @@ module SIGNUP
       role: role,
     }
 
-    contactType = username.is_email? ? 'email' : 'phone'
+    if username.is_email?
+      contactType = 'email'
+    elsif username.is_phone?
+      contactType = 'phone'
+    else
+      return nil
+    end
+        
+
     userData[contactType] = username
         
 

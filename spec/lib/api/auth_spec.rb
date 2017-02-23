@@ -14,8 +14,6 @@ require 'jwt'
 require 'dotenv'
 
 
-
-
 Dotenv.load
 
 ENV['RACK_ENV'] = 'test'
@@ -159,8 +157,118 @@ describe 'auth' do
   end
 
 
+  context "phone-email class methods", phoneEmail: true do
+  
+      context "emails" do
+        it "rejects invalid emails" do
+          string = "david"
+          expect(string.is_email?).to eq false
+
+          string = "david.com"
+          expect(string.is_email?).to eq false
+
+          string = "david@"
+          expect(string.is_email?).to eq false
+
+          string = "david@gmail"
+          expect(string.is_email?).to eq false
+
+          string = "david@gmail.c3292"
+          expect(string.is_email?).to eq false
+
+          string = "david.mcpeek@yale.company_that_is_mine"
+          expect(string.is_email?).to eq false
+
+          string = "david.mc----peek@y4343ale.edu"
+          expect(string.is_email?).to eq true 
+
+        end
+
+        it "accepts valid emails" do
+          string = "david.mcpeek@yale.edu"
+          expect(string.is_email?).to eq true
+
+          string = "david.mcpeek@y4343ale.edu"
+          expect(string.is_email?).to eq true
+
+          string = "david.mcpeek@yale.companythatismine"
+          expect(string.is_email?).to eq true
+
+        end
+
+      end
 
 
+      context "phone numbers" do
+        it "rejects invalid phone numbers" do
+          string = "david.mcpeek@yale.edu"
+          expect(string.is_phone?).to eq false
+
+          string = "12345abcd"
+          expect(string.is_phone?).to eq false
+
+          string = "(818)689-7323"
+          expect(string.is_phone?).to eq false
+
+          string = "098422       "
+          expect(string.is_phone?).to eq false
+        end
+
+        it "accepts valid phone numbers" do
+          string = "8186897323"
+          expect(string.is_phone?).to eq true
+
+          string = "1"
+          expect(string.is_phone?).to eq true
+
+        end
+
+      end
+
+  end
+
+
+
+
+  context 'signing up with username', signupUsername:true do
+    before(:each) do
+      @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
+      @school  = School.create(signature: "School", name: "School", code: "school|school-es")
+      @school.signup_teacher(@teacher)
+
+    end
+
+    it "adds username to `email` field when email format" do
+      username = 'david.mcpeek@yale.edu'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to_not be_nil
+      expect(phoneUser).to be_nil
+    end
+
+    it "adds username to `phone` field when phone format" do
+      username = '8186897323'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to be_nil
+      expect(phoneUser).to_not be_nil
+    end
+
+    it "fails to sign up a user when username is an invalid email and phone" do
+      username = 'an invalid-ass username.gov'
+      post '/signup', {username:username, first_name: 'David', last_name: 'McPeek', password: 'my_password', class_code: 'school1'}
+      emailUser = User.where(email: username).first
+      phoneUser = User.where(phone: username).first
+
+      expect(emailUser).to be_nil
+      expect(phoneUser).to be_nil
+    end
+
+  end
 
 
 
@@ -174,7 +282,7 @@ describe 'auth' do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       # @user = User.create(phone: @phone, password_digest: BCrypt::Password.create('my_password'))
       # @teacher.signup_user(@user)
 
@@ -247,11 +355,42 @@ describe 'auth' do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       @password = 'my_password'
       @user = User.create(phone: @phone, password_digest: BCrypt::Password.create(@password))
       @teacher.signup_user(@user)
     end
+
+    it "returns NO_EXISTING_USER when phone number is invalid" do
+      invalid_phone = 'invalid_phone'
+      user = User.create(phone: invalid_phone, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+      
+      body = {
+        phone: invalid_phone,
+        password: @password
+      }      
+
+      post '/login', body
+      expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
+
+    end
+
+    it "returns NO_EXISTING_USER when email  is invalid" do
+      invalid_email = 'invalid_phone'
+      user = User.create(email: invalid_email, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+      
+      body = {
+        phone: invalid_email,
+        password: @password
+      }      
+
+      post '/login', body
+      expect(last_response.status).to eq STATUS_CODES::NO_EXISTING_USER
+
+    end
+
 
     it "returns NO_EXISTING_USER when phone number is wrong" do
       wrong_number = 'my_ass'
@@ -279,6 +418,69 @@ describe 'auth' do
       post '/login'
       expect(last_response.status).to eq STATUS_CODES::MISSING_CREDENTIALS
     end
+
+
+    it "returns valid refresh token with `username` in params body and it's a PHONE" do
+      valid_phone = '999333111'
+      user = User.create(phone: valid_phone, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = {
+        username: valid_phone,
+        password: @password
+      }
+
+      post '/login', body
+
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      token = JSON.parse(last_response.body)['token']
+
+      payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
+
+      the_user = payload['user']
+      type = payload['type']
+
+      expect(the_user['user_id']).to eq user.id
+      expect(type).to eq 'refresh'
+      user.reload
+
+      expect(BCrypt::Password.new(user.refresh_token_digest).is_password? token).to eq true
+
+      # check to see that the type is refresh
+    end
+
+    it "returns valid refresh token with `username` in params body and it's an EMAIL" do
+      valid_email = 'david.mcpeek@yale.edu'
+      user = User.create(email: valid_email, password_digest: BCrypt::Password.create(@password))
+      @teacher.signup_user(user)
+
+      body = {
+        username: valid_email,
+        password: @password
+      }
+
+      post '/login', body
+
+      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+      # the bearer is the refresh_token
+      token = JSON.parse(last_response.body)['token']
+
+      payload, header = JWT.decode token, ENV['JWT_SECRET'], true, options
+
+      the_user = payload['user']
+      type = payload['type']
+
+      expect(the_user['user_id']).to eq user.id
+      expect(type).to eq 'refresh'
+      user.reload
+
+      expect(BCrypt::Password.new(user.refresh_token_digest).is_password? token).to eq true
+
+      # check to see that the type is refresh
+    end
+
+
 
     it "returns a valid refresh token and updates user with digest (with correct password)" do
       body = {
@@ -332,7 +534,7 @@ describe 'auth' do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'my_phone'
+      @phone = '8186897323'
     end
 
     it "returns NO_MATCHING_SCHOOL with wrong code" do
@@ -406,12 +608,6 @@ describe 'auth' do
       expect(user.last_name).to eq 'McPeek'
     end
   end
-
-
-
-
-
-
 
 
 
@@ -576,7 +772,7 @@ describe 'protected api', api: true do
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
-      @phone = 'sample_phone_number'
+      @phone = '8186897323'
       @user = User.create(phone: @phone, password_digest: BCrypt::Password.create('my_password'))
       @teacher.signup_user(@user)
 
