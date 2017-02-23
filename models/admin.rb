@@ -19,8 +19,13 @@ class Admin < Sequel::Model(:admins)
 
     st_url = st_url.sub(/^https?\:\/\//, '').sub(/^www./,'')
 
-    if email and signature and self.school and password_digest
-      "#{st_url}/signin?email=#{email}&digest=#{self.password_digest}&role=admin"
+    username = email
+    if email.nil? or email.empty?
+      username = phone
+    end
+
+    if username and signature and self.school and password_digest
+      "#{st_url}/signin?username=#{username}&digest=#{self.password_digest}&role=admin"
     else
       ''
     end

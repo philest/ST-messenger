@@ -22,9 +22,14 @@ class Teacher < Sequel::Model(:teachers)
 
     st_url = st_url.sub(/^https?\:\/\//, '').sub(/^www./,'')
 
+    username = email
+    if email.nil? or email.empty?
+      username = phone
+    end
 
-    if email and signature and self.school and password_digest
-      "#{st_url}/signin?email=#{email}&digest=#{self.password_digest}&role=teacher"
+
+    if username and signature and self.school and password_digest
+      "#{st_url}/signin?username=#{username}&digest=#{self.password_digest}&role=teacher"
     else
       ''
     end
