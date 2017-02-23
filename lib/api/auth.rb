@@ -126,12 +126,20 @@ class AuthAPI < Sinatra::Base
   end
 
 
+
+
+
   # this is a vestigial route :(
   # simply forward to /check_username
   get '/check_phone' do
     username = params[:phone]
     return check_if_user_exists(username)
   end
+
+
+
+
+
 
 
 
@@ -142,39 +150,20 @@ class AuthAPI < Sinatra::Base
 
 
 
-  post '/reset_password' do
-    # not sure if it'll be in JSON?
-    # get phone
-    phone = params['phone']
-    if phone.nil? or phone.empty?
-      return [MISSING_CREDENTIALS, { 'Content-Type' => 'text/plain' }, ['Missing phone param!']]
-    end
-    user = User.where(phone: phone).first
-    if user.nil?
-      return [NO_EXISTING_USER, { 'Content-Type' => 'text/plain' }, ["User with phone #{phone} doesn't exist"]]
-    end
 
-    # get a random string of integers...
-    generate_code = proc do
-      Array.new(4){[*'0'..'9'].sample}.join
-    end
 
-    new_password = generate_code.call()
-    user.set_password(new_password)
 
-    # now text them.....
-    case user.locale
-    when 'es'
-      msg = "Aquí está tu nueva contraseña:\n#{new_password}"
-    else
-      msg = "Here's your new StoryTime password:\n#{new_password}"
-    end
-    puts "I mean, maybe"
 
-    TextingWorker.perform_async(msg, phone)
 
-    return [SUCCESS, { 'Content-Type' => 'text/plain' }, ["Password updated for user with phone #{phone}."]]
-  end
+
+
+
+
+
+
+
+
+
 
 
   post '/signup_free_agent' do
@@ -234,17 +223,6 @@ class AuthAPI < Sinatra::Base
 
   end
 
-  # this is how to call another route, but not treat it as a redirect
-  # post '/merge_test' do
-  #   status, headers, body = call env.merge("PATH_INFO" => '/merge_redirect')
-  #   [status, headers, body.map(&:upcase)]
-  # end
-
-  # post '/merge_redirect' do
-  #   puts params # the params are passed :)
-  #   puts "REDIRECTED"
-  #   200
-  # end
 
 
 
@@ -313,6 +291,12 @@ class AuthAPI < Sinatra::Base
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
   end
+
+
+
+
+
+
 
 
 
