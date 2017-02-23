@@ -25,9 +25,9 @@ end
 module SearchByUsername
   def where_username_is(str)
     if str.is_email?
-      self.where(email: str).first
+      self.where(Sequel.ilike(:email, str)).first
     elsif str.is_phone?
-      self.where(phone: str).first
+      self.where(Sequel.ilike(:phone, str)).first
     else
       nil
     end
