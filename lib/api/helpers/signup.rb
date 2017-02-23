@@ -1,4 +1,4 @@
-require_relative '../../models/helpers/phone-email'
+require_relative '../../../models/helpers/phone-email'
 
 module SIGNUP
 
@@ -12,7 +12,7 @@ module SIGNUP
       role: role,
     }
 
-    contactType = username.is_phone? ? 'phone' : 'email'
+    contactType = username.is_email? ? 'email' : 'phone'
     userData[contactType] = username
         
 

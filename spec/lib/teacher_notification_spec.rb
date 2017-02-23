@@ -49,17 +49,17 @@ describe 'teacher notifications' do
         @nw.perform(@teacher.id)
       end
 
-      it "does many named, no unnamed correctly" do
-        user1 = User.create(first_name: "Phil")
-        user2 = User.create(first_name: "Aubrey", last_name: "Wahl")
-        args = [@teacher.signature, @teacher.email, 3, 'families', 'Aubrey Wahl, David McPeek, and Phil', @teacher.quicklink]
-        expect(@nw).to receive(:new_users_notification_helper).with(*args).once
+      # it "does many named, no unnamed correctly" do
+      #   user1 = User.create(first_name: "Phil")
+      #   user2 = User.create(first_name: "Aubrey", last_name: "Wahl")
+      #   args = [@teacher.signature, @teacher.email, 3, 'families', 'Aubrey Wahl, David McPeek, and Phil', @teacher.quicklink]
+      #   expect(@nw).to receive(:new_users_notification_helper).with(*args).once
 
-        @teacher.signup_user(@named)
-        @teacher.signup_user(user1)
-        @teacher.signup_user(user2)
-        @nw.perform(@teacher.id)
-      end
+      #   @teacher.signup_user(@named)
+      #   @teacher.signup_user(user1)
+      #   @teacher.signup_user(user2)
+      #   @nw.perform(@teacher.id)
+      # end
 
       it "does many unnamed, no named correctly" do
         user1 = User.create()

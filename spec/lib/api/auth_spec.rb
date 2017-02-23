@@ -170,6 +170,7 @@ describe 'auth' do
   context 'getting an access token' do
     before(:each) do
       # create school/teacher
+
       @teacher = Teacher.create(signature: "Ms. Teacher", email: "teacher@school.edu")
       @school  = School.create(signature: "School", name: "School", code: "school|school-es")
       @school.signup_teacher(@teacher)
@@ -187,12 +188,14 @@ describe 'auth' do
 
     end
 
-    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else" do
+    it "returns WRONG_ACCESS_TKN_TYPE when given an access token or something else", atoken:true do
+
       post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer #{@token}"}
 
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       # the bearer is the refresh_token
       access_tkn = JSON.parse(last_response.body)['token']
+
 
       access_tkn_payload, header = JWT.decode access_tkn, ENV['JWT_SECRET'], true, options
 

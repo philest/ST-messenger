@@ -127,14 +127,7 @@ class AuthAPI < Sinatra::Base
   # simply forward to /check_username
   get '/check_phone' do
     username = params[:phone]
-
-    res = HTTParty.post(
-      "#{base_url}/check_username",
-      body: params
-    )
-
-    # what does it mean that content_type is :json? 
-    return res.code
+    return check_if_user_exists(username)
   end
 
 
@@ -325,8 +318,10 @@ class AuthAPI < Sinatra::Base
 
   post '/get_access_tkn' do
     begin
+
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      puts "bearer = #{bearer}"
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
 
       if payload['type'] != 'refresh'
