@@ -309,7 +309,7 @@ class AuthAPI < Sinatra::Base
     refresh_token = create_refresh_token(user.id)
     user.update(refresh_token_digest: Password.create(refresh_token))
 
-    return 201, jsonSuccess({ token: refresh_token, dbuuid: user.id })
+    return 201, jsonSuccess({ token: refresh_token, dbuuid: user.id, role: user.role })
 
   end
 
