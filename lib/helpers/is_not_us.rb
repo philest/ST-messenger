@@ -23,7 +23,7 @@ module IsNotUs
     fcm_blacklist = [
       "f440qVxzJcQ:APA91bEYM3bFujWpyfqz_sATNOEPlWZzS37UF2gi5UWT2eYx7mAcQkh8iAiGnyChkDNrZTniwDlO2JysXpGEQBJFwTdS84FOvIwLL8oipuv8Wn-ikfZ7NWvQw9aIQaejse1A1WtcSwLs",
       "dqtr9mkCXfE:APA91bHcBlBBcXK0IFxH5E2PMzjU6Wf-iIKRVQuX4_2oSAFYptl-XNyf8udCx7F00npaXgdpAgM2Z-8LVniLUVYe7UEJxIfDTqR3Fz0PgHT2RvccA09JlZYfU8o3xaindTRIZTnZlGAd",
-      "dV30D2pz3LI:APA91bEnuZN0QYNY-UcGC1Z2sruA0z60KNkqav37et5xChE5UH4aZmhoHw6ze1ZKCtrB9nU8M6XGqmtqEUV2Z3wkjmdRo3VgDJsqLDTO6qlMg0u8Lwqsjs-C2l56X4iJLE-SycEwGsdj"
+      "dV30D2pz3LI:APA91bEnuZN0QYNY-UcGC1Z2sruA0z60KNkqav37et5xChE5UH4aZmhoHw6ze1ZKCtrB9nU8M6XGqmtqEUV2Z3wkjmdRo3VgDJsqLDTO6qlMg0u8Lwqsjs-C2l56X4iJLE-SycEwGsdj",
     ]
     phone_blacklist = ['8186897323', '5612125831', '3013328953']
     email_blacklist = [
@@ -50,12 +50,12 @@ module IsNotUs
       puts "it's just us! (fcm)"
       return false 
     end
-    if phone_blacklist.include? thingy
+    if phone_blacklist.include? thingy.downcase
       puts "it's just us! (phone)"
       return false 
     end
-    if email_blacklist.include? thingy
-      puts "it's just us! (phone)"
+    if email_blacklist.include? thingy.downcase
+      puts "it's just us! (email)"
       return false 
     end
     if Password.new(password_blacklist) == thingy
@@ -80,7 +80,9 @@ module PersonIsNotUs
     end 
 
     if self.class.name == "User"
+      puts "THIS IS A USER"
       if !is_not_us?(self.fcm_token)
+        puts "WHO IS NOT US!"
         return false
       end 
     end
