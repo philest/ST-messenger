@@ -1,7 +1,9 @@
 require_relative 'helpers/auth.rb'
 require_relative 'helpers/phone-email.rb'
+require_relative '../lib/helpers/is_not_us'
 
 class Teacher < Sequel::Model(:teachers)
+  include PersonIsNotUs
   include AuthenticateModel
   extend SearchByUsername
   

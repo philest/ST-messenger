@@ -1,7 +1,9 @@
 require_relative 'helpers/auth.rb'
 require_relative 'helpers/phone-email.rb'
+require_relative '../lib/helpers/is_not_us'
 
 class Admin < Sequel::Model(:admins)
+  include PersonIsNotUs
   include AuthenticateModel
   extend SearchByUsername
 

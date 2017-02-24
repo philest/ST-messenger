@@ -1,8 +1,10 @@
 require_relative 'helpers/auth.rb'
 require_relative 'helpers/phone-email.rb'
 require_relative '../lib/api/helpers/authentication'
+require_relative '../lib/helpers/is_not_us'
 
 class User < Sequel::Model(:users)
+  include PersonIsNotUs
   include AuthenticateModel
   include AuthenticationHelpers
   extend SearchByUsername

@@ -30,6 +30,7 @@ require_relative '../helpers/twilio_helpers'
 require_relative '../helpers/name_codes'
 require_relative '../helpers/match_school_code'
 require_relative '../helpers/name_codes'
+require_relative '../helpers/is_not_us'
 require_relative '../workers'
 
 require_relative 'helpers/authentication'
@@ -68,6 +69,7 @@ class UserAPI < Sinatra::Base
   helpers SchoolCodeMatcher
   helpers NameCodes
   helpers JSONMacros
+  helpers IsNotUs
 
 
   use AuthorizeEndpoint
@@ -137,7 +139,9 @@ class UserAPI < Sinatra::Base
     user = User.where(id: request.env[:user]['user_id']).first
 
     begin
-      notify_admins("#{event}", "#{user.first_name} #{user.last_name} (#{user.phone}) did this. Here's the payload: #{payload}")
+      if user.is_not_us
+        notify_admins("#{event}", "#{user.first_name} #{user.last_name} (#{user.phone}) did this. Here's the payload: #{payload}")
+      end
     rescue
       return 404, jsonError(NOTIFY_ADMINS_FAIL, 'failed to notify admins. this should not happen.')
     end

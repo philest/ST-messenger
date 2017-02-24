@@ -29,6 +29,7 @@ require_relative '../helpers/twilio_helpers'
 require_relative '../helpers/name_codes'
 require_relative '../helpers/match_school_code'
 require_relative '../helpers/name_codes'
+require_relative '../helpers/is_not_us'
 require_relative '../workers'
 
 require_relative 'helpers/authentication'
@@ -72,9 +73,9 @@ class AuthAPI < Sinatra::Base
     end
   end
 
+  helpers IsNotUs
 
   helpers do
-
     def check_if_user_exists (username)
       puts 'he'
 
@@ -97,9 +98,6 @@ class AuthAPI < Sinatra::Base
         return 204
       end
     end
-
-
-
   end
 
   # all of our endpoints return json
@@ -161,7 +159,7 @@ class AuthAPI < Sinatra::Base
     # if default school/teacher doesn't exists, create it
     begin
       # shouldn't these be switched around?
-      puts "about to create school/teafcher"
+      puts "about to create school/teacher"
       default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
       puts "done with that shit man"
     rescue Exception => e
@@ -197,7 +195,7 @@ class AuthAPI < Sinatra::Base
     end
 
 
-    if ENV['RACK_ENV'] != 'development'
+    if ENV['RACK_ENV'] != 'development' and is_not_us?(username) and is_not_us?(password)
       notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher email: #{teacher_email}")
     end
 
