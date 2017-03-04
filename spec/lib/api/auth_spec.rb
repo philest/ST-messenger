@@ -352,7 +352,8 @@ describe 'auth' do
 
     it "returns error when invalid refresh token" do
       post '/get_access_tkn', {}, {'HTTP_AUTHORIZATION' => "Bearer my_ass_is_a_token"}
-      expect(last_response.status).to eq STATUS_CODES::NO_VALID_ACCESS_TKN
+      expect(last_response.status).to eq 404
+      expect(JSON.parse(last_response.body)["code"]).to eq STATUS_CODES::TOKEN_CORRUPT
     end
 
     it "returns NO_EXISTING_USER when the user id is bad" do

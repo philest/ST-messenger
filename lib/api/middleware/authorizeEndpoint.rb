@@ -1,7 +1,8 @@
 require 'jwt'
-
+require_relative '../helpers/json_macros'
 class AuthorizeEndpoint
   include STATUS_CODES
+  include JSONMacros
 
   def initialize app
     @app = app
@@ -30,15 +31,15 @@ class AuthorizeEndpoint
 
     # https://philsturgeon.uk/http/2015/09/23/http-status-codes-are-not-enough/
     # we just need to optimize this a bit
-    rescue JWT::DecodeError => e
-      p e
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
     rescue JWT::ExpiredSignature
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+      return 404, jsonError(TOKEN_EXPIRED, 'The token has expired.')
     rescue JWT::InvalidIssuerError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+      return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid issuer.')
     rescue JWT::InvalidIatError
-      [NO_VALID_ACCESS_TKN, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+      return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid "issued at" time.')
+    rescue JWT::DecodeError => e
+      puts e
+      return 404, jsonError(TOKEN_CORRUPT, 'A token must be passed.')
     end
   end
 end

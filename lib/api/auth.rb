@@ -301,6 +301,8 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(WRONG_PASSWORD, 'wrong password')
     end
 
+
+
     # create refresh_tkn and send to user
     refresh_token = create_refresh_token(user.id)
     user.update(refresh_token_digest: Password.create(refresh_token))
@@ -311,43 +313,40 @@ class AuthAPI < Sinatra::Base
 
   # TODO: clean up token errors
   post '/get_access_tkn' do
-    begin
 
-      options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
-      bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
+    options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
+    bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+    
+    payload, header = enhanced_jwt_decode(bearer, ENV['JWT_SECRET'], true, options)
 
-      if payload['type'] != 'refresh'
-        return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
-      end
-
-      user_id = payload['user']['user_id']
-
-      # check in db and cross-reference the bearer and the refres_tkn_digest
-      user = User.where(id: user_id).first
-      if user.nil?
-        return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
-      end
-
-      refresh_tkn_hash   = Password.new(user.refresh_token_digest)
-
-    rescue JWT::ExpiredSignature
-      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token has expired')
-
-    rescue JWT::InvalidIssuerError
-      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid issuer')
-
-    rescue JWT::InvalidIatError
-      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'The token does not have a valid "issued at" time.')
-
-    rescue JWT::DecodeError
-      return NO_VALID_ACCESS_TKN, jsonError(NO_VALID_ACCESS_TKN, 'A token must be passed in')
-
+    # ERR if decode was errorful
+    if decode_error(payload)
+      return 404, jsonError(payload[:code], payload[:title])
     end
 
-    if refresh_tkn_hash == bearer
-      return 201, jsonSuccess({ token: access_token(user.id) })
+    
+    if payload['type'] != 'refresh'
+      return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
     end
+
+    user_id = payload['user']['user_id']
+
+    # check in db and cross-reference the bearer and the refres_tkn_digest
+    user = User.where(id: user_id).first
+    if user.nil?
+      return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, 'no such user with that refresh tkn')
+    end
+
+    refresh_tkn_hash   = Password.new(user.refresh_token_digest)
+
+    # ensure the refresh token is up to date
+    if refresh_tkn_hash != bearer
+      return 404, jsonError(TOKEN_WRONG, 'wrong refresh token')
+    end
+
+    # generate new access token
+    return 201, jsonSuccess({ token: access_token(user.id) })
   end
+  
 
 end

@@ -162,8 +162,8 @@ class ResetPassword < Sinatra::Base
 
     # decode JWT from user (access token)
     payload = forgot_password_decode(token)
-    if (payload['user'].nil?)
-      return 404, jsonError(payload[:code], payload[:msg])
+    if decode_error(payload) 
+      return 404, jsonError(payload[:code], payload[:title])
     end
 
 
@@ -223,8 +223,8 @@ class ResetPassword < Sinatra::Base
     # decode JWT from user (access token)
     # this catches if JWT is expired, etc
     payload = forgot_password_decode(token)
-    if (payload['user'].nil?)
-      return 404, jsonError(payload[:code], payload[:msg])
+    if decode_error(payload)
+      return 404, jsonError(payload[:code], payload[:title])
     end
 
     user_id = payload['user']['user_id']
