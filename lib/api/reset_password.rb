@@ -250,7 +250,6 @@ class ResetPassword < Sinatra::Base
       return 404, jsonError(SMS_CODE_WRONG, 'probably have a bad token somehow')
     end
 
-    puts 'HEEEE'
 
     # update user's password
     begin
