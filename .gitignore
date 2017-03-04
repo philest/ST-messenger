@@ -20,3 +20,4 @@ graphs/*.png
 !StoryTime-invite-packet.png
 !StoryTime-invite-packet2.png
 !StoryTime-invite-packet*
+.DS_Store
