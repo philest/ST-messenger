@@ -34,11 +34,14 @@ class AuthorizeEndpoint
 
     # error handling, following a philosophy inspired by this article:
     # https://philsturgeon.uk/http/2015/09/23/http-status-codes-are-not-enough/
-    rescue JWT::ExpiredSignature
+    rescue JWT::ExpiredSignature => e
+      puts e
       return 404, jsonError(TOKEN_EXPIRED, 'The token has expired.')
-    rescue JWT::InvalidIssuerError
+    rescue JWT::InvalidIssuerError => e
+      puts e
       return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid issuer.')
-    rescue JWT::InvalidIatError
+    rescue JWT::InvalidIatError=> e
+      puts e
       return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid "issued at" time.')
     rescue JWT::DecodeError => e
       puts e
