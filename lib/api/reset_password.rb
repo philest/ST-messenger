@@ -168,7 +168,7 @@ class ResetPassword < Sinatra::Base
 
 
     user_id = payload['user']['user_id'].to_s
-    start_time = payload['start_time'].to_i
+    start_time = payload['iat'].to_i
     life_length = payload['life_length'].to_i
 
 

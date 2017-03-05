@@ -8,7 +8,27 @@ module AuthenticationHelpers
 
 
 
+	# return a JWT config payload
+	def payload(user_id, exp, type, start_time = Time.now.to_i)
+		config = {
+			exp: start_time + exp.to_i,
+			iat: start_time,
+			iss: ENV['JWT_ISSUER'],
+			user: {
+				user_id: user_id
+			},
+			type: type
+		}
 
+		return config
+	end
+
+
+
+
+
+
+	# generate an access token
 	def access_token(user_id, exp = 5.minutes, type = "access")
 		JWT.encode payload(user_id, exp, type), ENV['JWT_SECRET'], 'HS256'
 	end
@@ -17,6 +37,8 @@ module AuthenticationHelpers
 
 
 
+
+	# generate a refresh token
 	def create_refresh_token(user_id)
 		JWT.encode payload(user_id, 6.months, "refresh"), ENV['JWT_SECRET'], 'HS256'
 	end
@@ -24,6 +46,9 @@ module AuthenticationHelpers
 
 
 
+
+
+	# JWT decoding with error handling
 	def enhanced_jwt_decode(tkn, secret = ENV['JWT_SECRET'], validation = true, options = {})
 		begin
 			payload, header = JWT.decode tkn, secret, validation, options
@@ -44,6 +69,9 @@ module AuthenticationHelpers
 	end
 
 
+
+
+	# returns true if enhanced_jwt_decode returned as error
 	def decode_error(payload)
 		if ( payload[:err] && payload[:code] && payload[:title])
 			return true
@@ -53,6 +81,13 @@ module AuthenticationHelpers
 
 
 
+
+
+	#########################################################
+	#########################################################
+	# TODO: move all of the following to own module somewhere
+	
+	# forgot password config
 	def forgot_password_payload(user_id, start_time, life_length, random_code = "")
 		config = {
 			exp: start_time + life_length,
@@ -62,7 +97,6 @@ module AuthenticationHelpers
 				user_id: user_id
 			},
 			type: 'reset password',
-			start_time: start_time,
 			life_length: life_length,
 		}
 
@@ -86,13 +120,9 @@ module AuthenticationHelpers
 
 
 
-
-
 	# returns the a hash with { user_id: some_id } if input
 	# otherwise, returns an error hash with { code: some_error_code, title: some_error_message }
 	def forgot_password_decode(tkn)
-
-
 
 		options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
 
@@ -113,22 +143,5 @@ module AuthenticationHelpers
 	end
 
 
-
-
-
-	def payload(user_id, exp, type)
-		start_time = Time.now.to_i
-		config = {
-			exp: start_time + exp.to_i,
-			iat: start_time,
-			iss: ENV['JWT_ISSUER'],
-			user: {
-				user_id: user_id
-			},
-			type: type
-		}
-
-		return config
-	end
 
 end
