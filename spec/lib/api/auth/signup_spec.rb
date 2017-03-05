@@ -19,17 +19,11 @@ Dotenv.load
 ENV['RACK_ENV'] = 'test'
 require 'rack/test'
 
-module JSONHelper
-  def post_json(uri, json)
-    return post uri, json, "CONTENT_TYPE" => "application/json"
-  end
-end
 
 describe 'auth' do
   include Rack::Test::Methods
   include STATUS_CODES
   include BCrypt
-  include JSONHelper
   include AuthenticationHelpers
 
 
@@ -77,8 +71,6 @@ describe 'auth' do
     end
 
   end
-
-
 
 
   context 'signing up user with registered teacher/school system', registered_user: true do
@@ -337,17 +329,7 @@ describe 'auth' do
       end
     end
   end
+
+
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
