@@ -97,10 +97,10 @@ describe 'auth' do
       expect(user).to be_nil
     end
 
-    it "returns MISSING_CREDENTIALS with missing creds" do
+    it "returns CREDENTIALS_MISSING with missing creds" do
       puts "STATUS_CODES = #{STATUS_CODES}"
       post '/signup'
-      expect(last_response.status).to eq STATUS_CODES::MISSING_CREDENTIALS
+      expect(last_response.status).to eq STATUS_CODES::CREDENTIALS_MISSING
     end
 
     it "creates a user with correct password_digest, locale, school, teacher, info" do
@@ -265,7 +265,7 @@ describe 'auth' do
           time_zone: -4.0,
         }
         # puts(last_response.inspect)
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREDENTIALS_MISSING
       end
       it "missing first_name (legacy)" do
         post '/signup_free_agent', {
@@ -275,7 +275,7 @@ describe 'auth' do
           time_zone: -4.0,
         }
         # puts(last_response.inspect)
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREDENTIALS_MISSING
 
       end
       it "missing password (legacy)" do
@@ -285,7 +285,7 @@ describe 'auth' do
           last_name: 'McPeek',
           time_zone: -4.0,
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREDENTIALS_MISSING
       end
 
       it "poorly formatted phone" do
@@ -295,7 +295,7 @@ describe 'auth' do
           last_name: 'McPeek',
           time_zone: -4.0,
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREDENTIALS_MISSING
       end
 
       it "poorly formatted email" do
@@ -305,7 +305,7 @@ describe 'auth' do
           last_name: 'McPeek',
           time_zone: -4.0,
         }
-        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::MISSING_CREDENTIALS
+        expect(JSON.parse(last_response.body)['code']).to eq STATUS_CODES::CREDENTIALS_MISSING
       end
 
       it "doesn't create a user" do

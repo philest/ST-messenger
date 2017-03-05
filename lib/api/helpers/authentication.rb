@@ -9,10 +9,10 @@ module AuthenticationHelpers
 
 
 	# return a JWT config payload
-	def payload(user_id, exp, type, start_time = Time.now.to_i)
+	def payload(user_id, exp, type, start_time = Time.now)
 		config = {
-			exp: start_time + exp.to_i,
-			iat: start_time,
+			exp: start_time.to_i + exp.to_i,
+			iat: start_time.to_i,
 			iss: ENV['JWT_ISSUER'],
 			user: {
 				user_id: user_id
@@ -39,8 +39,8 @@ module AuthenticationHelpers
 
 
 	# generate a refresh token
-	def create_refresh_token(user_id)
-		JWT.encode payload(user_id, 6.months, "refresh"), ENV['JWT_SECRET'], 'HS256'
+	def create_refresh_token(user_id, exp, start_time)
+		JWT.encode payload(user_id, exp, "refresh", start_time), ENV['JWT_SECRET'], 'HS256'
 	end
 
 
@@ -86,7 +86,7 @@ module AuthenticationHelpers
 	#########################################################
 	#########################################################
 	# TODO: move all of the following to own module somewhere
-	
+
 	# forgot password config
 	def forgot_password_payload(user_id, start_time, life_length, random_code = "")
 		config = {

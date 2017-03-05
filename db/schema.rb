@@ -20,6 +20,23 @@ Sequel.migration do
       Integer :num_pages
     end
     
+    create_table(:freemium_schools) do
+      primary_key :id
+      String :name, :text=>true
+      String :signature, :text=>true
+      String :zip_code, :text=>true
+      String :address, :text=>true
+      String :phone, :text=>true
+      String :email, :text=>true
+      String :state, :text=>true
+      String :city, :text=>true
+      String :plan, :default=>"free", :text=>true
+      Float :tz_offset
+      DateTime :created_at
+      DateTime :updated_at
+      foreign_key :district_id, :districts, :key=>[:id]
+    end
+    
     create_table(:schools) do
       primary_key :id
       String :name, :text=>true
@@ -36,6 +53,9 @@ Sequel.migration do
       Float :tz_offset
       Integer :total_users
       Integer :teacher_index, :default=>0
+      String :city, :text=>true
+      String :state, :text=>true
+      String :plan, :default=>"pro", :text=>true
     end
     
     create_table(:admins, :ignore_index_errors=>true) do
@@ -45,7 +65,7 @@ Sequel.migration do
       String :last_name, :text=>true
       String :email, :text=>true
       String :phone, :text=>true
-      String :password, :text=>true
+      String :password_digest, :text=>true
       DateTime :enrolled_on
       DateTime :updated_at
       foreign_key :school_id, :schools, :key=>[:id]
@@ -53,6 +73,7 @@ Sequel.migration do
       String :code, :text=>true
       Integer :signin_count, :default=>0
       DateTime :notified_on
+      Integer :grade
       
       index [:code], :name=>:admins_code_key, :unique=>true
       index [:email], :name=>:admins_email_key, :unique=>true
@@ -75,7 +96,7 @@ Sequel.migration do
       String :email, :text=>true
       String :phone, :text=>true
       String :fb_id, :text=>true
-      String :password, :text=>true
+      String :password_digest, :text=>true
       DateTime :enrolled_on
       DateTime :updated_at
       foreign_key :school_id, :schools, :key=>[:id]
@@ -85,6 +106,9 @@ Sequel.migration do
       Integer :t_number, :default=>0
       DateTime :notified_on
       Integer :signin_count, :default=>0
+      String :first_name, :text=>true
+      String :last_name, :text=>true
+      Integer :grade
       
       index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true
@@ -168,12 +192,16 @@ Sequel.migration do
       String :password_digest, :text=>true
       String :email, :text=>true
       String :refresh_token_digest, :text=>true
-      String :firebase_id, :text=>true
+      String :role, :default=>"parent", :text=>true
+      String :class_code, :text=>true
+      String :fcm_token, :text=>true
+      Integer :app_version_number
+      String :reset_password_token_digest, :text=>true
+      DateTime :last_refresh_token_iss, :default=>DateTime.parse("1995-07-11T23:00:00.000000000+0000")
       
       index [:code], :name=>:users_code_key, :unique=>true
       index [:email], :name=>:users_email_key, :unique=>true
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
-      index [:firebase_id], :name=>:users_firebase_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end
     

@@ -151,7 +151,7 @@ class AuthAPI < Sinatra::Base
     default_story_number = 2
 
     if ([username, first_name, password].include? nil) || ([username, first_name, password].include? '')
-      return 404, jsonError(MISSING_CREDENTIALS, "empty username or password or first_name")
+      return 404, jsonError(CREDENTIALS_MISSING, "empty username or password or first_name")
     end
 
     puts "we have our params!"
@@ -162,10 +162,8 @@ class AuthAPI < Sinatra::Base
       puts "about to create school/teacher"
       default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
       puts "done with that shit man"
-    rescue Exception => e
-      puts "["
-      puts e
-      puts "]"
+    rescue  Exception=> e
+      puts "[\n#{e}]\n"
 
       puts "A FUCKING EXCEPTION WAS RAISED MAN"
       if (ENV["RACK_ENV"] != "development")
@@ -222,7 +220,7 @@ class AuthAPI < Sinatra::Base
     if ([username, first_name, password, class_code].include? nil) or
        ([username, first_name, password, class_code].include? '')
        puts "#{username}#{first_name}#{class_code}"
-       return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'missing username/first_name/class_code')
+       return CREDENTIALS_MISSING, jsonError(CREDENTIALS_MISSING, 'missing username/first_name/class_code')
     end
 
     # parse class code
@@ -283,7 +281,7 @@ class AuthAPI < Sinatra::Base
     password    = params[:password]
 
     if username.nil? or password.nil? or username.empty? or password.empty?
-      return MISSING_CREDENTIALS, jsonError(MISSING_CREDENTIALS, 'empty username or password')
+      return 404, jsonError(CREDENTIALS_MISSING, 'empty username or password')
     end
 
     puts "username = #{username}"
@@ -293,18 +291,43 @@ class AuthAPI < Sinatra::Base
 
 
     if user.nil?
-      return NO_EXISTING_USER, jsonError(NO_EXISTING_USER, "couldn't find user in db")
+      return 404, jsonError(USER_NOT_EXIST, "couldn't find user in db")
     end
 
     if !user.authenticate(password)
-      return 404, jsonError(WRONG_PASSWORD, 'wrong password')
+      return 404, jsonError(CREDENTIALS_INVALID, 'wrong password')
     end
 
+    expiration = 6.months
+    old_refresh = user.refresh_token_digest
+    last_refresh_time = user.last_refresh_token_iss
+    now_time = Time.now
 
+    puts "#{last_refresh_time} -> #{last_refresh_time+expiration} <= #{now_time}"
 
-    # create refresh_tkn and send to user
-    refresh_token = create_refresh_token(user.id)
-    user.update(refresh_token_digest: Password.create(refresh_token))
+    begin
+
+      # if previous refresh token is nil or expired
+      if old_refresh.nil? || old_refresh.empty? || last_refresh_time + expiration <= now_time
+
+        # => create brand new refresh tkn
+        refresh_token = create_refresh_token(user.id, expiration, now_time)
+        user.update(
+          refresh_token_digest: Password.create(refresh_token),
+          last_refresh_token_iss: now_time.utc,
+        )
+
+      else
+
+        # => re-create old refresh tkn
+        refresh_token = create_refresh_token(user.id, expiration, last_refresh_time)
+
+      end
+
+    rescue Exception=> e
+      puts e
+      return 404, jsonError(TOKEN_CREATION_FAILED, 'failed to create refresh token')
+    end
 
     return 201, jsonSuccess({ token: refresh_token, dbuuid: user.id, role: user.role })
 
