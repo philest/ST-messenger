@@ -1,11 +1,17 @@
 require 'jwt'
 require_relative '../helpers/json_macros'
+require 'json'
 class AuthorizeEndpoint
   include STATUS_CODES
   include JSONMacros
 
   def initialize app
     @app = app
+  end
+
+  def rackJsonError(code, title)
+    return [404, { 'Content-Type' => 'application/json' }, [ jsonError(code, title) ]]
+    # return [404, { 'Content-Type' => 'application/json' }, [ {pee: 'pee'}.to_json ]]
   end
 
   def call(env)
@@ -17,9 +23,9 @@ class AuthorizeEndpoint
 
 
       payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
-      
+
       if payload['type'] != 'access'
-        return 404, jsonError(TOKEN_WRONG, 'Must give access token (not refresh, or otherwise)')
+        return rackJsonError(TOKEN_WRONG, 'Must give access token (not refresh, or otherwise)')
       end
 
 
@@ -28,7 +34,7 @@ class AuthorizeEndpoint
       env[:user] = payload['user']
 
       if User.where(id: env[:user]['user_id']).first.nil?
-        return 404, jsonError(USER_NOT_EXIST, 'The user you are looking for does not exist')
+        return rackJsonError(USER_NOT_EXIST, 'The user you are looking for does not exist')
       end
 
 
@@ -36,16 +42,16 @@ class AuthorizeEndpoint
     # https://philsturgeon.uk/http/2015/09/23/http-status-codes-are-not-enough/
     rescue JWT::ExpiredSignature => e
       puts e
-      return 404, jsonError(TOKEN_EXPIRED, 'The token has expired.')
+      return rackJsonError(TOKEN_EXPIRED, 'The token has expired.')
     rescue JWT::InvalidIssuerError => e
       puts e
-      return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid issuer.')
+      return rackJsonError(TOKEN_INVALID, 'The token does not have a valid issuer.')
     rescue JWT::InvalidIatError=> e
       puts e
-      return 404, jsonError(TOKEN_INVALID, 'The token does not have a valid "issued at" time.')
+      return rackJsonError(TOKEN_INVALID, 'The token does not have a valid "issued at" time.')
     rescue JWT::DecodeError => e
       puts e
-      return 404, jsonError(TOKEN_CORRUPT, 'A token must be passed.')
+      return rackJsonError(TOKEN_CORRUPT, 'A token must be passed.')
     end
 
     @app.call(env)
