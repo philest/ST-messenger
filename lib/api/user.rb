@@ -291,7 +291,10 @@ class UserAPI < Sinatra::Base
     user_data = {
       story_number: user.state_table.story_number,
       teacher_signature: user.teacher.signature,
+      teacher_first_name: user.teacher.first_name,
+      teacher_last_name: user.teacher.last_name,
       teacher_id: user.teacher.id,
+      teacher_propic: user.teacher.propic,
       school_signature: user.school.signature,
       first_name: user.first_name,
       last_name: user.last_name,

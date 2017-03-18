@@ -114,6 +114,8 @@ describe 'auth' do
       it 'fails when token is invalid' do
         post '/phone/code', { token: "this is a garbage token", randomCode: @random_code }
         res = JSON.parse(last_response.body)
+
+        puts res["title"]
         expect(res["code"]).to eq STATUS_CODES::TOKEN_CORRUPT
       end
 
