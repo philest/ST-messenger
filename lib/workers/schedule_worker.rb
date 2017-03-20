@@ -81,7 +81,7 @@ class ScheduleWorker
 
     # schedule for app
     app.each do |user|
-      if user.fcm_token
+      if user.fcm_token && user.phone != '5555555555'
         StartDayWorker.perform_async(user.id, platform='app')
       end
     end

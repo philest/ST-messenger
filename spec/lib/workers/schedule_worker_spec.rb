@@ -86,6 +86,25 @@ describe ScheduleWorker do
       end
     end
 
+    it "does not send a push notification to the demo user" do
+      demo_user = User.create(phone: '5555555555', platform: 'app', send_time: @time, fcm_token: 'pee')
+      rando_user = User.create(phone: '3013329909', platform: 'app', send_time: @time, fcm_token: 'poo')
+      @users << demo_user
+      @users << rando_user
+
+      sw =  ScheduleWorker.new
+      allow(sw).to  receive(:within_time_range).and_wrap_original do |original_method, *args, &block|
+        original_method.call(*args, [Time.now.wday], &block)
+      end
+
+      Sidekiq::Testing.fake! do
+        expect {
+         sw.perform(@interval)
+          ScheduleWorker.drain
+        }.to change(StartDayWorker.jobs, :size).by(@users.size - 1)
+      end
+    end
+
   end
 
 
