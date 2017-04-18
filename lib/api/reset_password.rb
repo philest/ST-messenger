@@ -264,12 +264,29 @@ class ResetPassword < Sinatra::Base
   end
 
 
+  post '/email/request' do
+
+    puts "hello darling, you're in /email/request!"
+
+    puts params
+
+    return 201, jsonSuccess({
+      msg: "WE ARE IN /EMAIL FOR RESET_EMAIL, AMIGO!!!!!",
+    })
+
+  end
+
 
 
   # step #1 in email password reset
   post '/email' do
     phone = params["email"]
 
+
+    puts "WE ARE IN /EMAIL FOR RESET_EMAIL!!!!! ;)"
+    return 201, jsonSuccess({
+      msg: "WE ARE IN /EMAIL FOR RESET_EMAIL, AMIGO!!!!!",
+    })
 
     # check if user is in DB
     begin
@@ -279,10 +296,8 @@ class ResetPassword < Sinatra::Base
       return 404, jsonError(PHONE_NOT_FOUND, 'could not find that phone in db')
     end
 
-
     # encode JWTs
     begin
-
       start_time = Time.now.to_i
       life = 5.minutes
       life_length = life.to_i
@@ -295,8 +310,6 @@ class ResetPassword < Sinatra::Base
       puts e
       return 404, jsonError(INTERNAL_ERROR, 'could not create token')
     end
-
-
 
     # update db entry
     begin
