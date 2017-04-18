@@ -169,8 +169,8 @@ class StartDayWorker
 
 
       # send out push notification
-      msg_title = "A new story has landed!"
-      msg_body  = "Tap here to read it. :)"
+      msg_title = "#{u.first_name} it's time for your new book!"
+      msg_body  = "Take a few minutes to read it."
 
       if (ENV['RACK_ENV'] != 'test')
         @@Fcm.send_with_notification_key(
