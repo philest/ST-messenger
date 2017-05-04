@@ -8,6 +8,11 @@ Birdv::DSL::ScriptClient.new_script 'day1', 'sms' do
   sequence 'callToAction' do |phone_no|
     text = 'scripts.enrollment.call_to_action'
     user = User.where(phone: phone_no).first
+
+    if !user.teacher.nil? and user.teacher.code == "demo23|demo23-es"
+      text = "*If you have Facebook Messenger, click here and type your class code #{user.code}:\njoinstorytime.com/go\n\nIf you do not have a smartphone, text back your full name"
+    end
+
      # handling the YWCA problem
     if !user.school.nil? and user.school.name == 'YWCA' and user.locale == 'es'
       send_sms phone_no, text, current='callToAction', 'english'
