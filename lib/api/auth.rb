@@ -138,10 +138,20 @@ class AuthAPI < Sinatra::Base
     last_name   = params["last_name"]
     time_zone   = params["time_zone"]
     teacher_email = params["teacher_email"]
+    teacher_name = params["teacher_name"]
 
     locale      = params["locale"] || 'en'
 
-    school_code_base = 'freeagent'
+    if ([username, first_name, password].include? nil) || ([username, first_name, password].include? '')
+      return 404, jsonError(CREDENTIALS_MISSING, "empty username or password or first_name")
+    end
+
+    if params['school_name'].nil?
+      school_code_base = 'freeagent'
+    else
+      school_code_base = "#{params['school_name']}_#{params['school_city']}_#{params['school_state']}"
+    end
+
     school_code_expression = "#{school_code_base}|#{school_code_base}-es"
 
     class_code = "#{school_code_base}#{(locale === 'es' ? '-es' : '')}1"
@@ -150,26 +160,34 @@ class AuthAPI < Sinatra::Base
 
     default_story_number = 2
 
-    if ([username, first_name, password].include? nil) || ([username, first_name, password].include? '')
-      return 404, jsonError(CREDENTIALS_MISSING, "empty username or password or first_name")
-    end
+    if params['school_name'].nil?
+      # if default school/teacher doesn't exists, create it
+      begin
+        # shouldn't these be switched around?
+        puts "about to create school/teacher"
+        default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
+        puts "done with that shit man"
+      rescue  Exception=> e
+        puts "[\n#{e}]\n"
 
-    puts "we have our params!"
-
-    # if default school/teacher doesn't exists, create it
-    begin
-      # shouldn't these be switched around?
-      puts "about to create school/teacher"
-      default_school, default_teacher = SIGNUP::create_free_agent_school(School, Teacher, school_code_expression)
-      puts "done with that shit man"
-    rescue  Exception=> e
-      puts "[\n#{e}]\n"
-
-      puts "A FUCKING EXCEPTION WAS RAISED MAN"
-      if (ENV["RACK_ENV"] != "development")
-        notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+        puts "A FUCKING EXCEPTION WAS RAISED MAN"
+        if (ENV["RACK_ENV"] != "development")
+          notify_admins("The default school or teacher didn't exist for some reason. Failed registration...", e)
+        end
+        return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
       end
-      return 404, jsonError(INTERNAL_ERROR, "couldn't create either default school or defualt teacher")
+    else
+      school_info = {
+            signature: params['school_name'],
+            name: params['school_name'],
+            city: params['school_city'],
+            state: params['school_state'],
+            code: school_code_expression,
+            plan: 'free'
+          }
+
+      school = School.where(school_info).first || School.create(school_info)
+      session[:school_id] = school.id
     end
 
     # TODO: make 'app' something that's passed in from client  :P
@@ -193,9 +211,19 @@ class AuthAPI < Sinatra::Base
 
 
     if ENV['RACK_ENV'] != 'development' and is_not_us?(username) and is_not_us?(password)
-      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher email: #{teacher_email}")
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher name: #{teacher_name}, teacher email: #{teacher_email}")
     end
 
+    # searchMarker:delete me!!!
+      notify_admins("Free-agent (#{role}) created. #{first_name} #{last_name}, username: #{username}, teacher name: #{teacher_name}, teacher email: #{teacher_email}")
+
+    puts "created free-agent."
+
+    newParent = User[new_user.id] # using primary key
+    newParent.update(
+      school_id: school.id
+    ) 
+ 
 
     return CREATE_USER_SUCCESS, jsonSuccess({dbuuid: new_user.id})
 
