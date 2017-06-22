@@ -176,13 +176,28 @@ class AuthAPI < Sinatra::Base
     begin
       app_platform = 'app'
 
+      puts "AYYYYYYYYYYY"
       new_user = SIGNUP::create_user(User, username, first_name, last_name, password, class_code, app_platform, role, time_zone)
+      puts "IHHHH"
+
       if new_user.nil?
         return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
       end
-      
+
       SIGNUP::register_user(new_user, class_code, password, default_story_number, default_story_number, true)
+    rescue Sequel::ValidationFailed => e
+      puts e.message
+      base = "#{username} is already taken (users)"
+      if e.message ==  "email #{base}" || e.message == "phone #{base}"
+        return 404, jsonError(USER_PREVIOUSLY_CREATED, "you are trying to create a user with an email/phone already taken")
+      end
+
+      return 404, jsonError(INTERNAL_ERROR, "sequel validation error")
+
     rescue Exception => e # TODO, better error handling
+
+
+      puts e
       puts "FOR SOME REASON THIS SHIT FAILED"
       if (ENV["RACK_ENV"] != "development")
         notify_admins("Free-agent creation failed somehow...", e)
@@ -233,18 +248,30 @@ class AuthAPI < Sinatra::Base
     end
 
 
-    # TODO: being...rescue this
-    new_user = SIGNUP::create_user(
-      User,
-      username,
-      first_name,
-      last_name,
-      password,
-      class_code,
-      'app', # TODO: make 'app' something that's passed in from client  :P
-      role,
-      time_zone,
-    )
+    begin
+      # TODO: being...rescue this
+      new_user = SIGNUP::create_user(
+        User,
+        username,
+        first_name,
+        last_name,
+        password,
+        class_code,
+        'app', # TODO: make 'app' something that's passed in from client  :P
+        role,
+        time_zone,
+      )
+
+    rescue Sequel::ValidationFailed => e
+      puts e.message
+      base = "#{username} is already taken (users)"
+      if e.message ==  "email #{base}" || e.message == "phone #{base}"
+        return 404, jsonError(USER_PREVIOUSLY_CREATED, "you are trying to create a user with an email/phone already taken")
+      end
+
+      return 404, jsonError(INTERNAL_ERROR, "sequel validation error")
+    end
+
 
     if new_user.nil?
       return CREDENTIALS_INVALID, jsonError(CREDENTIALS_INVALID, 'user was not created')
@@ -338,7 +365,7 @@ class AuthAPI < Sinatra::Base
 
     options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
     bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-    
+
     payload, header = enhanced_jwt_decode(bearer, ENV['JWT_SECRET'], true, options)
 
     # ERR if decode was errorful
@@ -346,7 +373,7 @@ class AuthAPI < Sinatra::Base
       return 404, jsonError(payload[:code], payload[:title])
     end
 
-    
+
     if payload['type'] != 'refresh'
       return WRONG_ACCESS_TKN_TYPE, jsonError(WRONG_ACCESS_TKN_TYPE, 'wrong token type, expected refresh')
     end
@@ -369,6 +396,6 @@ class AuthAPI < Sinatra::Base
     # generate new access token
     return 201, jsonSuccess({ token: access_token(user.id) })
   end
-  
+
 
 end

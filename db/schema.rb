@@ -8,18 +8,18 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
     end
-    
+
     create_table(:schema_info) do
       Integer :version, :default=>0, :null=>false
     end
-    
+
     create_table(:stories) do
       primary_key :id
       String :title, :text=>true
       String :url, :text=>true
       Integer :num_pages
     end
-    
+
     create_table(:freemium_schools) do
       primary_key :id
       String :name, :text=>true
@@ -36,7 +36,7 @@ Sequel.migration do
       DateTime :updated_at
       foreign_key :district_id, :districts, :key=>[:id]
     end
-    
+
     create_table(:schools) do
       primary_key :id
       String :name, :text=>true
@@ -57,7 +57,7 @@ Sequel.migration do
       String :state, :text=>true
       String :plan, :default=>"pro", :text=>true
     end
-    
+
     create_table(:admins, :ignore_index_errors=>true) do
       primary_key :id
       String :name, :text=>true
@@ -74,12 +74,12 @@ Sequel.migration do
       Integer :signin_count, :default=>0
       DateTime :notified_on
       Integer :grade
-      
+
       index [:code], :name=>:admins_code_key, :unique=>true
       index [:email], :name=>:admins_email_key, :unique=>true
       index [:phone], :name=>:admins_phone_key, :unique=>true
     end
-    
+
     create_table(:school_sessions) do
       primary_key :id
       String :session_type, :text=>true
@@ -89,7 +89,7 @@ Sequel.migration do
       DateTime :updated_at
       foreign_key :school_id, :schools, :key=>[:id]
     end
-    
+
     create_table(:teachers, :ignore_index_errors=>true) do
       primary_key :id
       String :name, :text=>true
@@ -109,13 +109,13 @@ Sequel.migration do
       String :first_name, :text=>true
       String :last_name, :text=>true
       Integer :grade
-      
+
       index [:code], :name=>:teachers_code_key, :unique=>true
       index [:email], :name=>:teachers_email_key, :unique=>true
       index [:fb_id], :name=>:teachers_fb_id_key, :unique=>true
       index [:phone], :name=>:teachers_phone_key, :unique=>true
     end
-    
+
     create_table(:classrooms) do
       primary_key :id
       DateTime :enrolled_on
@@ -123,7 +123,7 @@ Sequel.migration do
       foreign_key :teacher_id, :teachers, :key=>[:id]
       foreign_key :school_id, :schools, :key=>[:id]
     end
-    
+
     create_table(:button_press_logs, :ignore_index_errors=>true) do
       primary_key :id
       DateTime :created_at
@@ -132,16 +132,16 @@ Sequel.migration do
       Integer :user_id
       String :platform, :default=>"fb", :text=>true
       String :script_name, :text=>true
-      
+
       index [:day_number, :sequence_name]
     end
-    
+
     create_table(:enrollment_queue) do
       primary_key :id
       DateTime :created_at
       Integer :user_id
     end
-    
+
     create_table(:state_tables) do
       primary_key :id
       TrueClass :last_story_read?, :default=>false
@@ -162,7 +162,7 @@ Sequel.migration do
       Integer :last_unique_story, :default=>0
       TrueClass :last_unique_story_read?, :default=>true
     end
-    
+
     create_table(:users, :ignore_index_errors=>true) do
       primary_key :id
       String :phone, :text=>true
@@ -198,21 +198,21 @@ Sequel.migration do
       Integer :app_version_number
       String :reset_password_token_digest, :text=>true
       DateTime :last_refresh_token_iss, :default=>DateTime.parse("1995-07-11T23:00:00.000000000+0000")
-      
+
       index [:code], :name=>:users_code_key, :unique=>true
       index [:email], :name=>:users_email_key, :unique=>true
       index [:fb_id], :name=>:users_fb_id_key, :unique=>true
       index [:phone], :name=>:users_phone_key, :unique=>true
     end
-    
+
     alter_table(:button_press_logs) do
       add_foreign_key [:user_id], :users, :name=>:button_press_logs_user_id_fkey, :key=>[:id]
     end
-    
+
     alter_table(:enrollment_queue) do
       add_foreign_key [:user_id], :users, :name=>:enrollment_queue_user_id_fkey, :key=>[:id]
     end
-    
+
     alter_table(:state_tables) do
       add_foreign_key [:user_id], :users, :name=>:state_tables_user_id_fkey, :key=>[:id]
     end
